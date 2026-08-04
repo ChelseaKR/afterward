@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import csv
 import io
-from collections.abc import Iterator
+import re
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from typing import Any
 
@@ -24,6 +25,17 @@ CKAN_BASE = "https://data.ca.gov/api/3/action"
 OCCUPATIONAL_PROJECTIONS = "long-term-occupational-employment-projections"
 OEWS = "oews"
 REGIONAL_PLANNING_UNITS = "regional-planning-unit-overviews"
+"""EDD's Regional Planning Unit dataset (D4).
+
+Kept as a documented source, but it does **not** define any geography that can be used to
+place a training program. Inspected 2026-08-04: it is a second copy of the occupational
+projections -- identical columns -- cut by the fifteen WIOA planning units ("Bay-Peninsula",
+"Inland Empire") on the older 2023-2033 cycle. The area names carry no county list and no
+city list, so there is nothing in it to join a program's address to, and its regions are a
+different partition of the state from the MSA/consortium areas the current projections use.
+The area geography this module actually relies on is parsed out of the projections file
+itself; see :func:`parse_area`.
+"""
 REQUEST_TIMEOUT = 120.0
 
 STATEWIDE_AREA = "California"
@@ -102,6 +114,137 @@ class OccupationProjection:
         year" -- a suppressed-versus-zero failure reached by a different route.
         """
         return self.soc_level == DETAILED_SOC_LEVEL and self.soc_code is not None
+
+
+# --------------------------------------------------------------------------------------
+# Area geography
+#
+# EDD writes each area's definition into the ``Area Name`` string itself -- "Fresno MSA
+# (Fresno and Madera Counties)" -- so the geography is read out of the file rather than
+# transcribed into this module. Nothing below asserts a fact about California that EDD has
+# not written down in the row being parsed.
+# --------------------------------------------------------------------------------------
+
+METROPOLITAN_AREA_TYPE = "Metropolitan Area"
+"""EDD's label for its federal core-based statistical areas (MSAs and divisions).
+
+The other non-statewide type is ``Consortium``, whose names ("North Coast Region") are
+EDD's own coinages covering the rural counties left outside any CBSA. They name no cities,
+so no program can be placed in one by the rule in :func:`principal_city_areas`.
+"""
+
+AREA_TYPE_CONSORTIUM = "Consortium"
+
+_CBSA_SUFFIX = re.compile(r"\s+(?:MSA|MD)\Z")
+_COUNTY_NOUN = re.compile(r"\bCount(?:y|ies)\b", re.IGNORECASE)
+_COUNTY_SEPARATOR = re.compile(r",|\band\b", re.IGNORECASE)
+_WHITESPACE = re.compile(r"\s+")
+
+
+def normalise_place(name: str | None) -> str | None:
+    """Casefold and collapse whitespace so two place names can be compared exactly.
+
+    Exactly, and only exactly. No prefix, substring, or edit-distance matching is offered
+    anywhere in this module. Two California place names that nearly match are far more
+    likely to be two different places than one typo -- Ontario and Ontario, San Mateo and
+    San Marino -- and quietly attributing one area's wages to a program in another would be
+    indistinguishable, on the page, from having got it right.
+    """
+    if name is None:
+        return None
+    collapsed = _WHITESPACE.sub(" ", name).strip().casefold()
+    return collapsed if collapsed else None
+
+
+@dataclass(frozen=True)
+class ProjectionArea:
+    """One EDD projection geography, as EDD's own ``Area Name`` string defines it."""
+
+    area_type: str
+    area_name: str
+    principal_cities: tuple[str, ...]
+    counties: tuple[str, ...]
+
+    @property
+    def is_metropolitan(self) -> bool:
+        return self.area_type == METROPOLITAN_AREA_TYPE
+
+    @property
+    def short_name(self) -> str:
+        """The area title without EDD's parenthetical county gloss, for display."""
+        return self.area_name.partition("(")[0].strip()
+
+
+def _principal_cities(head: str) -> tuple[str, ...]:
+    """The cities a core-based statistical area title is built from.
+
+    A CBSA is titled after its principal cities, each of which lies inside the area by
+    construction: "Bakersfield-Delano MSA" is named that because Bakersfield and Delano are
+    in it. That is what makes a match against this list a restatement of EDD's own
+    published definition rather than an inference about California geography made here.
+
+    The ``MSA``/``MD`` marker is required. Without it the string is not a CBSA title and
+    its hyphens carry no such guarantee -- "North Valley-Northern Mountains Region" would
+    otherwise yield two cities that do not exist.
+    """
+    stem = head.strip()
+    if not _CBSA_SUFFIX.search(stem):
+        return ()
+    return tuple(part.strip() for part in _CBSA_SUFFIX.sub("", stem).split("-") if part.strip())
+
+
+def _counties(tail: str) -> tuple[str, ...]:
+    """The counties named in an area's parenthetical gloss, if it carries one."""
+    inner = tail.partition(")")[0]
+    if not inner.strip():
+        return ()
+    parts = _COUNTY_SEPARATOR.split(_COUNTY_NOUN.sub("", inner))
+    return tuple(part.strip() for part in parts if part.strip())
+
+
+def parse_area(area_type: str, area_name: str) -> ProjectionArea:
+    """Split an EDD ``Area Name`` into the principal cities and counties it names."""
+    head, _, tail = area_name.partition("(")
+    return ProjectionArea(
+        area_type=area_type,
+        area_name=area_name,
+        principal_cities=_principal_cities(head) if area_type == METROPOLITAN_AREA_TYPE else (),
+        counties=_counties(tail),
+    )
+
+
+def area_definitions(projections: Iterable[OccupationProjection]) -> list[ProjectionArea]:
+    """Every non-statewide geography the projections file publishes, parsed once each."""
+    areas: dict[tuple[str, str], ProjectionArea] = {}
+    for row in projections:
+        if row.is_statewide or not row.area_type or not row.area_name:
+            continue
+        key = (row.area_type, row.area_name)
+        if key not in areas:
+            areas[key] = parse_area(row.area_type, row.area_name)
+    return list(areas.values())
+
+
+def principal_city_areas(areas: Iterable[ProjectionArea]) -> dict[str, ProjectionArea]:
+    """Map each principal city name to the one area whose title names it.
+
+    A city claimed by two areas is dropped rather than assigned to either. Nothing in the
+    current EDD file is ambiguous this way, but a re-publication that introduced an
+    ambiguity must lose the city rather than have this code pick a winner.
+    """
+    claims: dict[str, list[ProjectionArea]] = {}
+    for area in areas:
+        if not area.is_metropolitan:
+            continue
+        for city in area.principal_cities:
+            key = normalise_place(city)
+            if key is not None:
+                claims.setdefault(key, []).append(area)
+    return {
+        city: claimed[0]
+        for city, claimed in claims.items()
+        if len({area.area_name for area in claimed}) == 1
+    }
 
 
 def resolve_resource_url(

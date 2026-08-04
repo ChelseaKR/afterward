@@ -8,6 +8,8 @@ on the other. Nothing in California publishes those two facts next to each other
 from __future__ import annotations
 
 import json
+from collections import Counter
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
@@ -38,6 +40,12 @@ class CoverageReport:
     distinct_providers: int
     distinct_occupations_matched: int
     occupation_rows_loaded: int
+    # Geography. `programs_without_area` is carried as its own number rather than left to
+    # be subtracted, because "we declined to place this program" is a published finding
+    # about the dataset and not an arithmetic leftover.
+    programs_mapped_to_area: int
+    programs_without_area: int
+    programs_with_regional_projection: int
 
     @property
     def outcome_coverage_pct(self) -> float:
@@ -46,6 +54,10 @@ class CoverageReport:
     @property
     def occupation_match_pct(self) -> float:
         return self._pct(self.programs_matched_to_occupation)
+
+    @property
+    def area_match_pct(self) -> float:
+        return self._pct(self.programs_mapped_to_area)
 
     def _pct(self, numerator: int) -> float:
         return round(100.0 * numerator / self.total_programs, 1) if self.total_programs else 0.0
@@ -189,22 +201,96 @@ OCCUPATION_SUMMARY_FIELDS = (
 )
 
 
-def occupation_summary(occupation: dict[str, Any]) -> dict[str, Any]:
+REGION_PROJECTION_FIELDS = (
+    "median_annual_wage",
+    "median_hourly_wage",
+    "total_job_openings",
+    "percent_change",
+)
+
+AREA_MATCH_PRINCIPAL_CITY = "principal_city"
+"""How an area was decided. Emitted so a reader can audit the claim rather than trust it."""
+
+
+def regional_projection(
+    occupation: Mapping[str, Any], area_name: str | None
+) -> dict[str, Any] | None:
+    """The occupation's own row for one EDD area, or None when EDD published no such row.
+
+    Two different absences reach the page as null and must not be conflated with each
+    other or with zero:
+
+    * ``area_name`` is None -- this program's city could not be placed in an EDD area, so
+      no regional figure is claimed for any of its occupations.
+    * ``area_name`` is set but the occupation has no row there -- EDD publishes a great
+      many occupations statewide and not in every small area.
+
+    The program-level ``region`` block distinguishes them: it is null in the first case and
+    populated in the second. Measures inside a row that does exist may themselves be null;
+    ``_to_wage`` upstream already maps EDD's literal ``$0`` placeholder to null, and
+    nothing here refills it.
+    """
+    if area_name is None:
+        return None
+    for region in occupation.get("regions", []):
+        if region.get("area_name") == area_name:
+            return {
+                "area_name": area_name,
+                "area_type": region.get("area_type"),
+                **{field: region.get(field) for field in REGION_PROJECTION_FIELDS},
+            }
+    return None
+
+
+def occupation_summary(occupation: dict[str, Any], area_name: str | None = None) -> dict[str, Any]:
     """Slim projection of an occupation for embedding in a program record.
 
     Programs reference occupations by SOC rather than carrying a copy: the full record,
     including every regional wage row, lives once in ``occupations.json``. Embedding it
     per-program inflated the dataset by two orders of magnitude, which matters because this
     is meant to ship as static files to phones.
+
+    The top-level figures stay statewide (decision D4: a program's graduates do not
+    necessarily work in the county where they trained). ``region`` carries the one area row
+    that applies to the program being built, so the page can show both and say which is
+    which -- a Fresno program's occupation is not well described by a statewide median that
+    a Bay Area concentration has pulled upward.
     """
-    return {key: occupation.get(key) for key in OCCUPATION_SUMMARY_FIELDS}
+    summary = {key: occupation.get(key) for key in OCCUPATION_SUMMARY_FIELDS}
+    summary["region"] = regional_projection(occupation, area_name)
+    return summary
+
+
+def area_for_city(
+    city: str | None, city_areas: Mapping[str, edd_lmi.ProjectionArea] | None
+) -> edd_lmi.ProjectionArea | None:
+    """The EDD area whose published title names this city, or None.
+
+    Exact match against EDD's own principal-city names, and nothing else. A city EDD does
+    not name gets no region at all: the nearest metro's wages would render identically to a
+    correct answer, so a reader could not tell a fact from a guess, and roughly half of
+    California's programs sit in cities no CBSA title mentions. Saying nothing about them
+    is the only version of this that stays honest.
+    """
+    if city_areas is None:
+        return None
+    key = edd_lmi.normalise_place(city)
+    if key is None:
+        return None
+    return city_areas.get(key)
 
 
 def program_payload(
-    program: dol_etp.Program, occupations: dict[str, dict[str, Any]]
+    program: dol_etp.Program,
+    occupations: dict[str, dict[str, Any]],
+    city_areas: Mapping[str, edd_lmi.ProjectionArea] | None = None,
 ) -> dict[str, Any]:
+    area = area_for_city(program.city, city_areas)
+    area_name = None if area is None else area.area_name
     matched = [
-        occupation_summary(occupations[soc]) for soc in program.soc_codes if soc in occupations
+        occupation_summary(occupations[soc], area_name)
+        for soc in program.soc_codes
+        if soc in occupations
     ]
     return {
         "uuid": program.uuid,
@@ -222,6 +308,16 @@ def program_payload(
             "zip": program.zip_code,
             "lat": program.lat,
             "lon": program.lon,
+        },
+        # Null means this program's city is not one EDD names, so no regional figure is
+        # claimed for it anywhere in this record. Not "statewide"; not "unknown region".
+        "region": None
+        if area is None
+        else {
+            "area_name": area.area_name,
+            "area_short_name": area.short_name,
+            "area_type": area.area_type,
+            "matched_on": AREA_MATCH_PRINCIPAL_CITY,
         },
         "length": {"weeks": program.length_weeks, "hours": program.length_hours},
         "cost": {
@@ -297,6 +393,47 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         "me": outcomes["median_earnings"],
         "r": outcomes["reported"],
     }
+
+
+def area_coverage(
+    payloads: list[dict[str, Any]], areas: list[edd_lmi.ProjectionArea]
+) -> list[dict[str, Any]]:
+    """Every EDD area, what it is made of, and how many programs landed in it.
+
+    Published so the geography can be audited without re-deriving it: a reader can see
+    that the three rural Consortium regions received zero programs, and why (their names
+    are region coinages, not city-titled CBSAs, so no program city can match one).
+    """
+    placed = Counter(
+        payload["region"]["area_name"] for payload in payloads if payload["region"] is not None
+    )
+    return [
+        {
+            "area_name": area.area_name,
+            "area_type": area.area_type,
+            "principal_cities": list(area.principal_cities),
+            "counties": list(area.counties),
+            # A genuine zero: we counted, and nothing mapped here. Unlike every measure in
+            # this dataset, this number is ours, so it can be zero without ambiguity.
+            "programs": placed.get(area.area_name, 0),
+        }
+        for area in areas
+    ]
+
+
+def unmapped_cities(payloads: list[dict[str, Any]]) -> dict[str, int]:
+    """Cities this build declined to place, with how many programs each cost.
+
+    The refusals are the interesting half of the coverage story, so they ship rather than
+    being summarised away: whoever reads this can see exactly which places would be
+    recovered by adding a documented address-to-county source, and how much each is worth.
+    """
+    counts = Counter(
+        payload["location"]["city"]
+        for payload in payloads
+        if payload["region"] is None and payload["location"]["city"] is not None
+    )
+    return {city: count for city, count in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))}
 
 
 def _fresh_dir(path: Path) -> Path:
@@ -402,9 +539,12 @@ def build(
     benchmark = dol_etp.fetch_state_benchmark(state)
     projections = edd_lmi.fetch_projections()
     occupations = index_occupations(projections)
+    areas = edd_lmi.area_definitions(projections)
+    city_areas = edd_lmi.principal_city_areas(areas)
 
-    payloads = [program_payload(p, occupations) for p in programs]
+    payloads = [program_payload(p, occupations, city_areas) for p in programs]
     matched_socs = {soc for p in payloads for soc in p["soc_codes"] if soc in occupations}
+    mapped_to_area = sum(1 for p in payloads if p["region"] is not None)
 
     report = CoverageReport(
         snapshot_date=snapshot,
@@ -421,6 +561,11 @@ def build(
         distinct_providers=len({p.provider_name for p in programs if p.provider_name}),
         distinct_occupations_matched=len(matched_socs),
         occupation_rows_loaded=len(occupations),
+        programs_mapped_to_area=mapped_to_area,
+        programs_without_area=len(payloads) - mapped_to_area,
+        programs_with_regional_projection=sum(
+            1 for p in payloads if any(o["region"] is not None for o in p["occupations"])
+        ),
     )
 
     (output_dir / "programs.json").write_text(
@@ -438,6 +583,9 @@ def build(
             | {
                 "outcome_coverage_pct": report.outcome_coverage_pct,
                 "occupation_match_pct": report.occupation_match_pct,
+                "area_match_pct": report.area_match_pct,
+                "areas": area_coverage(payloads, areas),
+                "unmapped_cities": unmapped_cities(payloads),
                 # DOL's own statewide aggregate. Kept as published context, but NOT used
                 # for per-program comparison: it is computed on a different basis (27%
                 # employed against a 69% median among reporting programs).

@@ -11,8 +11,581 @@
  "distinct_providers": 584,
  "distinct_occupations_matched": 56,
  "occupation_rows_loaded": 670,
+ "programs_mapped_to_area": 1525,
+ "programs_without_area": 1741,
+ "programs_with_regional_projection": 1446,
  "outcome_coverage_pct": 81.7,
  "occupation_match_pct": 93.3,
+ "area_match_pct": 46.7,
+ "areas": [
+  {
+   "area_name": "Anaheim-Santa Ana-Irvine MD (Orange County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Anaheim",
+    "Santa Ana",
+    "Irvine"
+   ],
+   "counties": [
+    "Orange"
+   ],
+   "programs": 55
+  },
+  {
+   "area_name": "Bakersfield-Delano MSA (Kern County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Bakersfield",
+    "Delano"
+   ],
+   "counties": [
+    "Kern"
+   ],
+   "programs": 180
+  },
+  {
+   "area_name": "Chico MSA (Butte County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Chico"
+   ],
+   "counties": [
+    "Butte"
+   ],
+   "programs": 8
+  },
+  {
+   "area_name": "Eastern Sierra-Mother Lode Region (Alpine, Amador, Calaveras, Inyo, Mariposa, Mono, and Tuolumne Counties)",
+   "area_type": "Consortium",
+   "principal_cities": [],
+   "counties": [
+    "Alpine",
+    "Amador",
+    "Calaveras",
+    "Inyo",
+    "Mariposa",
+    "Mono",
+    "Tuolumne"
+   ],
+   "programs": 0
+  },
+  {
+   "area_name": "El Centro MSA (Imperial County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "El Centro"
+   ],
+   "counties": [
+    "Imperial"
+   ],
+   "programs": 3
+  },
+  {
+   "area_name": "Fresno MSA (Fresno and Madera Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Fresno"
+   ],
+   "counties": [
+    "Fresno",
+    "Madera"
+   ],
+   "programs": 29
+  },
+  {
+   "area_name": "Hanford-Corcoran MSA (Kings County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Hanford",
+    "Corcoran"
+   ],
+   "counties": [
+    "Kings"
+   ],
+   "programs": 1
+  },
+  {
+   "area_name": "Los Angeles-Long Beach-Glendale MD (Los Angeles County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Los Angeles",
+    "Long Beach",
+    "Glendale"
+   ],
+   "counties": [
+    "Los Angeles"
+   ],
+   "programs": 299
+  },
+  {
+   "area_name": "Merced MSA (Merced County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Merced"
+   ],
+   "counties": [
+    "Merced"
+   ],
+   "programs": 23
+  },
+  {
+   "area_name": "Modesto MSA (Stanislaus County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Modesto"
+   ],
+   "counties": [
+    "Stanislaus"
+   ],
+   "programs": 18
+  },
+  {
+   "area_name": "Napa MSA (Napa County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Napa"
+   ],
+   "counties": [
+    "Napa"
+   ],
+   "programs": 30
+  },
+  {
+   "area_name": "North Coast Region (Del Norte, Humboldt, Lake, and Mendocino Counties)",
+   "area_type": "Consortium",
+   "principal_cities": [],
+   "counties": [
+    "Del Norte",
+    "Humboldt",
+    "Lake",
+    "Mendocino"
+   ],
+   "programs": 0
+  },
+  {
+   "area_name": "North Valley-Northern Mountains Region (Colusa, Glenn, Lassen, Modoc, Nevada, Plumas, Sierra, Siskiyou, Tehama, and Trinity Counties)",
+   "area_type": "Consortium",
+   "principal_cities": [],
+   "counties": [
+    "Colusa",
+    "Glenn",
+    "Lassen",
+    "Modoc",
+    "Nevada",
+    "Plumas",
+    "Sierra",
+    "Siskiyou",
+    "Tehama",
+    "Trinity"
+   ],
+   "programs": 0
+  },
+  {
+   "area_name": "Oakland-Fremont-Berkeley MD (Alameda and Contra Costa Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Oakland",
+    "Fremont",
+    "Berkeley"
+   ],
+   "counties": [
+    "Alameda",
+    "Contra Costa"
+   ],
+   "programs": 91
+  },
+  {
+   "area_name": "Oxnard-Thousand Oaks-Ventura MSA (Ventura County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Oxnard",
+    "Thousand Oaks",
+    "Ventura"
+   ],
+   "counties": [
+    "Ventura"
+   ],
+   "programs": 33
+  },
+  {
+   "area_name": "Redding MSA (Shasta County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Redding"
+   ],
+   "counties": [
+    "Shasta"
+   ],
+   "programs": 30
+  },
+  {
+   "area_name": "Riverside-San Bernardino-Ontario MSA (Riverside and San Bernardino Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Riverside",
+    "San Bernardino",
+    "Ontario"
+   ],
+   "counties": [
+    "Riverside",
+    "San Bernardino"
+   ],
+   "programs": 95
+  },
+  {
+   "area_name": "Sacramento-Roseville-Folsom MSA (El Dorado, Placer, Sacramento, and Yolo Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Sacramento",
+    "Roseville",
+    "Folsom"
+   ],
+   "counties": [
+    "El Dorado",
+    "Placer",
+    "Sacramento",
+    "Yolo"
+   ],
+   "programs": 51
+  },
+  {
+   "area_name": "Salinas MSA (Monterey County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Salinas"
+   ],
+   "counties": [
+    "Monterey"
+   ],
+   "programs": 8
+  },
+  {
+   "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "San Diego",
+    "Chula Vista",
+    "Carlsbad"
+   ],
+   "counties": [
+    "San Diego"
+   ],
+   "programs": 66
+  },
+  {
+   "area_name": "San Francisco-San Mateo-Redwood City MD (San Francisco and San Mateo Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "San Francisco",
+    "San Mateo",
+    "Redwood City"
+   ],
+   "counties": [
+    "San Francisco",
+    "San Mateo"
+   ],
+   "programs": 249
+  },
+  {
+   "area_name": "San Jose-Sunnyvale-Santa Clara MSA (San Benito and Santa Clara Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "San Jose",
+    "Sunnyvale",
+    "Santa Clara"
+   ],
+   "counties": [
+    "San Benito",
+    "Santa Clara"
+   ],
+   "programs": 79
+  },
+  {
+   "area_name": "San Luis Obispo-Paso Robles MSA (San Luis Obispo County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "San Luis Obispo",
+    "Paso Robles"
+   ],
+   "counties": [
+    "San Luis Obispo"
+   ],
+   "programs": 22
+  },
+  {
+   "area_name": "San Rafael MD (Marin County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "San Rafael"
+   ],
+   "counties": [
+    "Marin"
+   ],
+   "programs": 0
+  },
+  {
+   "area_name": "Santa Cruz-Watsonville MSA (Santa Cruz County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Santa Cruz",
+    "Watsonville"
+   ],
+   "counties": [
+    "Santa Cruz"
+   ],
+   "programs": 9
+  },
+  {
+   "area_name": "Santa Maria-Santa Barbara MSA (Santa Barbara County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Santa Maria",
+    "Santa Barbara"
+   ],
+   "counties": [
+    "Santa Barbara"
+   ],
+   "programs": 40
+  },
+  {
+   "area_name": "Santa Rosa-Petaluma MSA (Sonoma County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Santa Rosa",
+    "Petaluma"
+   ],
+   "counties": [
+    "Sonoma"
+   ],
+   "programs": 16
+  },
+  {
+   "area_name": "Stockton-Lodi MSA (San Joaquin County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Stockton",
+    "Lodi"
+   ],
+   "counties": [
+    "San Joaquin"
+   ],
+   "programs": 20
+  },
+  {
+   "area_name": "Vallejo MSA (Solano County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Vallejo"
+   ],
+   "counties": [
+    "Solano"
+   ],
+   "programs": 11
+  },
+  {
+   "area_name": "Visalia MSA (Tulare County)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Visalia"
+   ],
+   "counties": [
+    "Tulare"
+   ],
+   "programs": 53
+  },
+  {
+   "area_name": "Yuba City MSA (Sutter and Yuba Counties)",
+   "area_type": "Metropolitan Area",
+   "principal_cities": [
+    "Yuba City"
+   ],
+   "counties": [
+    "Sutter",
+    "Yuba"
+   ],
+   "programs": 6
+  }
+ ],
+ "unmapped_cities": {
+  "Pleasant Hill": 120,
+  "San Pablo": 77,
+  "Van Nuys": 49,
+  "Blythe": 42,
+  "Aptos": 39,
+  "Cupertino": 35,
+  "La Jolla": 32,
+  "Lake Elsinore": 31,
+  "San Pedro": 30,
+  "Downey": 28,
+  "La Puente": 28,
+  "Lemoore": 28,
+  "Carson": 27,
+  "Orange": 27,
+  "Valencia": 26,
+  "Woodland Hills": 26,
+  "Ukiah": 25,
+  "Bell": 22,
+  "Oroville": 22,
+  "Marysville": 21,
+  "Whittier": 21,
+  "Greenbrae": 20,
+  "Palm Desert": 20,
+  "Culver City": 19,
+  "Costa Mesa": 18,
+  "Pittsburg": 18,
+  "Davis": 17,
+  "Eureka": 17,
+  "Pomona": 17,
+  "Torrance": 17,
+  "Clovis": 16,
+  "Lancaster": 16,
+  "Antioch": 15,
+  "Citrus Heights": 15,
+  "Covina": 15,
+  "Fountain Valley": 15,
+  "Huntington Park": 15,
+  "La Verne": 15,
+  "Temecula": 15,
+  "Victorville": 15,
+  "Walnut": 15,
+  "Angwin": 14,
+  "Hayward": 14,
+  "Monrovia": 14,
+  "West Sacramento": 14,
+  "El Monte": 13,
+  "Mountain View": 13,
+  "Reedley": 13,
+  "Bellflower": 12,
+  "Santa Clarita": 12,
+  "Escondido": 11,
+  "Mission Hills": 11,
+  "Rohnert Park": 11,
+  "San Marcos": 11,
+  "Sylmar": 11,
+  "Concord": 10,
+  "Martinez": 10,
+  "Pleasanton": 10,
+  "Brentwood": 9,
+  "El Cajon": 9,
+  "Livermore": 9,
+  "Madera": 9,
+  "Mission Viejo": 9,
+  "Pasadena": 9,
+  "Porterville": 9,
+  "Rancho Cucamonga": 9,
+  "Sanger": 9,
+  "Baldwin Park": 8,
+  "Cerritos": 8,
+  "Jurupa Valley": 8,
+  "Moreno Valley": 8,
+  "North Hollywood": 8,
+  "Poway": 8,
+  "Simi Valley": 8,
+  "Azusa": 7,
+  "El Cerrito": 7,
+  "Fairfield": 7,
+  "Fontana": 7,
+  "Redlands": 7,
+  "South El Monte": 7,
+  "South Gate": 7,
+  "Tarzana": 7,
+  "Tulare": 7,
+  "Castro Valley": 6,
+  "Colusa": 6,
+  "Garden Grove": 6,
+  "Menlo Park": 6,
+  "Panorama City": 6,
+  "Rancho Mirage": 6,
+  "Susanville": 6,
+  "Weed": 6,
+  "West Covina": 6,
+  "Hesperia": 5,
+  "Huntington Beach": 5,
+  "Idyllwild": 5,
+  "Milpitas": 5,
+  "Walnut Creek": 5,
+  "Brawley": 4,
+  "Camarillo": 4,
+  "Cathedral City": 4,
+  "Compton": 4,
+  "Irwindale": 4,
+  "Oceanside": 4,
+  "Rancho Cordova": 4,
+  "Turlock": 4,
+  "Venice": 4,
+  "Winton": 4,
+  "Woodland": 4,
+  "Yucaipa": 4,
+  "Burbank": 3,
+  "Carpinteria": 3,
+  "Corona": 3,
+  "Gilroy": 3,
+  "La Habra": 3,
+  "Lakeport": 3,
+  "Manteca": 3,
+  "Montebello": 3,
+  "Northridge": 3,
+  "Paramount": 3,
+  "San Juan Capistrano": 3,
+  "San Leandro": 3,
+  "Sausalito": 3,
+  "Sonora": 3,
+  "South Lake Tahoe": 3,
+  "Sun Valley": 3,
+  "West Hills": 3,
+  "Willows": 3,
+  "Arcadia": 2,
+  "Artesia": 2,
+  "Claremont": 2,
+  "Cypress": 2,
+  "Inglewood": 2,
+  "Irving": 2,
+  "La Palma": 2,
+  "Lakewood": 2,
+  "Monterey": 2,
+  "Moorpark": 2,
+  "Murrieta": 2,
+  "Norwalk": 2,
+  "Quincy": 2,
+  "Richmond": 2,
+  "San Jacinto": 2,
+  "Santa Fe Springs": 2,
+  "Santa Monica": 2,
+  "Temple City": 2,
+  "Upland": 2,
+  "Beaumont": 1,
+  "Benicia": 1,
+  "Canoga Park": 1,
+  "Ceres": 1,
+  "City Of Commerce": 1,
+  "City Of Industry": 1,
+  "Coalinga": 1,
+  "Colton": 1,
+  "Dixon": 1,
+  "Dublin": 1,
+  "Emeryville": 1,
+  "Hawthorne": 1,
+  "Kingsburg": 1,
+  "Lathrop": 1,
+  "Montclair": 1,
+  "Newport Beach": 1,
+  "North Highlands": 1,
+  "Pico Rivera": 1,
+  "Placerville": 1,
+  "Rialto": 1,
+  "Ridgecrest": 1,
+  "San Dimas": 1,
+  "San Fernando": 1,
+  "Santee": 1,
+  "Sloughhouse": 1,
+  "Stanton": 1,
+  "Sunland": 1,
+  "Tehachapi": 1,
+  "Tracy": 1,
+  "Truckee": 1,
+  "Vacaville": 1,
+  "Valley Glen": 1
+ },
  "state_benchmark": {
   "state": "CA",
   "completion_rate": 0.71,
