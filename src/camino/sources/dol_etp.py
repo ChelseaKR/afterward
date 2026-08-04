@@ -11,17 +11,25 @@ Two things about this data matter more than anything else in this module:
    distinction is preserved all the way to the UI.
 2. Programs carry SOC codes directly (``field_program_soc_occ_1..3``), so the program ->
    occupation join needs no CIP/SOC crosswalk.
+
+This module also owns the HTTP manners for the whole package -- see "HTTP citizenship"
+below. ``edd_lmi`` imports that layer from here so the two clients cannot drift apart in
+how they identify themselves or how hard they push a public endpoint.
 """
 
 from __future__ import annotations
 
 import json
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from typing import Any
 
 import httpx
+
+from camino import __version__
 
 BASE_URL = "https://cxsearch.dol.gov/etp"
 PROGRAMS_INDEX = "etp_scorecard_programs"
@@ -205,6 +213,168 @@ def parse_state_benchmark(state: str, source: dict[str, Any]) -> StateBenchmark:
     )
 
 
+# --------------------------------------------------------------------------------------
+# HTTP citizenship
+#
+# Everything below is about being a guest on someone else's server. Both source clients in
+# this package share it: one honest identity, one retry policy, one throttle.
+# --------------------------------------------------------------------------------------
+
+USER_AGENT = (
+    f"camino/{__version__} (+https://github.com/ChelseaKR/camino; "
+    "non-commercial open-data client; quarterly bulk read)"
+)
+"""Who we say we are.
+
+Deliberately not a browser string. The endpoints here are public taxpayer-funded services
+and their operators are entitled to know who is reading them and where to complain: a
+spoofed Chrome User-Agent would buy access by lying, and would leave an operator no way to
+tell this project apart from a scraper. Being identifiable is the point, even though it
+means a filter can single us out.
+"""
+
+MAX_ATTEMPTS = 4
+BACKOFF_INITIAL_SECONDS = 1.0
+BACKOFF_MULTIPLIER = 2.0
+BACKOFF_CAP_SECONDS = 30.0
+RETRY_AFTER_CAP_SECONDS = 120.0
+"""Longest ``Retry-After`` we will wait out rather than fail and let a human reschedule."""
+
+RETRYABLE_STATUS = frozenset({408, 425, 429, 500, 502, 503, 504})
+"""Statuses worth a second look. 403 and 404 are decisions, not hiccups, and are absent."""
+
+
+class FetchError(RuntimeError):
+    """A public endpoint could not be read.
+
+    The message is written for whoever is staring at a failed build log, not for a
+    stack trace: it should say what refused us and what to do about it.
+    """
+
+    def __init__(self, message: str, *, url: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.url = url
+        self.status_code = status_code
+
+
+def build_client(timeout: float = REQUEST_TIMEOUT) -> httpx.Client:
+    """An ``httpx.Client`` that identifies itself."""
+    return httpx.Client(
+        timeout=timeout,
+        follow_redirects=True,
+        headers={"User-Agent": USER_AGENT},
+    )
+
+
+def _forbidden_message(url: str) -> str:
+    host = httpx.URL(url).host
+    return (
+        f"{host} refused the request (HTTP 403 Forbidden). Not retried: a refusal is a "
+        "decision, and repeating it would only be rude.\n"
+        "This is known to happen from CI runners and other datacenter IP ranges even when "
+        "the identical request succeeds from a laptop, because the endpoint sits behind a "
+        "load balancer that filters on client IP reputation and on User-Agent. This client "
+        f"already sends a descriptive User-Agent ({USER_AGENT!r}) and will not impersonate "
+        "a browser to get around the filter.\n"
+        "If this happened in CI, build from a committed data snapshot instead of fetching "
+        "live, and refresh that snapshot from a workstation."
+    )
+
+
+def _retry_after_seconds(response: httpx.Response) -> float | None:
+    """Seconds the server asked us to wait, from either Retry-After form, or None."""
+    raw = (response.headers.get("Retry-After") or "").strip()
+    if not raw:
+        return None
+    try:
+        return max(0.0, float(raw))
+    except ValueError:
+        pass
+    try:
+        when = parsedate_to_datetime(raw)
+    except (TypeError, ValueError):
+        return None
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=UTC)
+    return max(0.0, (when - datetime.now(UTC)).total_seconds())
+
+
+def _backoff_seconds(attempt: int) -> float:
+    return min(BACKOFF_INITIAL_SECONDS * BACKOFF_MULTIPLIER ** (attempt - 1), BACKOFF_CAP_SECONDS)
+
+
+def _raise_if_permanent(response: httpx.Response, url: str) -> None:
+    """Raise unless the status is one that might resolve itself."""
+    status = response.status_code
+    if status == httpx.codes.FORBIDDEN:
+        raise FetchError(_forbidden_message(url), url=url, status_code=status)
+    if status in RETRYABLE_STATUS:
+        return
+    raise FetchError(
+        f"{url} returned HTTP {status} {response.reason_phrase}. Not retried: this status "
+        "will not change on its own.",
+        url=url,
+        status_code=status,
+    )
+
+
+def _retry_wait(response: httpx.Response, attempt: int, url: str) -> float:
+    """How long to wait before the next attempt, honouring Retry-After when present."""
+    requested = _retry_after_seconds(response)
+    if requested is None:
+        return _backoff_seconds(attempt)
+    if requested > RETRY_AFTER_CAP_SECONDS:
+        raise FetchError(
+            f"{url} returned HTTP {response.status_code} and asked for a "
+            f"{requested:.0f}s wait, longer than this client will hold a build open. "
+            "Respecting that means stopping here and retrying later.",
+            url=url,
+            status_code=response.status_code,
+        )
+    return requested
+
+
+def get_with_retry(
+    client: httpx.Client,
+    url: str,
+    *,
+    params: dict[str, Any] | None = None,
+    max_attempts: int = MAX_ATTEMPTS,
+    sleep: Callable[[float], None] | None = None,
+) -> httpx.Response:
+    """GET ``url``, retrying only what is plausibly transient.
+
+    Timeouts, connection failures, 429 and 5xx get bounded exponential backoff, and a
+    ``Retry-After`` header overrides that backoff. A 403 or 404 is raised on the first
+    response instead of being hammered in a tight loop.
+
+    The User-Agent is set per request as well as on :func:`build_client`, so a
+    caller-supplied client still identifies itself.
+    """
+    wait_out = time.sleep if sleep is None else sleep
+    problem = "no attempt was made"
+    cause: Exception | None = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = client.get(url, params=params, headers={"User-Agent": USER_AGENT})
+        except httpx.TransportError as exc:
+            problem, cause = f"{type(exc).__name__}: {exc}", exc
+            wait = _backoff_seconds(attempt)
+        else:
+            if not response.is_error:
+                return response
+            _raise_if_permanent(response, url)
+            problem, cause = f"HTTP {response.status_code} {response.reason_phrase}".strip(), None
+            wait = _retry_wait(response, attempt, url)
+        if attempt == max_attempts:
+            break
+        wait_out(wait)
+    raise FetchError(
+        f"{url} could not be read after {max_attempts} attempts; last failure was {problem}.",
+        url=url,
+    ) from cause
+
+
 def fetch_state_benchmark(
     state: str = "CA", *, client: httpx.Client | None = None
 ) -> StateBenchmark | None:
@@ -221,13 +391,13 @@ def fetch_state_benchmark(
         },
     }
     owns_client = client is None
-    http = client or httpx.Client(timeout=REQUEST_TIMEOUT, follow_redirects=True)
+    http = client or build_client()
     try:
-        response = http.get(
+        response = get_with_retry(
+            http,
             f"{BASE_URL}/_search",
             params={"source": json.dumps(body), "source_content_type": "application/json"},
         )
-        response.raise_for_status()
         hits = response.json().get("hits", {}).get("hits", [])
         if not hits:
             return None
@@ -267,19 +437,19 @@ def fetch_programs(
     result set ever grows past Elasticsearch's 10k window.
     """
     owns_client = client is None
-    http = client or httpx.Client(timeout=REQUEST_TIMEOUT, follow_redirects=True)
+    http = client or build_client()
     after: list[Any] | None = None
     try:
         while True:
             body = _query_body(state, page_size, after)
-            response = http.get(
+            response = get_with_retry(
+                http,
                 f"{BASE_URL}/_search",
                 params={
                     "source": json.dumps(body),
                     "source_content_type": "application/json",
                 },
             )
-            response.raise_for_status()
             hits = response.json().get("hits", {}).get("hits", [])
             if not hits:
                 return

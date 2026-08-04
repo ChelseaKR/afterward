@@ -15,6 +15,11 @@ from typing import Any
 
 import httpx
 
+# The HTTP manners -- descriptive User-Agent, bounded retry with backoff, Retry-After --
+# are defined once in dol_etp and shared, so both public endpoints get approached the same
+# way and neither can quietly become the rude one.
+from camino.sources.dol_etp import build_client, get_with_retry
+
 CKAN_BASE = "https://data.ca.gov/api/3/action"
 OCCUPATIONAL_PROJECTIONS = "long-term-occupational-employment-projections"
 OEWS = "oews"
@@ -79,10 +84,9 @@ def resolve_resource_url(
 ) -> str:
     """Return the download URL of a dataset's first resource matching ``fmt``."""
     owns_client = client is None
-    http = client or httpx.Client(timeout=REQUEST_TIMEOUT, follow_redirects=True)
+    http = client or build_client(REQUEST_TIMEOUT)
     try:
-        response = http.get(f"{CKAN_BASE}/package_show", params={"id": dataset})
-        response.raise_for_status()
+        response = get_with_retry(http, f"{CKAN_BASE}/package_show", params={"id": dataset})
         resources = response.json()["result"]["resources"]
         for resource in resources:
             url = resource.get("url")
@@ -96,10 +100,9 @@ def resolve_resource_url(
 
 def _download_csv(url: str, client: httpx.Client | None = None) -> str:
     owns_client = client is None
-    http = client or httpx.Client(timeout=REQUEST_TIMEOUT, follow_redirects=True)
+    http = client or build_client(REQUEST_TIMEOUT)
     try:
-        response = http.get(url)
-        response.raise_for_status()
+        response = get_with_retry(http, url)
         return response.text
     finally:
         if owns_client:
