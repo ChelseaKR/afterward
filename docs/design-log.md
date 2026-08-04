@@ -207,6 +207,29 @@ run. Gates catch what they were built to catch. Two of these were found by readi
 rather than the code, and the null-versus-zero rule turned out to have been broken in three
 places nobody had thought to look.
 
+### D12 — Compare like with like, or do not compare
+
+The statewide benchmark added earlier turned out to be the wrong yardstick. DOL publishes
+27% employed at two quarters; the median reporting California program publishes 69%. The two
+are computed on different bases, so putting them side by side made **91% of programs read as
+"above the California average"** — a comparison that flatters nearly everyone and informs
+no one.
+
+Programs are now compared against the median of the programs that reported the same measure,
+with the number of reporters shown. That supports the claim the interface wants to make: is
+this better or worse than the typical California program willing to publish this number?
+Equalling the median gets no verdict at all. DOL's aggregate stays in `coverage.json` as
+published context, no longer used for comparison.
+
+The general lesson: a benchmark is a claim about comparability, and adding one without
+checking that the two numbers mean the same thing is worse than showing no benchmark.
+
+### D13 — Say what period a number covers
+
+`median_earnings` is a single quarter of WIOA earnings. It sat unlabelled a short distance
+from the occupation's annual wage, so the natural reading was that graduates earn about a
+sixth of the going rate. It now states its period in both languages.
+
 ### Still open
 
 - Does California's own ETPL list programs the federal file omits? **Still unresolved, and
