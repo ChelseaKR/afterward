@@ -9,6 +9,14 @@
  */
 
 @import "@cagovweb/design-system/dist/California-Design-System.css";
+/*
+ * A theme is not optional. The base stylesheet defines --primary-* only as an alias to
+ * --primary-static-*, which nothing sets until a theme is loaded, so without this every
+ * --primary token silently resolved to nothing: the masthead had no background colour and
+ * links had no colour. Valley for the Central Valley, whose workers are among the least
+ * well served by California's existing workforce tooling.
+ */
+@import "@cagovweb/design-system/dist/California-Design-System.theme.valley.css";
 
 :root {
   --content-max: 68rem;

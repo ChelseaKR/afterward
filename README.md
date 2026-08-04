@@ -81,8 +81,8 @@ in code:
   is a compile error, and a test fails if a Spanish string is left identical to the English.
 - **Accessible**, mobile-first. The people most likely to need this are least likely to be on
   a new device with a big screen. `make web-verify` runs axe over the built pages and fails
-  the build on any violation. Colour contrast still needs a browser check before launch,
-  since the audit runs in jsdom, which has no layout engine.
+  on any violation, and separately computes the real WCAG contrast ratio for every
+  foreground/background pairing the site uses, in both light and dark.
 - **Not a government site, and it says so.** The California Design System makes the pages
   look official. A non-affiliation notice sits in the banner landmark on every page, in both
   languages, rather than in footer small print.

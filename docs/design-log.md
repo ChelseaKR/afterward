@@ -239,9 +239,25 @@ sixth of the going rate. It now states its period in both languages.
   session-based extraction from CalJOBS, which is a separate piece of work with its own
   terms-of-use question. The federal file's 3,266 California programs stand as the spine
   until someone decides that extraction is worth it.
-- Colour contrast is unverified. The audit runs in jsdom, which has no layout engine, so
-  contrast is reported as needing review rather than counted as passing. Requires a browser
-  before any public launch.
+### D14 — Verify contrast analytically rather than claiming it
+
+jsdom has no layout engine, so the axe pass could never check contrast, and the project was
+asserting conformance it had not tested. `npm run contrast` now resolves the design system's
+own tokens through their alias chains for both light and dark and computes the real WCAG 2.1
+ratio for all 17 pairings the site uses. All pass; the tightest is 6.63:1 against a 4.5
+minimum.
+
+It earned its place immediately by finding a bug nothing else could see: `--primary-*` is
+only an alias to `--primary-static-*`, which the base stylesheet never defines. No theme was
+imported, so the masthead had **no background colour and links had no colour at all** — every
+`--primary` token resolved to nothing. A theme import fixes it.
+
+Two lessons, both about gates rather than colour. The first version of this script reported
+success while skipping 17 of 17 pairings, because an unresolvable token was treated as a
+skip. A gate that passes when it cannot evaluate anything is worse than no gate: it reports
+confidence it has not earned. Unresolved is now a failure. The second version mis-parsed the
+stylesheet's interleaved light and dark blocks and confidently reported light-mode text as
+white-on-black — wrong, but at least loudly wrong.
 
 ### One finding worth surfacing in the product
 

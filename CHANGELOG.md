@@ -18,7 +18,8 @@ All notable changes to this project are documented here. The format follows
 - Three-way job outlook filter, surfacing the 518 programs training for occupations the
   state projects will shrink.
 - Coverage reporting as a published artifact rather than a debug log.
-- Accessibility audit over the built pages, failing the build on any axe violation.
+- Accessibility audit over the built pages, failing the build on any axe violation, plus a
+  contrast audit computing real WCAG ratios for every colour pairing in both themes.
 - Offline build path and a committed 60-program fixture, so CI does not depend on a
   government endpoint being reachable.
 - Mechanical provenance check enforcing this project's clean-room constraint.
@@ -45,8 +46,6 @@ All notable changes to this project are documented here. The format follows
 - Occupation titles and program descriptions render in English on Spanish pages. The
   controlled vocabularies (education, experience, training type) are translated; the
   open-ended text is not.
-- Colour contrast is unverified in a real browser. The audit runs in jsdom, which has no
-  layout engine.
 - Whether California's own ETPL lists programs the federal file omits is unresolved; the
   state publishes no bulk export.
 - 1,430 programs publish no usable website link. Most never filed one; eight filed something
