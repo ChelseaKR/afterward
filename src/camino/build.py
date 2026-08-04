@@ -162,6 +162,77 @@ def program_payload(
     }
 
 
+def search_entry(program: dict[str, Any]) -> dict[str, Any]:
+    """One row of the client-side search index.
+
+    Short keys and only the fields a result card or filter actually needs. Everything else
+    is fetched per-program on demand, so the first paint does not cost megabytes on a phone.
+    """
+    occupation = (program["occupations"] or [{}])[0]
+    outcomes = program["outcomes"]
+    return {
+        "i": program["uuid"],
+        "n": program["program_name"],
+        "p": program["provider_name"],
+        "c": program["location"]["city"],
+        "$": program["cost"]["total_out_of_pocket"],
+        "w": program["length"]["weeks"],
+        "s": program["soc_codes"],
+        "o": occupation.get("title"),
+        # Occupation outlook, so "trains for a shrinking job" is filterable without a
+        # second fetch. None stays None: unknown is not the same as flat.
+        "g": occupation.get("percent_change"),
+        "wage": occupation.get("median_annual_wage"),
+        "op": occupation.get("total_job_openings"),
+        # Headline outcomes, null-preserving.
+        "cr": outcomes["completion_rate"],
+        "er": outcomes["employment_rate_q2"],
+        "me": outcomes["median_earnings"],
+        "r": outcomes["reported"],
+    }
+
+
+def emit_site_bundle(
+    payloads: list[dict[str, Any]],
+    occupations: dict[str, dict[str, Any]],
+    *,
+    output_dir: Path,
+    snapshot: str,
+    state: str,
+) -> None:
+    """Write the sharded artifacts a static front end consumes.
+
+    One slim index for search and filtering, plus per-program and per-occupation detail
+    fetched only when something is opened.
+    """
+    (output_dir / "search-index.json").write_text(
+        json.dumps(
+            {
+                "snapshot_date": snapshot,
+                "state": state,
+                "programs": [search_entry(p) for p in payloads],
+            },
+            separators=(",", ":"),
+        ),
+        encoding="utf-8",
+    )
+
+    program_dir = output_dir / "programs"
+    program_dir.mkdir(parents=True, exist_ok=True)
+    for payload in payloads:
+        if payload["uuid"]:
+            (program_dir / f"{payload['uuid']}.json").write_text(
+                json.dumps(payload, separators=(",", ":")), encoding="utf-8"
+            )
+
+    occupation_dir = output_dir / "occupations"
+    occupation_dir.mkdir(parents=True, exist_ok=True)
+    for soc_code, occupation in occupations.items():
+        (occupation_dir / f"{soc_code}.json").write_text(
+            json.dumps(occupation, separators=(",", ":")), encoding="utf-8"
+        )
+
+
 def build(
     state: str = DEFAULT_STATE,
     *,
@@ -204,6 +275,7 @@ def build(
         json.dumps({"snapshot_date": snapshot, "occupations": occupations}, indent=1),
         encoding="utf-8",
     )
+    emit_site_bundle(payloads, occupations, output_dir=output_dir, snapshot=snapshot, state=state)
     (output_dir / "coverage.json").write_text(
         json.dumps(
             asdict(report)

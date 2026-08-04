@@ -37,8 +37,19 @@ provenance-check:
 	uv run python scripts/provenance_check.py
 
 # Refresh the dataset from DOL and CA EDD. Network-bound; not part of `verify`.
+# Emits straight into the web app's public directory, which is where the site reads it.
 data:
-	uv run camino build
+	uv run camino build --output-dir web/public/data
+
+web-install:
+	cd web && npm ci
+
+web-dev:
+	cd web && npm run dev
+
+# Static export of the whole site. Requires `make data` to have run at least once.
+web-build:
+	cd web && npm run typecheck && npm run build
 
 verify: provenance-check lint typecheck test security audit
 
