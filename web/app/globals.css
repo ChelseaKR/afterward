@@ -992,3 +992,205 @@ td.num {
   color: var(--gray-90);
   font-size: 0.9375rem;
 }
+
+/* ---------- Someone else may be able to pay for this ----------
+ *
+ * The last block on a program page, and the only one whose subject is what to do rather than
+ * what the numbers say. It is set apart with a rule and a wider top margin rather than a
+ * coloured panel: an eligibility notice tinted like a promotion is read as one, and nothing
+ * here is an offer.
+ *
+ * Every colour used below is a pairing the contrast audit already covers — body text
+ * (--gray-120 on --gray-10), labels (--gray-90 on --gray-10), links (--primary-100 on
+ * --gray-10), and the stat-strip pairing (--gray-120 on --gray-20) for the two blocks that
+ * take a tint. No new pairing is introduced, so the audit's list stays the whole list.
+ */
+.funding {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--gray-40);
+}
+
+.funding > p,
+.funding-step > p,
+.funding-questions li p {
+  max-width: var(--measure);
+  line-height: 1.6;
+}
+
+.funding h3 {
+  font-size: 1.0625rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+/* The one sentence naming the possibility, and the only one carrying the snapshot date. */
+.funding-lede {
+  font-size: 1.0625rem;
+}
+
+/*
+ * The rule a claim rests on. Small, because it is for the reader who wants to check rather
+ * than the reader who wants to act — but a real link with its real title, since "20 CFR
+ * 680.410" as bare text is not checkable by anyone who does not already know where to look.
+ */
+.funding-cite {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  max-width: var(--measure);
+}
+
+.funding-cite-label {
+  color: var(--gray-90);
+}
+
+/*
+ * The offices. A list of cards rather than a table: an address, a phone number and an opening
+ * time are not columns, and on a phone a table of them wraps into nonsense.
+ */
+.center-list {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+}
+
+.center {
+  border: 1px solid var(--gray-40);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  background: var(--gray-10);
+}
+
+.center p {
+  margin: 0 0 0.375rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.center p:last-child {
+  margin-bottom: 0;
+}
+
+.center-name {
+  font-size: 1rem;
+}
+
+/* Comprehensive or affiliate. A label rather than a badge: it is a fact about what the office
+   can do, not a status, and 20 CFR 678.305 is the difference between the two. */
+.center-type {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--gray-90);
+}
+
+/*
+ * Phone first, and bigger than the rest of the card. It is the only channel published for
+ * every one of California's centres, the state's own advice is to ring before travelling, and
+ * on the device most of these readers are holding it is one tap.
+ */
+.center-phone {
+  font-size: 1.0625rem;
+}
+
+.center-phone a {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.center-address span,
+.center-hours,
+.center-veterans {
+  display: block;
+}
+
+.center-address .center-miles,
+.center-hours,
+.center-veterans {
+  color: var(--gray-90);
+  font-size: 0.875rem;
+}
+
+.center-closed {
+  color: var(--gray-120);
+}
+
+.funding-finders {
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+}
+
+/*
+ * The questions, collapsed. Fourteen of them are more than anyone reads standing up, and the
+ * ones that matter differ by person — so they are one click away and the click says how many
+ * there are and who answers them. Collapsed, never omitted: a question nobody thought to ask
+ * is the whole reason this section exists.
+ */
+.funding-questions {
+  margin: 0.5rem 0 1rem;
+  max-width: var(--measure);
+  border: 1px solid var(--gray-40);
+  border-radius: var(--border-radius-sm);
+  background: var(--gray-20);
+  padding: 0.75rem 1rem;
+}
+
+.funding-questions > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--primary-100);
+}
+
+.funding-questions > summary:hover {
+  text-decoration: underline;
+}
+
+.funding-questions ol {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.funding-questions li {
+  margin-bottom: 1rem;
+}
+
+.funding-questions li:last-child {
+  margin-bottom: 0;
+}
+
+.funding-ask {
+  margin-bottom: 0.25rem;
+}
+
+/*
+ * Who decides. Never collapsed, never in the footer, and never smaller than the text above it.
+ *
+ * It takes the same tinted, rule-marked treatment as the note that says a wage describes a
+ * wider group of jobs, because it is the same kind of sentence: the thing the reader has to
+ * know for the paragraphs above it to be read correctly. It is last because it is what the
+ * page leaves them with.
+ */
+.who-decides {
+  margin: 1.75rem 0 0.75rem;
+  padding: 1rem 1.125rem;
+  background: var(--gray-20);
+  border-left: 4px solid var(--primary-60);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  max-width: var(--measure);
+  line-height: 1.6;
+}
+
+/* Says this section was machine-translated. Quiet but not hidden: a reader deciding whether
+   to act on money and eligibility information should see it before the information, so it
+   uses the panel treatment rather than the small-print one. */
+.funding-translation-note {
+  background: var(--gray-20);
+  border-left: 4px solid var(--primary-60);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  padding: 0.875rem 1.125rem;
+  font-size: 0.9375rem;
+  max-width: var(--measure);
+}

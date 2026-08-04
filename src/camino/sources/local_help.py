@@ -772,24 +772,47 @@ Audience = Literal["job_center", "provider"]
 
 @dataclass(frozen=True)
 class Step:
-    """One move a person can actually make, and the rule that says it is real."""
+    """One move a person can actually make, and the rule that says it is real.
 
+    ``step_id`` is a stable name for the claim rather than for the sentence. The site
+    publishes these in two languages, and a translation has to be attached to *something*:
+    attached to position it silently re-points when a step is inserted, and attached to the
+    English text it has to be rewritten whenever a comma moves. The id is what a Spanish
+    string is keyed on, so it may be renamed only by someone prepared to re-point the
+    translation with it.
+
+    ``on_program_page`` records an editorial decision that belongs here rather than in a
+    template: which of these a person should meet without asking for them, on a page they
+    reached to read about one program. It is a small set on purpose -- a wall of federal
+    procedure at the foot of every page is not read, and the steps left out of it are the
+    ones the questions below already carry into the room where they can be answered.
+    """
+
+    step_id: str
     heading: str
     detail: str
     citations: tuple[Citation, ...]
+    on_program_page: bool = False
 
     def as_dict(self) -> dict[str, Any]:
         return {
+            "id": self.step_id,
             "heading": self.heading,
             "detail": self.detail,
+            "on_program_page": self.on_program_page,
             "citations": [c.as_dict() for c in self.citations],
         }
 
 
 @dataclass(frozen=True)
 class Question:
-    """Something to ask before committing, and what the answer decides."""
+    """Something to ask before committing, and what the answer decides.
 
+    ``question_id`` is stable for the same reason :attr:`Step.step_id` is: it is what a
+    published translation of this question is keyed on.
+    """
+
+    question_id: str
     ask: str
     because: str
     audience: Audience
@@ -797,6 +820,7 @@ class Question:
 
     def as_dict(self) -> dict[str, Any]:
         return {
+            "id": self.question_id,
             "ask": self.ask,
             "because": self.because,
             "audience": self.audience,
@@ -826,7 +850,7 @@ ETPL_SNAPSHOT_CAVEAT: Final = (
 )
 
 NOT_AN_ENTITLEMENT: Final = (
-    "Meeting every rule below still does not secure a place. California's own guidance to "
+    "Meeting every rule here still does not secure a place. California's own guidance to "
     "job center staff says so plainly: WIOA is not an entitlement program, funding for it "
     "is not unlimited, and local boards offer services to eligible applicants when funding "
     "is available."
@@ -865,6 +889,8 @@ def etpl_listing_note(snapshot_date: str) -> str:
 
 STEPS: Final[tuple[Step, ...]] = (
     Step(
+        step_id="ita",
+        on_program_page=True,
         heading="Someone else may be able to pay for this",
         detail=(
             "Federal training money under the Workforce Innovation and Opportunity Act is "
@@ -876,6 +902,8 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_ITA, CFR_ELIGIBLE_PROVIDER, EDD_ETPL),
     ),
     Step(
+        step_id="where_to_ask",
+        on_program_page=True,
         heading="The place to ask is an America's Job Center of California",
         detail=(
             "A comprehensive center is where all the required partner programs can be "
@@ -887,6 +915,8 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_COMPREHENSIVE_CENTER, CFR_AFFILIATE_CENTER, EDD_OFFICE_LOCATOR),
     ),
     Step(
+        step_id="who_can_be_served",
+        on_program_page=True,
         heading="Who can be served at all",
         detail=(
             "California states the general criteria as three things: age, Selective Service "
@@ -900,6 +930,7 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(EDD_ELIGIBILITY_GUIDE,),
     ),
     Step(
+        step_id="expect_an_interview",
         heading="Expect an interview, not a form",
         detail=(
             "Before anyone can be found eligible for training services they must receive an "
@@ -911,6 +942,7 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_CAREER_SERVICES_FIRST, CFR_TRAINING_ELIGIBILITY),
     ),
     Step(
+        step_id="what_the_center_decides",
         heading="What the center is deciding",
         detail=(
             "Training services may be made available to adults and dislocated workers whom "
@@ -923,6 +955,8 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_TRAINING_ELIGIBILITY,),
     ),
     Step(
+        step_id="say_your_priority_status",
+        on_program_page=True,
         heading="Say if you receive public assistance, are low income, or need basic skills help",
         detail=(
             "For the adult funding stream, federal law requires priority to be given to "
@@ -932,7 +966,9 @@ STEPS: Final[tuple[Step, ...]] = (
             "groups, then the groups themselves, then other veterans and eligible spouses, "
             "then any populations the Governor or the local board has added, then everyone "
             "else. Priority does not exclude anyone else, and it does not apply to the "
-            "dislocated worker stream. It only operates if the center is told."
+            "dislocated worker stream. It only operates if the center is told, and "
+            "California fixes a person's priority status at the moment eligibility is "
+            "determined — so it is the first appointment that counts."
         ),
         citations=(
             CFR_ADULT_PRIORITY,
@@ -942,6 +978,7 @@ STEPS: Final[tuple[Step, ...]] = (
         ),
     ),
     Step(
+        step_id="other_funding_first",
         heading="Bring what you already have — this money fills a gap",
         detail=(
             "WIOA training funding is limited to people who cannot get grant assistance "
@@ -953,6 +990,8 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_OTHER_GRANT_SOURCES,),
     ),
     Step(
+        step_id="supportive_services",
+        on_program_page=True,
         heading="Ask what else can be covered while you train",
         detail=(
             "Supportive services — help with transport, child care and dependent care, and "
@@ -964,6 +1003,8 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_SUPPORTIVE_SERVICES, CFR_SUPPORTIVE_LIMITS, CFR_NEEDS_RELATED),
     ),
     Step(
+        step_id="local_and_annual",
+        on_program_page=True,
         heading="The answer depends on the local area, and on the year",
         detail=(
             "Once someone has been found eligible and has chosen a provider, the center "
@@ -980,6 +1021,7 @@ STEPS: Final[tuple[Step, ...]] = (
 
 QUESTIONS: Final[tuple[Question, ...]] = (
     Question(
+        question_id="etpl_now",
         ask="Is this program on California's Eligible Training Provider List right now?",
         because=(
             "An Individual Training Account can only pay a provider on that list, and "
@@ -990,6 +1032,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_ELIGIBLE_PROVIDER, EDD_ETPL),
     ),
     Question(
+        question_id="full_price",
         ask=(
             "What does the price include, and what will I still have to buy — books, tools, "
             "uniforms, exam fees, license fees?"
@@ -1003,6 +1046,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_PROVIDER_INFORMATION,),
     ),
     Question(
+        question_id="credential",
         ask=(
             "What exactly do I hold at the end, who issues it, and does an employer or a "
             "licensing board recognize it?"
@@ -1016,6 +1060,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_PROGRAM_OF_TRAINING,),
     ),
     Question(
+        question_id="withdrawal",
         ask="If I stop partway through, what do I owe, and what happens to funding already paid?",
         because=(
             "An Individual Training Account is a payment agreement with the provider and "
@@ -1026,6 +1071,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_ITA,),
     ),
     Question(
+        question_id="schedule",
         ask="When does the next cohort start, and how many hours a week is it?",
         because=(
             "The schedule decides whether someone can keep working while training, and "
@@ -1036,6 +1082,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_NEEDS_RELATED,),
     ),
     Question(
+        question_id="funding_stream",
         ask="Which funding stream would I be served under — adult, dislocated worker, or youth?",
         because=(
             "They are different pots with different rules. The statutory priority for "
@@ -1047,6 +1094,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_ADULT_PRIORITY, CFR_DW_PRIORITY, CFR_YOUTH_ITA),
     ),
     Question(
+        question_id="local_demand",
         ask="Is this occupation one this local area funds training for?",
         because=(
             "The program has to be linked to employment opportunities in the local area or "
@@ -1058,6 +1106,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_TRAINING_ELIGIBILITY, CFR_CONSUMER_CHOICE),
     ),
     Question(
+        question_id="ita_cap",
         ask=(
             "What is the most this area will put into an Individual Training Account, and "
             "would that cover this program?"
@@ -1073,6 +1122,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_ITA_LIMITS, CFR_OTHER_GRANT_SOURCES),
     ),
     Question(
+        question_id="self_sufficiency",
         ask="How does this area define employment that supports a person?",
         because=(
             "The determination turns on whether someone can reach self-sufficiency without "
@@ -1084,6 +1134,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_TRAINING_ELIGIBILITY, EDD_ELIGIBILITY_GUIDE),
     ),
     Question(
+        question_id="out_of_area",
         ask="Can I use this for a program in another county, or another state?",
         because=(
             "Training outside the local area is allowed where the program is on the state "
@@ -1095,6 +1146,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_OUT_OF_AREA,),
     ),
     Question(
+        question_id="funds_left",
         ask="Are there training funds left for this program year?",
         because=(
             "The obligation to refer an eligible person and set up an account holds unless "
@@ -1105,6 +1157,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_CONSUMER_CHOICE,),
     ),
     Question(
+        question_id="other_grants_first",
         ask="What should I apply for first — a Pell Grant, or anything else?",
         because=(
             "WIOA funds are for people who cannot get grant assistance elsewhere or who "
@@ -1115,6 +1168,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_OTHER_GRANT_SOURCES,),
     ),
     Question(
+        question_id="support_costs",
         ask="Can you help with transport, child care, or living costs while I train?",
         because=(
             "Supportive services and needs-related payments are separate from tuition, and "
@@ -1126,6 +1180,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         citations=(CFR_SUPPORTIVE_SERVICES, CFR_NEEDS_RELATED),
     ),
     Question(
+        question_id="what_to_bring",
         ask="What should I bring, and how long does a determination take?",
         because=(
             "The determination rests on an interview, evaluation or assessment and career "
@@ -1152,18 +1207,36 @@ class FundingGuidance:
     who_decides: str
     steps: tuple[Step, ...]
     questions: tuple[Question, ...]
+    finders: tuple[Citation, ...]
+    """Where a reader goes when this project cannot name an office for them.
+
+    Carried here rather than written into a template because two of the obvious candidates
+    do not resolve at all -- ``etpl.edd.ca.gov`` and ``americasjobcenter.ca.gov`` are both
+    dead in DNS -- and a page whose purpose is to replace a dead link must not add one. These
+    three were checked, and this is the only place they are written down.
+    """
 
     def questions_for(self, audience: Audience) -> tuple[Question, ...]:
         return tuple(q for q in self.questions if q.audience == audience)
+
+    def steps_for_program_page(self) -> tuple[Step, ...]:
+        """The steps meant to be read without being asked for, in their published order."""
+        return tuple(step for step in self.steps if step.on_program_page)
 
     def as_dict(self) -> dict[str, Any]:
         return {
             "who_decides": self.who_decides,
             "steps": [s.as_dict() for s in self.steps],
             "questions": [q.as_dict() for q in self.questions],
+            "finders": [c.as_dict() for c in self.finders],
         }
 
 
 def funding_guidance() -> FundingGuidance:
     """The whole next-step story, disclaimer included. The only way to get the steps."""
-    return FundingGuidance(who_decides=WHO_DECIDES, steps=STEPS, questions=QUESTIONS)
+    return FundingGuidance(
+        who_decides=WHO_DECIDES,
+        steps=STEPS,
+        questions=QUESTIONS,
+        finders=(COS_CENTER_FINDER, EDD_OFFICE_LOCATOR, EDD_ETPL),
+    )

@@ -353,6 +353,182 @@ export interface ProviderLink {
   substitution: "https_upgrade" | "provider_front_page" | null;
 }
 
+/* ============================================================================================
+ * The next step: who might pay, and where to ask
+ *
+ * Every program in this dataset was on California's Eligible Training Provider List when the
+ * state last reported it, and under 20 CFR 680.410 that listing is what allows an Individual
+ * Training Account to pay a provider for someone's training. None of this decides anything:
+ * eligibility is determined by a one-stop centre after an interview (20 CFR 680.220), against
+ * policies 45 separate local boards set for themselves.
+ *
+ * That is why `FundingGuidance.who_decides` is a required field of the same object that carries
+ * the steps rather than a string beside it. A template can render a list and forget a caveat; it
+ * cannot render a list out of an object it did not receive.
+ * ========================================================================================== */
+
+/**
+ * One America's Job Center, as the U.S. Department of Labor's finder publishes it (PROVENANCE D6).
+ *
+ * Every contact field is nullable and a null is an unfilled box, never an assertion about the
+ * office. `veterans_representative: null` means nobody said, which must not be rendered as "no
+ * veterans' representative" — the difference decides whether a veteran makes the trip.
+ *
+ * `center_type` is the finder's own label, kept verbatim; `is_comprehensive` is the derived
+ * reading of it and is null when the record carries no type at all. A comprehensive centre gives
+ * access to every required partner program (20 CFR 678.305); an affiliate site need not
+ * (678.310). Both are real answers to "where do I go", so both are published and labelled.
+ *
+ * Published once per dataset in `Coverage.local_help.centers`, because the same three offices are
+ * the nearest ones to hundreds of programs. Program records point into it by id.
+ */
+export interface AmericanJobCenter {
+  id: string;
+  name: string;
+  /** Street lines as filed, in order. Empty when none were published. */
+  address: string[];
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  /** The only channel populated for all 183 California centres. Show it first. */
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  hours: string | null;
+  center_type: string | null;
+  is_comprehensive: boolean | null;
+  lat: number | null;
+  lon: number | null;
+  veterans_representative: boolean | null;
+  temporarily_closed: boolean | null;
+  closure_note: string | null;
+  worker_services: string[];
+  youth_services: string[];
+  last_updated: string | null;
+}
+
+/**
+ * A centre attached to one program, by id, with how far away it is.
+ *
+ * `miles` is a straight-line distance, so it is a floor on the journey rather than the journey.
+ * Anything showing it has to say "about", and null means the distance is unknown — never zero,
+ * which would mean the office is at the address the program is taught at.
+ */
+export interface NearbyCenter {
+  id: string;
+  miles: number | null;
+}
+
+/**
+ * The nearest centres to one program.
+ *
+ * Three states, and collapsing any two of them tells a reader something false:
+ *
+ * - `centers: null` — none were looked for. The build had no credentials to read the directory,
+ *   or the program's own record carries no coordinates to search from.
+ * - `centers: []` — looked for, and there is no centre within `radius_miles`. True of 32 of
+ *   California's 3,266 programs, and a real finding those pages should state.
+ * - a list — the nearest ones, closest first.
+ */
+export interface ProgramLocalHelp {
+  radius_miles: number;
+  centers: NearbyCenter[] | null;
+}
+
+/** One authority for one claim, published with it so a reader can check rather than trust. */
+export interface FundingCitation {
+  label: string;
+  url: string;
+}
+
+/**
+ * One move a person can make, and the rule that says it is real.
+ *
+ * `on_program_page` is the pipeline's editorial decision about which of these a reader should
+ * meet without asking for them. It is carried in the data rather than hard-coded in a template so
+ * that the choice sits beside the citations it rests on.
+ */
+export interface FundingStep {
+  id: string;
+  heading: string;
+  detail: string;
+  on_program_page: boolean;
+  citations: FundingCitation[];
+}
+
+/** Who can answer a question. Sending someone to a job centre to ask about a syllabus wastes
+ * the appointment, and the reverse wastes a phone call. */
+export type FundingAudience = "job_center" | "provider";
+
+export interface FundingQuestion {
+  id: string;
+  ask: string;
+  because: string;
+  audience: FundingAudience;
+  citations: FundingCitation[];
+}
+
+/**
+ * The funding route, the questions worth asking, and the sentence that must travel with them.
+ *
+ * `who_decides` is required and is not a footnote. The harm this whole block can do is send
+ * somebody to an office expecting money they will not get, and the difference between that being
+ * a disappointment and being this site's fault is whether it was clear from the start who
+ * decides. Anything rendering `steps` or `questions` must render it too, uncollapsed.
+ */
+export interface FundingGuidance {
+  who_decides: string;
+  steps: FundingStep[];
+  questions: FundingQuestion[];
+  /** Where to look when this dataset cannot name an office: checked links, in one place. */
+  finders: FundingCitation[];
+}
+
+/** How close the nearest centre is to each city this dataset publishes a program in. */
+export interface CenterCoverageBand {
+  miles: number;
+  with_any_center: number;
+  with_comprehensive_center: number;
+}
+
+export interface CityCenterCoverage {
+  places_total: number;
+  /** Read every band against this, not against `places_total`: a city with no coordinates was
+   * never measured, which is a different fact from being badly served. */
+  places_located: number;
+  centers_total: number;
+  centers_located: number;
+  bands: CenterCoverageBand[];
+  median_miles: number | null;
+  farthest: { place: string; miles: number }[];
+}
+
+/**
+ * The whole next-step block as `coverage.json` carries it.
+ *
+ * `centers_loaded: null` means this build never read the directory — no credentials, or the
+ * finder could not be reached. `0` would be the opposite claim, that it answered and held
+ * nothing, and the counts below a null are counts of a search that did not happen.
+ *
+ * `guidance` is present on every build regardless: what the funding route is does not depend on
+ * whether a machine could reach a list of offices.
+ */
+export interface LocalHelp {
+  centers_loaded: number | null;
+  radius_miles: number;
+  programs_searched: number;
+  programs_not_searched: number;
+  programs_with_a_center: number;
+  programs_with_none_within_radius: number;
+  programs_with_a_comprehensive_center: number;
+  programs_with_a_center_within_10_miles: number;
+  nearest_median_miles: number | null;
+  nearest_farthest_miles: number | null;
+  guidance: FundingGuidance;
+  centers: AmericanJobCenter[] | null;
+  cities: CityCenterCoverage | null;
+}
+
 export interface Program {
   uuid: string;
   provider_name: string | null;
@@ -383,6 +559,16 @@ export interface Program {
   };
   outcomes: ProgramOutcomes;
   occupations: ProgramOccupation[];
+  /**
+   * The nearest America's Job Centers, or the record that none were looked for.
+   *
+   * Optional as well as nullable, and the two mean the same thing here: a record built before
+   * this field existed arrives without the key at all, and a record built without credentials
+   * arrives with a null list inside it. Both are "nothing was established about what is near
+   * this program", which is never "there is nothing near this program". Every current build
+   * writes the key.
+   */
+  local_help?: ProgramLocalHelp | null;
 }
 
 /** Compact search-index row. Keys are short because this file ships to every visitor. */
@@ -455,4 +641,10 @@ export interface Coverage {
   distinct_occupations_matched: number;
   outcome_coverage_pct: number;
   occupation_match_pct: number;
+  /**
+   * Optional for one reason only: a dataset built before this field existed carries no funding
+   * guidance, and a page that assumed otherwise would crash the export rather than render one
+   * section fewer. It is written by every current build, credentials or not.
+   */
+  local_help?: LocalHelp;
 }

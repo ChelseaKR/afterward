@@ -573,3 +573,66 @@ class TestCitations:
     def test_the_local_variation_is_cited_rather_than_asserted(self) -> None:
         detail = " ".join(step.detail for step in STEPS)
         assert "45 local workforce development areas" in detail
+
+
+class TestClaimIdentity:
+    """Every published claim has a stable name, because a translation is keyed on it.
+
+    The Spanish text on the site is attached to these ids. Attached to position, inserting a
+    step would silently re-point every translation after it; attached to the English, moving a
+    comma would orphan a sentence. So an id may be renamed only by someone prepared to
+    re-point the translation with it, and these tests are where that becomes obvious.
+    """
+
+    def test_every_step_and_question_has_an_id(self) -> None:
+        assert all(step.step_id for step in STEPS)
+        assert all(question.question_id for question in QUESTIONS)
+
+    def test_ids_are_unique(self) -> None:
+        assert len({step.step_id for step in STEPS}) == len(STEPS)
+        assert len({q.question_id for q in QUESTIONS}) == len(QUESTIONS)
+
+    def test_ids_survive_serialization(self) -> None:
+        payload = funding_guidance().as_dict()
+        assert payload["steps"][0]["id"]
+        assert payload["questions"][0]["id"]
+
+    def test_the_steps_a_program_page_publishes_are_a_named_subset(self) -> None:
+        """Which claims a reader meets unasked is an editorial decision, made here.
+
+        It lives beside the citations rather than in a template so that adding one means
+        arguing for it next to the rule it rests on.
+        """
+        published = funding_guidance().steps_for_program_page()
+        assert published
+        assert len(published) < len(STEPS)
+        assert all(step.on_program_page for step in published)
+        # The two a reader is least likely to be told anywhere else, and most likely to need:
+        # that a great deal is open before work authorization is verified, and that transport
+        # and child care may be paid for while training.
+        ids = {step.step_id for step in published}
+        assert "who_can_be_served" in ids
+        assert "supportive_services" in ids
+
+
+class TestFinders:
+    """Where a reader goes when this project cannot name an office for them."""
+
+    def test_the_guidance_carries_somewhere_to_look(self) -> None:
+        assert funding_guidance().finders
+
+    def test_no_finder_points_at_a_host_that_does_not_resolve(self) -> None:
+        """The failure this whole feature exists to fix, and the easiest one to recreate.
+
+        `etpl.edd.ca.gov` and `americasjobcenter.ca.gov` are both dead in DNS and both are
+        what an older reference would send somebody to. A page replacing 334 dead provider
+        links must not ship one of its own.
+        """
+        urls = " ".join(citation.url for citation in funding_guidance().finders)
+        assert "etpl.edd.ca.gov" not in urls
+        assert "americasjobcenter.ca.gov" not in urls
+
+    def test_every_finder_is_an_https_url_with_a_label(self) -> None:
+        for citation in funding_guidance().finders:
+            assert citation.url.startswith("https://"), citation
+            assert citation.label.strip(), citation

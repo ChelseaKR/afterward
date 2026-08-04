@@ -9,6 +9,17 @@
    "description": "A program that focuses on the application of advanced technology to building design and construction retrofitting existing buildings and efficient operation of buildings including lighting and daylight design acoustics solar design building conservation and energy-conscious design. Includes instruction in architecture building technology civil and structural engineering mechanical engineering environmental control systems sustainability and computer tools and applications.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://vdci.edu/certificate-programs/bim-technology/",
+   "provider_link": {
+    "url": "https://vdci.edu/certificate-programs/bim-technology/",
+    "href": "https://vdci.edu/certificate-programs/bim-technology/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "15.0101",
    "soc_codes": [
@@ -130,7 +141,24 @@
       "percent_change": 6.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32692432",
+      "miles": 7.3
+     },
+     {
+      "id": "8507",
+      "miles": 11.7
+     },
+     {
+      "id": "14171355",
+      "miles": 13.7
+     }
+    ]
+   }
   },
   {
    "uuid": "f6903297-31e5-11f1-8f5f-00155dd2f085",
@@ -139,6 +167,17 @@
    "description": "Become a certified veterinary assistant through our NAVTA-approved vet assistant course. Turn your passion for helping animals into a rewarding career by learning the requirements necessary to become a more attractive job candidate. Ours is one of only a few online programs to be approved by the National Association of Veterinary Technicians in America (NAVTA). Designed to prepare you for a career working with animals our program teaches you everything from exam room prep and surgical procedure to small animal health care. After successful completion of the prior stages you ll then be placed in a veterinary environment to complete your externship.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+   "provider_link": {
+    "url": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+    "href": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "51.0808",
    "soc_codes": [
@@ -200,7 +239,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32504528",
+      "miles": 3.6
+     },
+     {
+      "id": "569",
+      "miles": 9.9
+     },
+     {
+      "id": "26014",
+      "miles": 15.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f69032e4-31e5-11f1-803c-00155dd2f085",
@@ -209,6 +265,17 @@
    "description": "In support of ABC s strategic alliance with The Association of Professional Dog Trainers (APDT) and our commitment to keeping dogs safe from injurious training methods our updated curriculum will continue to advocate science-based positive reinforcement training philosophies including using the least invasive minimally aversive (LIMA) training techniques. This enhanced curriculum now includes an additional 300 pages of information and features a beautiful sleek graphic design and enhanced training videos with the goal of providing students an improved learning experience. The improved curriculum also includes content on conducting remote training lessons; up-to-date information on how to get the most out of using both current and traditional marketing tools such as search engine optimization (SEO) social media email and print media; and an expanded appendix of various training and business forms.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.animalbehaviorcollege.com/grooming/",
+   "provider_link": {
+    "url": "https://www.animalbehaviorcollege.com/grooming/",
+    "href": "https://www.animalbehaviorcollege.com/grooming/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "1.0505",
    "soc_codes": [
@@ -270,7 +337,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32504528",
+      "miles": 3.6
+     },
+     {
+      "id": "569",
+      "miles": 9.9
+     },
+     {
+      "id": "26014",
+      "miles": 15.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f690332a-31e5-11f1-8e1c-00155dd2f085",
@@ -279,6 +363,17 @@
    "description": "Becoming a dog groomer begins with learning how to use various pet grooming tools. Our curriculum also teaches you how to safely groom both dogs and cats while maintaining a calm relaxing environment. As a student enrolled in ABC s dog groomer course you ll receive a complete grooming toolkit. These 40 professional grooming tools include: clippers blades shears brushes combs shampoo conditioner and more. This high-quality equipment is essential for every groomer s toolbox and can be used when you start your new career. Our pet grooming certification program wouldn t be complete without the essential hands-on training component. Once you finish the online dog grooming portion of this program you ll have the unique opportunity to work with professional dog groomers. You ll be able to apply everything you ve learned up to this point to complete a full groom on your own.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.animalbehaviorcollege.com/grooming/",
+   "provider_link": {
+    "url": "https://www.animalbehaviorcollege.com/grooming/",
+    "href": "https://www.animalbehaviorcollege.com/grooming/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "1.0504",
    "soc_codes": [
@@ -340,7 +435,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32504528",
+      "miles": 3.6
+     },
+     {
+      "id": "569",
+      "miles": 9.9
+     },
+     {
+      "id": "26014",
+      "miles": 15.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f6929c13-31e5-11f1-8fef-00155dd2f085",
@@ -349,6 +461,17 @@
    "description": "A program that prepares individuals to teach students in the elementary grades  which may include kindergarten through grade eight  depending on the school system or state regulations.  Includes preparation to teach all elementary education subject matter.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "http://www.reach.edu",
+   "provider_link": {
+    "url": "http://www.reach.edu",
+    "href": "https://reach.edu/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": "https_upgrade"
+   },
    "entity_type": "Higher Ed: Baccalaureate or Higher",
    "cip_code": "13.1202",
    "soc_codes": [
@@ -446,7 +569,24 @@
       "percent_change": 4.9
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32747961",
+      "miles": 0.6
+     },
+     {
+      "id": "32765942",
+      "miles": 0.9
+     },
+     {
+      "id": "27358",
+      "miles": 2.2
+     }
+    ]
+   }
   },
   {
    "uuid": "f6939ff4-31e5-11f1-b734-00155dd2f085",
@@ -455,6 +595,17 @@
    "description": "6091|Covers understanding user needs to create products that are dynamic and easy to use.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/courses/ux-career-track/",
+   "provider_link": {
+    "url": "https://www.springboard.com/courses/ux-career-track/",
+    "href": "https://www.springboard.com/courses/ux-career-track/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "11.0105",
    "soc_codes": [
@@ -528,7 +679,24 @@
       "percent_change": 10.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32765907",
+      "miles": 0.4
+     },
+     {
+      "id": "32611249",
+      "miles": 1.1
+     },
+     {
+      "id": "44311",
+      "miles": 1.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f693a050-31e5-11f1-bf37-00155dd2f085",
@@ -537,6 +705,17 @@
    "description": "6090|Covers the skills for the direct promotion of products & services to customers & functioning independently.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/courses/tech-sales-career-track/",
+   "provider_link": {
+    "url": "https://www.springboard.com/courses/tech-sales-career-track/",
+    "href": "https://www.springboard.com/courses/tech-sales-career-track/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "52.1801",
    "soc_codes": [
@@ -610,7 +789,24 @@
       "percent_change": -3.3
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32765907",
+      "miles": 0.4
+     },
+     {
+      "id": "32611249",
+      "miles": 1.1
+     },
+     {
+      "id": "44311",
+      "miles": 1.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f69ba316-31e5-11f1-b60b-00155dd2f085",
@@ -619,6 +815,17 @@
    "description": "A program that focuses on the development  use  critical evaluation  and regulation of new electronic communication technologies using computer applications  and that prepares individuals to function as developers and managers of digital communications media. Includes instruction in computer and telecommunications technologies and processes  design and development of digital communications  marketing and distribution  digital communications regulation  law  and policy  the study of human interaction with  and use of  digital media  and emerging trends and issues.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.helixopp.com/accessible-and-inclusive-design/index.html#training",
+   "provider_link": {
+    "url": "https://www.helixopp.com/accessible-and-inclusive-design/index.html#training",
+    "href": "https://www.helixopp.com/accessible-and-inclusive-design/index.html#training",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "9.0702",
    "soc_codes": [
@@ -692,7 +899,24 @@
       "percent_change": 12.0
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f693a013-31e5-11f1-8e16-00155dd2f085",
@@ -701,6 +925,17 @@
    "description": "6082|Web developer training, build web-based pages and applications to achieve user, business, and product goals and transform your career.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/",
+   "provider_link": {
+    "url": "https://www.springboard.com/",
+    "href": "https://www.springboard.com/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "15.1204",
    "soc_codes": [
@@ -774,7 +1009,24 @@
       "percent_change": 6.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32765907",
+      "miles": 0.4
+     },
+     {
+      "id": "32611249",
+      "miles": 1.1
+     },
+     {
+      "id": "44311",
+      "miles": 1.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f693a032-31e5-11f1-b11b-00155dd2f085",
@@ -783,6 +1035,17 @@
    "description": "6089|Prepares individuals to apply data science to generate insights from data and identify and predict trends.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/",
+   "provider_link": {
+    "url": "https://www.springboard.com/",
+    "href": "https://www.springboard.com/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "30.7101",
    "soc_codes": [
@@ -880,7 +1143,24 @@
       "percent_change": 26.0
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32765907",
+      "miles": 0.4
+     },
+     {
+      "id": "32611249",
+      "miles": 1.1
+     },
+     {
+      "id": "44311",
+      "miles": 1.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f693a070-31e5-11f1-b76d-00155dd2f085",
@@ -889,6 +1169,17 @@
    "description": "6086|Preparation for Security+ exam for those with Network+ certification and at least two years of experience in IT administration with a security focus, recommended.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/",
+   "provider_link": {
+    "url": "https://www.springboard.com/",
+    "href": "https://www.springboard.com/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "11.1003",
    "soc_codes": [
@@ -962,7 +1253,24 @@
       "percent_change": 24.1
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32765907",
+      "miles": 0.4
+     },
+     {
+      "id": "32611249",
+      "miles": 1.1
+     },
+     {
+      "id": "44311",
+      "miles": 1.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0411-31e5-11f1-9582-00155dd2f085",
@@ -971,6 +1279,17 @@
    "description": "39635|Fast paced program that prepares individuals to communicate dramatic information, ideas, moods, and feelings through the making and production of films and videos. Courses include DSLR Bootcamp, Lighting, and Audio Post Production.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/7/beginning-video-production-producereditor-fast-track",
+   "provider_link": {
+    "url": "https://learn.bavc.org/learn/public/learning_plan/view/7/beginning-video-production-producereditor-fast-track",
+    "href": "https://learn.bavc.org/",
+    "linked": true,
+    "label": "provider_home_page",
+    "verdict": "dead",
+    "reason": "not_found",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": "provider_front_page"
+   },
    "entity_type": "Private Non-Profit",
    "cip_code": "50.0602",
    "soc_codes": [
@@ -1044,7 +1363,24 @@
       "percent_change": 13.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d04a9-31e5-11f1-91b0-00155dd2f085",
@@ -1053,6 +1389,17 @@
    "description": "72155|The term of the competency-based apprenticeship with a minimum of 144 credit hours of relatedtechnical instruction (RTI) plus employer specific training and 2,000 hours of on-the-job learning(OJL) to achieve skills based on employer requirements per year. Term of apprenticeship will bedetermined by the apprentices educational level as outlined in the Minimum Qualifications.The estimated length of an apprenticeship program based on this occupation was set by the DOL tobe 3 years.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "http://www.reach.edu",
+   "provider_link": {
+    "url": "http://www.reach.edu",
+    "href": "https://reach.edu/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": "https_upgrade"
+   },
    "entity_type": "Higher Ed: Baccalaureate or Higher",
    "cip_code": "13.0201",
    "soc_codes": [
@@ -1150,7 +1497,24 @@
       "percent_change": 5.1
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32747961",
+      "miles": 0.6
+     },
+     {
+      "id": "32765942",
+      "miles": 0.9
+     },
+     {
+      "id": "27358",
+      "miles": 2.2
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0c12-31e5-11f1-b47c-00155dd2f085",
@@ -1159,6 +1523,17 @@
    "description": "63479|This program prepares individuals for employment as a front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility.  Students learn medical terminology, abbreviations, procedures, and common diseases.  The Medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics.  Telecommunications, file management and preparing correspondence will also be covered in the program.  Students will have hands-or practice with electronic records management and the insurance billing process.  Medicare, Medicaid, HMOS, PPOS and commercial plans will be discussed.  HIPAA compliance, fraud/abuse, ethics, professionalism, and job search strategies will be emphasized throughout the course. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0714",
    "soc_codes": [
@@ -1254,7 +1629,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32855953",
+      "miles": 1.2
+     },
+     {
+      "id": "26014",
+      "miles": 12.5
+     },
+     {
+      "id": "8506",
+      "miles": 13.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d1112-31e5-11f1-a794-00155dd2f085",
@@ -1263,6 +1655,17 @@
    "description": "3245|A program that prepares individuals to provide technical administrative support to professional accountants and other financial management personnel.  Includes instruction in posting transactions to accounts  record-keeping systems  accounting software operation  and general accounting principles and practices.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://www.shastacollege.edu/academics/programs/accounting/",
+   "provider_link": {
+    "url": "https://www.shastacollege.edu/academics/programs/accounting/",
+    "href": "https://www.shastacollege.edu/academics/programs/accounting/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "52.0302",
    "soc_codes": [
@@ -1360,7 +1763,20 @@
       "percent_change": -22.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32630997",
+      "miles": 9.8
+     },
+     {
+      "id": "31571548",
+      "miles": 10.0
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d118b-31e5-11f1-a64a-00155dd2f085",
@@ -1369,6 +1785,17 @@
    "description": "71929|A state-approved registered apprenticeship program. Apprentices follow the program Standards, outlining related instruction and on-the-job training hours required to receive a certificate from the state upon completion. Related instruction includes, but is not limited to, accounting principles and theory, financial accounting, managerial accounting, cost accounting, budget control, legal aspects of accounting, reporting procedures, statement analysis, business information systems, professional standards and ethics.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.shastacollege.edu/about/economic-workforce-development/apprenticeship/",
+   "provider_link": {
+    "url": "https://www.shastacollege.edu/about/economic-workforce-development/apprenticeship/",
+    "href": "https://www.shastacollege.edu/about/economic-workforce-development/apprenticeship/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "52.0301",
    "soc_codes": [
@@ -1466,7 +1893,20 @@
       "percent_change": -22.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32630997",
+      "miles": 9.8
+     },
+     {
+      "id": "31571548",
+      "miles": 10.0
+     }
+    ]
+   }
   },
   {
    "uuid": "f6969d0c-31e5-11f1-9977-00155dd2f085",
@@ -1475,6 +1915,17 @@
    "description": "The curriculum for the Dog Obedience Instructor Training Program is broken down into 11 stages that cover topics ranging from basic study of canines to business building tips. Each stage equips you with the knowledge and dog training skills necessary to advance to the externship portion of the dog training program. In stage 10  you can apply everything you?ve learned throughout your dog training course in a real-life setting.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.animalbehaviorcollege.com/dog-trainer/",
+   "provider_link": {
+    "url": "https://www.animalbehaviorcollege.com/dog-trainer/",
+    "href": "https://www.animalbehaviorcollege.com/dog-trainer/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "1.0505",
    "soc_codes": [
@@ -1536,7 +1987,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32504528",
+      "miles": 3.6
+     },
+     {
+      "id": "569",
+      "miles": 9.9
+     },
+     {
+      "id": "26014",
+      "miles": 15.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f6969d2b-31e5-11f1-8c35-00155dd2f085",
@@ -1545,6 +2013,17 @@
    "description": "As a student enrolled in ABC?s dog groomer course  you?ll receive a complete grooming toolkit. Our pet grooming certification program wouldn?t be complete without the essential hands-on training component. Once you finish the online dog grooming portion of this program  you?ll have the unique opportunity to work with professional dog groomers. You?ll be able to apply everything you?ve learned up to this point to complete a full groom on your own.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.animalbehaviorcollege.com/grooming/",
+   "provider_link": {
+    "url": "https://www.animalbehaviorcollege.com/grooming/",
+    "href": "https://www.animalbehaviorcollege.com/grooming/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "1.0504",
    "soc_codes": [
@@ -1606,7 +2085,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32504528",
+      "miles": 3.6
+     },
+     {
+      "id": "569",
+      "miles": 9.9
+     },
+     {
+      "id": "26014",
+      "miles": 15.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f6969d4a-31e5-11f1-bc5b-00155dd2f085",
@@ -1615,6 +2111,17 @@
    "description": "Our Veterinary Assistant Program is designed to prepare you for a career with animals. When you enroll  you learn everything from surgical preparation to small animal nursing. After successful completion of the prior stages  you?ll then be placed in a veterinary environment to complete your externship. During your externship  you?ll be given the opportunity to interact with professionals in the veterinary industry.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+   "provider_link": {
+    "url": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+    "href": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "1.8301",
    "soc_codes": [
@@ -1676,7 +2183,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32504528",
+      "miles": 3.6
+     },
+     {
+      "id": "569",
+      "miles": 9.9
+     },
+     {
+      "id": "26014",
+      "miles": 15.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d042f-31e5-11f1-a9f9-00155dd2f085",
@@ -1685,6 +2209,17 @@
    "description": "39639|Fast paced program that prepares individuals to use computer applications and related visual and sound imaging techniques to manipulate images and information originating as film, video, still photographs, digital copy, soundtracks, and physical objects.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/8/beginning-multimedia-after-effects-fast-track",
+   "provider_link": {
+    "url": "https://learn.bavc.org/learn/public/learning_plan/view/8/beginning-multimedia-after-effects-fast-track",
+    "href": "https://learn.bavc.org/",
+    "linked": true,
+    "label": "provider_home_page",
+    "verdict": "dead",
+    "reason": "not_found",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": "provider_front_page"
+   },
    "entity_type": "Private Non-Profit",
    "cip_code": "10.0304",
    "soc_codes": [
@@ -1758,7 +2293,24 @@
       "percent_change": 8.1
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d046b-31e5-11f1-8304-00155dd2f085",
@@ -1767,6 +2319,17 @@
    "description": "54831|Comprehensive certificate training to learn video and audio editing, special effects, motion graphics, color correction, aesthetics and workflow.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/4/beginning-digital-post-production-video-post-production-full-certificate",
+   "provider_link": {
+    "url": "https://learn.bavc.org/learn/public/learning_plan/view/4/beginning-digital-post-production-video-post-production-full-certificate",
+    "href": "https://learn.bavc.org/",
+    "linked": true,
+    "label": "provider_home_page",
+    "verdict": "dead",
+    "reason": "not_found",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": "provider_front_page"
+   },
    "entity_type": "Private Non-Profit",
    "cip_code": "50.0602",
    "soc_codes": [
@@ -1864,7 +2427,24 @@
       "percent_change": 13.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d048a-31e5-11f1-b572-00155dd2f085",
@@ -1873,6 +2453,17 @@
    "description": "39622|A program that prepares individuals to communicate dramatic information  ideas  moods  and feelings through the making and producing of films and videos. Includes instruction in theory of film  film technology and equipment operation  film production  film directing  film editing  cinematographic art  film audio  techniques for making specific types of films and or videos  media technologies  computer image making  multi-media production  and the planning and management of film video operations.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/5/beginning-digital-post-production-editor-fast-track",
+   "provider_link": {
+    "url": "https://learn.bavc.org/learn/public/learning_plan/view/5/beginning-digital-post-production-editor-fast-track",
+    "href": "https://learn.bavc.org/",
+    "linked": true,
+    "label": "provider_home_page",
+    "verdict": "dead",
+    "reason": "not_found",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": "provider_front_page"
+   },
    "entity_type": "Private Non-Profit",
    "cip_code": "50.0602",
    "soc_codes": [
@@ -1946,7 +2537,24 @@
       "percent_change": 13.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d09bc-31e5-11f1-ada9-00155dd2f085",
@@ -1955,6 +2563,17 @@
    "description": "65446|A program that prepares individuals to assess the security needs of computer and network systems  recommend safeguard solutions  and manage the implementation and maintenance of security devices  systems  and procedures.  Includes instruction in computer architecture  programming  and systems analysis  networking  telecommunications  cryptography  security system design  applicable law and regulations  risk assessment and policy analysis  contingency planning  user access issues  investigation techniques  and troubleshooting.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.uyoa.org",
+   "provider_link": {
+    "url": "http://www.uyoa.org",
+    "href": "https://www.uyoa.org/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": "https_upgrade"
+   },
    "entity_type": "National Apprenticeship",
    "cip_code": "11.1003",
    "soc_codes": [
@@ -2076,7 +2695,24 @@
       "percent_change": 8.5
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32747794",
+      "miles": 5.0
+     },
+     {
+      "id": "32855954",
+      "miles": 5.9
+     },
+     {
+      "id": "32873987",
+      "miles": 7.3
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0a37-31e5-11f1-86b1-00155dd2f085",
@@ -2085,6 +2721,7 @@
    "description": "75071|A program that prepares individuals to apply artistic and computer techniques to the interpretation of technical and commercial concepts. Includes instruction in computer-assisted art and design  printmaking  concepts sketching  technical drawing  color theory  imaging  studio technique  still and life modeling  multimedia applications  communication skills and commercial art business operations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Public",
    "cip_code": "50.0409",
    "soc_codes": [
@@ -2146,7 +2783,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32855953",
+      "miles": 1.2
+     },
+     {
+      "id": "26014",
+      "miles": 12.5
+     },
+     {
+      "id": "8506",
+      "miles": 13.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d11a9-31e5-11f1-9c95-00155dd2f085",
@@ -2155,6 +2809,17 @@
    "description": "70024|The standard term of the paid apprenticeship includes 3,000 on-the-job (OJT) hours, 272 related supplemental instruction (RSI), and completed within 24 months. This program serves the entire state of California and, upon completion, the apprentice will receive a state and industry recognized certificate of completion.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://craftprogram.net/",
+   "provider_link": {
+    "url": "https://craftprogram.net/",
+    "href": "https://craftprogram.net/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "3.0599",
    "soc_codes": [
@@ -2204,7 +2869,20 @@
      "oversized_for_one_program": false
     }
    },
-   "occupations": []
+   "occupations": [],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32630997",
+      "miles": 9.8
+     },
+     {
+      "id": "31571548",
+      "miles": 10.0
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d2fd4-31e5-11f1-8107-00155dd2f085",
@@ -2213,6 +2891,17 @@
    "description": "52529|THIS COURSE IS DESIGNED FOR NEW AND FUTURE SUPERVISORS WHO WANT TO GROW THEIR LEADERSHIP SKILLS AND MANAGEMENT TECHNIQUES TO BECOME MORE CONFIDENT LEADERS. PARTICIPANTS WILL LEARN HOW THE TRANSITION FROM INDIVIDUAL CONTRIBUTOR TO SUPERVISOR AND HOW TO ESTABLISH AUTHORITY, CREDIBILITY, AND DIRECTION FOR THEIR TEAM. THEY WILL ALSO LEARN HOW TO MOTIVATE EMPLOYEES AND HANDLE CHALLENGING SITUATIONS. THIS COURSE IS ALSO SUITABLE FOR NEW MANAGERS THAT CAN BENEFIT FROM NEW TECHNIQUES AND TOOLS TO ENHANCE THEIR LEADERSHIP SKILLS. PARTICIPANTS WILL LEARN HOW TO COMMUNICATE, COACH, AND BUILD EFFECTIVE TEAMS.THIS COURSE IS FOR EMPLOYEES THAT ARE NEW TO THEIR LEADERSHIP POSITIONS AND INTERESTED IN ENHANCING THEIR ABILITIES TO MOTIVATE EMPLOYEES AND DEVELOPING TEAM MEMBERS SKILLS.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.glendale.edu",
+   "provider_link": {
+    "url": "http://www.glendale.edu",
+    "href": "https://www.glendale.edu/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": "https_upgrade"
+   },
    "entity_type": "Public",
    "cip_code": "52.0213",
    "soc_codes": [
@@ -2262,7 +2951,24 @@
      "oversized_for_one_program": false
     }
    },
-   "occupations": []
+   "occupations": [],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "31315790",
+      "miles": 3.8
+     },
+     {
+      "id": "14319",
+      "miles": 4.2
+     },
+     {
+      "id": "32873992",
+      "miles": 4.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d3a0b-31e5-11f1-8a2a-00155dd2f085",
@@ -2271,6 +2977,7 @@
    "description": "53050|Confined Space topics will include: Air Monitoring, Lockout/Tagout, Blinding, Line Breaking, Safe Work Permit, Confined Spaces, Supplier Air System, and Field Exercise.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Private Non-Profit",
    "cip_code": "15.0903",
    "soc_codes": [
@@ -2320,7 +3027,24 @@
      "oversized_for_one_program": false
     }
    },
-   "occupations": []
+   "occupations": [],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32819732",
+      "miles": 11.9
+     },
+     {
+      "id": "32747930",
+      "miles": 13.1
+     },
+     {
+      "id": "31315425",
+      "miles": 14.5
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d3a84-31e5-11f1-ab33-00155dd2f085",
@@ -2329,6 +3053,7 @@
    "description": "54797|Identifies and describes the common types, uses, and components of excavators. Presents safety guidelines, prestart inspection procedures, and preventative maintenance requirements. Describes basic startup and operation, and covers common work activities associated with excavators. This course includes 8 hours of classroom training and 32 hours of hands-on training.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Private Non-Profit",
    "cip_code": "49.0202",
    "soc_codes": [
@@ -2378,7 +3103,24 @@
      "oversized_for_one_program": false
     }
    },
-   "occupations": []
+   "occupations": [],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32819732",
+      "miles": 11.9
+     },
+     {
+      "id": "32747930",
+      "miles": 13.1
+     },
+     {
+      "id": "31315425",
+      "miles": 14.5
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d044d-31e5-11f1-b96f-00155dd2f085",
@@ -2387,6 +3129,17 @@
    "description": "39585|Program that aims to aid students in developing aesthetic skills along with learning how to communicate using HD video. Student will learn lighting, sound, editing, workflow, compression and output to web. This is recommended for people who are filling in the gaps in their skillsets or to gain a solid understanding of video.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/2/video-production-full-certificate",
+   "provider_link": {
+    "url": "https://learn.bavc.org/learn/public/learning_plan/view/2/video-production-full-certificate",
+    "href": "https://learn.bavc.org/",
+    "linked": true,
+    "label": "provider_home_page",
+    "verdict": "dead",
+    "reason": "not_found",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": "provider_front_page"
+   },
    "entity_type": "Private Non-Profit",
    "cip_code": "50.0602",
    "soc_codes": [
@@ -2460,7 +3213,24 @@
       "percent_change": 13.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d04c8-31e5-11f1-931a-00155dd2f085",
@@ -2469,6 +3239,7 @@
    "description": "55986|A program that prepares individuals to cleanse, depilate, massage, and beautify the human body and to function as licensed estheticians and skin care specialists.  Includes instruction in skin anatomy, physiology, and health principles of nutrition decontamination and infection control health and safety facial and body massage body wrapping and spa treatments temporary hair removal including waxing and tweezing color and skin analysis client consultation and care applicable laws and regulations business practices and sometimes related alternative healing regimens.  At the end of the program, Esthetician/Skin Care students will possess the skills and the necessary knowledge to take/pass the California State Board Exam.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Private For-Profit",
    "cip_code": "12.0409",
    "soc_codes": [
@@ -2542,7 +3313,16 @@
       "percent_change": 11.1
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32783749",
+      "miles": 24.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d04e6-31e5-11f1-9494-00155dd2f085",
@@ -2551,6 +3331,17 @@
    "description": "55922|State licensing program which gives students necessary training to gain eligibility for the state licensing exam. A program that generally prepares individuals to cut, trim, and style scalp, facial, and body hair apply cosmetic preparations perform manicures and pedicures massage the head and extremities and prepare for practice as licensed cosmetologists in specialized or full-service salons.  Includes instruction in hair cutting and styling, manicuring, pedicuring, facial treatments, shampooing, chemical applications, esthetics, shop management, sanitation and safety, customer service, and applicable professional and labor laws and regulations.  At the end of the program, cosmetology students will possess the skills and knowledge necessary to take/pass the California State Board exam.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.designsschool.edu",
+   "provider_link": {
+    "url": "http://www.designsschool.edu",
+    "href": "https://designsschool.edu/",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": "https_upgrade"
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "12.0499",
    "soc_codes": [
@@ -2624,7 +3415,16 @@
       "percent_change": 5.9
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32783749",
+      "miles": 24.1
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0505-31e5-11f1-af10-00155dd2f085",
@@ -2633,6 +3433,17 @@
    "description": "74438|Digital Accessibility Developers program accessible software, websites, and other information communication technology (ICT). They make sure that digital products, environments, and services, are perceivable, operable, and sufficiently robust, to meet the user needs of the broadest range of disabilities, for instance by programming Accessibility Rich Internet Applications (ARIA) into ICT to interact with screen reader technologies. Students learn to plan, design, build, and implement accessible content. Once launched, they will perform research, analyze data, present results, and prepare publications as needed to advance the field of accessibility.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://helixopp.institute/admin/2",
+   "provider_link": {
+    "url": "https://helixopp.institute/admin/2",
+    "href": "https://helixopp.institute/admin/2",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Private For-Profit",
    "cip_code": "11.0899",
    "soc_codes": [
@@ -2706,7 +3517,24 @@
       "percent_change": 6.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "44311",
+      "miles": 1.1
+     },
+     {
+      "id": "32611249",
+      "miles": 1.3
+     },
+     {
+      "id": "32728501",
+      "miles": 1.6
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0523-31e5-11f1-bfaf-00155dd2f085",
@@ -2715,6 +3543,7 @@
    "description": "61979|A program that prepares individuals under the supervision of physicians and other health care professionals to draw blood samples from patients using a variety of intrusive procedures. Includes instruction in basic vascular anatomy and physiology blood physiology skin puncture techniques venipuncture venous specimen collection and handling safety and sanitation procedures and applicable standards and regulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Public",
    "cip_code": "51.1009",
    "soc_codes": [
@@ -2788,7 +3617,16 @@
       "percent_change": 22.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32499746",
+      "miles": 5.0
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0541-31e5-11f1-9b52-00155dd2f085",
@@ -2797,6 +3635,7 @@
    "description": "57050|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Public",
    "cip_code": "47.0703",
    "soc_codes": [
@@ -2863,7 +3702,16 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32499746",
+      "miles": 5.0
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0560-31e5-11f1-8f39-00155dd2f085",
@@ -2872,6 +3720,7 @@
    "description": "61981|A program that prepares individuals, under the supervision of physicians, to provide medical office administrative services and perform clinical duties including patient intake and care, routine diagnostic and recording procedures, pre-examination and examination assistance, and the administration of medications and first aid. Includes instruction in basic anatomy and physiology medical terminology medical law and ethics patient psychology and communications medical office procedures and clinical diagnostic, examination, testing, and treatment procedures.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Public",
    "cip_code": "51.0801",
    "soc_codes": [
@@ -2969,7 +3818,16 @@
       "percent_change": 26.7
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "32499746",
+      "miles": 5.0
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d057e-31e5-11f1-8a47-00155dd2f085",
@@ -2978,6 +3836,17 @@
    "description": "63467|A program that prepares individuals  under the supervision of a physical therapist  to implement physical therapy treatment care plans  train patients  conduct treatment interventions  use equipment  and observe and record patient progress.  Includes instruction in applied anatomy and physiology  applied kinesiology  principles and procedures of physical therapy  basic neurology and orthopedics  physical therapy modalities  documentation skills  psychosocial aspects of health care  wound and injury care  electrotherapy  working with orthotics and prostheses  and personal and professional ethics.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0806",
    "soc_codes": [
@@ -3051,7 +3920,24 @@
       "percent_change": 28.8
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d059e-31e5-11f1-ae18-00155dd2f085",
@@ -3060,6 +3946,17 @@
    "description": "63469|A program that prepares individuals to perform the duties of police and public security officers  including patrol and investigative activities  traffic control  crowd control and public relations  witness interviewing  evidence collection and management  basic crime prevention methods  weapon and equipment operation and maintenance  report preparation and other routine law enforcement responsibilities.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "43.0107",
    "soc_codes": [
@@ -3157,7 +4054,24 @@
       "percent_change": 9.7
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d05ca-31e5-11f1-a2d6-00155dd2f085",
@@ -3166,6 +4080,17 @@
    "description": "63438|This training prepares you to work as clinical medical assistant. Classroom instruction includes: ethics, medical terminology, medical forms, ambulatory care, obstetrics, gynecology, pediatrics, out-patient surgery, urology, orthopedics, internal medicine, and cardiology. You will be able to practice techniques and topics learned to gain expertise through externships in a physician office or medical clinics.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.2706",
    "soc_codes": [
@@ -3287,7 +4212,24 @@
       "percent_change": 5.9
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d05ea-31e5-11f1-b119-00155dd2f085",
@@ -3296,6 +4238,17 @@
    "description": "63366|The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems. Our program offers Snap-On Multimeter certification and allows completers to sit for the automotive service excellence (ASE) G1 certification exam {after completing two years of field experience).",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "47.0604",
    "soc_codes": [
@@ -3369,7 +4322,24 @@
       "percent_change": -1.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0608-31e5-11f1-a2a1-00155dd2f085",
@@ -3378,6 +4348,7 @@
    "description": "63447|A modularized instructional program that prepares individuals to perform clerical duties utilizing knowledge of medical terminology and hospital, clinical, laboratory and/or medical office procedures. Also included are writing reports such as case histories; understanding medical knowledge and procedures. The program includes the following courses; general clerk, business english, business math, typist, keyboarding, computer operator, software applications, integrated applications, medical records clerk, terminology and records management.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Public",
    "cip_code": "51.071",
    "soc_codes": [
@@ -3475,7 +4446,24 @@
       "percent_change": 5.9
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0627-31e5-11f1-842d-00155dd2f085",
@@ -3484,6 +4472,17 @@
    "description": "63369|The east Los Angeles skills centers automotive engine repair specialist program prepares individuals to apply technical knowledge and skills to repair, service, and maintain small internal-combustion engines used on portable equipment such as lawnmowers, chain saws, rotary tillers, and snowmobiles. After two years working experience students qualify to take the automotive service excellence (ASE) a 1 certification exam.  Our program is also a certified multimeter snap-on certified program.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "15.0803",
    "soc_codes": [
@@ -3557,7 +4556,24 @@
       "percent_change": -1.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0646-31e5-11f1-aaba-00155dd2f085",
@@ -3566,6 +4582,17 @@
    "description": "63465|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "47.0703",
    "soc_codes": [
@@ -3639,7 +4666,24 @@
       "percent_change": 36.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0664-31e5-11f1-af10-00155dd2f085",
@@ -3648,6 +4692,17 @@
    "description": "63442|The health information technology program will prepare you for a career as a medical insurance coder. You will learn the basics of healthcare law, ethics, customer relations, appointment scheduling, minor accounting, chart noting, correspondence, protected health information standards, phone etiquette, paper and electronic health records, insurance programs, the insurance billing process. Diagnostic coding and procedure coding; through workplace simulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0713",
    "soc_codes": [
@@ -3745,7 +4800,24 @@
       "percent_change": 14.7
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0682-31e5-11f1-a086-00155dd2f085",
@@ -3754,6 +4826,17 @@
    "description": "63404|The east Los Angeles skills center graphic design program prepares individuals to apply artistic and computer techniques to the interpretation of technical commercial concepts.  Includes instruction in computer-assisted art and design , printmaking, concepts sketching, and technical drawing, color theory, imaging, studio technique, still and life modeling multimedia applications, communication skills and commercial art business operations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "50.0409",
    "soc_codes": [
@@ -3851,7 +4934,24 @@
       "percent_change": 4.6
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d06a0-31e5-11f1-adc0-00155dd2f085",
@@ -3860,6 +4960,17 @@
    "description": "63371|The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems.  Our program offers snap-on multimeter certification and allows completers to sit for the automotive service excellence (ASE) g1 certification exam {after completing two years of field experience).",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "47.0604",
    "soc_codes": [
@@ -3974,7 +5085,24 @@
       "percent_change": -1.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d06be-31e5-11f1-acc3-00155dd2f085",
@@ -3983,6 +5111,17 @@
    "description": "63459|A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.3902",
    "soc_codes": [
@@ -4080,7 +5219,24 @@
       "percent_change": 8.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d06dd-31e5-11f1-a53e-00155dd2f085",
@@ -4089,6 +5245,17 @@
    "description": "63429|This competency-based course contains information and training to prepare persons to function as clinical medical assistants though training in ethics, medical terminology, and the preparation of medical forms. In addition, students will gain expertise in the day-to-day functions of the following specialties: ambulatory care, obstetrics and gynecology, pediatrics, outpatient surgery, urology, orthopedics, internal medicine, cardiology, and laboratory.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0899",
    "soc_codes": [
@@ -4162,7 +5329,24 @@
       "percent_change": 14.7
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d06fc-31e5-11f1-976c-00155dd2f085",
@@ -4171,6 +5355,17 @@
    "description": "63375|This competency-based outline is the second of the three-series cosmetology training and offers the 600-hour course conducted under the rules and regulations issued by the California state board of barbering and cosmetology (CSBBC). This course develops the skills needed to take and pass the license examination. Instruction includes wet and thermal hair styling, permanent waving, chemical straightening, and haircutting. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "12.0413",
    "soc_codes": [
@@ -4268,7 +5463,24 @@
       "percent_change": 7.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d071b-31e5-11f1-a792-00155dd2f085",
@@ -4277,6 +5489,17 @@
    "description": "63409|This competency-based course is designed to prepare students for employment in building maintenance and cleaning work. Instruction covers equipment, materials, and methods used in routine maintenance and cleaning of offices, shops, hospitals, schools, stores, and outdoor areas. Topics include commercial methods for floor care, wall and window washing, and making minor building repairs.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0702",
    "soc_codes": [
@@ -4391,7 +5614,24 @@
       "percent_change": 3.8
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d073a-31e5-11f1-ae8d-00155dd2f085",
@@ -4400,6 +5640,7 @@
    "description": "63507|The East Los Angeles Skills Center's Construction Worker Program prepares students for careers in the Residential and Commercial Construction Career Pathway. Students will learn how to perform tasks involving physical labor at construction sites; operate hand and power tools of all types: air hammers, earth tampers, cement mixers, small mechanical hoists, surveying and measuring equipment, and a variety of other equipment and instruments; clean and prepare sites, dig trenches, set braces to support the sides of excavations, erect scaffolding, and clean up rubble, debris and other waste materials; and assist other craft workers. At the completion of this course students may apply for their OSHA-10 and HazMat certifications.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
+   "provider_link": null,
    "entity_type": "Public",
    "cip_code": "46.9999",
    "soc_codes": [
@@ -4473,7 +5714,24 @@
       "percent_change": 11.5
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0759-31e5-11f1-a39f-00155dd2f085",
@@ -4482,6 +5740,17 @@
    "description": "63461|A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.3902",
    "soc_codes": [
@@ -4555,7 +5824,24 @@
       "percent_change": 8.2
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0777-31e5-11f1-b6e4-00155dd2f085",
@@ -4564,6 +5850,17 @@
    "description": "63440|This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology, abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with workplace simulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0714",
    "soc_codes": [
@@ -4661,7 +5958,24 @@
       "percent_change": -8.1
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0796-31e5-11f1-9ec5-00155dd2f085",
@@ -4670,6 +5984,17 @@
    "description": "63473|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "47.0703",
    "soc_codes": [
@@ -4791,7 +6116,24 @@
       "percent_change": 36.4
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d07b4-31e5-11f1-be7b-00155dd2f085",
@@ -4800,6 +6142,17 @@
    "description": "63450|This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic. Medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology. Abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with  workplace simulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0716",
    "soc_codes": [
@@ -4897,7 +6250,24 @@
       "percent_change": 5.9
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d07d3-31e5-11f1-b508-00155dd2f085",
@@ -4906,6 +6276,17 @@
    "description": "63396|This competency-based course is designed to prepare a student to enter an electrical distribution mechanic training program. This course covers the basic mechanical and electrical principles associated with the electrical line working trade. The goal of this course is to produce candidates for the edm training program, who as a result of this course will develop the basic skills needed to be successful trainees. These skills include: overall safety considerations, power pole climbing skills, knowledge of the basic tools and materials involved with the electrical line crafts, general construction standards, basic rigging principles, and basic electrical theory that is specific to this trade. A 175-hour power pole-climbing certificate of completion is granted to students who successfully complete the course. A component of this course includes preparation for civil service examination.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
+   "provider_link": {
+    "url": "http://www.laadulted.com",
+    "href": null,
+    "linked": false,
+    "label": "program_page",
+    "verdict": "dead",
+    "reason": "dns_failure",
+    "checked_on": "2026-08-04",
+    "notice": "page_unreachable",
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "47.0101",
    "soc_codes": [
@@ -4979,7 +6360,24 @@
       "percent_change": 4.0
      }
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "45074",
+      "miles": 1.1
+     },
+     {
+      "id": "32765825",
+      "miles": 3.0
+     },
+     {
+      "id": "14319",
+      "miles": 3.9
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d07f2-31e5-11f1-8e2e-00155dd2f085",
@@ -4988,6 +6386,17 @@
    "description": "61404|A program that prepares individuals  under the supervision of physicians and other health care professionals  to draw blood samples from patients using a variety of intrusive procedures.  Includes instruction in basic vascular anatomy and physiology  blood physiology  skin puncture techniques  venipuncture  venous specimen collection and handling  safety and sanitation procedures  and applicable standards and regulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://docs.google.com/document/d/1rRLBYaRwBVQ3lUuzrBx9KRVUVh1YEVlDQf3G92LAmXY/edit?tab=t.0",
+   "provider_link": {
+    "url": "https://docs.google.com/document/d/1rRLBYaRwBVQ3lUuzrBx9KRVUVh1YEVlDQf3G92LAmXY/edit?tab=t.0",
+    "href": "https://docs.google.com/document/d/1rRLBYaRwBVQ3lUuzrBx9KRVUVh1YEVlDQf3G92LAmXY/edit?tab=t.0",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.1009",
    "soc_codes": [
@@ -5049,7 +6458,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "14171355",
+      "miles": 6.4
+     },
+     {
+      "id": "32692432",
+      "miles": 14.8
+     },
+     {
+      "id": "8507",
+      "miles": 15.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d0810-31e5-11f1-882e-00155dd2f085",
@@ -5058,6 +6484,17 @@
    "description": "72299|A program that prepares individuals  under the supervision of veterinarians  laboratory animal specialists  and zoological professionals  to provide patient management  care  and clinical procedures assistance as well as owner communication.  Includes instruction in animal nursing care  animal health and nutrition  animal handling  clinical pathology  radiology  anesthesiology  dental prophylaxis  surgical assisting  clinical laboratory procedures  office administration skills  patient and owner management  and applicable standards and regulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://docs.google.com/document/d/1zFY57NDasI-e-XJax9iYhu2VbBBVYtkfssaXNRAXIxM/edit?tab=t.0",
+   "provider_link": {
+    "url": "https://docs.google.com/document/d/1zFY57NDasI-e-XJax9iYhu2VbBBVYtkfssaXNRAXIxM/edit?tab=t.0",
+    "href": "https://docs.google.com/document/d/1zFY57NDasI-e-XJax9iYhu2VbBBVYtkfssaXNRAXIxM/edit?tab=t.0",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "1.8301",
    "soc_codes": [
@@ -5119,7 +6556,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "14171355",
+      "miles": 6.4
+     },
+     {
+      "id": "32692432",
+      "miles": 14.8
+     },
+     {
+      "id": "8507",
+      "miles": 15.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d082f-31e5-11f1-8898-00155dd2f085",
@@ -5128,6 +6582,17 @@
    "description": "75364|A program that prepares individuals to apply basic engineering principles and technical skills to the design and engineering of welding and joining systems and the implementation of welding processes.  Includes instruction in materials science  computer-aided design  welding design  welding processes  welding metallurgy  automation and robotics  and codes  inspections  testing  and quality assurance.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://adultschool.guhsd.net/Find-Your-Program/Career-Training/AWS-Welding-Certification/SMAW-Shield-Metal-Arc-Welding-STICKARC/index.html",
+   "provider_link": {
+    "url": "https://adultschool.guhsd.net/Find-Your-Program/Career-Training/AWS-Welding-Certification/SMAW-Shield-Metal-Arc-Welding-STICKARC/index.html",
+    "href": "https://adultschool.guhsd.net/Find-Your-Program/Career-Training/AWS-Welding-Certification/SMAW-Shield-Metal-Arc-Welding-STICKARC/index.html",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "15.0614",
    "soc_codes": [
@@ -5223,7 +6688,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "14171355",
+      "miles": 6.4
+     },
+     {
+      "id": "32692432",
+      "miles": 14.8
+     },
+     {
+      "id": "8507",
+      "miles": 15.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d084e-31e5-11f1-b062-00155dd2f085",
@@ -5232,6 +6714,17 @@
    "description": "61534|A program that prepares individuals to apply technical knowledge and skills to drive trucks and buses  delivery vehicles  for-hire vehicles and other commercial vehicles  or to instruct commerical vehicle operators. Includes instruction in operating gas  diesel  or electrically-powered vehicles  loading and unloading cargo or passengers  reporting delays or accidents on the road  verifying load against shipping papers  arranging transportation for personnel  and keeping records of receipts and fares.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://docs.google.com/document/d/12KEQZufu13FqEuH68JGuuneoBo_0aeBrufipwcjUo8c/edit?tab=t.0",
+   "provider_link": {
+    "url": "https://docs.google.com/document/d/12KEQZufu13FqEuH68JGuuneoBo_0aeBrufipwcjUo8c/edit?tab=t.0",
+    "href": "https://docs.google.com/document/d/12KEQZufu13FqEuH68JGuuneoBo_0aeBrufipwcjUo8c/edit?tab=t.0",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "49.0205",
    "soc_codes": [
@@ -5327,7 +6820,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "14171355",
+      "miles": 6.4
+     },
+     {
+      "id": "32692432",
+      "miles": 14.8
+     },
+     {
+      "id": "8507",
+      "miles": 15.8
+     }
+    ]
+   }
   },
   {
    "uuid": "f69d086c-31e5-11f1-b6d6-00155dd2f085",
@@ -5336,6 +6846,17 @@
    "description": "61402|A program that prepares individuals  under the supervision of pharmacists  to prepare medications  provide medications and related assistance to patients  and manage pharmacy clinical and business operations.  Includes instruction in medical and pharmaceutical terminology  principles of pharmacology and pharmaceutics  drug identification  pharmacy laboratory procedures  prescription interpretation  patient communication and education  safety procedures  record-keeping  measurement and testing techniques  pharmacy business operations  prescription preparation  logistics and dispensing operations  and applicable standards and regulations.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
+   "provider_link": {
+    "url": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
+    "href": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
+    "linked": true,
+    "label": "program_page",
+    "verdict": "alive",
+    "reason": "ok",
+    "checked_on": "2026-08-04",
+    "notice": null,
+    "substitution": null
+   },
    "entity_type": "Public",
    "cip_code": "51.0805",
    "soc_codes": [
@@ -5397,7 +6918,24 @@
      },
      "region": null
     }
-   ]
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "14171355",
+      "miles": 6.4
+     },
+     {
+      "id": "32692432",
+      "miles": 14.8
+     },
+     {
+      "id": "8507",
+      "miles": 15.8
+     }
+    ]
+   }
   }
  ]
 }

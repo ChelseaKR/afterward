@@ -10,13 +10,13 @@ from __future__ import annotations
 import json
 import time
 from collections import Counter
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any, Final
 
-from camino.sources import careeronestop, dol_etp, edd_lmi, link_check, soc_vintage
+from camino.sources import careeronestop, dol_etp, edd_lmi, link_check, local_help, soc_vintage
 
 DEFAULT_STATE = "CA"
 
@@ -144,6 +144,41 @@ class ProviderLinkCoverage:
     latest_check: str | None
 
 
+@dataclass(frozen=True)
+class LocalHelpCoverage:
+    """How many program pages can name a real office where the funding question is decided.
+
+    ``centers_loaded`` carries the one distinction everything else here depends on. ``None``
+    means this build did not read the federal centre directory at all -- no credentials, or
+    the endpoint could not be reached -- and every count below it is then a count of a search
+    that never happened. ``0`` would be a different claim entirely: that the directory
+    answered and California has no job centres in it. The same distinction is written on each
+    program record, where a null list means "not looked for" and an empty list means "looked
+    for, and none within the radius".
+
+    The program counts are counts of what shipped rather than of what was fetched, in the
+    same spirit as :func:`enrichment_coverage`: the only honest measure of this feature is
+    how many pages a reader will actually find an address on.
+
+    ``nearest_median_miles`` and ``nearest_farthest_miles`` are straight-line distances and
+    ``None`` rather than 0 when nothing could be measured.
+    """
+
+    centers_loaded: int | None
+    radius_miles: float
+    programs_searched: int
+    # Programs that could not be searched even though the directory was read, because the
+    # federal record gives them no coordinates. Its own number, never folded into
+    # "no centre nearby" -- one is a fact about California, the other about a filing.
+    programs_not_searched: int
+    programs_with_a_center: int
+    programs_with_none_within_radius: int
+    programs_with_a_comprehensive_center: int
+    programs_with_a_center_within_10_miles: int
+    nearest_median_miles: float | None
+    nearest_farthest_miles: float | None
+
+
 @dataclass
 class CoverageReport:
     """Honest accounting of what the data does and does not cover.
@@ -181,6 +216,9 @@ class CoverageReport:
     # What became of the provider links. All-unchecked, not absent, when the build read no
     # link report -- which is the CI case and a complete build.
     provider_links: ProviderLinkCoverage
+    # How many pages can name an America's Job Center. Present with a null `centers_loaded`,
+    # not absent, when the build had no credentials to read the directory with.
+    local_help: LocalHelpCoverage
 
     @property
     def outcome_coverage_pct(self) -> float:
@@ -486,6 +524,184 @@ def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCovera
         earliest_check=dates[0] if dates else None,
         latest_check=dates[-1] if dates else None,
     )
+
+
+# --------------------------------------------------------------------------------------
+# The next step
+#
+# Every program in this dataset was on California's Eligible Training Provider List when the
+# state last reported it, and under 20 CFR 680.410 that listing is the precondition for an
+# Individual Training Account paying a provider for someone's training. A page that ends at
+# the price leaves that unsaid, and the person who would most benefit from knowing it is the
+# person least likely to be told anywhere else.
+#
+# This site cannot determine anybody's eligibility and must never appear to -- that is done
+# by a one-stop centre after an interview (20 CFR 680.220). What it can do is name the
+# nearest offices where the question is answered. Those come from one statewide read of the
+# federal finder, ranked locally, exactly as `camino.sources.local_help` was built to be
+# used: 183 centres in one request, not 227 requests for the same 183.
+# --------------------------------------------------------------------------------------
+
+CENTER_RADIUS_MILES: Final = 25.0
+"""How far away an office may be and still be published as somewhere to ask.
+
+Chosen from the measured distribution rather than picked. 3,234 of California's 3,266
+program pages have a centre inside it and the median page's nearest is about three miles;
+widening it to 50 would gain the last 32 pages at the price of offering somebody a mountain
+pass as "nearby". The 32 are told plainly that there is none within this distance, and given
+the statewide finder instead, which is a better answer than a two-hour drive presented as a
+local office.
+
+Straight-line, so it is generous rather than conservative wherever the road is not.
+"""
+
+NEAREST_CENTERS: Final = 3
+"""How many centres to publish per program.
+
+One is a single point of failure: a phone nobody answers, an office open two mornings a
+week, a site that turns out to be the wrong side of a county line. Three is enough to make a
+second call and few enough not to be a directory.
+"""
+
+CLOSE_ENOUGH_MILES: Final = 10.0
+"""Reported in coverage as the band that is plausibly reachable without a car."""
+
+
+def fetch_job_centers(
+    state: str = DEFAULT_STATE, *, cache_dir: Path | None = COS_CACHE_DIR
+) -> tuple[local_help.AmericanJobCenter, ...] | None:
+    """Every America's Job Center the federal finder holds for ``state``, in one request.
+
+    ``None`` means this build established nothing about where the centres are -- no
+    credentials are configured, or the endpoint could not be read. That is the CI case and a
+    complete build: the pages then carry the funding route and the statewide finder without
+    claiming anything about what is nearby. An empty tuple would be the other thing entirely,
+    and neither is ever rendered as the other.
+
+    Centres outside the state are dropped. A border search legitimately returns them -- the
+    nearest office to Blythe is in Arizona -- but an Individual Training Account is opened by
+    a California local board, so an out-of-state office is not an answer to the question this
+    dataset is attaching it to. Nothing is lost today: all 183 California records carry
+    ``CA``.
+    """
+    centers = local_help.fetch_centers(state, cache_dir=cache_dir)
+    if centers is None:
+        return None
+    return tuple(
+        center for center in centers if (center.state or "").casefold() == state.casefold()
+    )
+
+
+def local_help_block(
+    location: Mapping[str, Any], centers: Sequence[local_help.AmericanJobCenter] | None
+) -> dict[str, Any]:
+    """The nearest centres to one program, or the record that none were looked for.
+
+    ``centers`` is a list of ``{"id", "miles"}`` rather than whole records: the same three
+    offices are the nearest ones to hundreds of programs, and copying 183 addresses across
+    3,266 files to say so would add megabytes to a dataset meant to be served to phones. The
+    directory itself is published once, in ``coverage.json``, and these point into it.
+
+    Three states, never collapsed into two:
+
+    * ``None`` -- nothing was looked for. Either no directory was read, or this program's own
+      record carries no coordinates to search from.
+    * ``[]`` -- looked for, and there is no centre within :data:`CENTER_RADIUS_MILES`.
+    * a list -- the nearest ones, closest first.
+
+    ``miles`` is rounded to a tenth because it is a great-circle distance being offered to
+    somebody deciding whether to travel, and further precision would be a claim about roads
+    this has not measured.
+    """
+    if centers is None:
+        return {"radius_miles": CENTER_RADIUS_MILES, "centers": None}
+
+    lat, lon = location.get("lat"), location.get("lon")
+    if lat is None or lon is None:
+        return {"radius_miles": CENTER_RADIUS_MILES, "centers": None}
+
+    nearby = local_help.nearest_centers(
+        centers, lat, lon, limit=NEAREST_CENTERS, within_miles=CENTER_RADIUS_MILES
+    )
+    return {
+        "radius_miles": CENTER_RADIUS_MILES,
+        "centers": [
+            {
+                "id": found.center.center_id,
+                "miles": None if found.miles is None else round(found.miles, 1),
+            }
+            for found in nearby
+        ],
+    }
+
+
+def _attach_local_help(
+    payloads: list[dict[str, Any]], centers: Sequence[local_help.AmericanJobCenter] | None
+) -> None:
+    """Write every record's nearest centres, in place.
+
+    Always written, like the cohort verdict and the link decision, so that a consumer can
+    tell "this build looked and found nothing" from "this record predates the field".
+    """
+    for payload in payloads:
+        payload["local_help"] = local_help_block(payload["location"], centers)
+
+
+def local_help_coverage(
+    payloads: list[dict[str, Any]], centers: Sequence[local_help.AmericanJobCenter] | None
+) -> LocalHelpCoverage:
+    """Count what became of the centres, from the emitted records rather than the fetch."""
+    # `is True`, not truthiness: a centre the directory left unlabelled is not an affiliate,
+    # it is a centre nobody classified, and it must not be counted as either.
+    comprehensive = {c.center_id for c in centers or () if c.is_comprehensive is True}
+    attached = [payload["local_help"]["centers"] for payload in payloads]
+    searched = [rows for rows in attached if rows is not None]
+    found = [rows for rows in searched if rows]
+    nearest = sorted(rows[0]["miles"] for rows in found if rows[0]["miles"] is not None)
+    return LocalHelpCoverage(
+        centers_loaded=None if centers is None else len(centers),
+        radius_miles=CENTER_RADIUS_MILES,
+        programs_searched=len(searched),
+        programs_not_searched=len(attached) - len(searched),
+        programs_with_a_center=len(found),
+        programs_with_none_within_radius=len(searched) - len(found),
+        programs_with_a_comprehensive_center=sum(
+            1 for rows in found if any(row["id"] in comprehensive for row in rows)
+        ),
+        programs_with_a_center_within_10_miles=sum(1 for m in nearest if m <= CLOSE_ENOUGH_MILES),
+        nearest_median_miles=_median(nearest),
+        nearest_farthest_miles=nearest[-1] if nearest else None,
+    )
+
+
+def local_help_document(
+    coverage: LocalHelpCoverage,
+    centers: Sequence[local_help.AmericanJobCenter] | None,
+    payloads: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """The whole next-step block, as ``coverage.json`` carries it.
+
+    ``guidance`` is present on every build, credentials or not: what the Workforce Innovation
+    and Opportunity Act route is, and what to ask about it, does not depend on whether this
+    machine could reach a directory of offices. It arrives from
+    :func:`camino.sources.local_help.funding_guidance`, which is the only way to obtain the
+    steps, so the sentence naming who actually decides eligibility cannot be emitted apart
+    from them.
+
+    ``centers`` is the directory itself, published once and pointed into by every program
+    record. ``cities`` is the coverage measurement behind the claim that there is an office
+    near almost everywhere this dataset publishes a program -- measured, not asserted, and
+    null on a build that measured nothing.
+    """
+    guidance = local_help.funding_guidance()
+    places = local_help.places_from_programs(payloads)
+    return asdict(coverage) | {
+        "guidance": guidance.as_dict(),
+        "centers": None if centers is None else [center.as_dict() for center in centers],
+        "cities": None
+        if centers is None
+        else local_help.measure_coverage(centers, places).as_dict(),
+    }
 
 
 def index_occupations(
@@ -919,6 +1135,7 @@ def program_payload(
     city_areas: Mapping[str, edd_lmi.ProjectionArea] | None = None,
     cohort: dol_etp.CohortIntegrity | None = None,
     link_checks: Mapping[str, link_check.LinkCheck] | None = None,
+    centers: Sequence[local_help.AmericanJobCenter] | None = None,
 ) -> dict[str, Any]:
     """One program record, with its outcomes labelled by who they actually describe.
 
@@ -931,6 +1148,10 @@ def program_payload(
     ``link_checks`` comes from a separate, explicitly-invoked pass over the provider URLs.
     Omitting it is the ordinary case -- CI has no network -- and produces a record that
     publishes its link exactly as the federal feed filed it, claiming nothing about it.
+
+    ``centers`` is the state's America's Job Centers, read once for the whole build. Omitting
+    it produces a record whose ``local_help.centers`` is null: nowhere was looked for, which
+    is not the same as nowhere being near.
     """
     integrity = (
         cohort
@@ -1003,6 +1224,9 @@ def program_payload(
             "cohort": integrity.as_dict(),
         },
         "occupations": matched,
+        # Where a person can ask whether somebody else will pay for this. Points into the
+        # centre directory published once in coverage.json; null means not looked for.
+        "local_help": local_help_block({"lat": program.lat, "lon": program.lon}, centers),
     }
 
 
@@ -1322,8 +1546,16 @@ def build_offline(
     snapshot = programs_doc["snapshot_date"]
     _attach_cohort_integrity(payloads)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
+    # No centres are looked up here, for the same reason no links are checked: this is the
+    # hermetic build, and a distance copied out of another machine's read would be an
+    # observation this build did not make. The pages it produces carry the funding route and
+    # the statewide finder, and claim nothing about what is near any particular city.
+    _attach_local_help(payloads, None)
     coverage["cohort_integrity"] = asdict(cohort_integrity_coverage(payloads))
     coverage["provider_links"] = asdict(provider_link_coverage(payloads))
+    coverage["local_help"] = local_help_document(
+        local_help_coverage(payloads, None), None, payloads
+    )
     coverage["peer_medians"] = peer_medians(payloads)
 
     for name, document in (
@@ -1377,8 +1609,13 @@ def build(
     # a provider's programs, and a provider filing many impossible ones, are both invisible
     # from inside a single row.
     integrity = dol_etp.cohort_integrity([dol_etp.CohortFiling.of(p) for p in programs])
+    # One statewide read for every program, cached on disk like the occupation enrichment.
+    # None with no credentials, which is a complete build carrying no distance claims.
+    centers = fetch_job_centers(state, cache_dir=COS_CACHE_DIR)
     payloads = [
-        program_payload(p, occupations, city_areas, cohort=c, link_checks=link_checks)
+        program_payload(
+            p, occupations, city_areas, cohort=c, link_checks=link_checks, centers=centers
+        )
         for p, c in zip(programs, integrity, strict=True)
     ]
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
@@ -1411,6 +1648,7 @@ def build(
         cohort_integrity=cohort_integrity_coverage(payloads),
         enrichment=enrichment_coverage(occupations),
         provider_links=provider_link_coverage(payloads),
+        local_help=local_help_coverage(payloads, centers),
     )
 
     (output_dir / "programs.json").write_text(
@@ -1431,6 +1669,10 @@ def build(
                 "area_match_pct": report.area_match_pct,
                 "areas": area_coverage(payloads, areas),
                 "unmapped_cities": unmapped_cities(payloads),
+                # The counts, plus the centre directory the program records point into and
+                # the guidance the site publishes with them. Overrides the plain counts
+                # `asdict(report)` already wrote under this key.
+                "local_help": local_help_document(report.local_help, centers, payloads),
                 # DOL's own statewide aggregate. Kept as published context, but NOT used
                 # for per-program comparison: it is computed on a different basis (27%
                 # employed against a 69% median among reporting programs).

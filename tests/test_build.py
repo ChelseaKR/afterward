@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import ClassVar
+from typing import Any, ClassVar
 
 import httpx
 import pytest
@@ -16,6 +16,7 @@ from camino.build import (
     RELATED_SOURCE_SOC_SIBLINGS,
     EnrichmentCoverage,
     LinkCheckRun,
+    _attach_local_help,
     aggregate_match_coverage,
     area_coverage,
     build_offline,
@@ -24,8 +25,12 @@ from camino.build import (
     detailed_soc_codes,
     enrichment_coverage,
     fetch_enrichment,
+    fetch_job_centers,
     index_occupations,
     load_link_checks,
+    local_help_block,
+    local_help_coverage,
+    local_help_document,
     match_occupations,
     peer_medians,
     program_payload,
@@ -49,6 +54,7 @@ from camino.sources.link_check import (
     Reason,
     checks_document,
 )
+from camino.sources.local_help import COMPREHENSIVE, WHO_DECIDES, AmericanJobCenter
 
 FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "data"
 
@@ -1379,3 +1385,209 @@ class TestOfflineBuildLinks:
         for program in suppressed:
             assert program["provider_link"]["linked"] is False
             assert program["provider_link"]["notice"] == NOTICE_UNREACHABLE
+
+
+# --------------------------------------------------------------------------------------
+# The next step
+#
+# The one feature on this site whose failure mode is somebody losing a morning's pay. A
+# person reads that a program was on California's Eligible Training Provider List, walks
+# into an office expecting the training to be paid for, and is told no. These tests are
+# about the two things that keep the distance between those sentences visible: a centre this
+# build never looked for must never render as a centre that is not there, and the sentence
+# saying who actually decides must not be separable from the steps it qualifies.
+# --------------------------------------------------------------------------------------
+
+
+def _center(
+    center_id: str,
+    lat: float | None,
+    lon: float | None,
+    *,
+    comprehensive: bool = True,
+    state: str | None = "CA",
+) -> AmericanJobCenter:
+    return AmericanJobCenter(
+        center_id=center_id,
+        name=f"{center_id} AJCC",
+        address=("1 Main St",),
+        city="Somewhere",
+        state=state,
+        postal_code="90000",
+        phone="555-0100",
+        email=None,
+        website=None,
+        hours="Mon-Fri 9-5",
+        center_type=COMPREHENSIVE if comprehensive else "Affiliate Center",
+        lat=lat,
+        lon=lon,
+        veterans_representative=None,
+        temporarily_closed=None,
+        closure_note=None,
+        worker_services=(),
+        youth_services=(),
+        last_updated=None,
+    )
+
+
+SACRAMENTO = (38.5816, -121.4944)
+CENTERS = (
+    _center("near", 38.56, -121.47),
+    _center("mid", 38.40, -121.30, comprehensive=False),
+    _center("far", 38.35, -121.25),
+    _center("hundreds-of-miles-away", 32.71, -117.16),
+)
+
+
+def _at(lat: float | None, lon: float | None) -> dict[str, Any]:
+    return {"lat": lat, "lon": lon}
+
+
+class TestLocalHelpOnProgramRecords:
+    def test_publishes_the_nearest_centers_closest_first(self) -> None:
+        block = local_help_block(_at(*SACRAMENTO), CENTERS)
+        assert [row["id"] for row in block["centers"]] == ["near", "mid", "far"]
+        assert block["centers"][0]["miles"] < block["centers"][1]["miles"]
+
+    def test_publishes_ids_rather_than_copies_of_the_directory(self) -> None:
+        """The same three offices are nearest to hundreds of programs.
+
+        Copying the addresses into every record would put megabytes of duplicated text into a
+        dataset meant to be served to phones. The directory is published once in coverage.json
+        and these point into it.
+        """
+        row = local_help_block(_at(*SACRAMENTO), CENTERS)["centers"][0]
+        assert set(row) == {"id", "miles"}
+
+    def test_a_center_beyond_the_radius_is_not_offered(self) -> None:
+        block = local_help_block(_at(*SACRAMENTO), CENTERS)
+        assert "hundreds-of-miles-away" not in [row["id"] for row in block["centers"]]
+
+    def test_no_center_nearby_is_an_empty_list_not_a_null(self) -> None:
+        """The distinction the whole feature rests on.
+
+        A null here means nothing was looked for, and a page renders it as "we have not
+        established which offices are nearest". An empty list means the search ran and
+        California has nothing within the radius -- true of 32 of its 3,266 programs, and a
+        finding those pages state rather than swallow.
+        """
+        block = local_help_block(_at(41.75, -124.20), CENTERS)
+        assert block["centers"] == []
+
+    def test_no_directory_is_a_null_rather_than_an_empty_list(self) -> None:
+        assert local_help_block(_at(*SACRAMENTO), None)["centers"] is None
+
+    def test_a_program_with_no_coordinates_is_not_searched(self) -> None:
+        # Not "there is nothing near it": there is nowhere to search from.
+        assert local_help_block(_at(None, None), CENTERS)["centers"] is None
+        assert local_help_block(_at(38.5, None), CENTERS)["centers"] is None
+
+    def test_distance_is_rounded_to_a_tenth(self) -> None:
+        # A great-circle distance offered to somebody deciding whether to travel. More
+        # precision than this would be a claim about roads nothing here has measured.
+        miles = local_help_block(_at(*SACRAMENTO), CENTERS)["centers"][0]["miles"]
+        assert miles == round(miles, 1)
+
+    def test_a_program_record_carries_the_block_even_with_no_centers(self) -> None:
+        program = parse_program({"_source": {"field_uuid": "u1"}})
+        payload = program_payload(program, _occupations())
+        assert payload["local_help"]["centers"] is None
+        assert payload["local_help"]["radius_miles"] > 0
+
+
+class TestFetchJobCenters:
+    def test_returns_none_without_credentials(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """CI has none, and a build that dies for want of an office finder helps nobody."""
+        monkeypatch.delenv(USER_ID_ENV, raising=False)
+        monkeypatch.delenv(TOKEN_ENV, raising=False)
+        assert fetch_job_centers("CA") is None
+
+    def test_drops_centers_outside_the_state(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The nearest office to Blythe is in Arizona, and it cannot open a California account.
+
+        Correct of the finder to return it, wrong of this dataset to attach it to a California
+        program as the place to ask about California money.
+        """
+        monkeypatch.setattr(
+            "camino.build.local_help.fetch_centers",
+            lambda *a, **k: (*CENTERS, _center("phoenix", 33.45, -112.07, state="AZ")),
+        )
+        found = fetch_job_centers("CA")
+        assert found is not None
+        assert "phoenix" not in [c.center_id for c in found]
+
+
+class TestLocalHelpCoverage:
+    def _payloads(self, centers: tuple[AmericanJobCenter, ...] | None) -> list[dict[str, Any]]:
+        places = [
+            ("Sacramento", *SACRAMENTO),
+            ("Davis", 38.60, -121.50),
+            ("Crescent City", 41.75, -124.20),
+            ("Nowhere", None, None),
+        ]
+        payloads = [{"location": {"city": city, **_at(lat, lon)}} for city, lat, lon in places]
+        _attach_local_help(payloads, centers)
+        return payloads
+
+    def test_counts_what_the_pages_actually_carry(self) -> None:
+        coverage = local_help_coverage(self._payloads(CENTERS), CENTERS)
+        assert coverage.centers_loaded == len(CENTERS)
+        assert coverage.programs_searched == 3
+        assert coverage.programs_with_a_center == 2
+        assert coverage.programs_with_none_within_radius == 1
+        assert coverage.programs_not_searched == 1
+
+    def test_a_build_that_did_not_look_reports_null_rather_than_zero_centers(self) -> None:
+        """`0` would say the directory answered and California has no job centres in it."""
+        coverage = local_help_coverage(self._payloads(None), None)
+        assert coverage.centers_loaded is None
+        assert coverage.programs_searched == 0
+        assert coverage.nearest_median_miles is None
+        assert coverage.nearest_farthest_miles is None
+
+    def test_counts_a_comprehensive_center_separately(self) -> None:
+        # An affiliate site need not provide access to every partner program (20 CFR 678.310),
+        # so "there is an office" and "there is an office that can do all of it" differ.
+        coverage = local_help_coverage(self._payloads(CENTERS), CENTERS)
+        assert coverage.programs_with_a_comprehensive_center == 2
+
+    def test_the_document_always_carries_the_guidance(self) -> None:
+        """Credentials decide whether we know where the offices are, not what the rules are."""
+        payloads = self._payloads(None)
+        document = local_help_document(local_help_coverage(payloads, None), None, payloads)
+        assert document["centers"] is None
+        assert document["cities"] is None
+        assert document["guidance"]["steps"]
+        assert document["guidance"]["who_decides"]
+
+    def test_the_document_cannot_carry_steps_without_saying_who_decides(self) -> None:
+        """The structural guarantee, checked at the point it reaches the dataset.
+
+        `funding_guidance()` is the only way to obtain the steps and the disclaimer is a field
+        of what it returns, so a pipeline cannot emit one without the other. This asserts the
+        property survives serialisation, which is where it would otherwise be lost.
+        """
+        payloads = self._payloads(CENTERS)
+        document = local_help_document(local_help_coverage(payloads, CENTERS), CENTERS, payloads)
+        assert document["guidance"]["who_decides"] == WHO_DECIDES
+        assert [s["id"] for s in document["guidance"]["steps"] if s["on_program_page"]]
+        assert document["cities"]["places_located"] >= 1
+
+
+class TestOfflineBuildLocalHelp:
+    def test_no_page_claims_a_nearby_office(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        programs = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        assert programs
+        for program in programs:
+            assert program["local_help"]["centers"] is None
+
+    def test_the_funding_guidance_still_ships(self, tmp_path: Path) -> None:
+        """The route to funding does not depend on this machine reaching a list of offices."""
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        coverage = json.loads((tmp_path / "coverage.json").read_text(encoding="utf-8"))
+        guidance = coverage["local_help"]["guidance"]
+        assert guidance["who_decides"] == WHO_DECIDES
+        assert guidance["questions"]
+        assert guidance["finders"]
+        assert coverage["local_help"]["centers_loaded"] is None

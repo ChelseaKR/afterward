@@ -7,7 +7,12 @@ import { allProgramIds, getCoverage, getOccupation, getProgram } from "@/lib/dat
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
 import type {
+  AmericanJobCenter,
   EducationLevelShare,
+  FundingCitation,
+  FundingQuestion,
+  FundingStep,
+  LocalHelp,
   OccupationEducation,
   OccupationTask,
   Program,
@@ -834,6 +839,419 @@ function Attainment({
   );
 }
 
+/* ============================================================================================
+ * Someone else may be able to pay for this
+ *
+ * Every program on this site was on California's Eligible Training Provider List when the state
+ * last reported it, and under 20 CFR 680.410 that listing is the precondition for an Individual
+ * Training Account paying for it. Until now the page said nothing about it: a reader who could
+ * have had this program funded left with a price and, for 334 of these pages, a dead link.
+ *
+ * Three things this block must never become.
+ *
+ * It must never read as a promise. Eligibility is determined by a one-stop centre after an
+ * interview and assessment (20 CFR 680.220), priority is fixed at that first appointment, WIOA
+ * money is the last money in (680.230), and a local area that has spent its year's training
+ * funds is not obliged to refer anybody (680.340(c)). The words that stay on the right side of
+ * that line are not written in this file — they come from `camino.sources.local_help` through
+ * `lib/i18n.ts`, where a test scans them for phrasing that turns a description of a public
+ * program into a promise to one reader.
+ *
+ * It must never say a program *is* funded. `fundingLede` is stamped with the snapshot date and
+ * says "was on the list", because listings are annual and can lapse.
+ *
+ * And `who_decides` must run underneath all of it, uncollapsed. It is a required field of the
+ * object that carries the steps rather than a constant beside them, precisely so that a template
+ * cannot render the steps and forget it — the failure this feature has is somebody taking a
+ * morning off work for a "no", and the difference between that being a disappointment and being
+ * this site's fault is whether it was clear from the start who decides. It is a plain paragraph
+ * below, never a <details>, and never in the footer.
+ * ========================================================================================== */
+
+/**
+ * The localised text for each claim the pipeline publishes, keyed by the claim's stable id.
+ *
+ * Keyed by id rather than by position, because a step inserted upstream would otherwise
+ * silently re-point every translation after it, and keyed on ids rather than on the English so
+ * that a comma moving does not orphan a Spanish sentence.
+ *
+ * A claim with no entry here falls back to the pipeline's English. That is deliberately the
+ * weakest of the three possible behaviours to leave in place — dropping the claim would silently
+ * withhold something about money from exactly one language, and crashing would take down the
+ * export — and it is unreachable in a passing build: a Python test fails when the module
+ * publishes a string this file cannot render.
+ */
+const STEP_COPY: Record<string, (t: Copy) => { heading: string; detail: string }> = {
+  ita: (t) => ({ heading: t.fundingHeading, detail: t.fundingIta }),
+  where_to_ask: (t) => ({ heading: t.fundingCentersHeading, detail: t.fundingCenters }),
+  who_can_be_served: (t) => ({
+    heading: t.fundingWhoCanBeServedHeading,
+    detail: t.fundingWhoCanBeServed,
+  }),
+  say_your_priority_status: (t) => ({
+    heading: t.fundingPriorityHeading,
+    detail: t.fundingPriority,
+  }),
+  supportive_services: (t) => ({ heading: t.fundingSupportHeading, detail: t.fundingSupport }),
+  local_and_annual: (t) => ({ heading: t.fundingLocalHeading, detail: t.fundingLocal }),
+};
+
+const QUESTION_COPY: Record<string, (t: Copy) => { ask: string; because: string }> = {
+  etpl_now: (t) => ({ ask: t.fundingAskEtplNow, because: t.fundingWhyEtplNow }),
+  full_price: (t) => ({ ask: t.fundingAskFullPrice, because: t.fundingWhyFullPrice }),
+  credential: (t) => ({ ask: t.fundingAskCredential, because: t.fundingWhyCredential }),
+  withdrawal: (t) => ({ ask: t.fundingAskWithdrawal, because: t.fundingWhyWithdrawal }),
+  schedule: (t) => ({ ask: t.fundingAskSchedule, because: t.fundingWhySchedule }),
+  funding_stream: (t) => ({ ask: t.fundingAskFundingStream, because: t.fundingWhyFundingStream }),
+  local_demand: (t) => ({ ask: t.fundingAskLocalDemand, because: t.fundingWhyLocalDemand }),
+  ita_cap: (t) => ({ ask: t.fundingAskItaCap, because: t.fundingWhyItaCap }),
+  self_sufficiency: (t) => ({
+    ask: t.fundingAskSelfSufficiency,
+    because: t.fundingWhySelfSufficiency,
+  }),
+  out_of_area: (t) => ({ ask: t.fundingAskOutOfArea, because: t.fundingWhyOutOfArea }),
+  funds_left: (t) => ({ ask: t.fundingAskFundsLeft, because: t.fundingWhyFundsLeft }),
+  other_grants_first: (t) => ({
+    ask: t.fundingAskOtherGrantsFirst,
+    because: t.fundingWhyOtherGrantsFirst,
+  }),
+  support_costs: (t) => ({ ask: t.fundingAskSupportCosts, because: t.fundingWhySupportCosts }),
+  what_to_bring: (t) => ({ ask: t.fundingAskWhatToBring, because: t.fundingWhyWhatToBring }),
+};
+
+/** The step whose heading opens the block, so it is not printed twice. */
+const LEAD_STEP = "ita";
+
+/** The step the offices belong under: it is the one that says what an office is. */
+const CENTERS_STEP = "where_to_ask";
+
+function stepCopy(step: FundingStep, t: Copy): { heading: string; detail: string } {
+  return STEP_COPY[step.id]?.(t) ?? { heading: step.heading, detail: step.detail };
+}
+
+function questionCopy(question: FundingQuestion, t: Copy): { ask: string; because: string } {
+  return QUESTION_COPY[question.id]?.(t) ?? { ask: question.ask, because: question.because };
+}
+
+/**
+ * The rules a claim rests on, as links a reader can open.
+ *
+ * Every claim on this block is about somebody else's money and somebody else's rules, so none of
+ * it is published without the citation the pipeline attached to it. The labels are the official
+ * titles of federal regulations and state pages, which exist in English only; the note at the
+ * foot of the block says so rather than leaving a Spanish reader to wonder.
+ */
+function Citations({ citations, label }: { citations: FundingCitation[]; label: string }) {
+  if (citations.length === 0) return null;
+  return (
+    <p className="funding-cite">
+      <span className="funding-cite-label">{label}</span>{" "}
+      {citations.map((citation, index) => (
+        <span key={citation.url}>
+          {index > 0 ? " · " : ""}
+          <a href={citation.url} rel="nofollow noopener noreferrer" target="_blank">
+            {citation.label}
+          </a>
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/**
+ * A dialable form of a published phone number, or null.
+ *
+ * Only digits and a leading `+` reach the href: the number is a third-party string arriving from
+ * a federal API, and a `tel:` URL is somewhere a stray character does not belong. Ten digits are
+ * assumed to be North American and given a country code so the link works from a mobile abroad;
+ * anything else is passed through as digits rather than guessed at.
+ */
+function telHref(phone: string): string | null {
+  const digits = phone.replace(/[^0-9]/g, "");
+  if (digits.length === 0) return null;
+  return digits.length === 10 ? `tel:+1${digits}` : `tel:${digits}`;
+}
+
+/**
+ * One office, phone first.
+ *
+ * Phone before address because it is the only channel populated for all 183 California centres,
+ * and because the state's own advice is to ring before travelling — its staff are not physically
+ * present at every location. Everything else is rendered only where the directory published it:
+ * a blank here is an unfilled field, and a rendered blank beside a label reads as a claim that
+ * the office does not have one.
+ *
+ * `veterans_representative` is shown only when it is true. False and null both render as nothing,
+ * because "no veterans' representative" would be a claim about an office that a missing box does
+ * not support, and it is a claim that stops a veteran from going.
+ */
+function CenterCard({
+  center,
+  miles,
+  lang,
+}: {
+  center: AmericanJobCenter;
+  miles: number | null;
+  lang: Lang;
+}) {
+  const t = dict(lang);
+  const tel = center.phone === null ? null : telHref(center.phone);
+  const place = [center.city, center.state].filter((part) => part !== null).join(", ");
+  const label =
+    center.is_comprehensive === true
+      ? t.fundingComprehensive
+      : center.is_comprehensive === false
+        ? t.fundingAffiliate
+        : null;
+
+  return (
+    <li className="center">
+      <p className="center-name">
+        <strong>{center.name}</strong>
+        {label !== null && <span className="center-type">{label}</span>}
+      </p>
+
+      {center.phone !== null && (
+        <p className="center-phone">
+          <span>{t.fundingPhone}: </span>
+          {tel === null ? center.phone : <a href={tel}>{center.phone}</a>}
+        </p>
+      )}
+
+      <p className="center-address">
+        {center.address.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+        {place.length > 0 && (
+          <span>
+            {place}
+            {center.postal_code === null ? "" : ` ${center.postal_code}`}
+          </span>
+        )}
+        {miles !== null && <span className="center-miles">{t.fundingMilesAway(miles)}</span>}
+      </p>
+
+      {center.hours !== null && (
+        <p className="center-hours">
+          {t.fundingHours}: {center.hours}
+        </p>
+      )}
+      {center.temporarily_closed === true && (
+        <p className="center-closed">
+          <strong>{t.fundingClosed}</strong>
+          {center.closure_note === null ? "" : ` ${center.closure_note}`}
+        </p>
+      )}
+      {center.veterans_representative === true && (
+        <p className="center-veterans">{t.fundingVeteransRep}</p>
+      )}
+    </li>
+  );
+}
+
+/*
+ * The centre directory, indexed once per export worker rather than once per page.
+ *
+ * `getCoverage()` returns the same frozen object to all 6,532 program pages, so the index is
+ * keyed on that array's identity: a dev server that rebuilds `public/data` underneath itself
+ * hands back a different array and gets a fresh index, rather than resolving ids against the
+ * previous dataset's offices.
+ */
+let centerIndex: { source: AmericanJobCenter[]; byId: Map<string, AmericanJobCenter> } | null = null;
+
+function centersById(centers: AmericanJobCenter[]): Map<string, AmericanJobCenter> {
+  if (centerIndex === null || centerIndex.source !== centers) {
+    centerIndex = { source: centers, byId: new Map(centers.map((c) => [c.id, c])) };
+  }
+  return centerIndex.byId;
+}
+
+/**
+ * The offices nearest this program, or an honest account of why there are none listed.
+ *
+ * Three states, and they are not two. A null list means nothing was established — no directory
+ * was read, or this program's record carries no coordinates to search from. An empty list means
+ * the search ran and there is no centre within the published radius, which is true of 32 of
+ * California's 3,266 programs and is a real finding those pages should state rather than swallow.
+ * A populated list is the nearest three. The statewide finder is offered in all three cases,
+ * because it is the answer that is always true.
+ */
+function NearestCenters({
+  program,
+  localHelp,
+  lang,
+}: {
+  program: Program;
+  localHelp: LocalHelp;
+  lang: Lang;
+}) {
+  const t = dict(lang);
+  const nearby = program.local_help?.centers ?? null;
+  const radius = program.local_help?.radius_miles ?? localHelp.radius_miles;
+  const directory = localHelp.centers === null ? null : centersById(localHelp.centers);
+
+  const found =
+    nearby === null || directory === null
+      ? null
+      : nearby
+          .map((row) => ({ center: directory.get(row.id), miles: row.miles }))
+          .filter((row): row is { center: AmericanJobCenter; miles: number | null } =>
+            Boolean(row.center),
+          );
+
+  return (
+    <>
+      {found === null ? (
+        <p>{t.fundingCentersNotChecked}</p>
+      ) : found.length === 0 ? (
+        <p>{t.fundingCentersNone(radius)}</p>
+      ) : (
+        <>
+          <ul className="center-list">
+            {found.map((row) => (
+              <CenterCard
+                key={row.center.id}
+                center={row.center}
+                miles={row.miles}
+                lang={lang}
+              />
+            ))}
+          </ul>
+          <p className="compare-note">{t.fundingDistanceNote}</p>
+        </>
+      )}
+
+      <p className="funding-finders">
+        {t.fundingFindersIntro}
+        <br />
+        {localHelp.guidance.finders.map((finder, index) => (
+          <span key={finder.url}>
+            {index > 0 ? " · " : ""}
+            <a href={finder.url} rel="nofollow noopener noreferrer" target="_blank">
+              {finder.label}
+            </a>
+          </span>
+        ))}
+      </p>
+    </>
+  );
+}
+
+/** The questions worth asking, split by who can answer them, collapsed but never omitted. */
+function Questions({
+  questions,
+  heading,
+  lang,
+}: {
+  questions: FundingQuestion[];
+  heading: string;
+  lang: Lang;
+}) {
+  const t = dict(lang);
+  if (questions.length === 0) return null;
+
+  return (
+    <details className="funding-questions">
+      <summary>
+        {heading} ({questions.length})
+      </summary>
+      <ol>
+        {questions.map((question) => {
+          const copy = questionCopy(question, t);
+          return (
+            <li key={question.id}>
+              <p className="funding-ask">
+                <strong>{copy.ask}</strong>
+              </p>
+              <p>{copy.because}</p>
+              <Citations citations={question.citations} label={t.fundingRuleLabel} />
+            </li>
+          );
+        })}
+      </ol>
+    </details>
+  );
+}
+
+function FundingBlock({
+  program,
+  localHelp,
+  snapshot,
+  lang,
+}: {
+  program: Program;
+  localHelp: LocalHelp;
+  snapshot: string;
+  lang: Lang;
+}) {
+  const t = dict(lang);
+  const steps = localHelp.guidance.steps.filter((step) => step.on_program_page);
+  const lead = steps.find((step) => step.id === LEAD_STEP);
+  const rest = steps.filter((step) => step.id !== LEAD_STEP);
+
+  return (
+    <section className="funding">
+      <h2>{lead === undefined ? t.fundingHeading : stepCopy(lead, t).heading}</h2>
+
+      {/*
+        Spanish only, and above everything rather than under it. This section is about money
+        and eligibility, its readers are the ones an error hurts most, and it has not had a
+        native reviewer. A reader is entitled to know that before they read it, not after.
+        The English page needs no such note because English is the text being referred to.
+      */}
+      {lang === "es" && <p className="funding-translation-note">{t.fundingTranslationNote}</p>}
+
+      {/*
+        * The program-specific sentence, and the only one carrying a date. "Was on the list when
+        * the state last reported" is the claim the data supports; "is eligible for funding" is
+        * not, and listings lapse.
+        */}
+      <p className="funding-lede">{t.fundingLede(snapshot)}</p>
+      {lead !== undefined && (
+        <>
+          <p>{stepCopy(lead, t).detail}</p>
+          <Citations citations={lead.citations} label={t.fundingRuleLabel} />
+        </>
+      )}
+
+      {rest.map((step) => {
+        const copy = stepCopy(step, t);
+        return (
+          <section key={step.id} className="funding-step">
+            <h3>{copy.heading}</h3>
+            <p>{copy.detail}</p>
+            <Citations citations={step.citations} label={t.fundingRuleLabel} />
+            {/* The offices sit under the heading that names them, not in a section of their own. */}
+            {step.id === CENTERS_STEP && (
+              <NearestCenters program={program} localHelp={localHelp} lang={lang} />
+            )}
+          </section>
+        );
+      })}
+
+      <h3>{t.fundingQuestionsHeading}</h3>
+      <Questions
+        questions={localHelp.guidance.questions.filter((q) => q.audience === "job_center")}
+        heading={t.fundingQuestionsJobCenter}
+        lang={lang}
+      />
+      <Questions
+        questions={localHelp.guidance.questions.filter((q) => q.audience === "provider")}
+        heading={t.fundingQuestionsProvider}
+        lang={lang}
+      />
+
+      {/*
+        * Never inside a <details>, never moved to the footer, and never conditional on anything
+        * above it having rendered. Everything in this block is a description of a public program;
+        * this is the sentence that says it is not an offer, and it is the last thing read.
+        */}
+      <p className="who-decides">{t.fundingWhoDecides}</p>
+      <p className="compare-note">{t.fundingEnglishSources}</p>
+    </section>
+  );
+}
+
 /**
  * Build the statewide comparison for one measure, or undefined when either side is missing.
  * Never invents a comparison out of a null: an unreported program value has nothing to
@@ -873,7 +1291,13 @@ export default async function ProgramPage({
 
   const t = dict(lang);
   const region = REGION_COPY[lang];
-  const peers = getCoverage().peer_medians;
+  const coverage = getCoverage();
+  const peers = coverage.peer_medians;
+  /*
+   * The funding route, the questions, and the sentence saying who decides. Absent only from a
+   * dataset built before any of it existed, in which case the page is the page it always was.
+   */
+  const localHelp = coverage.local_help;
   const { outcomes, cost, length, location } = program;
   // False when the filing describes the provider's whole institution rather than this program.
   const attributable = outcomes.cohort.attributable;
@@ -1250,6 +1674,23 @@ export default async function ProgramPage({
             </p>
           )}
         </div>
+      )}
+
+      {/*
+        * Last, after the reader has formed a view.
+        *
+        * The price, the outcomes and the provider's own link are all above it: this is not a
+        * pitch to be met on the way in, it is what to do about the decision once it has been
+        * made. It sits before the methodology link for the same reason — the methodology is
+        * about the numbers, and this is about the next morning.
+        */}
+      {localHelp !== undefined && (
+        <FundingBlock
+          program={program}
+          localHelp={localHelp}
+          snapshot={coverage.snapshot_date}
+          lang={lang}
+        />
       )}
 
       {/*

@@ -495,6 +495,104 @@ areaNote: (unplaced: number, total: number) =>
     "It is also measured on a different scale from “Usually needs” above, so the two cannot be subtracted from one another.",
   attainmentMeasuredFor: (title: string) =>
     `Measured for ${title}, the wider group this job is counted inside.`,
+
+  /* ---- Someone else may be able to pay for this ------------------------------------------
+   *
+   * Every program on this site was on California's Eligible Training Provider List when the
+   * state last reported it, and under 20 CFR 680.410 that listing is what allows an Individual
+   * Training Account to pay a provider for somebody's training. The site never said so, and a
+   * reader who could have had a program paid for had no way to find that out here.
+   *
+   * The English below is not written here. Every string from `fundingLede` to the last
+   * `fundingWhy…` is copied byte for byte from `camino.sources.local_help`, where each sentence
+   * sits beside the regulation it rests on and is scanned by a test that refuses promissory
+   * phrasing — "you qualify", "guarantee", "free training", "at no cost to you". A Python test
+   * asserts that what is published here is still what that module says, so editing one of these
+   * strings in place moves it out from under the check that exists to stop this feature telling
+   * somebody they will be funded. Edit the module; regenerate; translate.
+   *
+   * The Spanish is written here, and it is the highest-risk text on this site. A hedge that
+   * survives in English and evaporates in Spanish turns a description of a public program into a
+   * promise, for the readers least able to absorb the cost of a wasted trip.
+   * -------------------------------------------------------------------------------------- */
+  fundingLede: (date: string) =>
+    `This program was on California's Eligible Training Provider List when the state last reported it to the U.S. Department of Labor (${date}). Programs on that list can be paid for through an Individual Training Account. Listings are renewed periodically and can lapse, so a program listed when the state last reported may not be listed today. Ask before you rely on it.`,
+  fundingHeading: "Someone else may be able to pay for this",
+  fundingIta: "Federal training money under the Workforce Innovation and Opportunity Act is paid through an Individual Training Account: an agreement between a local workforce board and a training provider, set up on behalf of one person. That money can only go to a provider on the state's Eligible Training Provider List, which is the list every program on this site comes from.",
+  fundingCentersHeading: "The place to ask is an America's Job Center of California",
+  fundingCenters: "A comprehensive center is where all the required partner programs can be reached; an affiliate site offers some of them. California's Employment Development Department directs people to CareerOneStop's finder to locate one. Contacting a center before traveling is worth it — the state notes that its own staff are not physically present at every location.",
+  fundingWhoCanBeServedHeading: "Who can be served at all",
+  fundingWhoCanBeServed: "California states the general criteria as three things: age, Selective Service registration where it applies, and authorization to work in the United States. Work authorization is checked when someone moves into a service that needs it, not at the door — career assessments, an employment plan, case management, basic skills and English instruction, help finishing work-authorization paperwork, and referrals for transport, childcare, food and housing are all listed as services a local area may deliver without verifying it first.",
+  fundingPriorityHeading: "Say if you receive public assistance, are low income, or need basic skills help",
+  fundingPriority: "For the adult funding stream, federal law requires priority to be given to recipients of public assistance, other low-income individuals, and individuals who are basic skills deficient. California instructs job center staff to work an explicit order: veterans and eligible spouses who are also in one of those groups, then the groups themselves, then other veterans and eligible spouses, then any populations the Governor or the local board has added, then everyone else. Priority does not exclude anyone else, and it does not apply to the dislocated worker stream. It only operates if the center is told, and California fixes a person's priority status at the moment eligibility is determined — so it is the first appointment that counts.",
+  fundingSupportHeading: "Ask what else can be covered while you train",
+  fundingSupport: "Supportive services — help with transport, child care and dependent care, and others — may be provided to people taking part in career or training services who cannot obtain them elsewhere. Adults who are unemployed, do not qualify for unemployment compensation, and are enrolled in training may be eligible for needs-related payments as well.",
+  fundingLocalHeading: "The answer depends on the local area, and on the year",
+  fundingLocal: "Once someone has been found eligible and has chosen a provider, the center must refer them and set up an account — unless the program has exhausted its training funds for the program year. How much an account is worth, which occupations a board will fund, what counts as employment that supports a person, and how priority is applied are all set locally, across California's 45 local workforce development areas. Meeting every rule here still does not secure a place. California's own guidance to job center staff says so plainly: WIOA is not an entitlement program, funding for it is not unlimited, and local boards offer services to eligible applicants when funding is available.",
+  fundingWhoDecides: "Whether a person can have a program paid for is decided by their local workforce development board and the America's Job Center staff who interview them — not by this site, and not by the training provider. California has 45 local workforce development areas and each sets its own policies, so the answer can differ between two people in neighboring counties. Nothing here is a promise of funding or a determination of eligibility.",
+  fundingAskEtplNow: "Is this program on California's Eligible Training Provider List right now?",
+  fundingWhyEtplNow: "An Individual Training Account can only pay a provider on that list, and listings are granted per program rather than per school — a listed provider can have unlisted programs. Eligibility is also time-limited and renewed.",
+  fundingAskFullPrice: "What does the price include, and what will I still have to buy — books, tools, uniforms, exam fees, license fees?",
+  fundingWhyFullPrice: "Providers report tuition and supplies to the state as separate figures and either can be missing, so the cost shown here may be a floor rather than a total. Exam and licensing fees are often outside both.",
+  fundingAskCredential: "What exactly do I hold at the end, who issues it, and does an employer or a licensing board recognize it?",
+  fundingWhyCredential: "A program on the list has to lead to a credential, employment, or measurable progress toward one — but 'certificate of completion' from a school and a license a state board recognizes are very different things to be holding.",
+  fundingAskWithdrawal: "If I stop partway through, what do I owe, and what happens to funding already paid?",
+  fundingWhyWithdrawal: "An Individual Training Account is a payment agreement with the provider and may be paid in instalments, so who is owed what on a withdrawal is a question for the provider and the center together, before enrolling rather than after.",
+  fundingAskSchedule: "When does the next cohort start, and how many hours a week is it?",
+  fundingWhySchedule: "The schedule decides whether someone can keep working while training, and needs-related payments are only for people who are unemployed and already enrolled — so the timetable and the money question are the same question.",
+  fundingAskFundingStream: "Which funding stream would I be served under — adult, dislocated worker, or youth?",
+  fundingWhyFundingStream: "They are different pots with different rules. The statutory priority for public assistance recipients, low-income individuals and people who are basic skills deficient applies to adult funds only. Out-of-school youth aged 16 to 24 can be served by Individual Training Accounts from youth funds.",
+  fundingAskLocalDemand: "Is this occupation one this local area funds training for?",
+  fundingWhyLocalDemand: "The program has to be linked to employment opportunities in the local area or one the person will commute to, and boards give priority to credentials aligned with in-demand sectors. A program can be on the state list and still not be one a particular board will pay for.",
+  fundingAskItaCap: "What is the most this area will put into an Individual Training Account, and would that cover this program?",
+  fundingWhyItaCap: "Caps and duration limits are local policy, not federal, so the same program can be fully funded in one county and partly funded in the next. A cap is also not necessarily the end of it: the rules allow someone to choose training that costs more than the maximum when other funds are available to make up the difference. Ask what the gap would be and what could close it.",
+  fundingAskSelfSufficiency: "How does this area define employment that supports a person?",
+  fundingWhySelfSufficiency: "The determination turns on whether someone can reach self-sufficiency without training, and California requires each local board to set that threshold itself — at least the lower living standard income level for the area, and often higher. It is a local number, and it is the number the decision rests on.",
+  fundingAskOutOfArea: "Can I use this for a program in another county, or another state?",
+  fundingWhyOutOfArea: "Training outside the local area is allowed where the program is on the state list, and outside California where state and local policies permit — both subject to local procedure. Worth asking anywhere the nearest program is a long drive, which in this state is a lot of places.",
+  fundingAskFundsLeft: "Are there training funds left for this program year?",
+  fundingWhyFundsLeft: "The obligation to refer an eligible person and set up an account holds unless the program has exhausted its training funds for the year. That is the one answer a website can never know, and it decides everything.",
+  fundingAskOtherGrantsFirst: "What should I apply for first — a Pell Grant, or anything else?",
+  fundingWhyOtherGrantsFirst: "WIOA funds are for people who cannot get grant assistance elsewhere or who need more than it covers, and centers must consider other sources first. Enrolling with a Pell application pending is allowed if arranged in advance.",
+  fundingAskSupportCosts: "Can you help with transport, child care, or living costs while I train?",
+  fundingWhySupportCosts: "Supportive services and needs-related payments are separate from tuition, and are only available to people already taking part in career or training services who cannot get that help anywhere else. They are worth asking about in the same conversation, not a later one.",
+  fundingAskWhatToBring: "What should I bring, and how long does a determination take?",
+  fundingWhyWhatToBring: "The determination rests on an interview, evaluation or assessment and career planning, and the center has to be able to document it. There is no federal minimum waiting period, so the answer is local and worth knowing before taking a day off work.",
+
+  // The block's own furniture: labels, and the three sentences that describe what this site did
+  // rather than what a rule says. Not from the module, because they are claims about this
+  // dataset — what it looked for, what it found, and what it never checked.
+  fundingCentersNone: (miles: number) =>
+    `No America's Job Center is within about ${miles} miles of this program's city. There is ` +
+    `one further away — the finder below searches the whole state.`,
+  fundingCentersNotChecked:
+    "This site has not established which offices are nearest to this program. The finder below searches the whole state.",
+  fundingDistanceNote:
+    "Distances are straight-line, so the drive is longer. Call before you travel: opening hours here are as the federal directory published them, and the state notes its own staff are not present at every location.",
+  fundingFindersIntro: "Find a center anywhere in California, and check what is on the list today:",
+  fundingEnglishSources:
+    "The rules cited here, and the state and federal sites linked to, are published in English.",
+  fundingComprehensive: "Comprehensive center",
+  fundingAffiliate: "Affiliate site",
+  fundingPhone: "Phone",
+  fundingHours: "Hours",
+  fundingMilesAway: (miles: number) => `about ${miles} miles away`,
+  fundingVeteransRep: "Has a veterans' representative",
+  fundingClosed: "The directory records this office as temporarily closed",
+  fundingQuestionsHeading: "What to ask before you commit",
+  fundingQuestionsJobCenter: "Questions for the America's Job Center",
+  fundingQuestionsProvider: "Questions for the training provider",
+  fundingRuleLabel: "The rule:",
+  /**
+   * Rendered on Spanish pages only. This section is about money and eligibility, for the
+   * readers least able to absorb an error, and it has not had a native reviewer. Saying so
+   * is the honest move — but a bare "may contain errors" gives a reader nothing to do, so it
+   * names English as the reference text and points at the people who actually decide. It
+   * deliberately does not promise that anyone at the center speaks Spanish: the directory's
+   * language field was blank for nine of ten centers sampled, so that claim is unsupported.
+   */
+  fundingTranslationNote:
+    "This section was translated without a professional review, and the English text is the reference version. If anything here is unclear, ask at the center — they are the ones who decide.",
 };
 
 /**
@@ -914,6 +1012,123 @@ areaNote: (unplaced, total) =>
     "Además se mide en una escala distinta de la de «Suele requerir» arriba, así que no se pueden restar una de otra.",
   attainmentMeasuredFor: (title: string) =>
     `Medido para ${title}, el grupo más amplio dentro del cual se cuenta este trabajo.`,
+
+  /* ---- Puede que alguien más pague este programa ------------------------------------------
+   *
+   * NEEDS A HUMAN REVIEWER BEFORE IT SHIPS. This is money and eligibility, the audience is the
+   * people most harmed by getting it wrong, and a negation is the first thing lost in
+   * translation. Four things a reviewer should check line by line:
+   *
+   * 1. Nothing here promises anybody funding. "Se pueden pagar" is a statement about what the
+   *    rules allow, never about this reader; "podrían" carries every hedge the English carries.
+   *    No "garantiza" and no "gratis" appears anywhere below, deliberately, even inside a
+   *    negation — a reader skimming official-looking prose takes the word and drops the "not".
+   * 2. The tense in `fundingLede`. "Estaba en la lista" is the claim; "está en la lista" is a
+   *    different and unsupported one, and one letter separates them.
+   * 3. The proper nouns stay in English on purpose — "America's Job Center", "Individual
+   *    Training Account", "Eligible Training Provider List" — because a reader has to say those
+   *    words to somebody or type them into a search. The Spanish gloss is beside each.
+   * 4. `fundingWhoDecides` and `fundingLocal` are the two that say what this site cannot do.
+   *    If any sentence in them reads as softer than its English, that is a defect, not a style
+   *    choice.
+   * -------------------------------------------------------------------------------------- */
+  fundingLede: (date: string) =>
+    `Este programa estaba en la Lista de Instituciones de Capacitación Elegibles de California (Eligible Training Provider List) cuando el estado la reportó por última vez al Departamento de Trabajo de EE. UU. (${date}). Los programas de esa lista se pueden pagar mediante una Cuenta Individual de Capacitación (Individual Training Account). Las inscripciones en la lista se renuevan cada cierto tiempo y pueden vencer, así que un programa que estaba en la lista en esa fecha puede no estar hoy. Pregunte antes de contar con ello.`,
+  fundingHeading: "Puede que alguien más pague este programa",
+  fundingIta:
+    "El dinero federal para capacitación de la Ley de Innovación y Oportunidad en la Fuerza Laboral (WIOA) se paga mediante una Cuenta Individual de Capacitación: un acuerdo entre una junta local de desarrollo laboral y una institución de capacitación, que se establece en nombre de una sola persona. Ese dinero solo puede ir a una institución que esté en la Lista de Instituciones de Capacitación Elegibles del estado, que es la lista de la que sale cada programa de este sitio.",
+  fundingCentersHeading: "El lugar donde preguntar es un America's Job Center of California",
+  fundingCenters:
+    "En un centro integral (comprehensive center) se puede acceder a los programas de todos los socios obligatorios; un sitio afiliado (affiliate site) ofrece algunos de ellos. El Departamento de Desarrollo del Empleo de California remite a la gente al buscador de CareerOneStop para encontrar uno. Conviene comunicarse con un centro antes de ir: el estado advierte que su propio personal no está físicamente en todas las oficinas.",
+  fundingWhoCanBeServedHeading: "A quién se puede atender",
+  fundingWhoCanBeServed:
+    "California resume los criterios generales en tres puntos: la edad, el registro en el Servicio Selectivo cuando corresponde y la autorización para trabajar en Estados Unidos. La autorización de trabajo se verifica cuando la persona pasa a un servicio que la requiere, no en la puerta: las evaluaciones de carrera, un plan de empleo, el manejo del caso, la enseñanza de destrezas básicas y de inglés, la ayuda para completar los trámites de la autorización de trabajo y las referencias para transporte, cuidado infantil, alimentos y vivienda figuran todas como servicios que un área local puede brindar sin verificarla primero.",
+  fundingPriorityHeading:
+    "Diga si recibe asistencia pública, tiene bajos ingresos o necesita reforzar destrezas básicas",
+  fundingPriority:
+    "En la vía de financiamiento para adultos, la ley federal exige dar prioridad a quienes reciben asistencia pública, a otras personas de bajos ingresos y a quienes tienen deficiencias en destrezas básicas. California le indica al personal de los centros que siga un orden explícito: primero las personas veteranas y sus cónyuges elegibles que además están en uno de esos grupos; luego esos grupos; luego las demás personas veteranas y cónyuges elegibles; luego las poblaciones que el Gobernador o la junta local hayan agregado; y al final todas las demás. La prioridad no excluye a nadie y no se aplica a la vía de trabajadores desplazados. Solo funciona si usted se lo dice al centro, y California fija la prioridad de cada persona en el momento en que se determina su elegibilidad: por eso lo que cuenta es la primera cita.",
+  fundingSupportHeading: "Pregunte qué más se puede cubrir mientras se capacita",
+  fundingSupport:
+    "Los servicios de apoyo —ayuda con el transporte, con el cuidado de niños y de otras personas dependientes, y otros— podrían brindarse a quienes participan en servicios de carrera o de capacitación y no pueden conseguirlos por otro lado. Las personas adultas que están desempleadas, no califican para el seguro de desempleo y están inscritas en una capacitación también podrían ser elegibles para pagos por necesidad (needs-related payments).",
+  fundingLocalHeading: "La respuesta depende del área local y del año",
+  fundingLocal:
+    "Una vez que se determina que una persona es elegible y ya eligió una institución, el centro debe remitirla y abrir una cuenta, salvo que el programa haya agotado sus fondos de capacitación del año. Cuánto vale una cuenta, qué ocupaciones financia una junta, qué se considera un empleo que sostiene a una persona y cómo se aplica la prioridad se deciden localmente, en las 45 áreas locales de desarrollo laboral de California. Cumplir con todas estas reglas todavía no asegura un lugar. La propia guía de California para el personal de los centros lo dice sin rodeos: WIOA no es un programa de derecho automático, su financiamiento no es ilimitado y las juntas locales ofrecen servicios a quienes son elegibles cuando hay fondos disponibles.",
+  fundingWhoDecides:
+    "Si a una persona le pagan o no un programa lo deciden su junta local de desarrollo laboral y el personal del America's Job Center que la entrevista: no lo decide este sitio, ni lo decide la institución de capacitación. California tiene 45 áreas locales de desarrollo laboral y cada una fija sus propias políticas, así que la respuesta puede ser distinta para dos personas de condados vecinos. Nada de lo que dice esta página es una promesa de financiamiento ni una determinación de elegibilidad.",
+  fundingAskEtplNow:
+    "¿Este programa está ahora mismo en la Lista de Instituciones de Capacitación Elegibles de California?",
+  fundingWhyEtplNow:
+    "Una Cuenta Individual de Capacitación solo le puede pagar a una institución que esté en esa lista, y la elegibilidad se otorga por programa y no por escuela: una institución que está en la lista puede tener programas que no lo están. Además la elegibilidad tiene plazo y hay que renovarla.",
+  fundingAskFullPrice:
+    "¿Qué incluye el precio y qué tendré que comprar aparte: libros, herramientas, uniformes, cuotas de examen, cuotas de licencia?",
+  fundingWhyFullPrice:
+    "Las instituciones le reportan al estado la colegiatura y los materiales como cifras separadas, y cualquiera de las dos puede faltar, así que el costo que aparece aquí puede ser un piso y no un total. Las cuotas de examen y de licencia suelen quedar fuera de ambas.",
+  fundingAskCredential:
+    "¿Qué obtengo exactamente al final, quién lo expide y lo reconoce un empleador o una junta de licencias?",
+  fundingWhyCredential:
+    "Un programa de la lista tiene que llevar a una credencial, a un empleo o a un avance medible hacia uno, pero un «certificado de finalización» de una escuela y una licencia que reconoce una junta estatal son cosas muy distintas.",
+  fundingAskWithdrawal:
+    "Si dejo el programa a medias, ¿cuánto debo y qué pasa con el dinero ya pagado?",
+  fundingWhyWithdrawal:
+    "Una Cuenta Individual de Capacitación es un acuerdo de pago con la institución y puede pagarse por partes, así que quién le debe qué a quién si alguien se retira es una pregunta para la institución y el centro juntos, y hay que hacerla antes de inscribirse, no después.",
+  fundingAskSchedule: "¿Cuándo empieza el siguiente grupo y cuántas horas por semana son?",
+  fundingWhySchedule:
+    "El horario decide si alguien puede seguir trabajando mientras se capacita, y los pagos por necesidad son solo para personas desempleadas que ya están inscritas: por eso el calendario y el dinero son la misma pregunta.",
+  fundingAskFundingStream:
+    "¿Bajo qué vía de financiamiento me atenderían: adultos, trabajadores desplazados o jóvenes?",
+  fundingWhyFundingStream:
+    "Son fondos distintos con reglas distintas. La prioridad que fija la ley para quienes reciben asistencia pública, para otras personas de bajos ingresos y para quienes tienen deficiencias en destrezas básicas se aplica solo a los fondos para adultos. A las personas jóvenes de 16 a 24 años que están fuera de la escuela se les puede atender con Cuentas Individuales de Capacitación de los fondos para jóvenes.",
+  fundingAskLocalDemand: "¿Es esta una ocupación para la que esta área local financia capacitación?",
+  fundingWhyLocalDemand:
+    "El programa tiene que estar ligado a oportunidades de empleo en el área local o en otra a la que la persona esté dispuesta a trasladarse, y las juntas dan prioridad a las credenciales alineadas con los sectores de mayor demanda. Un programa puede estar en la lista estatal y aun así no ser uno que una junta en particular pague.",
+  fundingAskItaCap:
+    "¿Cuál es el máximo que esta área pone en una Cuenta Individual de Capacitación y alcanzaría para este programa?",
+  fundingWhyItaCap:
+    "Los topes y los límites de duración son política local, no federal, así que el mismo programa puede quedar cubierto por completo en un condado y solo en parte en el de al lado. Un tope tampoco es necesariamente el final del asunto: las reglas permiten elegir una capacitación que cueste más que el máximo cuando hay otros fondos para cubrir la diferencia. Pregunte de cuánto sería esa diferencia y con qué se podría cubrir.",
+  fundingAskSelfSufficiency: "¿Cómo define esta área un empleo que sostiene a una persona?",
+  fundingWhySelfSufficiency:
+    "La determinación depende de si alguien puede alcanzar la autosuficiencia sin capacitarse, y California exige que cada junta local fije ese umbral por su cuenta: al menos el nivel de ingresos de vida mínimo (lower living standard income level) del área, y a menudo más alto. Es un número local, y es el número sobre el que descansa la decisión.",
+  fundingAskOutOfArea: "¿Puedo usar esto para un programa en otro condado o en otro estado?",
+  fundingWhyOutOfArea:
+    "La capacitación fuera del área local se permite cuando el programa está en la lista estatal, y fuera de California cuando las políticas estatales y locales lo permiten; en ambos casos según el procedimiento local. Vale la pena preguntarlo dondequiera que el programa más cercano quede lejos, que en este estado son muchos lugares.",
+  fundingAskFundsLeft: "¿Quedan fondos de capacitación para este año del programa?",
+  fundingWhyFundsLeft:
+    "La obligación de remitir a una persona elegible y abrirle una cuenta se mantiene salvo que el programa haya agotado sus fondos de capacitación del año. Esa es la única respuesta que un sitio web nunca puede saber, y lo decide todo.",
+  fundingAskOtherGrantsFirst: "¿Qué debo solicitar primero: una Beca Pell u otra cosa?",
+  fundingWhyOtherGrantsFirst:
+    "Los fondos de WIOA son para quienes no pueden conseguir ayuda de otras subvenciones o necesitan más de lo que esa ayuda cubre, y los centros deben considerar primero las otras fuentes. Se permite inscribirse con una solicitud de Beca Pell pendiente si se acuerda de antemano.",
+  fundingAskSupportCosts:
+    "¿Me pueden ayudar con el transporte, el cuidado de niños o los gastos para vivir mientras me capacito?",
+  fundingWhySupportCosts:
+    "Los servicios de apoyo y los pagos por necesidad son aparte de la colegiatura, y solo están disponibles para quienes ya participan en servicios de carrera o de capacitación y no pueden conseguir esa ayuda en ningún otro lado. Conviene preguntarlo en la misma conversación, no en una posterior.",
+  fundingAskWhatToBring: "¿Qué debo llevar y cuánto tarda una determinación?",
+  fundingWhyWhatToBring:
+    "La determinación se basa en una entrevista, evaluación o valoración y en la planificación de carrera, y el centro tiene que poder documentarla. No hay un tiempo mínimo de espera federal, así que la respuesta es local y conviene saberla antes de pedir un día libre en el trabajo.",
+
+  fundingCentersNone: (miles: number) =>
+    `No hay ningún America's Job Center a menos de unas ${miles} millas de la ciudad de este ` +
+    `programa. Sí hay alguno más lejos: el buscador de abajo busca en todo el estado.`,
+  fundingCentersNotChecked:
+    "Este sitio no estableció cuáles son las oficinas más cercanas a este programa. El buscador de abajo busca en todo el estado.",
+  fundingDistanceNote:
+    "Las distancias son en línea recta, así que el trayecto es más largo. Llame antes de ir: los horarios que aparecen aquí son los que publicó el directorio federal, y el estado advierte que su propio personal no está en todas las oficinas.",
+  fundingFindersIntro:
+    "Encuentre un centro en cualquier parte de California y consulte qué hay hoy en la lista:",
+  fundingEnglishSources:
+    "Las reglas que se citan aquí y los sitios estatales y federales enlazados están publicados en inglés.",
+  fundingComprehensive: "Centro integral",
+  fundingAffiliate: "Sitio afiliado",
+  fundingPhone: "Teléfono",
+  fundingHours: "Horario",
+  fundingMilesAway: (miles: number) => `a unas ${miles} millas`,
+  fundingVeteransRep: "Tiene representante para personas veteranas",
+  fundingClosed: "El directorio registra esta oficina como cerrada temporalmente",
+  fundingQuestionsHeading: "Qué preguntar antes de comprometerse",
+  fundingQuestionsJobCenter: "Preguntas para el America's Job Center",
+  fundingQuestionsProvider: "Preguntas para la institución de capacitación",
+  fundingRuleLabel: "La regla:",
+  fundingTranslationNote:
+    "Esta sección se tradujo sin revisión profesional y la versión en inglés es la de referencia. Si algo aquí no queda claro, pregúntelo en el centro: son ellos quienes deciden.",
 };
 
 function fmt(n: number): string {

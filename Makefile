@@ -45,6 +45,12 @@ provenance-check:
 
 # Refresh the dataset from DOL and CA EDD. Network-bound; not part of `verify`.
 # Emits straight into the web app's public directory, which is where the site reads it.
+#
+# CareerOneStop credentials (.env.local) add two things and are optional for both: the
+# occupation descriptions, and the America's Job Centers each program page names as the place
+# to ask about having the training paid for. Without them the build is complete and simply
+# claims nothing about where the nearest office is -- which is what CI does. The centre
+# directory is one request for the whole state and is cached under data/raw/cos-cache.
 data:
 	uv run camino build --output-dir web/public/data
 

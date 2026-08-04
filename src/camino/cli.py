@@ -7,8 +7,10 @@ from pathlib import Path
 import typer
 
 from camino.build import (
+    CLOSE_ENOUGH_MILES,
     LINK_CACHE_DIR,
     LINK_CHECK_PATH,
+    LocalHelpCoverage,
     ProviderLinkCoverage,
     build,
     build_offline,
@@ -76,6 +78,7 @@ def build_command(
         typer.echo("  (no CareerOneStop credentials configured; enrichment skipped)")
 
     _echo_provider_links(report.provider_links, link_checks)
+    _echo_local_help(report.local_help)
 
 
 def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None:
@@ -108,6 +111,38 @@ def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None
     typer.echo(f"    upgraded to https       {links.programs_upgraded_to_https:>6}")
     typer.echo(f"    sent to the front page  {links.programs_sent_to_front_page:>6}")
     typer.echo(f"  published without a link  {links.programs_not_linked:>6}")
+
+
+def _echo_local_help(centers: LocalHelpCoverage) -> None:
+    """Say how many pages can name a real office, and never imply one that was not looked for.
+
+    A build with no credentials prints the directory line as "not read" rather than as 0.
+    "We did not look" and "California has no job centres" are different sentences, and the
+    summary is where an operator decides whether the dataset they just built is one worth
+    publishing.
+    """
+    if centers.centers_loaded is None:
+        typer.echo("\nAmerica's Job Centers     not read")
+        typer.echo("  (no CareerOneStop credentials configured, or the finder could not be")
+        typer.echo("   reached; no program page in this dataset claims a nearby office)")
+        return
+
+    def row(label: str, value: int) -> None:
+        typer.echo(f"  {label:<24}{value:>6}")
+
+    radius = int(centers.radius_miles)
+    typer.echo(f"\nAmerica's Job Centers       {centers.centers_loaded:>6}")
+    row(f"pages with one, {radius} mi", centers.programs_with_a_center)
+    row(f"  within {int(CLOSE_ENOUGH_MILES)} miles", centers.programs_with_a_center_within_10_miles)
+    row("  a comprehensive one", centers.programs_with_a_comprehensive_center)
+    row("none that close", centers.programs_with_none_within_radius)
+    if centers.programs_not_searched:
+        row("no coordinates to search", centers.programs_not_searched)
+    if centers.nearest_median_miles is not None:
+        typer.echo(
+            f"  median distance {centers.nearest_median_miles} miles, straight line"
+            f" (farthest {centers.nearest_farthest_miles})"
+        )
 
 
 @app.command("check-links")
