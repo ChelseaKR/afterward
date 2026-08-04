@@ -123,6 +123,49 @@ const en = {
   backToSearch: "Back to search",
   coverageNote: (pct: number) =>
     `${pct}% of California programs report at least one outcome. The rest are listed with what is known.`,
+
+  // ---- Browse indexes ----
+  browseOccupationsTitle: "Every occupation California projects",
+  browseOccupationsIntro:
+    "California publishes a ten-year projection for every occupation it tracks. All of them are here, grouped by whether the state expects the work to grow or shrink and ordered by the openings it projects.",
+  occupationsListed: "Occupations listed",
+  titlesEnglishOnly:
+    "Occupation titles appear in English because that is the only language the state publishes them in.",
+  occupationColumn: "Occupation",
+  programsHere: "Programs listed here",
+  onThisPage: "On this page",
+  jumpToOutlook: "Jump to a section of this list",
+  sortedByOpenings:
+    "Ordered by projected openings, most first. An occupation with no published figure goes last rather than being counted as none.",
+  bandShrinking: "Work California expects less of",
+  bandShrinkingNote:
+    "The state projects fewer of these jobs over the next ten years. Training for one is not a mistake, but it is a decision worth making with the number in front of you.",
+  bandSteady: "Work with no projected change",
+  bandSteadyNote:
+    "The state projects the same number of these jobs in ten years as there are today.",
+  bandGrowing: "Work California expects more of",
+  bandGrowingNote:
+    "The state projects growth here. That says nothing about the pay, and nothing about whether any particular program prepares you for the work.",
+  bandUnknown: "Work with no projection published",
+  bandUnknownNote:
+    "The state published no projected change for these. That is missing information, not a projection of zero.",
+
+  browseProvidersTitle: "Every training provider",
+  browseProvidersIntro:
+    "Every school, college, and training organisation with at least one California program in this dataset, listed alphabetically with how much of its own record it publishes.",
+  browseProvidersDerived:
+    "The federal providers index carries no California rows, so this roster is rebuilt from the programs themselves. Spellings that differ only in capitalisation or punctuation are merged into one entry.",
+  jumpToLetter: "Jump to providers by first letter",
+  otherLetter: "0–9 and other",
+  citiesColumn: "Cities",
+  moreCities: (n: number) => `+${fmt(n)} more`,
+  reportingRatio: (n: number, total: number) => `${fmt(n)} of ${fmt(total)}`,
+  providersListed: "Providers listed",
+  programsListed: "Programs across them",
+  providersReportingSome: "Publish at least one outcome",
+
+  browseAllOccupations: "Browse all occupations",
+  browseAllProviders: "Browse all providers",
 };
 
 /**
@@ -244,6 +287,49 @@ const es: Dictionary = {
   backToSearch: "Volver a la búsqueda",
   coverageNote: (pct: number) =>
     `${pct}% de los programas de California reportan al menos un resultado. Los demás se muestran con lo que se sabe.`,
+
+  // ---- Browse indexes ----
+  browseOccupationsTitle: "Todas las ocupaciones que California proyecta",
+  browseOccupationsIntro:
+    "California publica una proyección a diez años para cada ocupación que sigue. Aquí están todas, agrupadas según si el estado espera que el trabajo crezca o se reduzca y ordenadas por las vacantes que proyecta.",
+  occupationsListed: "Ocupaciones en la lista",
+  titlesEnglishOnly:
+    "Los nombres de las ocupaciones aparecen en inglés porque el estado solo los publica en ese idioma.",
+  occupationColumn: "Ocupación",
+  programsHere: "Programas en esta lista",
+  onThisPage: "En esta página",
+  jumpToOutlook: "Ir a una sección de esta lista",
+  sortedByOpenings:
+    "Ordenado por vacantes proyectadas, de mayor a menor. Una ocupación sin cifra publicada va al final en vez de contarse como ninguna.",
+  bandShrinking: "Trabajos de los que California espera menos",
+  bandShrinkingNote:
+    "El estado proyecta menos de estos empleos en los próximos diez años. Capacitarse para uno no es un error, pero conviene decidirlo con la cifra a la vista.",
+  bandSteady: "Trabajos sin cambio proyectado",
+  bandSteadyNote:
+    "El estado proyecta dentro de diez años la misma cantidad de estos empleos que hay hoy.",
+  bandGrowing: "Trabajos de los que California espera más",
+  bandGrowingNote:
+    "El estado proyecta crecimiento aquí. Eso no dice nada sobre el pago, ni sobre si algún programa en particular lo prepara para ese trabajo.",
+  bandUnknown: "Trabajos sin proyección publicada",
+  bandUnknownNote:
+    "El estado no publicó un cambio proyectado para estos. Es información que falta, no una proyección de cero.",
+
+  browseProvidersTitle: "Todas las instituciones de capacitación",
+  browseProvidersIntro:
+    "Cada escuela, colegio y organización de capacitación con al menos un programa de California en estos datos, en orden alfabético y con cuánto publica de su propio historial.",
+  browseProvidersDerived:
+    "El índice federal de instituciones no trae filas de California, así que esta lista se reconstruye a partir de los propios programas. Las grafías que solo difieren en mayúsculas o puntuación se combinan en una sola entrada.",
+  jumpToLetter: "Ir a las instituciones por letra inicial",
+  otherLetter: "0–9 y otros",
+  citiesColumn: "Ciudades",
+  moreCities: (n: number) => `+${fmt(n)} más`,
+  reportingRatio: (n: number, total: number) => `${fmt(n)} de ${fmt(total)}`,
+  providersListed: "Instituciones en la lista",
+  programsListed: "Programas en total",
+  providersReportingSome: "Publican al menos un resultado",
+
+  browseAllOccupations: "Ver todas las ocupaciones",
+  browseAllProviders: "Ver todas las instituciones",
 };
 
 function fmt(n: number): string {

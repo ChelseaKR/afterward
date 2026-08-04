@@ -127,6 +127,11 @@ const PAIRS = [
   ["measure value", "--gray-120", "--gray-10", AA_LARGE],
   ["footer text", "--gray-90", "--gray-10", AA_NORMAL],
   ["panel-quiet body", "--gray-120", "--gray-20", AA_NORMAL],
+  // Browse tables highlight the row under the cursor, which moves three kinds of text onto
+  // a different background. Easy to forget precisely because it only exists on hover.
+  ["hovered row link", "--primary-100", "--gray-20", AA_NORMAL],
+  ["hovered row text", "--gray-120", "--gray-20", AA_NORMAL],
+  ["hovered row unreported", "--gray-80", "--gray-20", AA_NORMAL],
 ];
 
 const statics = staticTokens();

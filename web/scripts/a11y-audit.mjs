@@ -78,6 +78,12 @@ if (SINGLE) {
     ["Program detail (English)", firstDirIn("en", "programs")],
     ["Program detail (Spanish)", firstDirIn("es", "programs")],
     ["Occupation detail (English)", firstDirIn("en", "occupations")],
+    // The browse indexes are the two longest pages on the site — several hundred table rows
+    // each — and the ones most dependent on real table semantics to be usable at all.
+    ["Occupation index (English)", join(OUT, "en", "occupations", "index.html")],
+    ["Occupation index (Spanish)", join(OUT, "es", "occupations", "index.html")],
+    ["Provider index (English)", join(OUT, "en", "providers", "index.html")],
+    ["Provider index (Spanish)", join(OUT, "es", "providers", "index.html")],
   ].filter(([, file]) => file && existsSync(file));
 
   if (targets.length === 0) {

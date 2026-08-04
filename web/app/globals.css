@@ -566,6 +566,69 @@ td.num {
   color: var(--primary-100);
 }
 
+/* ---------- Browse indexes ---------- */
+
+/*
+ * The occupation and provider indexes are long tables rather than prose, so they take the
+ * full shell width instead of the 52rem reading measure the detail pages use. Headings and
+ * spacing match `.detail` so the two page types read as one site.
+ */
+.browse {
+  padding-block: 1.5rem 4rem;
+}
+
+.browse h1 {
+  font-size: clamp(1.5rem, 4vw, 2.125rem);
+  line-height: 1.15;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.browse h2 {
+  font-size: 1.25rem;
+  margin: 2.5rem 0 0.5rem;
+}
+
+.browse .lede {
+  max-width: var(--measure);
+  color: var(--gray-90);
+}
+
+.browse .measure-grid {
+  margin-top: 1.25rem;
+}
+
+/* Long index tables need a row the eye can follow across six columns. */
+.browse tbody tr:hover {
+  background: var(--gray-20);
+}
+
+.browse-more {
+  margin-top: 2.5rem;
+}
+
+/*
+ * Section jump links. Rendered as a list of real links so keyboard and screen-reader users
+ * get the same shortcut a sighted user gets from scanning, and so the sections remain
+ * reachable when the page runs to several hundred rows.
+ */
+.jump-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.625rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.jump-nav a {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--gray-40);
+  border-radius: var(--border-radius-sm);
+  background: var(--gray-10);
+  font-size: 0.875rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
