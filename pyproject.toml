@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "camino"
+version = "0.1.0"
+description = "California training programs, their reported outcomes, and the occupations they lead to."
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+license = { file = "LICENSE" }
+authors = [{ name = "Camino contributors" }]
+keywords = ["california", "workforce", "wioa", "training", "labor-market", "government"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Sociology",
+]
+dependencies = [
+  "httpx>=0.28,<1",
+  "typer>=0.15,<1",
+]
+
+[project.urls]
+Documentation = "https://github.com/ChelseaKR/camino#readme"
+Issues = "https://github.com/ChelseaKR/camino/issues"
+Source = "https://github.com/ChelseaKR/camino"
+
+[project.scripts]
+camino = "camino.cli:main"
+
+[dependency-groups]
+dev = [
+  "bandit[toml]>=1.8.3",
+  "mypy>=1.15",
+  "pip-audit>=2.9",
+  "pre-commit>=4.2",
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "respx>=0.22",
+  "ruff>=0.15",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/camino"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["STANDARDS", "data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "S", "UP", "SIM", "C90", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# E501: CSV fixtures must stay byte-accurate to the real EDD export header.
+"tests/*" = ["S101", "E501"]
+# B008: typer.Option in a default is the framework's documented idiom.
+"src/camino/cli.py" = ["B008"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.bandit]
+exclude_dirs = ["tests", "data"]
