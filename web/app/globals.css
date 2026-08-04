@@ -721,6 +721,91 @@ td.num {
   max-width: var(--measure);
 }
 
+/* ---------- Figures that describe a wider occupation than the program teaches ---------- */
+
+/*
+ * Said above the numbers, in the same quiet treatment the search page uses for its stat strip:
+ * a light panel with a rule down the left in the primary colour. Deliberately *not* the orange
+ * `.callout`, which this same page uses for an occupation the state expects to shrink. Nothing
+ * here is a warning about the job — the figures are real, published, and exactly right about a
+ * larger population — and borrowing the alarm treatment would tell the reader the wrong thing
+ * in the same breath as telling them the right one.
+ *
+ * --gray-120 on --gray-20, which the contrast audit already covers as "stat strip".
+ */
+.match-note {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--gray-20);
+  border-left: 4px solid var(--primary-60);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  max-width: var(--measure);
+}
+
+/*
+ * A figure this project removed, as distinct from one nobody ever reported.
+ *
+ * It keeps `.unreported`'s italics and colour because it is still an absence and should not
+ * read as a value — --gray-80 on --gray-10, the audited "not-reported text" pairing — but it
+ * gets its own class rather than reusing `.unreported`, whose meaning throughout this site is
+ * "the provider did not file this". The sentence underneath is a different claim from the
+ * absence above it, so it is set upright and left readable.
+ */
+.measure dd.withheld {
+  font-size: 1rem;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gray-80);
+}
+
+.measure dd.withheld small {
+  font-style: normal;
+}
+
+/* ---------- Methodology page ---------- */
+
+/*
+ * Prose rather than a table of caveats, so it needs the one thing the detail pages never did:
+ * a line short enough to read several hundred words at. Everything else — heading scale,
+ * vertical rhythm, page padding — comes from `.detail`, which this page also carries, so the
+ * methodology reads as part of the site rather than as a legal annex bolted onto it.
+ */
+.about > p,
+.about li,
+.about .source-list dd {
+  max-width: var(--measure);
+  line-height: 1.6;
+}
+
+.about .lede {
+  font-size: 1.0625rem;
+  color: var(--gray-90);
+}
+
+.source-list {
+  margin: 0;
+}
+
+.source-list dt {
+  font-weight: 700;
+  margin-top: 1.25rem;
+}
+
+.source-list dd {
+  margin: 0.25rem 0 0;
+}
+
+.limits {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.limits li {
+  margin-bottom: 0.75rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

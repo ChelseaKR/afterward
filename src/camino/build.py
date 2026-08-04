@@ -681,6 +681,21 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
 
     Short keys and only the fields a result card or filter actually needs. Everything else
     is fetched per-program on demand, so the first paint does not cost megabytes on a phone.
+
+    ``a`` carries the program's published EDD area, and only its short name: the full
+    ``area_name`` repeats a county gloss ("Fresno MSA (Fresno and Madera Counties)") that a
+    filter has no use for, and the gloss is one fetch away on the program page. Measured on
+    the 3,266-program build, the field costs 5.1 KB gzipped (178.4 KB to 183.5 KB, +2.8%).
+    Interning the 27 distinct names into a lookup table and shipping an integer per row would
+    have cost 1.9 KB instead, and was rejected: an integer means nothing without the table, so
+    a table that ever slipped out of step with the rows would attribute programs to the wrong
+    labour market silently, which is the one failure this dataset is built to refuse. 3.2 KB
+    is a cheap price for a row that can be read on its own.
+
+    ``a`` is null for the 1,741 programs whose city EDD does not name. That is a third state,
+    not an absence to be tidied away: it is neither "not reported" (the city is known, and
+    published in ``c``) nor membership in some residual area. The key is always written so a
+    consumer can tell an unplaced program from an index built before this field existed.
     """
     occupations = program["occupations"]
     outcomes = program["outcomes"]
@@ -699,11 +714,15 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     # The worst outlook among the jobs this trains for: a program is only as safe as its
     # weakest destination, and that is the fact a prospective student needs first.
     worst_change = min(changes) if changes else None
+    region = program["region"]
     return {
         "i": program["uuid"],
         "n": program["program_name"],
         "p": program["provider_name"],
         "c": program["location"]["city"],
+        # Short name of the EDD labour-market area, or null for "this city is in none of
+        # them". Never a nearest-metro guess and never a catch-all bucket.
+        "a": None if region is None else region["area_short_name"],
         "$": program["cost"]["total_out_of_pocket"],
         "$partial": not program["cost"]["total_is_complete"],
         "w": program["length"]["weeks"],

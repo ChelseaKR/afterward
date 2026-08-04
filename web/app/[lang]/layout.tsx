@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,6 +7,55 @@ import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
+}
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
+
+/**
+ * Metadata for the preview card a shared link produces.
+ *
+ * Without this a link posted anywhere renders as a bare URL, which for this site is worse
+ * than merely plain: the pages are built with California's official design system, and a
+ * preview with no context is a preview with no room to say this is not a state website. The
+ * description therefore leads with the non-affiliation notice rather than the tagline.
+ *
+ * Per-language, because the notice is only useful in a language its reader speaks. Built
+ * from the existing dictionary, so there is nothing here to translate separately and
+ * nothing that can drift out of step with the page it describes.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+
+  const t = dict(lang);
+  const title = `${t.siteName} — ${t.tagline}`;
+  const description = `${t.notAffiliated} ${t.siteSummary}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: SITE_URL ? `${SITE_URL}/${lang}/` : `/${lang}/`,
+      languages: Object.fromEntries(
+        LANGUAGES.map((other) => [other, SITE_URL ? `${SITE_URL}/${other}/` : `/${other}/`]),
+      ),
+    },
+    openGraph: {
+      type: "website",
+      siteName: t.siteName,
+      locale: lang === "es" ? "es_US" : "en_US",
+      title,
+      description,
+      ...(SITE_URL ? { url: `${SITE_URL}/${lang}/` } : {}),
+    },
+    // Summary rather than a large image card: there is no image, and the large variant
+    // renders as an empty banner above the text when none is supplied.
+    twitter: { card: "summary", title, description },
+  };
 }
 
 /**

@@ -65,6 +65,45 @@ export interface RelatedOccupation {
 }
 
 /**
+ * How the join reached the occupation attached to a program.
+ *
+ * `"exact"` — the program's own SOC code is one California publishes, so every figure on the
+ * occupation is that occupation's own.
+ *
+ * `"soc_broad_group"` — California publishes nothing for the program's code and reports that
+ * work only inside its parent category in the occupation classification. The figures are the
+ * parent's, over a population that *contains* the program's occupation and others besides.
+ *
+ * `"bls_hybrid_occupation"` — the same weaker claim, arrived at differently: the target is not
+ * a classification code at all but a federal publication bucket, defined as the union of
+ * several named occupations the federal statistics cannot estimate separately.
+ *
+ * The two aggregate kinds are not interchangeable with `"exact"`, and a consumer that cannot
+ * tell them apart will present a wider group's numbers as though they described the one job
+ * the program trains for. Anything rendering these figures has to say which it is showing.
+ */
+export type MatchKind = "exact" | "soc_broad_group" | "bls_hybrid_occupation";
+
+/**
+ * The provenance of one program-to-occupation attachment, written on every attachment.
+ *
+ * `entry_level_education_withheld` separates two absences that would otherwise both arrive as
+ * a null `entry_level_education` and mean opposite things. True means California *did* publish
+ * a typical-entry credential and this project declined to attach it, because a credential
+ * assigned to a union of occupations is a different answer rather than an approximate one —
+ * a master's degree read off a mental-health-counsellor aggregate is simply wrong about a
+ * community-college substance-use certificate. False means there was nothing published to
+ * attach. Only the second is the provider's silence, and the withheld case must never borrow
+ * the interface's "not reported" explanation.
+ */
+export interface OccupationMatch {
+  kind: MatchKind;
+  /** The program's own codes that landed on this occupation, so the claim can be audited. */
+  program_soc_codes: string[];
+  entry_level_education_withheld: boolean;
+}
+
+/**
  * An occupation as embedded in a program record.
  *
  * The inherited figures stay statewide by design: a program's graduates do not necessarily
@@ -74,9 +113,14 @@ export interface RelatedOccupation {
  * Deliberately not folded into `OccupationSummary`: the rows in `Occupation.regions` share
  * that base and have no `region` of their own, and giving them a field the pipeline never
  * writes would be a lie the compiler then enforces.
+ *
+ * `match` is required rather than optional for the same reason. The pipeline writes it on
+ * every attachment without exception, and making it optional here would let a page reach for
+ * the figures while skipping the one field that says how much they are worth.
  */
 export interface ProgramOccupation extends OccupationSummary {
   region: OccupationRegion | null;
+  match: OccupationMatch;
 }
 
 /**
@@ -202,6 +246,15 @@ export interface SearchEntry {
   n: string | null;
   p: string | null;
   c: string | null;
+  /**
+   * Short name of the published EDD labour-market area this program's city sits in
+   * ("Fresno MSA"), or null when California's own area titles name no such city.
+   *
+   * Null means unplaced, which is a third state distinct from both "not reported" and any
+   * area — 1,741 of 3,266 programs are in it. An unplaced program is never attributed to a
+   * nearby area, however obvious the geography looks.
+   */
+  a: string | null;
   $: number | null;
   /** True when a cost component was suppressed, making `$` a floor rather than a total. */
   $partial: boolean;

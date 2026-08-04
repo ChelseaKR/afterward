@@ -1,14 +1,23 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ANY_AREA,
+  UNPLACED_AREA,
+  areaFromOptionValue,
+  areaOf,
+  areaOptionValue,
+  areas,
   cities,
   DEFAULT_FILTERS,
   isShrinking,
+  matchesArea,
   matchesFilters,
   runSearch,
   score,
   summarise,
   terms,
+  unplacedMatches,
+  unplacedTotal,
 } from "./search";
 import type { SearchEntry } from "./types";
 
@@ -18,6 +27,7 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     n: "Medical Assisting",
     p: "Fresno City College",
     c: "Fresno",
+    a: "Fresno MSA",
     $: 4000,
     $partial: false,
     w: 30,
@@ -165,7 +175,12 @@ describe("summarise", () => {
       entry({ r: false, g: 10 }),
       entry({ r: true, g: null }),
     ]);
-    expect(stats).toEqual({ total: 3, reported: 2, shrinking: 1 });
+    expect(stats).toEqual({ total: 3, reported: 2, shrinking: 1, unplaced: 0 });
+  });
+
+  it("counts unplaced programs, so the headline can say the geography is partial", () => {
+    const stats = summarise([entry({ a: "Fresno MSA" }), entry({ a: null }), entry({ a: null })]);
+    expect(stats.unplaced).toBe(2);
   });
 });
 
@@ -208,5 +223,150 @@ describe("city filter", () => {
 
   it("is inert when unset", () => {
     expect(matchesFilters(entry({ c: null }), DEFAULT_FILTERS)).toBe(true);
+  });
+});
+
+describe("areaOf", () => {
+  it("reads a placed program's area", () => {
+    expect(areaOf(entry({ a: "Bakersfield-Delano MSA" }))).toBe("Bakersfield-Delano MSA");
+  });
+
+  it("reads an unplaced program as unplaced", () => {
+    expect(areaOf(entry({ a: null }))).toBeNull();
+  });
+
+  it("reads a row from an index built before the field as unplaced, never as a member", () => {
+    // The alternative — letting a missing key satisfy whichever area is selected — would put
+    // a program under a labour market on no evidence whatsoever.
+    // The field is required on SearchEntry, so a row without it cannot be built normally.
+    // That is the point: this simulates JSON from an index emitted before the field existed,
+    // which the type system cannot police because it arrives as parsed JSON at runtime.
+    const { a: _dropped, ...withoutArea } = entry();
+    const legacy = withoutArea as SearchEntry;
+    expect(areaOf(legacy)).toBeNull();
+    expect(matchesArea(legacy, { kind: "area", name: "Fresno MSA" })).toBe(false);
+    expect(matchesArea(legacy, UNPLACED_AREA)).toBe(true);
+  });
+});
+
+describe("areas", () => {
+  it("lists areas by program count, then alphabetically", () => {
+    const list = areas([
+      entry({ a: "Fresno MSA" }),
+      entry({ a: "Visalia MSA" }),
+      entry({ a: "Fresno MSA" }),
+      entry({ a: "Chico MSA" }),
+    ]);
+    expect(list).toEqual([
+      { name: "Fresno MSA", count: 2 },
+      { name: "Chico MSA", count: 1 },
+      { name: "Visalia MSA", count: 1 },
+    ]);
+  });
+
+  it("never invents an area for the unplaced, nor a bucket to hold them", () => {
+    const list = areas([entry({ a: null }), entry({ a: null }), entry({ a: "Fresno MSA" })]);
+    expect(list).toEqual([{ name: "Fresno MSA", count: 1 }]);
+  });
+});
+
+describe("unplacedTotal", () => {
+  it("counts the programs the state's geography does not reach", () => {
+    expect(unplacedTotal([entry({ a: null }), entry({ a: "Fresno MSA" }), entry({ a: null })])).toBe(
+      2,
+    );
+  });
+});
+
+describe("area filter", () => {
+  const placed = entry({ i: "placed", c: "Fresno", a: "Fresno MSA" });
+  const elsewhere = entry({ i: "elsewhere", c: "Visalia", a: "Visalia MSA" });
+  // Clovis is minutes from Fresno and in the same county. EDD does not name it, so it is
+  // unplaced, and no amount of proximity may be allowed to file it under Fresno MSA.
+  const clovis = entry({ i: "clovis", c: "Clovis", a: null });
+  const all = [placed, elsewhere, clovis];
+
+  it("keeps only the programs the state placed in that exact area", () => {
+    const filters = { ...DEFAULT_FILTERS, area: { kind: "area" as const, name: "Fresno MSA" } };
+    expect(runSearch(all, filters).map((e) => e.i)).toEqual(["placed"]);
+  });
+
+  it("never attributes an unplaced program to a nearby area", () => {
+    expect(matchesArea(clovis, { kind: "area", name: "Fresno MSA" })).toBe(false);
+  });
+
+  it("selects the unplaced as a group of their own", () => {
+    expect(runSearch(all, { ...DEFAULT_FILTERS, area: UNPLACED_AREA }).map((e) => e.i)).toEqual([
+      "clovis",
+    ]);
+  });
+
+  it("returns everything when set to any, including the unplaced", () => {
+    expect(runSearch(all, { ...DEFAULT_FILTERS, area: ANY_AREA })).toHaveLength(3);
+  });
+
+  it("is inert by default", () => {
+    expect(matchesFilters(clovis, DEFAULT_FILTERS)).toBe(true);
+  });
+
+  it("combines with the city filter rather than contradicting it", () => {
+    const filters = {
+      ...DEFAULT_FILTERS,
+      area: { kind: "area" as const, name: "Fresno MSA" },
+      city: "Visalia",
+    };
+    expect(runSearch(all, filters)).toEqual([]);
+  });
+});
+
+describe("unplacedMatches", () => {
+  const programs = [
+    entry({ i: "a", n: "Welding", a: "Fresno MSA", r: true }),
+    entry({ i: "b", n: "Welding", a: null, r: true }),
+    entry({ i: "c", n: "Welding", a: null, r: false }),
+    entry({ i: "d", n: "Nursing", a: null, r: true }),
+  ];
+
+  it("counts what an area selection is hiding, not the whole unplaced population", () => {
+    const filters = {
+      ...DEFAULT_FILTERS,
+      query: "welding",
+      area: { kind: "area" as const, name: "Fresno MSA" },
+    };
+    expect(unplacedMatches(programs, filters)).toBe(2);
+  });
+
+  it("still honours every non-geographic filter the reader set", () => {
+    const filters = { ...DEFAULT_FILTERS, query: "welding", onlyReported: true };
+    expect(unplacedMatches(programs, filters)).toBe(1);
+  });
+
+  it("ignores a city selection, which is geography too", () => {
+    const filters = { ...DEFAULT_FILTERS, city: "Fresno" };
+    expect(unplacedMatches(programs, filters)).toBe(3);
+  });
+
+  it("is zero when the state placed everything the search found", () => {
+    expect(unplacedMatches([programs[0]!], DEFAULT_FILTERS)).toBe(0);
+  });
+});
+
+describe("area option values", () => {
+  it("round-trips all three states", () => {
+    const cases = [ANY_AREA, UNPLACED_AREA, { kind: "area" as const, name: "Fresno MSA" }];
+    for (const area of cases) {
+      expect(areaFromOptionValue(areaOptionValue(area))).toEqual(area);
+    }
+  });
+
+  it("keeps an area named like the sentinel distinct from the sentinel", () => {
+    const decoy = { kind: "area" as const, name: "unplaced" };
+    expect(areaOptionValue(decoy)).not.toBe(areaOptionValue(UNPLACED_AREA));
+    expect(areaFromOptionValue(areaOptionValue(decoy))).toEqual(decoy);
+  });
+
+  it("falls back to any for an unrecognised value, hiding nothing", () => {
+    expect(areaFromOptionValue("")).toEqual(ANY_AREA);
+    expect(areaFromOptionValue("garbage")).toEqual(ANY_AREA);
   });
 });

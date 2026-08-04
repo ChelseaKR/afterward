@@ -1,6 +1,13 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install format lint typecheck test security audit provenance-check verify build data
+.PHONY: help install format lint typecheck test security audit provenance-check verify build data \
+	dataset-verify dataset-package dataset-publish
+
+# Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
+DATASET_DIR ?= web/public/data
+DIST_DIR ?= dist
+# Floor for a believable production dataset. Real: 3,266 programs. Fixture: 60.
+MIN_PROGRAMS ?= 2000
 
 help:
 	@uv run camino --help
@@ -50,6 +57,53 @@ data-offline:
 # Regenerate the committed fixture from a real dataset. Run after `make data`.
 fixture:
 	uv run python scripts/make_fixture.py
+
+# --- Handing a production dataset to CI -----------------------------------------------
+# The deploy workflow cannot build this itself: DOL answers GitHub Actions runners with 403
+# and CareerOneStop credentials are per-user. So the dataset is built here, checked here,
+# and published as an immutable release asset that .github/workflows/deploy.yml consumes by
+# tag. Run `make data` first, then `make dataset-publish`.
+
+# Refuse to package anything that looks like the fixture, a truncated build, or a source
+# that has quietly started returning almost nothing.
+dataset-verify:
+	@test -f $(DATASET_DIR)/coverage.json || { \
+		echo "No $(DATASET_DIR)/coverage.json. Run 'make data' first." >&2; exit 1; }
+	@set -- $$(uv run python -c 'import json;d=json.load(open("$(DATASET_DIR)/coverage.json"));print(d.get("is_fixture", False), d.get("total_programs", 0), d.get("snapshot_date", "unknown"))'); \
+	if [ "$$1" != "False" ]; then \
+		echo "REFUSING: $(DATASET_DIR) is the fixture (is_fixture=true)." >&2; \
+		echo "Run 'make data' on a machine that can reach the sources." >&2; exit 1; \
+	fi; \
+	if [ "$$2" -lt $(MIN_PROGRAMS) ]; then \
+		echo "REFUSING: total_programs=$$2 is below the $(MIN_PROGRAMS) floor." >&2; exit 1; \
+	fi; \
+	files=$$(find $(DATASET_DIR)/programs -name '*.json' | wc -l | tr -d ' '); \
+	if [ "$$files" -ne "$$2" ]; then \
+		echo "REFUSING: $$files program files on disk, coverage.json claims $$2." >&2; exit 1; \
+	fi; \
+	echo "dataset ok: $$2 programs in $$files files, snapshot $$3"
+
+# Tarball plus checksum, into dist/ (gitignored). COPYFILE_DISABLE keeps macOS from
+# packing ._* companions, which would otherwise arrive as bogus programs/*.json.
+dataset-package: dataset-verify
+	@mkdir -p $(DIST_DIR)
+	@snapshot=$$(uv run python -c 'import json;print(json.load(open("$(DATASET_DIR)/coverage.json"))["snapshot_date"])'); \
+	tarball=camino-dataset-$$snapshot.tar.gz; \
+	COPYFILE_DISABLE=1 tar -czf $(DIST_DIR)/$$tarball -C $(DATASET_DIR) .; \
+	( cd $(DIST_DIR) && if command -v sha256sum >/dev/null 2>&1; then \
+		sha256sum $$tarball > $$tarball.sha256; else shasum -a 256 $$tarball > $$tarball.sha256; fi ); \
+	ls -lh $(DIST_DIR)/$$tarball $(DIST_DIR)/$$tarball.sha256
+
+# Publish the package as a release the deploy workflow can pull. The tag is the snapshot
+# date, so every deploy names exactly which dataset it published.
+dataset-publish: dataset-package
+	@set -- $$(uv run python -c 'import json;d=json.load(open("$(DATASET_DIR)/coverage.json"));print(d["snapshot_date"], d["total_programs"])'); \
+	tarball=camino-dataset-$$1.tar.gz; \
+	gh release create dataset-$$1 $(DIST_DIR)/$$tarball $(DIST_DIR)/$$tarball.sha256 \
+		--title "Dataset $$1" \
+		--notes "Site dataset built from the live sources on $$1: $$2 programs."; \
+	echo; \
+	echo "Now run the Deploy workflow with dataset_tag=dataset-$$1"
 
 web-install:
 	cd web && npm ci

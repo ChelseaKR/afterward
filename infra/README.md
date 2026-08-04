@@ -52,9 +52,58 @@ aws cloudformation update-stack \
 
 ## Redeploying
 
-Sync again and invalidate. The dataset refreshes far more slowly than the code, so a full
-invalidation is fine and cheap at this cadence.
+`.github/workflows/deploy.yml` does this. Run it by hand rather than repeating the commands
+above; the manual path is what put a 404 at `/` and `https://example.invalid` in the
+sitemap, and every guard in the workflow exists because of a specific way that went wrong.
+
+### The dataset has to come from outside CI
+
+`make data` reads the DOL ETP endpoint, which answers GitHub Actions runners with **403**,
+and enriches from CareerOneStop with per-user credentials. CI therefore builds from the
+committed 60-program fixture. A runner cannot produce production data, so the deploy does
+not try: it downloads a dataset that was built where the fetch works, and refuses anything
+that smells like the fixture.
 
 ```bash
-aws cloudfront create-invalidation --distribution-id <id> --paths "/*"
+make data              # on a machine with credentials and unblocked egress
+make dataset-publish   # verifies, tars, checksums, and cuts a dataset-<snapshot> release
+```
+
+Then run **Actions → Deploy → Run workflow** on `main` with `dataset_tag=dataset-<snapshot>`.
+The workflow builds the site from that dataset, uploads, invalidates, and smoke-tests.
+
+### What it refuses to do
+
+| Guard | Failure it prevents |
+|---|---|
+| CI must be green on the deployed commit | Publishing code that never passed lint, tests, or `make provenance-check` |
+| `main` only, `production` environment only | Publishing a branch; also the only OIDC subject the deploy role trusts |
+| `is_fixture`, a 2,000-program floor, and file count vs. manifest | Publishing the 60-program fixture, which looks entirely plausible |
+| Placeholder-host scan over the export | `https://example.invalid` in `sitemap.xml` and `robots.txt` |
+| Every built file matched to an S3 object by name | `sync` exiting 0 having skipped `index.html`, so `/` 404s |
+| `head-object` on a hashed asset and on `index.html` | Cache headers not landing, so the dataset sticks or assets re-download |
+| Live fetch of `/`, `/en/`, `/es/`, `/robots.txt`, `/sitemap.xml`, `/data/coverage.json` | Declaring success on a site nobody can load, or one serving a stale snapshot |
+
+The live `coverage.json` check compares the snapshot date and program count against what was
+just uploaded, so a stale edge response fails the deploy instead of passing it.
+
+### Two details worth knowing
+
+The upload runs three passes: hashed assets without `--delete`, then everything else with
+it, then hashed assets with it. Assets exist before any page references them, and orphaned
+chunks are pruned only after the pages that used them are gone.
+
+Cache headers are verified on the S3 objects, not over HTTPS, because
+`SiteResponseHeaders` sets `Cache-Control: public, max-age=0, must-revalidate` as an
+overriding custom header on the only cache behaviour. Every edge response carries that,
+including hashed assets — so the object's `immutable` header is real but invisible from
+outside, and the year-long asset caching the split is meant to buy is not currently
+happening at the edge. Removing that custom header would let the per-object values through.
+
+Invalidation is a full `/*`. The dataset refreshes on a quarterly-ish cadence, so precision
+would only be a way to miss something.
+
+```bash
+# Manual fallback, if Actions is unavailable. Everything above still applies.
+aws cloudfront create-invalidation --distribution-id E166CPAG407D0L --paths "/*"
 ```

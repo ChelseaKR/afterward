@@ -102,25 +102,33 @@ Resources:
         Comment: Security headers for a static site that collects nothing and embeds nothing.
         CustomHeadersConfig:
           Items:
-            - Header: Cache-Control
-              Override: true
-              Value: public, max-age=0, must-revalidate
+            # Cache-Control is deliberately NOT set here. An overriding custom header applies
+            # to every response from the one cache behaviour, which silently clobbered the
+            # `immutable` value on hashed assets: content-addressed chunks that never change
+            # were being revalidated on every visit while the upload's own headers looked
+            # correct on the objects. Per-object Cache-Control from S3 now passes through,
+            # which is where the split between immutable assets and revalidated HTML belongs.
+            #
             # This site asks for no device capability at all. Denying the lot is not
             # defensive posturing; there is genuinely nothing here that needs any of it.
             - Header: Permissions-Policy
               Override: true
               Value: camera=(), geolocation=(), microphone=(), payment=(), usb=(), interest-cohort=()
-            # Everything is first-party and static. No inline event handlers, no third-party
-            # scripts, no remote fonts, no analytics, and no form posts anywhere.
-            - Header: Content-Security-Policy
-              Override: true
-              Value: >-
-                default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'
-                'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self';
-                form-action 'none'; frame-ancestors 'none'; base-uri 'self';
-                object-src 'none'; upgrade-insecure-requests
         Name: !Sub "${AWS::StackName}-security-headers"
         SecurityHeadersConfig:
+          # CloudFront rejects Content-Security-Policy as a custom header — it owns the
+          # recognised security headers and wants them declared here instead.
+          #
+          # Everything is first-party and static: no third-party scripts, no remote fonts,
+          # no analytics, no form posts. 'unsafe-inline' covers the framework's hydration
+          # payload and the ten-line nav script in the layout.
+          ContentSecurityPolicy:
+            Override: true
+            ContentSecurityPolicy: >-
+              default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'
+              'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self';
+              form-action 'none'; frame-ancestors 'none'; base-uri 'self';
+              object-src 'none'; upgrade-insecure-requests
           ContentTypeOptions:
             Override: true
           # Nothing here is meant to be framed, and a site wearing California's design

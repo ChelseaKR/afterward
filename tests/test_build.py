@@ -21,6 +21,7 @@ from camino.build import (
     match_occupations,
     peer_medians,
     program_payload,
+    search_entry,
     unmapped_cities,
 )
 from camino.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
@@ -648,6 +649,54 @@ State,California,2024-2034,4,15-1211,Computer Systems Analysts,300,330,30,10.0,1
     def test_regions_are_resolved_per_occupation_not_once_per_program(self) -> None:
         payload = self._payload("Fresno", "15-1252", "29-1141", "15-1211")
         assert [o["region"] is not None for o in payload["occupations"]] == [True, True, False]
+
+
+class TestSearchEntryArea:
+    """The search index must be able to filter by area without inventing one."""
+
+    def _entry(self, region: dict | None, city: str | None = "Fresno") -> dict:
+        program = {
+            "uuid": "u1",
+            "program_name": "Software Development",
+            "provider_name": "Fresno City College",
+            "location": {"city": city},
+            "region": region,
+            "cost": {"total_out_of_pocket": None, "total_is_complete": True},
+            "length": {"weeks": None},
+            "soc_codes": [],
+            "occupations": [],
+            "outcomes": {
+                "completion_rate": None,
+                "employment_rate_q2": None,
+                "median_earnings": None,
+                "reported": False,
+            },
+        }
+        return search_entry(program)
+
+    def test_a_placed_program_carries_its_areas_short_name(self) -> None:
+        entry = self._entry(
+            {
+                "area_name": "Fresno MSA (Fresno and Madera Counties)",
+                "area_short_name": "Fresno MSA",
+                "area_type": "Metropolitan Area",
+                "matched_on": "principal_city",
+            }
+        )
+        # The short name only: the county gloss in area_name is a fetch away on the program
+        # page and would cost payload on every row for a filter that never reads it.
+        assert entry["a"] == "Fresno MSA"
+
+    def test_an_unplaced_program_carries_null_not_a_bucket(self) -> None:
+        # Clovis is minutes from Fresno and in Fresno County. EDD does not name it, so the
+        # index says so rather than filing it under the area a reader would assume.
+        entry = self._entry(None, city="Clovis")
+        assert entry["a"] is None
+        assert entry["c"] == "Clovis"
+
+    def test_the_key_is_always_written(self) -> None:
+        # So a consumer can tell an unplaced program from an index built before this field.
+        assert "a" in self._entry(None)
 
 
 class TestAreaCoverageReporting:

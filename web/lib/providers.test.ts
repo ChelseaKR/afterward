@@ -9,6 +9,7 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     n: "Program",
     p: "Fresno City College",
     c: "Fresno",
+    a: "Fresno MSA",
     $: 4000,
     $partial: false,
     w: 30,

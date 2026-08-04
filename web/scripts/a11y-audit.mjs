@@ -89,6 +89,12 @@ if (SINGLE) {
     ["Occupation index (Spanish)", join(OUT, "es", "occupations", "index.html")],
     ["Provider index (English)", join(OUT, "en", "providers", "index.html")],
     ["Provider index (Spanish)", join(OUT, "es", "providers", "index.html")],
+    // The methodology page is the one page here that is mostly prose, and the only one a
+    // named provider is likely to read end to end before disputing a figure. It is also the
+    // only template built from headings, lists and definition lists rather than the measure
+    // grid every other page reuses, so nothing else covers its structure.
+    ["About (English)", join(OUT, "en", "about", "index.html")],
+    ["About (Spanish)", join(OUT, "es", "about", "index.html")],
   ].filter(([, file]) => file && existsSync(file));
 
   if (targets.length === 0) {

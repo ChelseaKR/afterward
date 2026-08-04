@@ -5,6 +5,7 @@ import { Measure } from "@/components/Measure";
 import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
+import type { ProgramOccupation } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
 
@@ -96,6 +97,81 @@ const REGION_COPY: Record<Lang, RegionCopy> = {
       `California están en esta situación.`,
   },
 };
+
+/**
+ * The occupation this program's figures actually describe, in words a reader can check.
+ *
+ * Falls back to the SOC code and then to a generic phrase, because every sentence built from
+ * this reads "…reports that work inside X", and an empty X would turn a specific claim into a
+ * vague one at exactly the moment the page is trying to be precise.
+ */
+function occupationName(occupation: ProgramOccupation, lang: Lang): string {
+  return occupation.title ?? occupation.soc_code ?? dict(lang).unnamedOccupation;
+}
+
+/** SOC codes as prose: "31-1121 and 31-1122" in English, "31-1121 y 31-1122" in Spanish. */
+function socList(codes: readonly string[], lang: Lang): string {
+  return new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(codes);
+}
+
+/**
+ * Said above the figures whenever they belong to a wider occupation than the program teaches.
+ *
+ * This sits before the numbers rather than after them on purpose. Read afterwards it is a
+ * footnote to a wage the reader has already taken as their own; read first it changes what
+ * the wage is. It names the wider occupation, because "these numbers are broader" without
+ * saying broader than what leaves the reader with a doubt they cannot act on, and it names
+ * the program's own SOC codes so the claim can be checked against the published
+ * classification rather than taken on trust.
+ *
+ * The two aggregate kinds get different sentences because they have different causes, and
+ * the cause is the part that tells a reader whether a narrower figure exists anywhere: a
+ * broad group is the category the classification files this occupation under, while a hybrid
+ * is a federal publication bucket for occupations that cannot be measured apart. Neither is
+ * hedged as an approximation — the figures are exactly right about a bigger population.
+ */
+function AggregateNote({ occupation, lang }: { occupation: ProgramOccupation; lang: Lang }) {
+  const t = dict(lang);
+  const { match } = occupation;
+  if (match.kind === "exact") return null;
+
+  const group = occupationName(occupation, lang);
+  const codes = socList(match.program_soc_codes, lang);
+
+  return (
+    <p className="match-note">
+      <strong>{t.aggregateHeading}</strong>
+      <br />
+      {match.kind === "soc_broad_group"
+        ? t.aggregateBroadGroup(group, codes)
+        : t.aggregateHybrid(group, codes)}
+    </p>
+  );
+}
+
+/**
+ * The usual-entry credential, in the one case where it is missing because this site removed it.
+ *
+ * Deliberately not a `<Measure value={null}>`. That renders the page's standard not-reported
+ * treatment, whose explanation says the provider did not report this — which here is a false
+ * statement about a named organisation, repeated on 135 pages. The provider reported its
+ * program faithfully; California published a credential for a group of occupations; this
+ * project declined to put the second next to the first. The sentence saying so is visible
+ * rather than a `title` attribute, since a tooltip is exactly where the wrong explanation was
+ * hiding, and since it is unreachable on a phone.
+ */
+function WithheldEducation({ occupation, lang }: { occupation: ProgramOccupation; lang: Lang }) {
+  const t = dict(lang);
+  return (
+    <div className="measure">
+      <dt>{t.entryEducation}</dt>
+      <dd className="withheld">
+        {t.entryEducationWithheld}
+        <small>{t.entryEducationWithheldNote(occupationName(occupation, lang))}</small>
+      </dd>
+    </div>
+  );
+}
 
 /**
  * Build the statewide comparison for one measure, or undefined when either side is missing.
@@ -301,6 +377,11 @@ export default async function ProgramPage({
                     occupation.title
                   )}
                 </h3>
+                {/*
+                  * Before the panel, not after it: by the time someone has read a wage they
+                  * have already decided whose wage it is.
+                  */}
+                <AggregateNote occupation={occupation} lang={lang} />
                 <dl className="measure-grid panel">
                   <Measure
                     label={t.medianWage}
@@ -323,11 +404,21 @@ export default async function ProgramPage({
                     value={signedPercent(occupation.percent_change, lang)}
                     lang={lang}
                   />
-                  <Measure
-                    label={t.entryEducation}
-                    value={translateTerm(occupation.entry_level_education, lang)}
-                    lang={lang}
-                  />
+                  {/*
+                    * Two nulls that mean opposite things, told apart before either is drawn.
+                    * `entry_level_education_withheld` is the pipeline saying it had a value
+                    * and removed it; a plain null is the absence the rest of the page's
+                    * not-reported treatment correctly describes.
+                    */}
+                  {occupation.match.entry_level_education_withheld ? (
+                    <WithheldEducation occupation={occupation} lang={lang} />
+                  ) : (
+                    <Measure
+                      label={t.entryEducation}
+                      value={translateTerm(occupation.entry_level_education, lang)}
+                      lang={lang}
+                    />
+                  )}
                 </dl>
                 {placed && occupation.region === null && (
                   <p className="compare-note" style={{ marginTop: "0.5rem" }}>
@@ -354,6 +445,17 @@ export default async function ProgramPage({
           </a>
         </p>
       )}
+
+      {/*
+        * Every figure above is somebody else's, filed by this provider or published by the
+        * state, and this page is where a reader has just formed an opinion about a named
+        * organisation from them. The route to the methodology belongs here rather than only
+        * in the site chrome. It is a link on the page and not in the footer because the
+        * footer lives in the shared layout, which this change does not own.
+        */}
+      <p className="browse-more">
+        <Link href={`/${lang}/about/`}>{t.methodologyLink} →</Link>
+      </p>
     </div>
   );
 }

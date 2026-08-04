@@ -6,10 +6,20 @@ import { useDeferredValue, useMemo, useState } from "react";
 import { dict, type Lang } from "@/lib/i18n";
 import { money, percent, signedPercent, tidyName } from "@/lib/format";
 import {
+  ANY_AREA,
+  UNPLACED_AREA,
+  areaFromOptionValue,
+  areaOf,
+  areaOptionValue,
+  areas,
   cities,
   isShrinking,
+  matchesArea,
   runSearch,
   summarise,
+  unplacedMatches,
+  type AreaFilter,
+  type Filters,
   type Outlook,
   type Sort,
 } from "@/lib/search";
@@ -21,25 +31,74 @@ import { slugify } from "@/lib/providers";
 const COST_CAPS = [2000, 5000, 10000, 20000];
 const PAGE_SIZE = 25;
 
+/** Matches the private helper in lib/i18n.ts: grouped digits, the same in both languages. */
+
 export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: Lang }) {
   const t = dict(lang);
   const [query, setQuery] = useState("");
   const [onlyReported, setOnlyReported] = useState(false);
   const [outlook, setOutlook] = useState<Outlook>("any");
   const [maxCost, setMaxCost] = useState<number | null>(null);
+  const [area, setArea] = useState<AreaFilter>(ANY_AREA);
   const [city, setCity] = useState<string | null>(null);
   const [sort, setSort] = useState<Sort>("relevance");
   const [limit, setLimit] = useState(PAGE_SIZE);
 
   const deferredQuery = useDeferredValue(query);
 
-  const results = useMemo(
-    () => runSearch(programs, { query: deferredQuery, onlyReported, outlook, maxCost, city, sort }),
-    [programs, deferredQuery, onlyReported, outlook, maxCost, city, sort],
+  const filters = useMemo<Filters>(
+    () => ({ query: deferredQuery, onlyReported, outlook, maxCost, area, city, sort }),
+    [deferredQuery, onlyReported, outlook, maxCost, area, city, sort],
   );
 
+  const results = useMemo(() => runSearch(programs, filters), [programs, filters]);
+
   const stats = useMemo(() => summarise(programs), [programs]);
-  const cityOptions = useMemo(() => cities(programs), [programs]);
+  const areaOptions = useMemo(() => areas(programs), [programs]);
+
+  /*
+    Region and city, and why both survive.
+
+    Region is the better grain and is therefore the primary control: in this snapshot it
+    collapses a 227-entry city list into 27 published labour-market areas, and someone
+    weighing a move thinks in "the Bakersfield area", not in city limits. Counts below are
+    that snapshot's; the code reads them from the data. Region cannot replace city
+    outright, because California's published areas are titled after two or three principal
+    cities and a program joins one only when its city is one of those. That leaves 1,741
+    programs — 53% — in cities no area title names, and city is the only geographic handle
+    they have. Dropping city would take the last one away from more than half the dataset.
+
+    Two independent controls would let a reader ask for Fresno MSA and Visalia at once and
+    get a blank screen with no explanation, so the city list derives from the region
+    selection instead: it lists only the cities inside whatever region is chosen, and
+    changing region clears a stale city. One control narrows the other; neither can
+    contradict it.
+
+    What neither control does is guess. A region never absorbs a nearby unplaced city, so
+    Clovis stays out of Fresno MSA and Pleasant Hill stays out of the Oakland MD even though
+    both sit in those areas' counties. Everything below exists to make that visible instead
+    of letting the filter imply a catchment it does not have.
+  */
+  const cityOptions = useMemo(
+    () => cities(programs.filter((program) => matchesArea(program, area))),
+    [programs, area],
+  );
+
+  // Only asked for a named region: under "any" nothing is hidden, and under "unplaced" these
+  // programs are the result set rather than the omission from it.
+  const hiddenUnplaced = useMemo(
+    () => (area.kind === "area" ? unplacedMatches(programs, filters) : 0),
+    [programs, filters, area.kind],
+  );
+
+  function selectArea(next: AreaFilter) {
+    setArea(next);
+    // The city list is a subset of the region, so a city carried over from another one would
+    // silently return nothing and read as "no programs here" rather than "these cannot both
+    // be true".
+    setCity(null);
+    setLimit(PAGE_SIZE);
+  }
 
   // Comparison selection, kept as ids so it survives filtering: picking two programs and
   // then narrowing the search should not silently discard the choice.
@@ -69,6 +128,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     setOnlyReported(false);
     setOutlook("any");
     setMaxCost(null);
+    setArea(ANY_AREA);
     setCity(null);
     setSort("relevance");
     setLimit(PAGE_SIZE);
@@ -117,6 +177,39 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         </div>
 
         <div className="field">
+          <label htmlFor="area">{t.region}</label>
+          <select
+            id="area"
+            value={areaOptionValue(area)}
+            aria-describedby="area-note"
+            onChange={(e) => selectArea(areaFromOptionValue(e.target.value))}
+          >
+            <option value="">{t.filterAnyCity}</option>
+            {areaOptions.map((option) => (
+              <option
+                key={option.name}
+                value={areaOptionValue({ kind: "area", name: option.name })}
+              >
+                {option.name} ({option.count.toLocaleString()})
+              </option>
+            ))}
+            {/*
+              Named and selectable, never a silent remainder. Without this option the 53% of
+              programs the state places nowhere would be reachable only by leaving the filter
+              alone, which is indistinguishable from hiding them.
+            */}
+            {stats.unplaced > 0 && (
+              <option value={areaOptionValue(UNPLACED_AREA)}>
+                {t.unplacedOption(stats.unplaced)}
+              </option>
+            )}
+          </select>
+          <p id="area-note" style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}>
+            {t.areaNote(stats.unplaced, stats.total)}
+          </p>
+        </div>
+
+        <div className="field">
           <label htmlFor="city">{t.filterCity}</label>
           <select
             id="city"
@@ -126,10 +219,20 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
               setLimit(PAGE_SIZE);
             }}
           >
-            <option value="">{t.filterAnyCity}</option>
+            {/*
+              The "all" label follows the region, so it never claims a reach the list does
+              not have: with a region chosen these are that region's cities, not California's.
+            */}
+            <option value="">
+              {area.kind === "any"
+                ? t.filterAnyCity
+                : area.kind === "unplaced"
+                  ? t.anyCityUnplaced
+                  : t.anyCityInArea}
+            </option>
             {cityOptions.map((option) => (
               <option key={option.name} value={option.name}>
-                {option.name} ({option.count})
+                {option.name} ({option.count.toLocaleString()})
               </option>
             ))}
           </select>
@@ -168,8 +271,11 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
 
       <section aria-label={t.searchLabel}>
         {/*
-          The two facts that justify the whole dataset, stated before any result. Both are
-          public today and neither is discoverable beside the other anywhere else.
+          The facts that justify the whole dataset, stated before any result. The first two
+          are public today and neither is discoverable beside the other anywhere else. The
+          third is about the dataset's own reach rather than California's training system,
+          and it sits here because a reader deserves it before, not after, they narrow by
+          region and wonder where everything went.
         */}
         <ul className="stat-strip">
           <li>{t.statReported(stats.reported, stats.total)}</li>
@@ -186,7 +292,45 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
               {t.showThese}
             </button>
           </li>
+          {/*
+            Stated here rather than only inside the filter, because it is a fact about the
+            dataset a reader is owed before they reach for a region: half of these programs
+            are somewhere the state's own geography does not describe.
+          */}
+          {stats.unplaced > 0 && (
+            <li>
+              {t.statUnplaced(stats.unplaced, stats.total)}{" "}
+              <button type="button" className="linklike" onClick={() => selectArea(UNPLACED_AREA)}>
+                {t.showThese}
+              </button>
+            </li>
+          )}
         </ul>
+
+        {/*
+          The cost of the region filter, in the exact terms of the search that is runnint.
+          A reader who narrowed to Fresno MSA must not read the result as "everything near
+          Fresno", and the honest correction is the count of what a region can never include.
+        */}
+        {hiddenUnplaced > 0 && (
+          <div className="panel panel-quiet" style={{ marginBottom: "1.5rem" }}>
+            <p style={{ margin: 0 }}>
+              {t.areaHidesUnplaced(hiddenUnplaced)}{" "}
+              <button type="button" className="linklike" onClick={() => selectArea(UNPLACED_AREA)}>
+                {t.showThese}
+              </button>
+            </p>
+          </div>
+        )}
+
+        {area.kind === "unplaced" && (
+          <div className="panel panel-quiet" style={{ marginBottom: "1.5rem" }}>
+            <p>
+              <strong>{t.unplacedHeading}</strong>
+            </p>
+            <p style={{ margin: 0 }}>{t.unplacedBody}</p>
+          </div>
+        )}
 
         <div className="results-head">
           <p className="results-count" role="status" aria-live="polite">
@@ -270,6 +414,9 @@ function ResultCard({
   const t = dict(lang);
   const shrinking = isShrinking(entry.g);
   const atLimit = compareFull && !compared;
+  // Named only where the state named it. A card with no region says nothing about where the
+  // program is beyond its city, which is exactly the claim the data supports.
+  const region = areaOf(entry);
 
   return (
     <li className={`card${entry.r ? "" : " is-unreported"}${shrinking ? " is-shrinking" : ""}`}>
@@ -293,6 +440,7 @@ function ResultCard({
           <Link href={`/${lang}/providers/${slugify(entry.p)}/`}>{tidyName(entry.p)}</Link>
         ) : null}
         {entry.c ? ` · ${entry.c}` : ""}
+        {region === null ? "" : ` · ${region}`}
       </p>
 
       <dl className="facts">

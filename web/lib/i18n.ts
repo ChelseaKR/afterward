@@ -116,6 +116,26 @@ const en = {
   benchmarkNote:
     "Compared with the median California program that reported this same measure. Programs reporting nothing are not in the comparison, so this is a comparison among those willing to publish.",
 
+areaNote: (unplaced: number, total: number) =>
+      `Regions are California's own labour-market areas. A program joins one only when its ` +
+      `city is named in that region's title, so ${fmt(unplaced)} of ${fmt(total)} programs — ` +
+      `some of them inside these regions' own counties — belong to no region here. Picking a ` +
+      `region hides those programs; it does not place them somewhere else.`,
+    unplacedOption: (n: number) => `Not placed in a region (${fmt(n)})`,
+    anyCityInArea: "Any city in this region",
+    anyCityUnplaced: "Any city with no region",
+    areaHidesUnplaced: (n: number) =>
+      `${fmt(n)} more programs match this search but are in cities California places in no ` +
+      `region. They are not shown here, and they are not somewhere else.`,
+    unplacedHeading: "Programs California places in no region",
+    unplacedBody:
+      "Their cities are not named in any published labour-market area, so no region's pay " +
+      "figures are claimed for them. That is a gap in the state's geography rather than a " +
+      "judgement about the programs, and it covers cities inside the regions listed above as " +
+      "well as cities far from any of them.",
+    statUnplaced: (n: number, total: number) =>
+      `${fmt(n)} of ${fmt(total)} are in cities California places in no region`,
+
   aboutData: "Where this comes from",
   snapshot: (d: string) => `Data snapshot: ${d}`,
   viewProgram: "Program details",
@@ -202,6 +222,107 @@ const en = {
   similarWork: "Similar work",
   similarWorkNote:
     "O*NET, the U.S. Department of Labor's occupation database, names these as occupations involving work similar to this one — its own reading of the job, not a grouping by code. They keep O*NET's order, and only those California publishes a projection for are shown.",
+
+  // ---- Figures borrowed from a wider occupation ----
+  // California publishes no estimate for some occupations and reports that work only inside a
+  // larger one. Those programs used to show the larger occupation's numbers with nothing said
+  // about it. These strings say it, in the reader's own terms: the numbers are real, they are
+  // California's, and they are about more jobs than the one this program teaches.
+  aggregateHeading: "These figures describe a wider group of jobs",
+  aggregateBroadGroup: (group: string, codes: string) =>
+    `California publishes no separate pay or openings figures for the occupation this program trains for (${codes}). It reports that work only inside ${group}, the larger category the occupation classification files it under, so the pay, openings and projected change below belong to that whole category. Read them as the range this job sits inside, not as a figure for the job itself.`,
+  aggregateHybrid: (group: string, codes: string) =>
+    `California publishes no separate pay or openings figures for the occupation this program trains for (${codes}). The federal classification it follows counts that work together with several related jobs under ${group}, because they cannot be measured apart, so the pay, openings and projected change below belong to the combined group. Read them as the range this job sits inside, not as a figure for the job itself.`,
+  unnamedOccupation: "the occupation California reports it under",
+  entryEducationWithheld: "Not shown for this program",
+  entryEducationWithheldNote: (group: string) =>
+    `California does publish a usual entry requirement for ${group}, but it is one answer for the whole group and can name a degree this program's own occupation never asks for. It is left out here rather than shown beside a program it may not describe. That is this site's decision, not something the provider failed to report.`,
+
+  // ---- Methodology ----
+  methodologyLink: "How this site gets its figures, and what they do not tell you",
+  aboutTitle: "About these figures",
+  aboutLede:
+    "This site publishes performance figures about named California training providers, in public, and puts them side by side. That is worth doing, and it is worth being exact about what the numbers are. Everything below describes where each figure comes from, who produced it, what it leaves out, and what to do if you think it misrepresents you.",
+  aboutIndependence:
+    "Camino is an independent, non-commercial project. It is not affiliated with, endorsed by, or operated by the State of California, the California Employment Development Department, any California workforce development board, or the U.S. Department of Labor. It uses California's open-source design system, which is why these pages resemble official state websites. They are not official ones.",
+  aboutProgramsCounted: "Programs described here",
+  aboutProvidersNamed: "Providers named here",
+  aboutProgramsReporting: "Programs that report any outcome",
+
+  aboutSourcesHeading: "Where every figure comes from",
+  aboutSourcesBody:
+    "Nothing here is original research, nothing is estimated by this project, and nothing is a prediction of its own. Every number on the site is copied from one of three public records and can be traced back to it.",
+  aboutSourceProgramsLabel: "Programs, providers, cost, length and outcomes",
+  aboutSourceProgramsBody:
+    "The U.S. Department of Labor's Eligible Training Provider performance report (ETA-9171), which states file under the Workforce Innovation and Opportunity Act and the Department is required to publish. It is the source of every provider name, price, length, and every measure of what happened to the people who enrolled.",
+  aboutSourceOccupationsLabel: "Pay, projected openings and job outlook",
+  aboutSourceOccupationsBody:
+    "California's Employment Development Department: its long-term occupational employment projections for 2024 to 2034, and its wage statistics where the projections carry no wage. These are the state's own ten-year estimates for an occupation, statewide and for the areas it names.",
+  aboutSourceFederalLabel: "Job descriptions and skills",
+  aboutSourceFederalBody:
+    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content. It serves English only, which is why an occupation description stays in English on a Spanish page.",
+  aboutSourcesDates:
+    "Each source, its licence, and the date it was read are recorded in the project's public provenance file, and the whole dataset can be rebuilt from those sources by anyone.",
+  aboutProvenanceLink: "Read the provenance file",
+
+  aboutSelfReportedHeading: "The outcomes are self-reported, and this site does not check them",
+  aboutSelfReportedBody:
+    "Completion, employment and earnings are reported by each training provider to California, and by California to the federal government. This project reproduces what was filed. It does not audit it, cannot confirm it, and has no way to tell a carefully compiled figure from a careless one. A number here is evidence of what a provider reported, not proof of what happened.",
+  aboutSelfReportedSecond:
+    "This matters most in the direction people do not expect. The measures are not adjusted for who a program enrols. A program that takes people furthest from work will tend to report lower employment and lower earnings than one that enrols people already close to a job, and nothing in this data separates the two.",
+
+  aboutMissingHeading: "What a blank means",
+  aboutMissingBody:
+    "A missing value here means not reported or withheld. It never means zero, and it is never rendered as one. Under federal rules, results for small groups are suppressed so that individual participants cannot be identified, so a blank can equally be a program too small to publish safely as one that filed nothing at all.",
+  aboutMissingSecond: (reporting: string, total: string) =>
+    `Roughly a third of California's programs report nothing whatsoever: ${reporting} of ${total} publish at least one measure. That is a large enough share that hiding it would distort the whole site, so a program that reported nothing is listed with everything else and says so plainly. Absence of data is not evidence that a program performs badly, and this interface is built to keep those two ideas apart.`,
+
+  aboutQuarterHeading: "The earnings figure covers three months, not a year",
+  aboutQuarterBody:
+    "Median earnings under this federal measure are earnings in the second quarter after someone left the program — a single quarter, roughly three months. It is not an annual salary and it is not a starting wage. It sits on the same page as an occupation's typical yearly pay, which is a different measure from a different source over a different period, and the two must not be read against each other.",
+
+  aboutComparisonsHeading: "What the comparisons claim, and what they do not",
+  aboutComparisonsBody:
+    "A rate on its own is unreadable: nobody knows whether 45% employed is good. So where a program reports a measure, it is shown against the median California program that reported the same measure. Programs that reported nothing are not in that median, which makes it a comparison among those willing to publish rather than a comparison against the state as a whole.",
+  aboutComparisonsSecond:
+    "“Better than typical” means one reported number is above that median. It is not a judgement of teaching, of a provider, or of whether a program is right for you, and it takes no account of who enrolled, where, or in what year. Where two programs are placed side by side, the marked cell is simply the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best.",
+  aboutComparisonsThird:
+    "No comparison is ever built out of a blank. A program that reported nothing is never called below average, because there is nothing to compare and saying so would be an accusation rather than a fact.",
+
+  aboutAggregateHeading: "When an occupation figure describes more jobs than one",
+  aboutAggregateBody: (aggregate: string) =>
+    `California does not publish an estimate for every occupation. For some, the state reports the work only inside a larger occupation — the category above it, or a bucket the federal statistics use for jobs they cannot measure separately. Rather than leave those programs with no occupation figures at all, this site shows the larger occupation's and says so on the page, naming the wider occupation and the program's own occupation code. That applies to ${aggregate} of the program pages here.`,
+  aboutAggregateSecond:
+    "One figure is deliberately dropped in that case instead of borrowed: the usual entry requirement. A median wage over a wider population is still an approximation of something a trainee belongs to. A credential is not — it is one answer assigned to the whole group, and on a group that mixes a master's-level occupation with a community-college certificate it is not approximate, it is wrong. Telling someone they need a degree they do not need, for the job they are training for right now, is the same class of error as printing a suppressed number as zero.",
+
+  aboutLimitsHeading: "Known limitations",
+  aboutLimitsBody:
+    "These are the things this site gets wrong or cannot yet do. They are listed here rather than discovered later.",
+  aboutLimitTranslation:
+    "Occupation titles and program descriptions appear in English on Spanish pages. The interface and the controlled vocabularies are translated; the open-ended text from the federal and state feeds is not, because it is published in English only.",
+  aboutLimitEtpl:
+    "The programs here are the ones California filed federally. Whether the state's own eligible training provider list carries programs the federal file omits is unresolved, because California publishes no bulk export of it. A program missing from this site is not necessarily a program that does not exist.",
+  aboutLimitUnmatched: (unmatched: string) =>
+    `${unmatched} programs show no occupation figures at all. California publishes no projection for the occupation they are tagged with, and no nearby occupation is substituted, because a similar-sounding job with a different wage would look exactly like a correct answer.`,
+  aboutLimitArea: (unplaced: string) =>
+    `${unplaced} programs show no regional pay figure. Their city is not one of the metropolitan or rural areas California names when it publishes wages, and a neighbouring area's numbers are not borrowed to fill the gap.`,
+  aboutLimitUrl: (noUrl: string) =>
+    `${noUrl} programs have no working website link. Most never filed one, and a handful filed something that was not a web address at all, which is dropped rather than turned into a link.`,
+  aboutLimitProjections:
+    "Occupation projections are the state's ten-year estimates, not guarantees. A job California expects to grow may not, and a job it expects to shrink may still be the right choice for a particular person in a particular place.",
+  aboutLimitSnapshot: (date: string) =>
+    `Everything here is a snapshot taken on ${date}. The federal file is refreshed on a quarterly cadence, so a figure corrected upstream since that date is not corrected here yet.`,
+
+  aboutCorrectionsHeading: "If a figure here misrepresents you",
+  aboutCorrectionsBody:
+    "This site names real organisations and publishes numbers about them, so there has to be a way to say it got something wrong. Please open an issue on the project's public repository, naming the program and the figure you are disputing.",
+  aboutCorrectionsSecond:
+    "Two outcomes are possible and they are worth telling apart. Where the error is this project's — a bad join, a mislabelled measure, a program attached to the wrong occupation — it will be fixed, and the correction is not conditional on who asks. Where the underlying public record is wrong, the correction has to go through the body that published it, since this site reproduces that record and cannot quietly diverge from it; the issue thread is a reasonable place to note that a correction is in progress, and that note will be honoured here.",
+  aboutCorrectionsLink: "Open an issue about a figure on this site",
+
+  aboutAdviceHeading: "This is not advice",
+  aboutAdviceBody:
+    "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counsellor before you decide.",
 };
 
 /**
@@ -316,6 +437,26 @@ const es: Dictionary = {
   benchmarkNote:
     "Comparado con el programa típico de California que reportó esta misma medida. Los programas que no reportan nada no entran en la comparación.",
 
+areaNote: (unplaced, total) =>
+      `Las regiones son las áreas laborales que publica California. Un programa entra en una ` +
+      `solo si su ciudad aparece en el título de esa región, así que ${fmt(unplaced)} de ` +
+      `${fmt(total)} programas —algunos dentro de los condados de esas mismas regiones— aquí ` +
+      `no pertenecen a ninguna. Elegir una región los oculta; no los coloca en otro lugar.`,
+    unplacedOption: (n) => `Sin región asignada (${fmt(n)})`,
+    anyCityInArea: "Cualquier ciudad de esta región",
+    anyCityUnplaced: "Cualquier ciudad sin región",
+    areaHidesUnplaced: (n) =>
+      `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero están en ciudades que ` +
+      `California no ubica en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
+    unplacedHeading: "Programas que California no ubica en ninguna región",
+    unplacedBody:
+      "Sus ciudades no aparecen en ninguna área laboral publicada, así que no se les atribuye " +
+      "el pago de ninguna región. Es un vacío en la geografía del estado, no un juicio sobre " +
+      "los programas, y abarca tanto ciudades dentro de las regiones de arriba como ciudades " +
+      "lejos de todas ellas.",
+    statUnplaced: (n, total) =>
+      `${fmt(n)} de ${fmt(total)} están en ciudades que California no ubica en ninguna región`,
+
   aboutData: "De dónde vienen estos datos",
   snapshot: (d: string) => `Datos actualizados: ${d}`,
   viewProgram: "Detalles del programa",
@@ -394,6 +535,103 @@ const es: Dictionary = {
   similarWork: "Trabajos similares",
   similarWorkNote:
     "O*NET, la base de datos ocupacional del Departamento de Trabajo de EE. UU., señala estas ocupaciones como trabajos parecidos a este: es su propia lectura del oficio, no una agrupación por código. Conservan el orden de O*NET y solo aparecen las que California proyecta.",
+
+  // ---- Figures borrowed from a wider occupation ----
+  aggregateHeading: "Estas cifras describen un grupo de ocupaciones más amplio",
+  aggregateBroadGroup: (group: string, codes: string) =>
+    `California no publica cifras de pago ni de vacantes por separado para la ocupación que enseña este programa (${codes}). Solo reporta ese trabajo dentro de ${group}, la categoría más amplia en la que lo coloca la clasificación ocupacional, así que el pago, las vacantes y el cambio proyectado que aparecen abajo son los de esa categoría completa. Léalos como el rango en el que cae esta ocupación, no como una cifra de la ocupación misma.`,
+  aggregateHybrid: (group: string, codes: string) =>
+    `California no publica cifras de pago ni de vacantes por separado para la ocupación que enseña este programa (${codes}). La clasificación federal que sigue cuenta ese trabajo junto con varias ocupaciones relacionadas bajo ${group}, porque no se pueden medir por separado, así que el pago, las vacantes y el cambio proyectado que aparecen abajo son los del grupo combinado. Léalos como el rango en el que cae esta ocupación, no como una cifra de la ocupación misma.`,
+  unnamedOccupation: "la ocupación bajo la cual California lo reporta",
+  entryEducationWithheld: "No se muestra para este programa",
+  entryEducationWithheldNote: (group: string) =>
+    `California sí publica un requisito de estudios habitual para ${group}, pero es una sola respuesta para todo el grupo y puede exigir un título que la ocupación propia de este programa nunca pide. Se omite aquí en vez de mostrarlo junto a un programa al que quizá no corresponde. Es una decisión de este sitio, no un dato que la institución haya dejado de reportar.`,
+
+  // ---- Methodology ----
+  methodologyLink: "Cómo se obtienen las cifras de este sitio y qué no le dicen",
+  aboutTitle: "Sobre estas cifras",
+  aboutLede:
+    "Este sitio publica en abierto cifras de desempeño sobre instituciones de capacitación de California, con nombre y apellido, y las pone una al lado de la otra. Vale la pena hacerlo, y vale la pena ser preciso sobre qué son esas cifras. Todo lo que sigue explica de dónde sale cada dato, quién lo produjo, qué deja fuera y qué hacer si usted cree que lo representa mal.",
+  aboutIndependence:
+    "Camino es un proyecto independiente y sin fines de lucro. No está afiliado ni respaldado ni operado por el estado de California, el Departamento de Desarrollo del Empleo de California, ninguna junta local de desarrollo laboral ni el Departamento de Trabajo de EE. UU. Usa el sistema de diseño de código abierto de California, y por eso estas páginas se parecen a los sitios oficiales del estado. No lo son.",
+  aboutProgramsCounted: "Programas descritos aquí",
+  aboutProvidersNamed: "Instituciones nombradas aquí",
+  aboutProgramsReporting: "Programas que reportan algún resultado",
+
+  aboutSourcesHeading: "De dónde sale cada cifra",
+  aboutSourcesBody:
+    "Aquí no hay investigación propia, este proyecto no estima nada por su cuenta y nada es un pronóstico suyo. Cada número del sitio está copiado de uno de tres registros públicos y se puede rastrear hasta él.",
+  aboutSourceProgramsLabel: "Programas, instituciones, costo, duración y resultados",
+  aboutSourceProgramsBody:
+    "El informe federal de desempeño de instituciones de capacitación elegibles (ETA-9171) del Departamento de Trabajo de EE. UU., que los estados presentan bajo la Ley de Innovación y Oportunidad en la Fuerza Laboral y que el Departamento debe publicar. De ahí viene cada nombre de institución, cada precio, cada duración y cada medida de lo que pasó con quienes se inscribieron.",
+  aboutSourceOccupationsLabel: "Pago, vacantes proyectadas y perspectiva laboral",
+  aboutSourceOccupationsBody:
+    "El Departamento de Desarrollo del Empleo de California: sus proyecciones de empleo por ocupación a largo plazo para 2024–2034 y sus estadísticas de salarios cuando la proyección no trae salario. Son las estimaciones propias del estado a diez años para una ocupación, a nivel estatal y en las áreas que el estado nombra.",
+  aboutSourceFederalLabel: "Descripciones de la ocupación y habilidades",
+  aboutSourceFederalBody:
+    "CareerOneStop, el servicio del Departamento de Trabajo de EE. UU. que publica el contenido ocupacional de O*NET. Solo lo ofrece en inglés, y por eso la descripción de una ocupación aparece en inglés en una página en español.",
+  aboutSourcesDates:
+    "Cada fuente, su licencia y la fecha en que se consultó están registradas en el archivo público de procedencia del proyecto, y cualquiera puede reconstruir el conjunto de datos completo a partir de esas fuentes.",
+  aboutProvenanceLink: "Leer el archivo de procedencia",
+
+  aboutSelfReportedHeading: "Los resultados los reportan las propias instituciones, y este sitio no los verifica",
+  aboutSelfReportedBody:
+    "La finalización, el empleo y los ingresos los reporta cada institución de capacitación a California, y California al gobierno federal. Este proyecto reproduce lo que se presentó. No lo audita, no lo puede confirmar y no tiene manera de distinguir una cifra elaborada con cuidado de una hecha al descuido. Un número aquí es prueba de lo que una institución reportó, no de lo que ocurrió.",
+  aboutSelfReportedSecond:
+    "Esto importa sobre todo en el sentido que la gente no espera. Las medidas no se ajustan según a quién inscribe cada programa. Un programa que atiende a las personas más lejos del empleo tenderá a reportar menos empleo y menores ingresos que uno que inscribe a personas que ya están cerca de un trabajo, y nada en estos datos separa a los dos.",
+
+  aboutMissingHeading: "Qué significa un espacio en blanco",
+  aboutMissingBody:
+    "Un valor que falta aquí significa que no se reportó o que se omitió. Nunca significa cero y nunca se muestra como cero. Según las reglas federales, los resultados de grupos pequeños se suprimen para que no se pueda identificar a ninguna persona participante, así que un espacio en blanco puede ser tanto un programa demasiado pequeño para publicarlo sin riesgo como uno que no presentó nada.",
+  aboutMissingSecond: (reporting: string, total: string) =>
+    `Cerca de un tercio de los programas de California no reporta absolutamente nada: ${reporting} de ${total} publican al menos una medida. Es una proporción tan grande que esconderla distorsionaría el sitio entero, así que un programa que no reportó nada aparece junto a los demás y lo dice con todas sus letras. La falta de datos no es prueba de que un programa funcione mal, y esta interfaz está hecha para no confundir esas dos ideas.`,
+
+  aboutQuarterHeading: "La cifra de ingresos cubre tres meses, no un año",
+  aboutQuarterBody:
+    "Los ingresos medianos de esta medida federal son los ingresos del segundo trimestre después de que alguien salió del programa: un solo trimestre, unos tres meses. No es un salario anual ni un sueldo inicial. Aparece en la misma página que el pago anual típico de la ocupación, que es otra medida, de otra fuente y de otro periodo, y las dos no se deben leer una contra la otra.",
+
+  aboutComparisonsHeading: "Qué afirman las comparaciones y qué no",
+  aboutComparisonsBody:
+    "Una tasa sola no se puede interpretar: nadie sabe si 45% empleado es bueno. Por eso, cuando un programa reporta una medida, se muestra frente al programa mediano de California que reportó esa misma medida. Los programas que no reportaron nada no entran en esa mediana, así que es una comparación entre quienes sí publican, no una comparación contra el estado entero.",
+  aboutComparisonsSecond:
+    "«Mejor que lo típico» quiere decir que un número reportado está por encima de esa mediana. No es un juicio sobre la enseñanza, ni sobre la institución, ni sobre si un programa le conviene a usted, y no toma en cuenta a quién se inscribió, dónde ni en qué año. Cuando dos programas se ponen lado a lado, la celda marcada es simplemente la cifra reportada más fuerte de esa fila; una fila donde menos de dos programas reportaron algo se queda sin marcar, porque ser el único que presentó un número no es lo mismo que ser el mejor.",
+  aboutComparisonsThird:
+    "Ninguna comparación se construye a partir de un espacio en blanco. A un programa que no reportó nada nunca se le llama peor que el promedio, porque no hay nada que comparar y decirlo sería una acusación, no un hecho.",
+
+  aboutAggregateHeading: "Cuando una cifra ocupacional describe más de una ocupación",
+  aboutAggregateBody: (aggregate: string) =>
+    `California no publica una estimación para cada ocupación. Para algunas, el estado reporta el trabajo solo dentro de una ocupación más amplia: la categoría superior, o un grupo que las estadísticas federales usan para oficios que no pueden medir por separado. En vez de dejar esos programas sin ninguna cifra ocupacional, este sitio muestra las de la ocupación más amplia y lo advierte en la página, nombrando esa ocupación más amplia y el código ocupacional propio del programa. Eso ocurre en ${aggregate} de las páginas de programa de este sitio.`,
+  aboutAggregateSecond:
+    "En ese caso hay un dato que se descarta a propósito en lugar de tomarlo prestado: el requisito de estudios habitual. Un salario mediano sobre una población más amplia sigue siendo una aproximación de algo a lo que la persona pertenece. Un título no lo es: es una sola respuesta asignada a todo el grupo, y en un grupo que mezcla una ocupación de nivel de maestría con un certificado de colegio comunitario no es aproximada, es falsa. Decirle a alguien que necesita un título que no necesita, para el trabajo que está estudiando ahora mismo, es el mismo tipo de error que mostrar como cero una cifra suprimida.",
+
+  aboutLimitsHeading: "Limitaciones conocidas",
+  aboutLimitsBody:
+    "Esto es lo que este sitio hace mal o todavía no puede hacer. Se enumera aquí en vez de dejar que se descubra después.",
+  aboutLimitTranslation:
+    "Los nombres de las ocupaciones y las descripciones de los programas aparecen en inglés en las páginas en español. La interfaz y los vocabularios controlados sí están traducidos; el texto libre que viene de las fuentes federales y estatales no, porque solo se publica en inglés.",
+  aboutLimitEtpl:
+    "Los programas que aparecen aquí son los que California presentó al gobierno federal. Queda sin resolver si la lista estatal de instituciones elegibles incluye programas que el archivo federal omite, porque California no publica una descarga masiva de esa lista. Un programa ausente de este sitio no es necesariamente un programa que no existe.",
+  aboutLimitUnmatched: (unmatched: string) =>
+    `${unmatched} programas no muestran ninguna cifra ocupacional. California no publica proyección para la ocupación con la que están etiquetados, y no se sustituye por una ocupación parecida, porque un oficio de nombre similar con otro salario se vería exactamente igual que una respuesta correcta.`,
+  aboutLimitArea: (unplaced: string) =>
+    `${unplaced} programas no muestran una cifra de pago regional. Su ciudad no es una de las áreas metropolitanas o rurales que California nombra al publicar salarios, y no se toman prestadas las cifras de un área vecina para llenar el hueco.`,
+  aboutLimitUrl: (noUrl: string) =>
+    `${noUrl} programas no tienen un enlace de sitio web utilizable. La mayoría nunca presentó uno, y unos pocos presentaron algo que no era una dirección web, que se descarta en vez de convertirse en un enlace.`,
+  aboutLimitProjections:
+    "Las proyecciones ocupacionales son estimaciones del estado a diez años, no garantías. Una ocupación que California espera que crezca puede no crecer, y una que espera que se reduzca puede seguir siendo la decisión correcta para una persona concreta en un lugar concreto.",
+  aboutLimitSnapshot: (date: string) =>
+    `Todo lo que hay aquí es una instantánea tomada el ${date}. El archivo federal se actualiza cada trimestre, así que una cifra corregida en la fuente después de esa fecha todavía no está corregida aquí.`,
+
+  aboutCorrectionsHeading: "Si una cifra de aquí lo representa mal",
+  aboutCorrectionsBody:
+    "Este sitio nombra organizaciones reales y publica números sobre ellas, así que tiene que existir una forma de avisar que algo está mal. Por favor abra un reporte en el repositorio público del proyecto, indicando el programa y la cifra que está cuestionando.",
+  aboutCorrectionsSecond:
+    "Hay dos desenlaces posibles y conviene distinguirlos. Cuando el error es de este proyecto — un cruce mal hecho, una medida mal etiquetada, un programa unido a la ocupación equivocada — se corrige, y la corrección no depende de quién la pida. Cuando lo que está mal es el registro público de origen, la corrección tiene que pasar por el organismo que lo publicó, ya que este sitio reproduce ese registro y no puede apartarse de él en silencio; el hilo del reporte es un buen lugar para dejar constancia de que hay una corrección en curso, y esa constancia se respeta aquí.",
+  aboutCorrectionsLink: "Abrir un reporte sobre una cifra de este sitio",
+
+  aboutAdviceHeading: "Esto no es asesoría",
+  aboutAdviceBody:
+    "Nada de lo que hay aquí es asesoría financiera, legal, educativa ni profesional. Inscribirse en un programa de capacitación es un compromiso económico y personal serio. Use esto como una fuente entre varias, y hable con la institución, con su America's Job Center local o con una persona orientadora antes de decidir.",
 };
 
 function fmt(n: number): string {

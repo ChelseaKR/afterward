@@ -1,0 +1,526 @@
+name: Deploy
+
+# Publishes the static site to S3 behind CloudFront at https://camino.chelseakr.com.
+#
+# ---------------------------------------------------------------------------------------
+# Why this is dispatch-only, and why it does not build the dataset
+# ---------------------------------------------------------------------------------------
+# The production dataset cannot be built here. `make data` reads the public DOL ETP search
+# endpoint, which answers GitHub Actions runners with 403, and optionally enriches from
+# CareerOneStop using per-user credentials. CI therefore builds from the committed
+# 60-program fixture (`make data-offline`) -- a test input, never a publishable one.
+#
+# So an automatic deploy on push to main would have exactly one dataset available to it:
+# the fixture. It would replace 3,266 real programs with 60 fake ones, and the result would
+# look entirely plausible -- correct chrome, correct styling, working search, wrong world.
+# That is the failure this workflow exists to make impossible, so the automatic path is not
+# "gated"; it is absent, on purpose.
+#
+# The dataset is instead produced where the fetch actually works -- an operator workstation
+# running `make data` -- then checked, packaged and checksummed by `make dataset-package`
+# and published as an immutable GitHub release asset by `make dataset-publish`. This
+# workflow consumes that asset by tag. Everything downstream of the dataset (the Next.js
+# export, the site URL, the cache headers, the upload, the invalidation) IS reproducible,
+# so the runner still does all of it, with a pinned toolchain and the guards below.
+#
+# CI is still a gate, just not a trigger: this workflow refuses to run unless the CI
+# workflow has already concluded successfully on the exact commit being deployed. CI
+# passing tells you the code is sound; it tells you nothing about whether production data
+# exists, which is why it cannot also be the thing that starts a deploy.
+#
+# The dataset therefore arrives as trusted input from outside CI. The response to that is
+# not to pretend otherwise but to make it checkable: a checksum, a refusal to publish
+# anything fixture-shaped, an on-disk count that has to agree with the manifest, and a
+# post-deploy assertion that the live site is serving that exact snapshot.
+#
+# If DOL ever stops refusing runner egress -- or a self-hosted runner with allowed egress
+# appears -- the dataset build moves in here and the release handshake goes away.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_tag:
+        description: "Dataset release tag to publish, e.g. dataset-2026-08-04 (make dataset-publish creates it)"
+        required: true
+        type: string
+      reason:
+        description: "Why this deploy is happening (recorded in the run summary)"
+        required: false
+        type: string
+
+permissions:
+  contents: read # checkout, and `gh release download` for the dataset asset
+  id-token: write # OIDC only. There are no static AWS keys for this account anywhere.
+  actions: read # read CI's conclusion for this commit
+
+# Never cancel a deploy in flight: a half-applied sync is worse than a slow one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  SITE_URL: https://camino.chelseakr.com
+  SITE_BUCKET: camino.chelseakr.com
+  CLOUDFRONT_DISTRIBUTION_ID: E166CPAG407D0L
+  # Floor for a believable production dataset. The real one is 3,266 programs; the CI
+  # fixture is 60. Anything under this is a fixture, a truncated download, or a source
+  # that has quietly started returning almost nothing -- none of which should reach users.
+  MIN_PROGRAMS: "2000"
+  # Retry transient S3 errors in the SDK rather than leaving them to `sync`, which has been
+  # observed reporting "stream is not seekable" and still exiting 0. The upload is verified
+  # object-by-object below regardless; this just reduces how often that verification fails.
+  AWS_RETRY_MODE: standard
+  AWS_MAX_ATTEMPTS: "10"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    # Required, and not merely as an approval gate: the deploy role's trust policy accepts
+    # exactly one subject, `repo:ChelseaKR/camino:environment:production`. A job without
+    # this environment cannot assume the role at all. See GitHubDeployRole in
+    # infra/aws-static-site.yml.
+    environment:
+      name: production
+      url: https://camino.chelseakr.com
+
+    steps:
+      # ---------------------------------------------------------------------------------
+      # Preflight
+      # ---------------------------------------------------------------------------------
+      - name: Refuse to deploy anything but main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Production deploys run from main only; this ref is ${GITHUB_REF}."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - name: Require CI success on this exact commit
+        # This is the CI gate. It cannot be a trigger (see the header), so it is enforced
+        # here instead: no green CI run for this SHA, no deploy. CI covers lint, types,
+        # tests, the security and audit passes, `make provenance-check`, and the accessible
+        # static export -- none of which are repeated below, because they are already
+        # settled for this commit by the time this passes.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          successes=$(gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${GITHUB_SHA}&per_page=100" \
+            --jq '.workflow_runs[] | select(.conclusion == "success") | .id' | wc -l)
+          if [ "$successes" -eq 0 ]; then
+            echo "::error::No successful CI run for ${GITHUB_SHA}."
+            echo "Run the CI workflow against this commit (it accepts workflow_dispatch) and try again."
+            exit 1
+          fi
+          echo "CI green on ${GITHUB_SHA} (${successes} successful run(s))."
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web
+
+      # ---------------------------------------------------------------------------------
+      # Dataset: fetched, not built. See the header for why.
+      # ---------------------------------------------------------------------------------
+      - name: Download the dataset release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATASET_TAG: ${{ inputs.dataset_tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/dataset"
+          gh release download "$DATASET_TAG" \
+            --dir "${RUNNER_TEMP}/dataset" \
+            --pattern '*.tar.gz' --pattern '*.tar.gz.sha256' --clobber
+          cd "${RUNNER_TEMP}/dataset"
+          tarballs=$(find . -name '*.tar.gz' | wc -l | tr -d ' ')
+          if [ "$tarballs" -ne 1 ]; then
+            echo "::error::Release ${DATASET_TAG} carries ${tarballs} tarballs; expected exactly one."
+            exit 1
+          fi
+          # The checksum is published alongside the tarball by `make dataset-package`.
+          # It proves the bytes are the ones the operator verified locally; it does not
+          # prove they are production data, which is what the next step is for.
+          sha256sum -c ./*.tar.gz.sha256
+          mkdir -p "${GITHUB_WORKSPACE}/web/public/data"
+          tar -xzf ./*.tar.gz -C "${GITHUB_WORKSPACE}/web/public/data" --no-same-owner
+          echo "DATASET_TAG=${DATASET_TAG}" >> "$GITHUB_ENV"
+
+      - name: Refuse to publish a fixture dataset
+        # GUARD 1. `make data-offline` emits the committed fixture and stamps
+        # is_fixture: true into coverage.json; a real build has no such key. Publishing the
+        # fixture is the single most plausible-looking failure available here, so it is
+        # checked three ways: the marker, a program-count floor, and agreement between the
+        # manifest and what is actually on disk (which also catches a truncated extract).
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, sys
+
+          root = pathlib.Path("web/public/data")
+          coverage_path = root / "coverage.json"
+          if not coverage_path.is_file():
+              sys.exit("::error::No coverage.json in the dataset; refusing to deploy.")
+
+          coverage = json.loads(coverage_path.read_text(encoding="utf-8"))
+          minimum = int(os.environ["MIN_PROGRAMS"])
+          total = int(coverage.get("total_programs", 0))
+          on_disk = len(list((root / "programs").glob("*.json")))
+          snapshot = str(coverage.get("snapshot_date", "")).strip()
+
+          problems = []
+          if coverage.get("is_fixture"):
+              problems.append(
+                  "coverage.json carries is_fixture: true -- this is the 60-program CI "
+                  "fixture from `make data-offline`, not production data."
+              )
+          if total < minimum:
+              problems.append(f"total_programs={total} is below the {minimum} floor.")
+          if on_disk != total:
+              problems.append(
+                  f"{on_disk} program files on disk but coverage.json claims {total}; "
+                  "the dataset is incomplete."
+              )
+          if not snapshot:
+              problems.append("coverage.json has no snapshot_date.")
+
+          if problems:
+              for problem in problems:
+                  print(f"::error::{problem}")
+              sys.exit("Refusing to deploy this dataset.")
+
+          print(f"Dataset accepted: {total} programs, snapshot {snapshot}.")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              env_file.write(f"DATASET_SNAPSHOT={snapshot}\n")
+              env_file.write(f"DATASET_PROGRAMS={total}\n")
+          PY
+
+      # ---------------------------------------------------------------------------------
+      # Build
+      # ---------------------------------------------------------------------------------
+      - name: Refuse to build without the production site URL
+        # GUARD 2, first half. Unset NEXT_PUBLIC_SITE_URL does not fail the build: it
+        # silently writes https://example.invalid into sitemap.xml and robots.txt. Here the
+        # value is a workflow constant, so this check mostly guards against someone editing
+        # that constant to something empty or wrong. The check that can actually catch a
+        # bad build is the artifact scan after `npm run build`.
+        run: |
+          set -euo pipefail
+          if [ "${SITE_URL:-}" != "https://camino.chelseakr.com" ]; then
+            echo "::error::SITE_URL is '${SITE_URL:-<unset>}', not the production host."
+            exit 1
+          fi
+
+      - name: Build the static export
+        working-directory: web
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ env.SITE_URL }}
+        run: npm run build
+
+      - name: Verify the built artifact before anything leaves the runner
+        # GUARD 2, second half, plus a shape check on the export itself. Everything here is
+        # cheap and local: it is far better to fail with nothing uploaded than to discover
+        # a placeholder hostname in a sitemap that search engines have already fetched.
+        run: |
+          set -euo pipefail
+          cd web/out
+
+          missing=""
+          for required in index.html 404.html robots.txt sitemap.xml en/index.html es/index.html; do
+            [ -f "$required" ] || missing="${missing} ${required}"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Build output is missing:${missing}"
+            exit 1
+          fi
+
+          # The placeholder host. Excluding data/ only because it is 40 MB of JSON that
+          # cannot contain a URL; everything that can is scanned.
+          if grep -rlF --exclude-dir=data 'example.invalid' . > "${RUNNER_TEMP}/placeholders.txt"; then
+            echo "::error::NEXT_PUBLIC_SITE_URL did not reach the build -- placeholder host found in:"
+            head -20 "${RUNNER_TEMP}/placeholders.txt"
+            exit 1
+          fi
+
+          grep -qF "Sitemap: ${SITE_URL}/sitemap.xml" robots.txt || {
+            echo "::error::robots.txt does not point at ${SITE_URL}/sitemap.xml"; exit 1; }
+          grep -qF "<loc>${SITE_URL}/en/</loc>" sitemap.xml || {
+            echo "::error::sitemap.xml does not contain ${SITE_URL}/en/"; exit 1; }
+
+          # Roughly two locale variants per program, plus occupations and static pages.
+          # A collapsed sitemap means the export ran against a dataset that was not there.
+          urls=$(grep -c '<url>' sitemap.xml || true)
+          floor=$((MIN_PROGRAMS * 2))
+          if [ "$urls" -lt "$floor" ]; then
+            echo "::error::sitemap.xml lists ${urls} URLs, below the ${floor} floor."
+            exit 1
+          fi
+
+          grep -qF 'lang="es"' es/index.html || {
+            echo "::error::/es/ was not exported in Spanish."; exit 1; }
+
+          # The dataset the export actually consumed, rather than the one we verified on
+          # disk a few steps ago -- these differ if a stale web/public/data survived.
+          python3 - <<'PY'
+          import json, os, pathlib, sys
+
+          coverage = json.loads(pathlib.Path("data/coverage.json").read_text(encoding="utf-8"))
+          if coverage.get("is_fixture"):
+              sys.exit("::error::The exported site carries the fixture dataset.")
+          if str(coverage.get("snapshot_date")) != os.environ["DATASET_SNAPSHOT"]:
+              sys.exit(
+                  f"::error::Exported snapshot {coverage.get('snapshot_date')} is not the "
+                  f"downloaded snapshot {os.environ['DATASET_SNAPSHOT']}."
+              )
+          if int(coverage.get("total_programs", 0)) != int(os.environ["DATASET_PROGRAMS"]):
+              sys.exit("::error::Exported program count does not match the dataset.")
+          PY
+
+          echo "Artifact verified: ${urls} sitemap URLs, ${DATASET_PROGRAMS} programs, snapshot ${DATASET_SNAPSHOT}."
+
+      # ---------------------------------------------------------------------------------
+      # Publish
+      # ---------------------------------------------------------------------------------
+      - name: Assume the deploy role
+        # OIDC, short-lived credentials, no stored secrets. The role is created by the
+        # camino-static-site stack and can do four things: list the bucket, read/write/
+        # delete objects in it, and invalidate this one distribution.
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::014248889144:role/camino-static-site-github-deploy
+          role-session-name: camino-deploy-${{ github.run_id }}
+          # The stack, the bucket and CloudFront's certificate all live in us-east-1.
+          aws-region: us-east-1
+
+      - name: Confirm the assumed identity
+        run: |
+          set -euo pipefail
+          arn=$(aws sts get-caller-identity --query Arn --output text)
+          echo "Assumed: ${arn}"
+          case "$arn" in
+            *camino-static-site-github-deploy*) ;;
+            *) echo "::error::Unexpected deploy identity: ${arn}"; exit 1 ;;
+          esac
+
+      - name: Upload to S3
+        # Three passes, in this order, so the live site is never internally inconsistent:
+        #
+        #   1. new hashed assets, no --delete  -> chunks exist before any page references them
+        #   2. everything else, --delete       -> pages swap over and stale pages are pruned
+        #   3. hashed assets again, --delete   -> orphaned chunks from the old build go
+        #
+        # Doing (2) first would swap in pages referencing chunks that are not uploaded yet;
+        # running a --delete pass over the assets first would pull chunks out from under
+        # the pages still being served.
+        #
+        # Cache split as infra/README.md documents: content-hashed assets are immutable,
+        # everything else must revalidate, because the dataset changes underneath stable
+        # URLs. --exclude keeps the two classes from overwriting each other's headers, and
+        # the AWS CLI applies that filter to the destination as well, so pass (2)'s
+        # --delete leaves _next/static alone.
+        working-directory: web/out
+        run: |
+          set -euo pipefail
+          aws s3 sync ./_next/static/ "s3://${SITE_BUCKET}/_next/static/" \
+            --only-show-errors --cache-control "public, max-age=31536000, immutable"
+          aws s3 sync . "s3://${SITE_BUCKET}/" --delete \
+            --only-show-errors --cache-control "public, max-age=0, must-revalidate" \
+            --exclude "_next/static/*"
+          aws s3 sync ./_next/static/ "s3://${SITE_BUCKET}/_next/static/" --delete \
+            --only-show-errors --cache-control "public, max-age=31536000, immutable"
+
+      - name: Verify every built file is actually in the bucket
+        # GUARD 3. `sync` has been seen exiting 0 having silently skipped index.html,
+        # robots.txt and sitemap.xml -- which is how `/` served a 404 while the deploy
+        # looked clean -- and reporting "stream is not seekable" without treating it as a
+        # failure. So the exit code is not evidence of anything. The evidence is the key
+        # set: every file under out/ must exist as an object, by name. Missing keys get a
+        # bounded re-sync (sync only re-uploads what is absent, so this is cheap) and then
+        # a hard failure.
+        working-directory: web/out
+        run: |
+          set -euo pipefail
+          local_keys="${RUNNER_TEMP}/local-keys.txt"
+          remote_keys="${RUNNER_TEMP}/remote-keys.txt"
+          missing="${RUNNER_TEMP}/missing-keys.txt"
+          extra="${RUNNER_TEMP}/extra-keys.txt"
+
+          find . -type f | sed 's|^\./||' | LC_ALL=C sort > "$local_keys"
+
+          list_remote() {
+            aws s3api list-objects-v2 --bucket "$SITE_BUCKET" \
+              --output json --query 'Contents[].Key' \
+              | jq -r '.[]?' | LC_ALL=C sort > "$remote_keys"
+          }
+
+          resync() {
+            aws s3 sync ./_next/static/ "s3://${SITE_BUCKET}/_next/static/" \
+              --only-show-errors --cache-control "public, max-age=31536000, immutable" || true
+            aws s3 sync . "s3://${SITE_BUCKET}/" \
+              --only-show-errors --cache-control "public, max-age=0, must-revalidate" \
+              --exclude "_next/static/*" || true
+          }
+
+          for attempt in 1 2 3; do
+            list_remote
+            comm -23 "$local_keys" "$remote_keys" > "$missing"
+            count=$(wc -l < "$missing" | tr -d ' ')
+            if [ "$count" -eq 0 ] || [ "$attempt" -eq 3 ]; then
+              break
+            fi
+            echo "::warning::Attempt ${attempt}: ${count} object(s) missing from the bucket; re-syncing."
+            head -20 "$missing"
+            resync
+          done
+
+          count=$(wc -l < "$missing" | tr -d ' ')
+          if [ "$count" -ne 0 ]; then
+            echo "::error::${count} file(s) never reached S3 after three attempts:"
+            head -50 "$missing"
+            exit 1
+          fi
+
+          # Extras mean --delete did not prune something. Not fatal on its own -- an object
+          # put there deliberately out of band would otherwise block every deploy -- but
+          # stale pages served from the bucket are worth shouting about.
+          comm -13 "$local_keys" "$remote_keys" > "$extra"
+          extra_count=$(wc -l < "$extra" | tr -d ' ')
+          if [ "$extra_count" -ne 0 ]; then
+            echo "::warning::${extra_count} object(s) in the bucket are not in this build:"
+            head -20 "$extra"
+          fi
+
+          local_count=$(wc -l < "$local_keys" | tr -d ' ')
+          echo "UPLOADED_OBJECTS=${local_count}" >> "$GITHUB_ENV"
+          echo "Verified ${local_count} objects, key for key."
+
+      - name: Verify the cache headers landed
+        # GUARD 4. Checked on the objects rather than over HTTPS on purpose: the
+        # distribution's response-headers policy sets Cache-Control as an overriding custom
+        # header, so every edge response reports max-age=0 regardless of what the object
+        # says. The object metadata is the only place the split is observable from here.
+        working-directory: web/out
+        run: |
+          set -euo pipefail
+          asset=$(find ./_next/static -type f | head -1 | sed 's|^\./||')
+          asset_cc=$(aws s3api head-object --bucket "$SITE_BUCKET" --key "$asset" \
+            --query CacheControl --output text)
+          page_cc=$(aws s3api head-object --bucket "$SITE_BUCKET" --key index.html \
+            --query CacheControl --output text)
+          page_type=$(aws s3api head-object --bucket "$SITE_BUCKET" --key index.html \
+            --query ContentType --output text)
+
+          case "$asset_cc" in *immutable*) ;; *)
+            echo "::error::${asset} has Cache-Control '${asset_cc}', expected immutable."; exit 1 ;;
+          esac
+          case "$page_cc" in *must-revalidate*) ;; *)
+            echo "::error::index.html has Cache-Control '${page_cc}', expected must-revalidate."; exit 1 ;;
+          esac
+          case "$page_type" in text/html*) ;; *)
+            echo "::error::index.html was uploaded as '${page_type}'."; exit 1 ;;
+          esac
+          echo "Headers: assets '${asset_cc}', pages '${page_cc}'."
+
+      - name: Invalidate CloudFront
+        # Full invalidation. The dataset refreshes on a quarterly-ish cadence, so the
+        # 1,000-path free tier is nowhere near a constraint and precision would only be a
+        # way to miss something.
+        run: |
+          set -euo pipefail
+          invalidation=$(aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths '/*' \
+            --query 'Invalidation.Id' --output text)
+          echo "INVALIDATION_ID=${invalidation}" >> "$GITHUB_ENV"
+          echo "Invalidation ${invalidation} created."
+          # A waiter timeout is not itself a reason to fail: the objects are already
+          # published, and the smoke test below is the real check. It asserts the live
+          # snapshot matches what was just uploaded, so it cannot be satisfied by a stale
+          # edge response either.
+          if ! aws cloudfront wait invalidation-completed \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --id "$invalidation"; then
+            echo "::warning::Invalidation ${invalidation} still in progress; smoke test will retry."
+          fi
+
+      - name: Smoke-test the live site
+        # GUARD 5. Nothing above proves a user can load the site: the bucket is private and
+        # only reachable through the distribution, the route-rewrite function runs at the
+        # edge, and `/` returning 404 is exactly the failure that got through last time.
+        # So the site is checked at its public address, over HTTPS, through CloudFront.
+        run: |
+          set -euo pipefail
+
+          fetch() { # url, expected substring
+            local url="$1" expected="$2" status
+            for attempt in 1 2 3 4 5 6 7 8; do
+              status=$(curl -sS -o "${RUNNER_TEMP}/body" -w '%{http_code}' \
+                --max-time 45 -H 'Cache-Control: no-cache' "$url" || echo 000)
+              if [ "$status" = "200" ] && grep -qF "$expected" "${RUNNER_TEMP}/body"; then
+                if grep -qF 'example.invalid' "${RUNNER_TEMP}/body"; then
+                  echo "::error::${url} serves the placeholder host."
+                  return 1
+                fi
+                echo "  ok  ${url} (${status})"
+                return 0
+              fi
+              echo "  ... ${url} -> ${status}, attempt ${attempt}"
+              sleep 15
+            done
+            echo "::error::${url} never returned 200 with the expected content (last status ${status})."
+            head -c 400 "${RUNNER_TEMP}/body" || true
+            return 1
+          }
+
+          fetch "${SITE_URL}/" '<!DOCTYPE html>'
+          fetch "${SITE_URL}/en/" 'lang="en"'
+          fetch "${SITE_URL}/es/" 'lang="es"'
+          fetch "${SITE_URL}/robots.txt" "Sitemap: ${SITE_URL}/sitemap.xml"
+          fetch "${SITE_URL}/sitemap.xml" "<loc>${SITE_URL}/en/</loc>"
+
+          # The end-to-end proof that production is serving the dataset this run published,
+          # and not the fixture, and not a cached previous snapshot.
+          fetch "${SITE_URL}/data/coverage.json" '"total_programs"'
+          python3 - <<'PY'
+          import json, os, pathlib, sys
+
+          live = json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "body").read_text(encoding="utf-8"))
+          if live.get("is_fixture"):
+              sys.exit("::error::The live site is serving the fixture dataset.")
+          if str(live.get("snapshot_date")) != os.environ["DATASET_SNAPSHOT"]:
+              sys.exit(
+                  f"::error::Live snapshot is {live.get('snapshot_date')}, expected "
+                  f"{os.environ['DATASET_SNAPSHOT']}."
+              )
+          if int(live.get("total_programs", 0)) != int(os.environ["DATASET_PROGRAMS"]):
+              sys.exit(
+                  f"::error::Live site reports {live.get('total_programs')} programs, expected "
+                  f"{os.environ['DATASET_PROGRAMS']}."
+              )
+          print(f"  ok  live dataset {live['snapshot_date']}, {live['total_programs']} programs")
+          PY
+
+      - name: Summarise
+        if: always()
+        run: |
+          {
+            echo "## Deploy to ${SITE_URL}"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Result | ${{ job.status }} |"
+            echo "| Commit | \`${GITHUB_SHA}\` |"
+            echo "| Dataset release | \`${DATASET_TAG:-not downloaded}\` |"
+            echo "| Snapshot | ${DATASET_SNAPSHOT:-unknown} |"
+            echo "| Programs | ${DATASET_PROGRAMS:-unknown} |"
+            echo "| Objects published | ${UPLOADED_OBJECTS:-none} |"
+            echo "| Invalidation | ${INVALIDATION_ID:-none} |"
+            echo "| Reason given | ${DEPLOY_REASON:-none} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+        env:
+          DEPLOY_REASON: ${{ inputs.reason }}
