@@ -3,10 +3,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Measure } from "@/components/Measure";
-import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
+import { allProgramIds, getCoverage, getOccupation, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
-import type { Program, ProgramOccupation } from "@/lib/types";
+import type {
+  EducationLevelShare,
+  OccupationEducation,
+  OccupationTask,
+  Program,
+  ProgramOccupation,
+} from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
 
@@ -216,6 +222,618 @@ function WithheldEducation({ occupation, lang }: { occupation: ProgramOccupation
   );
 }
 
+type Copy = ReturnType<typeof dict>;
+
+/* ============================================================================================
+ * What the work is
+ *
+ * This page used to open on cost, length and an enrolment count: three numbers about a
+ * purchase, before a word about what the purchase is for. The only thing on it describing the
+ * actual work was the federal course-catalogue paragraph at the very bottom. Someone landing
+ * here from a search engine is asking "what is this, and is it for me" — and the page answered
+ * a question they had not got to yet.
+ *
+ * The federal occupation records carry the answer: what people in the job do, what else the
+ * job is called, what education the people doing it actually have, and what employers expect
+ * before and after they hire. All of it is read from `getOccupation`, which the program record
+ * only points at by SOC code.
+ * ========================================================================================== */
+
+/** The parts of an occupation record this page needs, and nothing else. */
+interface WorkProfile {
+  /** Other names the same job is advertised under. Empty for 79 of the 670 occupations. */
+  alternateTitles: string[];
+  /** Distinct tasks, most important first. Empty for the 89 with no O*NET profile. */
+  tasks: OccupationTask[];
+  /** The federal one-paragraph account of the work, used only where there are no tasks. */
+  description: string | null;
+  education: OccupationEducation | null;
+}
+
+/*
+ * `getOccupation` is deliberately uncached — a program page reads its record twice and holding
+ * every program would cost an export worker the whole corpus. Occupations are the opposite
+ * case: there are only 670 of them, all 3,266 program pages draw from that same small set in
+ * two languages, and what is kept here is a few hundred bytes per occupation rather than the
+ * 14 KB record it came from. Nothing in the map is ever mutated; every array below is built
+ * fresh from the parsed record rather than sorted in place.
+ */
+const profiles = new Map<string, WorkProfile | null>();
+
+function trimmedOrNull(value: string | null): string | null {
+  if (value === null) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+/**
+ * Other names for the job, shortest first, at most four.
+ *
+ * The source publishes up to ten, alphabetically, which is a relevance order for nothing.
+ * Taking the first four alphabetically would be an arbitrary sample presented as the common
+ * names; the shortest are, in practice, the ones people actually say — "Charge Nurse",
+ * "School Nurse", "Staff Nurse" rather than "Certified Operating Room Nurse (CNOR)". Four,
+ * because this is a line that helps a reader recognise the job, and ten near-synonyms under a
+ * heading is a keyword dump.
+ *
+ * A title identical to the occupation's own is dropped: "also called Roofer" under the heading
+ * "Roofers" tells nobody anything.
+ */
+const ALTERNATE_TITLES_SHOWN = 4;
+
+function pickAlternateTitles(titles: readonly string[], occupationTitle: string | null): string[] {
+  const own = (occupationTitle ?? "").trim().toLowerCase();
+  const seen = new Set<string>();
+  const kept: string[] = [];
+
+  for (const title of titles) {
+    const trimmed = title.trim();
+    const key = trimmed.toLowerCase();
+    if (trimmed.length === 0 || key === own || seen.has(key)) continue;
+    seen.add(key);
+    kept.push(trimmed);
+  }
+
+  return kept
+    .sort((a, b) => a.length - b.length || a.localeCompare(b))
+    .slice(0, ALTERNATE_TITLES_SHOWN);
+}
+
+/**
+ * Tasks in the order the source rates them, with the repeats removed.
+ *
+ * Two things the raw list needs before it can be shown. First, **it repeats itself**: 473 of
+ * the 581 rated occupations return at least one sentence more than once, and Registered Nurses
+ * returns eight tasks that are five distinct sentences. Rendering the array as published would
+ * put "Monitor, record, and report symptoms or changes in patients' conditions." on the page
+ * three times in a row, which reads as a bug in the site rather than a repeat in the feed.
+ * De-duplication happens *after* the sort, so the copy that survives is the highest-rated one.
+ *
+ * Second, an unrated task has no place in the order at all. It sorts last, and is never
+ * treated as a zero, which would file a task the source never judged below every task it
+ * judged genuinely unimportant. No occupation has one today; the rule is not conditional on
+ * that staying true.
+ */
+function rankTasks(tasks: readonly OccupationTask[]): OccupationTask[] {
+  const ordered = [...tasks].sort((a, b) => {
+    if (a.importance === null) return b.importance === null ? 0 : 1;
+    if (b.importance === null) return -1;
+    return b.importance - a.importance;
+  });
+
+  const seen = new Set<string>();
+  const distinct: OccupationTask[] = [];
+  for (const task of ordered) {
+    const description = task.description.trim();
+    const key = description.toLowerCase();
+    if (description.length === 0 || seen.has(key)) continue;
+    seen.add(key);
+    distinct.push({ description, importance: task.importance });
+  }
+  return distinct;
+}
+
+function workProfile(soc: string | null): WorkProfile | null {
+  if (soc === null) return null;
+
+  const hit = profiles.get(soc);
+  if (hit !== undefined) return hit;
+
+  const occupation = getOccupation(soc);
+  // `Array.isArray` rather than a type assertion: these three fields were appended to the
+  // pipeline's occupation record, and a dataset built before they existed would arrive with
+  // them missing rather than empty. A page reading `undefined.length` is a broken page; a page
+  // reading an empty list is a page with one fewer section, which is the intended behaviour.
+  const profile: WorkProfile | null =
+    occupation === null
+      ? null
+      : {
+          alternateTitles: pickAlternateTitles(
+            Array.isArray(occupation.alternate_titles) ? occupation.alternate_titles : [],
+            occupation.title,
+          ),
+          tasks: rankTasks(Array.isArray(occupation.tasks) ? occupation.tasks : []),
+          description: trimmedOrNull(occupation.description),
+          education: occupation.education ?? null,
+        };
+
+  profiles.set(soc, profile);
+  return profile;
+}
+
+/**
+ * How many tasks lead, and when the rest go behind a disclosure.
+ *
+ * Four is enough for a reader to recognise the work or rule it out, and eight sentences at the
+ * top of a page is a wall rather than an explanation. The rest are one click away rather than
+ * cut: the source published them and the page has no business deciding the reader has seen
+ * enough. Below six, everything shows — a disclosure hiding a single sentence is worse than
+ * the sentence.
+ */
+const TASKS_SHOWN = 4;
+const TASKS_WITHOUT_DISCLOSURE = 5;
+
+function WorkForOccupation({
+  occupation,
+  profile,
+  lang,
+}: {
+  occupation: ProgramOccupation;
+  profile: WorkProfile;
+  lang: Lang;
+}) {
+  const t = dict(lang);
+  const { alternateTitles, tasks, description } = profile;
+  const lead = tasks.length <= TASKS_WITHOUT_DISCLOSURE ? tasks : tasks.slice(0, TASKS_SHOWN);
+  const rest = tasks.slice(lead.length);
+  const name = occupationName(occupation, lang);
+
+  return (
+    <section style={{ marginBottom: "1.75rem" }}>
+      <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
+        {occupation.soc_code ? (
+          <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>{name}</Link>
+        ) : (
+          name
+        )}
+      </h3>
+
+      {/*
+        * Before the tasks, because for a great many people this line is the whole answer. A
+        * reader who has worked as a school nurse does not need eight sentences to know whether
+        * "Registered Nurses" is their job — they need to see "School Nurse" once.
+        */}
+      {alternateTitles.length > 0 && (
+        <p className="also-called">
+          <strong>{t.alsoCalled}</strong> {alternateTitles.join(" · ")}
+        </p>
+      )}
+
+      {tasks.length > 0 ? (
+        <>
+          <p className="compare-note">{t.tasksNote}</p>
+          <ul className="task-list">
+            {lead.map((task) => (
+              <li key={task.description}>{task.description}</li>
+            ))}
+          </ul>
+          {rest.length > 0 && (
+            <details className="more-tasks">
+              <summary>{t.moreTasks(rest.length)}</summary>
+              <ul className="task-list">
+                {rest.map((task) => (
+                  <li key={task.description}>{task.description}</li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </>
+      ) : description !== null ? (
+        /*
+         * 89 occupations have no task list, and 77 of them still have the Department's
+         * one-paragraph account of the work. A definition is weaker than a task list, so the
+         * page says which of the two it is showing rather than letting the shorter section
+         * pass for the same thing.
+         */
+        <>
+          <p className="compare-note">{t.workDescriptionOnly}</p>
+          <p>{description}</p>
+        </>
+      ) : (
+        /*
+         * The remaining 12: the federal publication buckets, which are not O*NET occupations
+         * and have nothing behind them to read. Named rather than silently dropped, so a
+         * reader looking at a program that trains for three jobs is not left wondering what
+         * happened to the third.
+         */
+        <p className="compare-note">{t.workNothing}</p>
+      )}
+    </section>
+  );
+}
+
+/* ============================================================================================
+ * Getting in, and what people in the job actually studied
+ * ========================================================================================== */
+
+/** Locale tags matching `lib/format.ts`, whose own map is private to that module. */
+const SHARE_LOCALE: Record<Lang, string> = { en: "en-US", es: "es-US" };
+
+/**
+ * One share of the education distribution, as a percentage.
+ *
+ * The source publishes whole-number percentages to one decimal, and **0.0 is a real
+ * measurement** — 179 cells across the 670 occupations are a genuine zero, meaning nobody was
+ * counted at that level. Rounding everything to a whole number would print "0%" for a true
+ * zero and for 0.4% alike, collapsing "the source counted nobody" into "the source counted
+ * almost nobody": the same class of error as printing a suppressed figure as zero. So anything
+ * under one per cent keeps its decimal, and an exact zero prints as an exact zero.
+ */
+function share(value: number, lang: Lang): string {
+  return new Intl.NumberFormat(SHARE_LOCALE[lang], {
+    style: "percent",
+    maximumFractionDigits: value > 0 && value < 1 ? 1 : 0,
+  }).format(value / 100);
+}
+
+/**
+ * The seven Census attainment levels, in order, exactly as the source names them.
+ *
+ * The order is load-bearing: "how many people went less far than this" is a sum over the
+ * levels below one of them. All 670 distributions carry these seven in this sequence, but the
+ * sums below are computed by looking each level up here rather than by trusting array
+ * position, so a source that reorders or adds a level cannot silently produce a wrong total.
+ */
+const ATTAINMENT_ORDER = [
+  "Less than high school diploma",
+  "High school diploma or equivalent",
+  "Some college, no degree",
+  "Associate's degree",
+  "Bachelor's degree",
+  "Master's degree",
+  "Doctoral or professional degree",
+] as const;
+
+/**
+ * California's stated entry credential, mapped onto the attainment scale where one exists.
+ *
+ * **"Postsecondary non-degree award" is deliberately absent.** It is the stated category for
+ * 1,274 of the program-to-occupation attachments in this data — disproportionately the
+ * certificate-shaped ones this site exists for — and it is not a step on the Census attainment
+ * scale at all. There is no level it sits above or below, so "the share of people who meet it"
+ * is not a computable quantity, and a number invented to fill the sentence would look exactly
+ * like a real one. Those pages say so instead.
+ */
+const EDD_TO_ATTAINMENT: Record<string, string> = {
+  "No formal educational credential": "Less than high school diploma",
+  "High school diploma or equivalent": "High school diploma or equivalent",
+  "Some college, no degree": "Some college, no degree",
+  "Associate's degree": "Associate's degree",
+  "Bachelor's degree": "Bachelor's degree",
+  "Master's degree": "Master's degree",
+  "Doctoral or professional degree": "Doctoral or professional degree",
+};
+
+/** Short labels for the attainment scale. An unknown level shows as published, never blank. */
+function levelLabel(level: string, t: Copy): string {
+  switch (level) {
+    case "Less than high school diploma":
+      return t.eduLevelNoHs;
+    case "High school diploma or equivalent":
+      return t.eduLevelHs;
+    case "Some college, no degree":
+      return t.eduLevelSomeCollege;
+    case "Associate's degree":
+      return t.eduLevelAssociate;
+    case "Bachelor's degree":
+      return t.eduLevelBachelor;
+    case "Master's degree":
+      return t.eduLevelMaster;
+    case "Doctoral or professional degree":
+      return t.eduLevelDoctorate;
+    default:
+      return level;
+  }
+}
+
+/**
+ * The share of people whose schooling stopped short of California's stated entry credential.
+ *
+ * This is the number the section exists for. On 60 of California's occupations the stated
+ * category names a credential most people doing the job do not hold — Construction Managers
+ * reads "Bachelor's degree" while 66% of them went less far — and someone weighing a
+ * community-college pathway against a four-year one is being quietly discouraged by a category
+ * that describes them wrongly.
+ *
+ * Returns `off-scale` where the category has no place on the attainment scale, and null where
+ * there is nothing to compare: no category published, the category withheld by this project,
+ * the category already at the bottom of the scale (nothing sits below it, so it is not a
+ * question), or a distribution carrying a level this scale does not know — in which case
+ * nothing can be summed past it and no total is claimed.
+ *
+ * A null cell makes the sum unknown, and an unknown sum is not published. It is never a zero.
+ */
+type CategoryComparison = { kind: "below"; percent: number } | { kind: "off-scale" };
+
+function belowCategory(
+  distribution: readonly EducationLevelShare[],
+  category: string | null,
+): CategoryComparison | null {
+  const trimmed = (category ?? "").trim();
+  if (trimmed.length === 0) return null;
+
+  const level = EDD_TO_ATTAINMENT[trimmed];
+  if (level === undefined) return { kind: "off-scale" };
+
+  const target = ATTAINMENT_ORDER.indexOf(level as (typeof ATTAINMENT_ORDER)[number]);
+  if (target <= 0) return null;
+
+  let total = 0;
+  for (const row of distribution) {
+    const index = ATTAINMENT_ORDER.indexOf(row.level.trim() as (typeof ATTAINMENT_ORDER)[number]);
+    if (index === -1) return null;
+    if (index >= target) continue;
+    if (row.percent === null) return null;
+    total += row.percent;
+  }
+  return { kind: "below", percent: total };
+}
+
+/**
+ * The level most people in the occupation reached, or null when the page cannot say.
+ *
+ * Null when the top two levels print the same percentage. Construction Managers is 26.9% high
+ * school against 26.8% bachelor's: both show as 27% in the list below, and a sentence naming
+ * one of them "most common" over a list showing them equal reads as an error in the site. The
+ * list still tells the reader everything; the sentence declines to round a tie into a winner.
+ */
+function mostCommon(
+  distribution: readonly EducationLevelShare[],
+  lang: Lang,
+): { level: string; percent: number } | null {
+  let best: { level: string; percent: number } | null = null;
+  let runnerUp: number | null = null;
+
+  for (const row of distribution) {
+    if (row.percent === null) continue;
+    if (best === null || row.percent > best.percent) {
+      runnerUp = best === null ? runnerUp : best.percent;
+      best = { level: row.level, percent: row.percent };
+    } else if (runnerUp === null || row.percent > runnerUp) {
+      runnerUp = row.percent;
+    }
+  }
+
+  if (best === null) return null;
+  if (runnerUp !== null && share(runnerUp, lang) === share(best.percent, lang)) return null;
+  return best;
+}
+
+/*
+ * The two entry requirements, in words rather than in the federal vocabulary.
+ *
+ * "Moderate-term on-the-job training" is what California publishes; "1 to 12 months" is the
+ * same answer said in a way a reader can act on. The two vocabularies agree one for one across
+ * all 670 occupations — 280/165/148/44/21/12 on both sides — so this is a choice of phrasing
+ * and not a second, differing source. An unrecognised value shows exactly as published rather
+ * than disappearing, so a gap here is visible and fixable.
+ */
+function experienceLabel(value: string | null, t: Copy): string | null {
+  switch (value) {
+    case "No work experience":
+      return t.expNone;
+    case "Less than 5 years work experience":
+      return t.expUnder5;
+    case "5 years or more work experience":
+      return t.expOver5;
+    default:
+      return trimmedOrNull(value);
+  }
+}
+
+function trainingLabel(value: string | null, t: Copy): string | null {
+  switch (value) {
+    case "No on-the-job training":
+      return t.ojtNone;
+    case "Less than 1 month on-the-job training":
+      return t.ojtUnderMonth;
+    case "1 to 12 months on-the-job training":
+      return t.ojtToYear;
+    case "More than 1 year on-the-job training":
+      return t.ojtOverYear;
+    case "Internship/residency":
+      return t.ojtInternship;
+    case "Apprenticeship":
+      return t.ojtApprenticeship;
+    default:
+      return trimmedOrNull(value);
+  }
+}
+
+/**
+ * What those two requirements mean for someone about to pay for this program.
+ *
+ * Ordered by how badly the reader needs it before they hand over money. Five years of prior
+ * work in a related job — true of 25 California occupations — is the one fact on this page a
+ * person should meet before enrolling rather than after, so it is the only one given the
+ * page's warning treatment. An apprenticeship or a residency is the next: a classroom
+ * certificate for an occupation people enter through an apprenticeship is a materially
+ * different purchase, and nothing on this site said so.
+ *
+ * The last case is the reassuring one and is stated for the same reason as the rest: for 572
+ * occupations no prior experience is expected, and a reader deciding whether a certificate can
+ * be their route in deserves to be told plainly that it can.
+ *
+ * Silence where the pair is anything else — no sentence is better than a guessed one.
+ */
+function entryConsequence(
+  education: OccupationEducation,
+  t: Copy,
+): { text: string; warn: boolean } | null {
+  const experience = education.typical_experience;
+  const training = education.typical_on_the_job_training;
+
+  if (experience === "5 years or more work experience") {
+    return { text: t.entryWarnExperience, warn: true };
+  }
+  if (experience === "Less than 5 years work experience") {
+    return { text: t.entryNoteExperience, warn: false };
+  }
+  if (training === "Apprenticeship") return { text: t.entryNoteApprenticeship, warn: false };
+  if (training === "Internship/residency") return { text: t.entryNoteInternship, warn: false };
+  if (training === "More than 1 year on-the-job training") {
+    return { text: t.entryNoteLongTraining, warn: false };
+  }
+  if (
+    experience === "No work experience" &&
+    (training === "No on-the-job training" ||
+      training === "Less than 1 month on-the-job training")
+  ) {
+    return { text: t.entryNoteDirect, warn: false };
+  }
+  return null;
+}
+
+function EntryRequirements({ education, lang }: { education: OccupationEducation; lang: Lang }) {
+  const t = dict(lang);
+  const experience = experienceLabel(education.typical_experience, t);
+  const training = trainingLabel(education.typical_on_the_job_training, t);
+  if (experience === null && training === null) return null;
+
+  const consequence = entryConsequence(education, t);
+
+  return (
+    <>
+      <h4 style={{ fontSize: "1rem", margin: "1.25rem 0 0.5rem" }}>{t.entryHeading}</h4>
+      <dl className="entry-facts">
+        {experience !== null && (
+          <div>
+            <dt>{t.entryExperience}</dt>
+            <dd>{experience}</dd>
+          </div>
+        )}
+        {training !== null && (
+          <div>
+            <dt>{t.entryTraining}</dt>
+            <dd>{training}</dd>
+          </div>
+        )}
+      </dl>
+      {consequence !== null && (
+        <p
+          className={consequence.warn ? "callout" : "compare-note"}
+          style={{ marginTop: "0.75rem" }}
+        >
+          {consequence.warn ? <strong>{consequence.text}</strong> : consequence.text}
+        </p>
+      )}
+      <p className="compare-note">{t.entrySource}</p>
+    </>
+  );
+}
+
+/**
+ * What people already doing the job studied — a measurement of people, next to a category that
+ * is a claim about requirements, and never in the row that category occupies.
+ *
+ * Three things have to be true of this block or it does more harm than the single category it
+ * sits beside. It is **national**, and every other figure on the page is California's, which
+ * the note says outright. It is **not a requirement**, and read as one it recreates the exact
+ * false inference the withheld category exists to prevent, with more decimal places. And where
+ * California's stated category is not on this scale, the page says that no comparison is
+ * possible rather than quietly making one anyway.
+ */
+function Attainment({
+  education,
+  occupation,
+  lang,
+}: {
+  education: OccupationEducation;
+  occupation: ProgramOccupation;
+  lang: Lang;
+}) {
+  const t = dict(lang);
+  const distribution = education.distribution;
+  if (!Array.isArray(distribution) || distribution.length === 0) return null;
+
+  /*
+   * The category is only brought into this block where the page is already showing it. On the
+   * 135 attachments where this project withholds it, importing it here to compute a comparison
+   * would put the wrong credential back on the page through a side door.
+   */
+  const category = occupation.match.entry_level_education_withheld
+    ? null
+    : occupation.entry_level_education;
+  const categoryLabel = translateTerm(category, lang);
+  const comparison = categoryLabel === null ? null : belowCategory(distribution, category);
+  const top = mostCommon(distribution, lang);
+
+  /*
+   * `reported_for_soc` is checked rather than trusted. It equals the page's own SOC for all
+   * 670 occupations today — that is a measurement, not a guarantee — and a figure measured for
+   * a different population than the page it appears on has to say whose it is.
+   */
+  const measuredFor =
+    education.reported_for_soc === null ||
+    occupation.soc_code === null ||
+    education.reported_for_soc === occupation.soc_code
+      ? null
+      : (education.reported_for_title ?? education.reported_for_soc);
+
+  return (
+    <>
+      <h4 style={{ fontSize: "1rem", margin: "1.5rem 0 0.5rem" }}>{t.attainmentHeading}</h4>
+      <div className="panel">
+        {top !== null && (
+          <p style={{ marginTop: 0 }}>
+            {t.attainmentTop(levelLabel(top.level, t), share(top.percent, lang))}
+          </p>
+        )}
+        {categoryLabel !== null && comparison !== null && comparison.kind === "below" && (
+          <p>
+            <strong>{t.attainmentBelow(categoryLabel, share(comparison.percent, lang))}</strong>
+          </p>
+        )}
+        {categoryLabel !== null && comparison !== null && comparison.kind === "off-scale" && (
+          <p>{t.attainmentNoCompare(categoryLabel)}</p>
+        )}
+        <dl className="attainment">
+          {distribution.map((row) => (
+            <div className="attainment-row" key={row.level}>
+              <dt>{levelLabel(row.level, t)}</dt>
+              {row.percent === null ? (
+                // Not a zero-length bar. A level the source did not publish draws no track at
+                // all and says so in words.
+                <dd className="unreported">{t.notReported}</dd>
+              ) : (
+                <dd>
+                  <span className="attainment-bar" aria-hidden="true">
+                    <span style={{ width: `${row.percent}%` }} />
+                  </span>
+                  <span className="attainment-share">{share(row.percent, lang)}</span>
+                </dd>
+              )}
+            </div>
+          ))}
+        </dl>
+      </div>
+      <p className="compare-note">
+        {t.attainmentNational} {t.attainmentNotRule}
+        {/*
+          * The scale warning belongs to exactly one case: California's stated category is not
+          * a step on this list, so no share of people can be said to meet it. Saying it where
+          * the category *is* on the list would contradict the sentence above, which has just
+          * subtracted one from the other; saying it where no category is shown at all — the
+          * 135 attachments this project withholds one for — points the reader at a row that
+          * deliberately carries no credential.
+          */}
+        {comparison !== null && comparison.kind === "off-scale" ? ` ${t.attainmentScale}` : ""}
+        {measuredFor === null ? "" : ` ${t.attainmentMeasuredFor(measuredFor)}`}
+      </p>
+    </>
+  );
+}
+
 /**
  * Build the statewide comparison for one measure, or undefined when either side is missing.
  * Never invents a comparison out of a null: an unreported program value has nothing to
@@ -294,6 +912,28 @@ export default async function ProgramPage({
    */
   const format = translateTerm(program.program_format, lang);
 
+  /*
+   * The federal record for each occupation this program leads to, in the same order the
+   * figures below use, so a reader on a three-occupation page meets the three jobs in one
+   * order and only one order.
+   *
+   * The opening section renders only where at least one of them has something to say about the
+   * work. 61 of the 3,266 programs train for occupations O*NET has never profiled — residual
+   * "All Other" codes and federal publication buckets — and those pages are meant to be the
+   * page they already were, one section shorter, rather than a heading over an apology.
+   */
+  const profiled = occupations.map((occupation) => ({
+    occupation,
+    profile: workProfile(occupation.soc_code),
+  }));
+  const explainsWork = profiled.some(
+    ({ profile }) =>
+      profile !== null &&
+      (profile.tasks.length > 0 ||
+        profile.description !== null ||
+        profile.alternateTitles.length > 0),
+  );
+
   return (
     <div className="shell detail">
       <p>
@@ -318,6 +958,33 @@ export default async function ProgramPage({
         same admission about their own untranslated text, and this page carried none.
       */}
       <p className="compare-note">{t.programTextEnglishOnly}</p>
+
+      {/*
+        * What the work is, before what it costs.
+        *
+        * This section is first because the question it answers is first. Someone arriving here
+        * wants to know what this job is and whether it is theirs; the price and the length are
+        * the second question and the outcome measures are the third, and both are still on the
+        * page, a screen further down. Nothing was removed to make room.
+        */}
+      {explainsWork && (
+        <>
+          <h2>{t.workHeading}</h2>
+          <p className="compare-note">{t.workNote}</p>
+          {profiled.map(({ occupation, profile }) =>
+            profile === null ? null : (
+              <WorkForOccupation
+                key={occupation.soc_code}
+                occupation={occupation}
+                profile={profile}
+                lang={lang}
+              />
+            ),
+          )}
+        </>
+      )}
+
+      <h2>{t.costHeading}</h2>
 
       <dl className="measure-grid panel">
         <Measure
@@ -389,7 +1056,12 @@ export default async function ProgramPage({
 
       {occupations.length > 0 && (
         <>
-          <h2>{t.occupation}</h2>
+          {/*
+            * Renamed from "The job this trains for", which the section above now answers. What
+            * is left here is the two things a reader asks once they know what the work is:
+            * what it pays, and what stands between them and being hired.
+            */}
+          <h2>{t.payHeading}</h2>
           {shrinking && (
             <p className="callout">
               <strong>
@@ -422,10 +1094,11 @@ export default async function ProgramPage({
             </div>
           )}
 
-          {occupations.map((occupation) => {
+          {profiled.map(({ occupation, profile }) => {
             // Only claimed when the city was placed: without an area there is no row to
             // read, and nothing here ever substitutes a nearby area's figures for it.
             const local = placed ? occupation.region : null;
+            const education = profile?.education ?? null;
             const figure = (value: string | null) =>
               local === null || areaShort === null
                 ? undefined
@@ -494,6 +1167,24 @@ export default async function ProgramPage({
                   <p className="compare-note" style={{ marginTop: "0.5rem" }}>
                     {region.noRow(areaShort)}
                   </p>
+                )}
+
+                {/*
+                  * Both of these sit *below* the grid, never inside it.
+                  *
+                  * "Usually needs" is one federal answer about what a person needs to enter.
+                  * What people in the job actually studied is a count of a population and makes
+                  * no claim about any individual, so it cannot be wrong about a reader in the
+                  * way the category can — but dropped into the same row with a new label it
+                  * would be read as a requirement, which is the exact false inference the
+                  * withheld category exists to prevent. It is a second fact, not a replacement
+                  * fact, and it is placed like one.
+                  */}
+                {education !== null && (
+                  <>
+                    <EntryRequirements education={education} lang={lang} />
+                    <Attainment education={education} occupation={occupation} lang={lang} />
+                  </>
                 )}
               </section>
             );

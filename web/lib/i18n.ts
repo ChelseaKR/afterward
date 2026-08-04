@@ -390,6 +390,106 @@ areaNote: (unplaced: number, total: number) =>
   aboutAdviceHeading: "This is not advice",
   aboutAdviceBody:
     "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counsellor before you decide.",
+
+  // ---- What the work actually is (program page) ----
+  //
+  // A program page used to open on cost, length and enrolment counts: three numbers about a
+  // purchase, before a word about what the purchase is for. Someone arriving from a search
+  // engine is asking one question first — what is this job, and is it for me — and the page
+  // had no answer to it beyond a paragraph of federal course-catalogue prose at the bottom.
+  //
+  // These strings carry that answer. They are written for someone deciding whether to spend a
+  // year and several thousand dollars, and they assume no college: short sentences, ordinary
+  // verbs, and every caveat stated rather than implied.
+  workHeading: "What this work is",
+  workNote:
+    "This describes the jobs people do, not the classes this program teaches. It comes from the U.S. Department of Labor, which asks people already doing the work. The Department publishes it in English only, so the job names and the sentences below stay in English on this page.",
+  alsoCalled: "Job ads may call this:",
+  tasksNote:
+    "Some of what people in this job do. The Department rates how important each one is, and they appear in that order.",
+  moreTasks: (n: number) => `Show ${fmt(n)} more things this job involves`,
+  // 89 of the 670 occupations have no task list at all, and 77 of those still have the
+  // Department's one-paragraph account of the work. Falling back to it keeps the page an
+  // explanation rather than a gap, and says which of the two the reader is looking at.
+  workDescriptionOnly:
+    "The Department publishes no list of daily tasks for this job. This is how it describes the work instead.",
+  // The remaining 12. They are the federal publication buckets, which have no O*NET profile
+  // to read, so the honest thing is to name the gap rather than leave a heading over nothing.
+  workNothing:
+    "The Department publishes no description and no task list for this job. That is a gap in the federal record, not a sign that the work is unusual.",
+
+  costHeading: "What it costs and how long it takes",
+  payHeading: "What the job pays, and who gets hired",
+
+  // ---- Getting in ----
+  //
+  // "Will finishing this actually get me in?" is a different question from "what credential
+  // does it award", and 25 California occupations answer it with five years of prior work.
+  // Someone should meet that before they pay, not after.
+  entryHeading: "Getting in",
+  entryExperience: "Experience needed first",
+  entryTraining: "Training after you are hired",
+  expNone: "None",
+  expUnder5: "Under 5 years in a related job",
+  expOver5: "5 years or more in a related job",
+  ojtNone: "None",
+  ojtUnderMonth: "Under a month",
+  ojtToYear: "1 to 12 months",
+  ojtOverYear: "More than a year",
+  ojtInternship: "An internship or residency",
+  ojtApprenticeship: "An apprenticeship",
+  entryWarnExperience:
+    "Most people hired for this job have already spent 5 years or more in a related one. Finishing this program may not be enough on its own. Ask the provider who hires their graduates, and what those people did before.",
+  entryNoteExperience:
+    "Employers usually expect some time in a related job as well as the training. Ask the provider what their graduates did before they were hired.",
+  entryNoteApprenticeship:
+    "People usually enter this job through an apprenticeship rather than from a classroom course alone. Ask the provider whether this program leads to one.",
+  entryNoteInternship:
+    "People usually enter this job through an internship or a residency rather than from a classroom course alone. Ask the provider whether this program leads to one.",
+  entryNoteLongTraining:
+    "New hires are trained on the job for more than a year after they start. The classroom part is the beginning of this work, not the whole of it.",
+  entryNoteDirect:
+    "No earlier job experience is expected, and new hires are not put through a long training period. For work like this, a program is usually the way in.",
+  entrySource:
+    "These are the federal government's answers for the occupation, not rules this provider sets. California publishes the same two answers for every one of these jobs.",
+
+  // ---- What people in this job actually studied ----
+  //
+  // The single "Usually needs" category is the federal judgement of what a person typically
+  // needs to enter. It is not what people have: on 60 California occupations it names a
+  // credential most people doing the job do not hold, and on 135 program pages it is withheld
+  // outright because it was assigned to a whole group of occupations. The distribution is the
+  // second fact, and it is published as a second fact — never in the row the category vacated.
+  attainmentHeading: "What people in this job actually studied",
+  // The seven Census attainment levels, shortened for a list a reader scans rather than
+  // reads. Deliberately not borrowed from the education vocabulary the "Usually needs" row
+  // uses: these are a different scale answering a different question, and wording them
+  // identically would invite exactly the subtraction the note underneath rules out. One of
+  // the seven — "Less than high school diploma" — has no entry in that vocabulary at all.
+  eduLevelNoHs: "No high school diploma",
+  eduLevelHs: "High school diploma",
+  eduLevelSomeCollege: "Started college, no degree",
+  eduLevelAssociate: "Two-year degree",
+  eduLevelBachelor: "Four-year degree",
+  eduLevelMaster: "Master's degree",
+  eduLevelDoctorate: "Doctorate or professional degree",
+  attainmentTop: (level: string, share: string) =>
+    `Most common: ${level} — ${share} of the people doing this work.`,
+  attainmentBelow: (level: string, share: string) =>
+    `California says this job usually needs: ${level}. ${share} of the people doing it went less far than that.`,
+  // 1,274 of the program-to-occupation attachments here state "Postsecondary non-degree
+  // award", which is not a step on the attainment scale at all. Counting who "meets" it is
+  // not possible, and a number invented for the sentence would look exactly like a real one.
+  attainmentNoCompare: (level: string) =>
+    `California says this job usually needs: ${level}. That is not one of the steps below, so there is no way to count how many people meet it.`,
+  attainmentNational:
+    "This counts people already doing this job, across the whole United States. Every other figure on this page is California's, and the federal government publishes no state version of this one.",
+  attainmentNotRule:
+    "It is what people happen to have, not a rule about who gets hired. A small row does not mean you would be turned away, and a large one is not a promise of a job.",
+  attainmentScale:
+    "It is also measured on a different scale from “Usually needs” above, so the two cannot be subtracted from one another.",
+  attainmentMeasuredFor: (title: string) =>
+    `Measured for ${title}, the wider group this job is counted inside.`,
 };
 
 /**
@@ -736,6 +836,74 @@ areaNote: (unplaced, total) =>
   aboutAdviceHeading: "Esto no es asesoría",
   aboutAdviceBody:
     "Nada de lo que hay aquí es asesoría financiera, legal, educativa ni profesional. Inscribirse en un programa de capacitación es un compromiso económico y personal serio. Use esto como una fuente entre varias, y hable con la institución, con su America's Job Center local o con una persona orientadora antes de decidir.",
+
+  // ---- En qué consiste el trabajo (página del programa) ----
+  workHeading: "En qué consiste este trabajo",
+  workNote:
+    "Esto describe el trabajo que hace la gente, no las clases que enseña este programa. Viene del Departamento de Trabajo de EE. UU., que pregunta a quienes ya hacen ese trabajo. El Departamento lo publica solo en inglés, así que los nombres de los oficios y las frases de abajo quedan en inglés en esta página.",
+  alsoCalled: "En los anuncios de empleo puede aparecer como:",
+  tasksNote:
+    "Parte de lo que hace la gente en este trabajo. El Departamento califica qué tan importante es cada tarea, y aquí aparecen en ese orden.",
+  moreTasks: (n: number) => `Ver ${fmt(n)} tareas más de este trabajo`,
+  workDescriptionOnly:
+    "El Departamento no publica una lista de tareas diarias para este trabajo. Así describe la labor en su lugar.",
+  workNothing:
+    "El Departamento no publica ni descripción ni lista de tareas para este trabajo. Es un vacío del registro federal, no una señal de que el trabajo sea raro.",
+
+  costHeading: "Cuánto cuesta y cuánto dura",
+  payHeading: "Cuánto paga el trabajo y a quién contratan",
+
+  // ---- Cómo se entra ----
+  entryHeading: "Cómo se entra",
+  entryExperience: "Experiencia previa necesaria",
+  entryTraining: "Capacitación después de la contratación",
+  expNone: "Ninguna",
+  expUnder5: "Menos de 5 años en un trabajo parecido",
+  expOver5: "5 años o más en un trabajo parecido",
+  ojtNone: "Ninguna",
+  ojtUnderMonth: "Menos de un mes",
+  ojtToYear: "De 1 a 12 meses",
+  ojtOverYear: "Más de un año",
+  ojtInternship: "Prácticas o residencia",
+  ojtApprenticeship: "Un aprendizaje",
+  entryWarnExperience:
+    "La mayoría de quienes consiguen este trabajo ya pasaron 5 años o más en uno parecido. Terminar este programa puede no bastar por sí solo. Pregunte a la institución quién contrata a sus egresados y qué hicieron esas personas antes.",
+  entryNoteExperience:
+    "Los empleadores suelen esperar algo de tiempo en un trabajo parecido, además de la capacitación. Pregunte a la institución qué hicieron sus egresados antes de ser contratados.",
+  entryNoteApprenticeship:
+    "A este trabajo se suele entrar por un aprendizaje, no solo con un curso en el salón de clases. Pregunte a la institución si este programa lleva a uno.",
+  entryNoteInternship:
+    "A este trabajo se suele entrar por prácticas o una residencia, no solo con un curso en el salón de clases. Pregunte a la institución si este programa lleva a eso.",
+  entryNoteLongTraining:
+    "A quienes entran los capacitan en el trabajo por más de un año después de empezar. La parte del salón de clases es el comienzo de este oficio, no todo el oficio.",
+  entryNoteDirect:
+    "No se pide experiencia previa y a quienes entran no los someten a una capacitación larga. Para un trabajo así, un programa suele ser la puerta de entrada.",
+  entrySource:
+    "Son las respuestas del gobierno federal sobre la ocupación, no reglas que ponga esta institución. California publica las mismas dos respuestas para cada uno de estos trabajos.",
+
+  // ---- Qué estudiaron en realidad las personas que tienen este trabajo ----
+  attainmentHeading: "Qué estudió en realidad la gente que tiene este trabajo",
+  eduLevelNoHs: "Sin diploma de preparatoria",
+  eduLevelHs: "Diploma de preparatoria",
+  eduLevelSomeCollege: "Empezó la universidad, sin título",
+  eduLevelAssociate: "Título de dos años",
+  eduLevelBachelor: "Título de cuatro años",
+  eduLevelMaster: "Maestría",
+  eduLevelDoctorate: "Doctorado o título profesional",
+  attainmentTop: (level: string, share: string) =>
+    `Lo más común: ${level} — el ${share} de quienes hacen este trabajo.`,
+  attainmentBelow: (level: string, share: string) =>
+    `California dice que este trabajo suele requerir: ${level}. El ${share} de quienes lo hacen llegó menos lejos que eso.`,
+  attainmentNoCompare: (level: string) =>
+    `California dice que este trabajo suele requerir: ${level}. Eso no es uno de los niveles de abajo, así que no hay manera de contar cuánta gente lo cumple.`,
+  attainmentNational:
+    "Aquí se cuenta a personas que ya tienen este trabajo, en todo Estados Unidos. Todas las demás cifras de esta página son de California, y el gobierno federal no publica una versión estatal de esta.",
+  attainmentNotRule:
+    "Es lo que la gente tiene, no una regla sobre a quién contratan. Una fila pequeña no significa que a usted lo rechazarían, y una grande no es promesa de empleo.",
+  attainmentScale:
+    "Además se mide en una escala distinta de la de «Suele requerir» arriba, así que no se pueden restar una de otra.",
+  attainmentMeasuredFor: (title: string) =>
+    `Medido para ${title}, el grupo más amplio dentro del cual se cuenta este trabajo.`,
 };
 
 function fmt(n: number): string {

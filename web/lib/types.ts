@@ -141,6 +141,78 @@ export interface OccupationSkill {
 }
 
 /**
+ * One thing people in an occupation do, as O*NET records it and CareerOneStop serves it
+ * (PROVENANCE D6).
+ *
+ * `importance` is O*NET's rating exactly as published, and null means the source named the
+ * task without rating it — absence of a rating, never a rating of zero. The pipeline sorts
+ * by this and keeps the eight highest, so a null sorted as 0 would silently drop a task the
+ * source never judged at all in favour of one it judged unimportant.
+ *
+ * The number arrives with no scale attached, exactly as `OccupationSkill.importance` does.
+ * Consumers may honour the *order* it gives and must not print it as a score.
+ *
+ * `description` is a whole English sentence and is not translated anywhere: the API serves
+ * English only. A page showing these has to say so rather than let a Spanish reader take the
+ * English for a broken translation.
+ *
+ * The published list repeats itself — 473 of the 581 rated occupations return the same
+ * sentence more than once, up to five times — so anything counting or budgeting tasks must
+ * work from distinct descriptions rather than array length.
+ */
+export interface OccupationTask {
+  description: string;
+  importance: number | null;
+}
+
+/**
+ * One step of the education-attainment scale, and the share of people in the occupation
+ * whose schooling stopped there.
+ *
+ * `percent` is a whole-number percentage (54.4, not 0.544) and **0.0 is a real measurement**:
+ * 179 cells across the 670 occupations are a genuine zero, meaning the source counted nobody
+ * at that level. Null would mean unpublished, and none is today. Nothing here may use
+ * truthiness on the number, and a zero must render as "0%" rather than disappearing.
+ */
+export interface EducationLevelShare {
+  level: string;
+  percent: number | null;
+}
+
+/**
+ * What people in an occupation studied, and what employers expect before and after hiring.
+ *
+ * Three quite different claims, kept in one record because the federal source publishes them
+ * in one block, and worth telling apart before any of them is put on a page:
+ *
+ * `distribution` is a **national measurement of a population** — the education people already
+ * working in this occupation actually hold, counted by the U.S. Bureau of Labor Statistics
+ * across the whole country. It is not a requirement, it is not California's, and its seven
+ * Census levels are not the same vocabulary as `OccupationSummary.entry_level_education`,
+ * whose "Postsecondary non-degree award" has no counterpart on this scale at all. Subtracting
+ * one from the other is only meaningful where the stated category maps onto a level here.
+ *
+ * `typical_experience` and `typical_on_the_job_training` are **requirement claims**, and they
+ * are the same federal assignment that reaches this dataset a second time as
+ * `Occupation.work_experience` and `Occupation.job_training`: across all 670 occupations the
+ * two sets agree one for one, category for category. These are the plainer phrasings ("1 to
+ * 12 months on-the-job training" where the other says "Moderate-term on-the-job training"),
+ * so there is no scope disagreement to disclose — only a choice of wording.
+ *
+ * `reported_for_soc` names the occupation BLS measured `distribution` for, which is not
+ * always the occupation asking: the twelve aggregates carry their members' shared figures.
+ * It is null when the source's code could not be read. Check it at the point of use rather
+ * than assuming it matches; that it does for all 670 today is a measurement, not a promise.
+ */
+export interface OccupationEducation {
+  distribution: EducationLevelShare[];
+  typical_experience: string | null;
+  typical_on_the_job_training: string | null;
+  reported_for_soc: string | null;
+  reported_for_title: string | null;
+}
+
+/**
  * An occupation O*NET's own related-occupation list names for this one.
  *
  * The pipeline keeps only entries this dataset can open a page for, so every row here is a
@@ -194,6 +266,23 @@ export interface Occupation extends OccupationSummary {
    */
   bright_outlook: string | null;
   related_source: RelatedSource | null;
+  /**
+   * What the work involves, most important first. Empty for the 89 occupations O*NET has no
+   * profile for — precisely the same 89 that have no `skills`, since O*NET either rates an
+   * occupation or it does not. Those pages are meant to be shorter, not broken.
+   */
+  tasks: OccupationTask[];
+  /**
+   * Other names the same job is advertised under ("Charge Nurse", "School Nurse"), as
+   * published: alphabetical, at most ten, English only. Empty for 79 occupations.
+   */
+  alternate_titles: string[];
+  /**
+   * Present for all 670 occupations today, including the twelve aggregates. Typed nullable
+   * anyway: a record predating the field would arrive without it, and a page that assumed
+   * otherwise would put "0%" on a distribution nobody measured.
+   */
+  education: OccupationEducation | null;
 }
 
 /**
