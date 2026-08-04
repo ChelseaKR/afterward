@@ -32,6 +32,13 @@ All notable changes to this project are documented here. The format follows
 - Wages of exactly zero are treated as unpublished rather than rendered as "$0 a year".
 - Partial costs render as "At least $X" instead of presenting a floor as the price.
 - The site root is a real language chooser rather than an error shell with no `lang`.
+- Provider URLs are validated: non-http(s) values are dropped rather than rendered into an
+  `href`, closing a latent script-injection sink; bare domains are repaired to https.
+- Programs are compared against the median program that reported the same measure, not
+  against DOL's statewide aggregate, which is computed on a different basis and made 91% of
+  programs read as above average.
+- Earnings are labelled as covering a single quarter, so they are not read as a yearly
+  salary beside the annual occupation wage.
 
 ### Known limitations
 
@@ -42,9 +49,5 @@ All notable changes to this project are documented here. The format follows
   layout engine.
 - Whether California's own ETPL lists programs the federal file omits is unresolved; the
   state publishes no bulk export.
-- `median_earnings` is a quarterly WIOA measure displayed near annual occupation wages
-  without a period label, which invites a reader to compare two different things.
-- The statewide benchmark is not a like-for-like comparison: 91% of programs read as "above
-  the California average" on employment, which suggests the statewide figure is computed
-  differently from the per-program one.
-- `program_url` is rendered without scheme validation; eight values are not absolute URLs.
+- 1,430 programs publish no usable website link. Most never filed one; eight filed something
+  that was not a URL, and those are now dropped rather than rendered.
