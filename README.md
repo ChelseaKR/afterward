@@ -38,11 +38,11 @@ plus a sharded bundle the site consumes: a slim `search-index.json` for client-s
 and per-program and per-occupation detail fetched only when opened.
 
 The front end is a Next.js static export in `web/` — search with filters, program detail,
-and occupation detail, in English and Spanish. It builds to about 8,000 pages in under
-twenty seconds and needs no server at runtime.
+occupation detail, and provider pages, in English and Spanish. It needs no server at
+runtime.
 
 ```bash
-make web-verify    # typecheck, unit tests, static export, axe pass over built pages
+make web-verify    # typecheck, unit tests, contrast audit, static export, axe pass
 ```
 
 ### Working without the network
