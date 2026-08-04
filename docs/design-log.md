@@ -140,6 +140,31 @@ question and a hide-checkbox cannot ask it.
 Unknown growth is excluded from *both* the growing and shrinking filters. Treating unknown
 as either would put a claim on screen the data cannot support.
 
+### D12 — CI builds from a committed fixture, because DOL refuses CI
+
+The web CI job failed on its first real run: `cxsearch.dol.gov` returns **403 Forbidden** to
+GitHub Actions runners. The same query succeeds from a laptop, so this is datacenter-IP or
+client filtering, not a malformed request.
+
+The deeper mistake was depending on a third party being reachable at all. CI now builds from
+a 60-program fixture committed to the repository, through a `build-offline` path that runs
+the same emit code as a real build.
+
+The fixture is **chosen, not sampled**. It contains a program with full outcomes, one that
+reported nothing, one with a suppressed measure beside a reported one, a shrinking occupation
+and a growing one, a small cohort, and a program with no matching occupation. A green run
+against a random 60 rows would prove very little, so tests assert that coverage directly —
+if the fixture stops exercising a case, the tests say so rather than CI passing while
+testing less.
+
+Two guards worth naming: one test monkeypatches `httpx` to raise on any request, so the
+offline path cannot silently regain a network dependency; another asserts no `-1` survived
+into the fixture, since that would mean suppression leaked through as real data. Fixture
+builds are marked `is_fixture: true` so nobody mistakes 60 rows for California's landscape.
+
+The scheduled freshness job still hits the live sources and is still allowed to fail. That
+is now its only purpose: telling us when upstream changed, without blocking anything.
+
 ### Still open
 
 - Does California's own ETPL list programs the federal file omits? **Still unresolved, and

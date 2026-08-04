@@ -45,6 +45,22 @@ twenty seconds and needs no server at runtime.
 make web-verify    # typecheck, unit tests, static export, axe pass over built pages
 ```
 
+### Working without the network
+
+`make data` reaches out to the U.S. DOL and California EDD. That is fine from a laptop but
+not from CI — the DOL endpoint returns 403 to GitHub Actions runners, and a build should not
+fail because a third party is unreachable. A 60-program fixture is committed for that:
+
+```bash
+make data-offline  # build the site dataset from fixtures/data, no network
+make fixture       # regenerate the fixture after a real `make data`
+```
+
+The fixture is chosen rather than sampled, so it exercises every case the UI renders
+differently: reported and unreported outcomes, a suppressed measure beside a reported one, a
+shrinking occupation and a growing one, a small cohort, and a program with no matching
+occupation. Fixture builds are marked `is_fixture: true` in `coverage.json`.
+
 ## Honesty about coverage
 
 `coverage.json` is a first-class output, not a debug artifact. Roughly **half** of
