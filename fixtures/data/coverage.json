@@ -1,0 +1,26 @@
+{
+ "snapshot_date": "2026-08-04",
+ "total_programs": 60,
+ "programs_with_any_outcome": 49,
+ "programs_with_median_earnings": 1432,
+ "programs_with_employment_rate": 1766,
+ "programs_with_completion_rate": 2047,
+ "programs_with_cost": 3266,
+ "programs_with_soc": 3266,
+ "programs_matched_to_occupation": 56,
+ "distinct_providers": 584,
+ "distinct_occupations_matched": 56,
+ "occupation_rows_loaded": 764,
+ "outcome_coverage_pct": 81.7,
+ "occupation_match_pct": 93.3,
+ "state_benchmark": {
+  "state": "CA",
+  "completion_rate": 0.71,
+  "employment_rate_q2": 0.27,
+  "median_earnings": 16978.95,
+  "credential_rate": 0.37,
+  "total_exited": 664260.0,
+  "total_completed": 469808.0
+ },
+ "is_fixture": true
+}

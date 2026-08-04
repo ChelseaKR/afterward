@@ -233,6 +233,42 @@ def emit_site_bundle(
         )
 
 
+def build_offline(fixture_dir: Path, *, output_dir: Path | None = None) -> int:
+    """Emit the site bundle from a committed fixture instead of the live sources.
+
+    CI uses this. The upstream DOL endpoint refuses requests from GitHub Actions runners,
+    and a build that depends on a third party being reachable fails for reasons that have
+    nothing to do with the change under test. This runs the same emit code as a real build,
+    so the shape of what the site consumes is exercised either way.
+    """
+    output_dir = output_dir or Path("web/public/data")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    programs_doc = json.loads((fixture_dir / "programs.json").read_text(encoding="utf-8"))
+    occupations_doc = json.loads((fixture_dir / "occupations.json").read_text(encoding="utf-8"))
+    coverage = json.loads((fixture_dir / "coverage.json").read_text(encoding="utf-8"))
+
+    payloads = programs_doc["programs"]
+    occupations = occupations_doc["occupations"]
+    snapshot = programs_doc["snapshot_date"]
+
+    for name, document in (
+        ("programs.json", programs_doc),
+        ("occupations.json", occupations_doc),
+        ("coverage.json", coverage),
+    ):
+        (output_dir / name).write_text(json.dumps(document, indent=1), encoding="utf-8")
+
+    emit_site_bundle(
+        payloads,
+        occupations,
+        output_dir=output_dir,
+        snapshot=snapshot,
+        state=programs_doc.get("state", DEFAULT_STATE),
+    )
+    return len(payloads)
+
+
 def build(
     state: str = DEFAULT_STATE,
     *,

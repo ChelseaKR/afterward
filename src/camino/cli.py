@@ -6,7 +6,7 @@ from pathlib import Path
 
 import typer
 
-from camino.build import build
+from camino.build import build, build_offline
 
 app = typer.Typer(
     add_completion=False,
@@ -46,6 +46,20 @@ def build_command(
         f"  ({report.occupation_match_pct}%)"
     )
     typer.echo(f"  distinct occupations      {report.distinct_occupations_matched:>6}")
+
+
+@app.command("build-offline")
+def build_offline_command(
+    fixture_dir: Path = typer.Option(
+        Path("fixtures/data"), "--fixture-dir", help="Committed fixture to build from."
+    ),
+    output_dir: Path = typer.Option(
+        Path("web/public/data"), "--output-dir", help="Where to write the emitted JSON."
+    ),
+) -> None:
+    """Emit the site dataset from the committed fixture, without touching the network."""
+    count = build_offline(fixture_dir, output_dir=output_dir)
+    typer.echo(f"Built {count} fixture programs from {fixture_dir} -> {output_dir}")
 
 
 def main() -> None:

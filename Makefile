@@ -41,6 +41,16 @@ provenance-check:
 data:
 	uv run camino build --output-dir web/public/data
 
+# Build the site dataset from the committed fixture, with no network access.
+# CI uses this: the DOL endpoint refuses GitHub Actions runners, and a build that depends on
+# a third party being reachable fails for reasons unrelated to the change under test.
+data-offline:
+	uv run camino build-offline
+
+# Regenerate the committed fixture from a real dataset. Run after `make data`.
+fixture:
+	uv run python scripts/make_fixture.py
+
 web-install:
 	cd web && npm ci
 

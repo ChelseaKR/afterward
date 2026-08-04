@@ -35,7 +35,8 @@ jobs:
 
   web:
     # Typecheck, unit tests, static export, and an axe pass over the built pages.
-    # Needs a dataset to build against, so it fetches from the public sources first.
+    # Builds against the committed fixture rather than the live sources: DOL returns 403 to
+    # GitHub Actions runners, and CI should not fail because a third party is unreachable.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,15 +57,16 @@ jobs:
           make install
           make web-install
 
-      - name: Build dataset
-        run: make data
+      - name: Build dataset from fixture
+        run: make data-offline
 
       - name: Verify site
         run: make web-verify
 
   data-freshness:
     # Confirms the public sources still respond and still contain California data.
-    # Never blocks a pull request; upstream outages are not this repo's fault.
+    # Never blocks a pull request; upstream outages are not this repo's fault, and DOL is
+    # known to refuse GitHub Actions runners outright, so this is informational only.
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     continue-on-error: true

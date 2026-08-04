@@ -1,0 +1,3373 @@
+{
+ "snapshot_date": "2026-08-04",
+ "state": "CA",
+ "programs": [
+  {
+   "uuid": "f6900f55-31e5-11f1-ba03-00155dd2f085",
+   "provider_name": "Virtual Design and Construction Institute",
+   "program_name": "BIM Technology Certificate",
+   "description": "A program that focuses on the application of advanced technology to building design and construction retrofitting existing buildings and efficient operation of buildings including lighting and daylight design acoustics solar design building conservation and energy-conscious design. Includes instruction in architecture building technology civil and structural engineering mechanical engineering environmental control systems sustainability and computer tools and applications.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://vdci.edu/certificate-programs/bim-technology/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "15.0101",
+   "soc_codes": [
+    "17-3019",
+    "11-9021",
+    "17-3011"
+   ],
+   "location": {
+    "city": "San Diego",
+    "state": "CA",
+    "zip": "92110",
+    "lat": 32.77,
+    "lon": -117.2
+   },
+   "length": {
+    "weeks": null,
+    "hours": null
+   },
+   "cost": {
+    "tuition": 5660.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 5660.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 11.0,
+    "total_exited": 9.0,
+    "total_completed": 9.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 9.0,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": 9.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "17-3019",
+     "title": "Drafters, All Other",
+     "median_annual_wage": 75444.0,
+     "total_job_openings": 1190.0,
+     "percent_change": -15.8,
+     "entry_level_education": "Associate's degree"
+    },
+    {
+     "soc_code": "11-9021",
+     "title": "Construction Managers",
+     "median_annual_wage": 135394.0,
+     "total_job_openings": 47800.0,
+     "percent_change": 10.9,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "17-3011",
+     "title": "Architectural and Civil Drafters",
+     "median_annual_wage": 78662.0,
+     "total_job_openings": 10740.0,
+     "percent_change": 7.0,
+     "entry_level_education": "Associate's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f6903297-31e5-11f1-8f5f-00155dd2f085",
+   "provider_name": "Animal Behavior College",
+   "program_name": "Veterinary Assistant",
+   "description": "Become a certified veterinary assistant through our NAVTA-approved vet assistant course. Turn your passion for helping animals into a rewarding career by learning the requirements necessary to become a more attractive job candidate. Ours is one of only a few online programs to be approved by the National Association of Veterinary Technicians in America (NAVTA). Designed to prepare you for a career working with animals our program teaches you everything from exam room prep and surgical procedure to small animal health care. After successful completion of the prior stages you ll then be placed in a veterinary environment to complete your externship.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "51.0808",
+   "soc_codes": [
+    "31-9096"
+   ],
+   "location": {
+    "city": "Valencia",
+    "state": "CA",
+    "zip": "91355",
+    "lat": 34.41,
+    "lon": -118.56
+   },
+   "length": {
+    "weeks": null,
+    "hours": null
+   },
+   "cost": {
+    "tuition": 5684.0,
+    "supplies": 1729.15,
+    "total_out_of_pocket": 7413.15,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 879.0,
+    "total_exited": 467.0,
+    "total_completed": 244.0,
+    "completion_rate": 0.52,
+    "credentials_earned": 528.0,
+    "median_earnings": 10000.0,
+    "employment_rate_q2": 0.62,
+    "employed_q2": 572.0,
+    "employed_q4": 367.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69032e4-31e5-11f1-803c-00155dd2f085",
+   "provider_name": "Animal Behavior College",
+   "program_name": "Dog Obedience Instructor Program",
+   "description": "In support of ABC s strategic alliance with The Association of Professional Dog Trainers (APDT) and our commitment to keeping dogs safe from injurious training methods our updated curriculum will continue to advocate science-based positive reinforcement training philosophies including using the least invasive minimally aversive (LIMA) training techniques. This enhanced curriculum now includes an additional 300 pages of information and features a beautiful sleek graphic design and enhanced training videos with the goal of providing students an improved learning experience. The improved curriculum also includes content on conducting remote training lessons; up-to-date information on how to get the most out of using both current and traditional marketing tools such as search engine optimization (SEO) social media email and print media; and an expanded appendix of various training and business forms.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.animalbehaviorcollege.com/grooming/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "1.0505",
+   "soc_codes": [
+    "39-2011"
+   ],
+   "location": {
+    "city": "Valencia",
+    "state": "CA",
+    "zip": "91355",
+    "lat": 34.41,
+    "lon": -118.56
+   },
+   "length": {
+    "weeks": null,
+    "hours": null
+   },
+   "cost": {
+    "tuition": 5701.0,
+    "supplies": 1516.67,
+    "total_out_of_pocket": 7217.67,
+    "wioa_funded_cost": 6267.0
+   },
+   "outcomes": {
+    "total_served": 1105.0,
+    "total_exited": 673.0,
+    "total_completed": 489.0,
+    "completion_rate": 0.73,
+    "credentials_earned": 724.0,
+    "median_earnings": 5000.0,
+    "employment_rate_q2": 0.49,
+    "employed_q2": 598.0,
+    "employed_q4": 493.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-2011",
+     "title": "Animal Trainers",
+     "median_annual_wage": 50303.0,
+     "total_job_openings": 7160.0,
+     "percent_change": 8.7,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f690332a-31e5-11f1-8e1c-00155dd2f085",
+   "provider_name": "Animal Behavior College",
+   "program_name": "Grooming Program",
+   "description": "Becoming a dog groomer begins with learning how to use various pet grooming tools. Our curriculum also teaches you how to safely groom both dogs and cats while maintaining a calm relaxing environment. As a student enrolled in ABC s dog groomer course you ll receive a complete grooming toolkit. These 40 professional grooming tools include: clippers blades shears brushes combs shampoo conditioner and more. This high-quality equipment is essential for every groomer s toolbox and can be used when you start your new career. Our pet grooming certification program wouldn t be complete without the essential hands-on training component. Once you finish the online dog grooming portion of this program you ll have the unique opportunity to work with professional dog groomers. You ll be able to apply everything you ve learned up to this point to complete a full groom on your own.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.animalbehaviorcollege.com/grooming/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "1.0504",
+   "soc_codes": [
+    "39-2021"
+   ],
+   "location": {
+    "city": "Valencia",
+    "state": "CA",
+    "zip": "91355",
+    "lat": 34.41,
+    "lon": -118.56
+   },
+   "length": {
+    "weeks": null,
+    "hours": null
+   },
+   "cost": {
+    "tuition": 6249.0,
+    "supplies": 2119.4,
+    "total_out_of_pocket": 8368.4,
+    "wioa_funded_cost": 4465.5
+   },
+   "outcomes": {
+    "total_served": 589.0,
+    "total_exited": 273.0,
+    "total_completed": 141.0,
+    "completion_rate": 0.52,
+    "credentials_earned": 319.0,
+    "median_earnings": 5000.0,
+    "employment_rate_q2": 0.46,
+    "employed_q2": 388.0,
+    "employed_q4": 192.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f6929c13-31e5-11f1-8fef-00155dd2f085",
+   "provider_name": "Reach University",
+   "program_name": "Reach University Educator Preparation Program",
+   "description": "A program that prepares individuals to teach students in the elementary grades  which may include kindergarten through grade eight  depending on the school system or state regulations.  Includes preparation to teach all elementary education subject matter.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "http://www.reach.edu",
+   "entity_type": "Higher Ed: Baccalaureate or Higher",
+   "cip_code": "13.1202",
+   "soc_codes": [
+    "25-2021",
+    "25-2056"
+   ],
+   "location": {
+    "city": "Oakland",
+    "state": "CA",
+    "zip": "94612",
+    "lat": 37.81,
+    "lon": -122.27
+   },
+   "length": {
+    "weeks": 260.0,
+    "hours": 30.0
+   },
+   "cost": {
+    "tuition": 12374.0,
+    "supplies": 12725.0,
+    "total_out_of_pocket": 25099.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "25-2021",
+     "title": "Elementary School Teachers, Except Special Education",
+     "median_annual_wage": 102439.0,
+     "total_job_openings": 96800.0,
+     "percent_change": -1.7,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f6939ff4-31e5-11f1-b734-00155dd2f085",
+   "provider_name": "Springboard",
+   "program_name": "User Experience Design Career Track (500 clock hours)",
+   "description": "6091|Covers understanding user needs to create products that are dynamic and easy to use.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.springboard.com/courses/ux-career-track/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "11.0105",
+   "soc_codes": [
+    "15-1255"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94111",
+    "lat": 37.8,
+    "lon": -122.4
+   },
+   "length": {
+    "weeks": 26.0,
+    "hours": 19.0
+   },
+   "cost": {
+    "tuition": 7900.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 7900.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f693a050-31e5-11f1-bf37-00155dd2f085",
+   "provider_name": "Springboard",
+   "program_name": "Tech Sales Career Track (150 clock hours)",
+   "description": "6090|Covers the skills for the direct promotion of products & services to customers & functioning independently.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.springboard.com/courses/tech-sales-career-track/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "52.1801",
+   "soc_codes": [
+    "41-4012"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94111",
+    "lat": 37.8,
+    "lon": -122.4
+   },
+   "length": {
+    "weeks": 16.0,
+    "hours": 9.0
+   },
+   "cost": {
+    "tuition": 5900.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 5900.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "41-4012",
+     "title": "Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",
+     "median_annual_wage": 77187.0,
+     "total_job_openings": 117100.0,
+     "percent_change": -3.3,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69ba316-31e5-11f1-b60b-00155dd2f085",
+   "provider_name": "Helix Opportunity LLC",
+   "program_name": "Digital Accessibility Developer",
+   "description": "A program that focuses on the development  use  critical evaluation  and regulation of new electronic communication technologies using computer applications  and that prepares individuals to function as developers and managers of digital communications media. Includes instruction in computer and telecommunications technologies and processes  design and development of digital communications  marketing and distribution  digital communications regulation  law  and policy  the study of human interaction with  and use of  digital media  and emerging trends and issues.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.helixopp.com/accessible-and-inclusive-design/index.html#training",
+   "entity_type": "Private For-Profit",
+   "cip_code": "9.0702",
+   "soc_codes": [
+    "15-1252"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 12.0,
+    "hours": 20.0
+   },
+   "cost": {
+    "tuition": 18150.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 18150.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f693a013-31e5-11f1-8e16-00155dd2f085",
+   "provider_name": "Springboard",
+   "program_name": "Software Engineering Career Track (800 clock hours)",
+   "description": "6082|Web developer training, build web-based pages and applications to achieve user, business, and product goals and transform your career.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.springboard.com/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "15.1204",
+   "soc_codes": [
+    "15-1254"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94111",
+    "lat": 37.8,
+    "lon": -122.4
+   },
+   "length": {
+    "weeks": 38.0,
+    "hours": 21.0
+   },
+   "cost": {
+    "tuition": 10900.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 10900.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 11.0,
+    "total_exited": 11.0,
+    "total_completed": 6.0,
+    "completion_rate": 0.55,
+    "credentials_earned": 6.0,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "15-1254",
+     "title": "Web Developers",
+     "median_annual_wage": 122917.0,
+     "total_job_openings": 5070.0,
+     "percent_change": 9.0,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f693a032-31e5-11f1-b11b-00155dd2f085",
+   "provider_name": "Springboard",
+   "program_name": "Data Analytics Career Track (500 clock hours)",
+   "description": "6089|Prepares individuals to apply data science to generate insights from data and identify and predict trends.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.springboard.com/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "30.7101",
+   "soc_codes": [
+    "13-1111",
+    "15-2051"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94111",
+    "lat": 37.8,
+    "lon": -122.4
+   },
+   "length": {
+    "weeks": 26.0,
+    "hours": 19.0
+   },
+   "cost": {
+    "tuition": 8900.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 8900.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 14.0,
+    "total_exited": 14.0,
+    "total_completed": 10.0,
+    "completion_rate": 0.71,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "13-1111",
+     "title": "Management Analysts",
+     "median_annual_wage": 103162.0,
+     "total_job_openings": 154880.0,
+     "percent_change": 11.5,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f693a070-31e5-11f1-b76d-00155dd2f085",
+   "provider_name": "Springboard",
+   "program_name": "Cybersecurity Career Track (500 clock hours)",
+   "description": "6086|Preparation for Security+ exam for those with Network+ certification and at least two years of experience in IT administration with a security focus, recommended.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.springboard.com/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "11.1003",
+   "soc_codes": [
+    "15-1212"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94111",
+    "lat": 37.8,
+    "lon": -122.4
+   },
+   "length": {
+    "weeks": 26.0,
+    "hours": 19.0
+   },
+   "cost": {
+    "tuition": 10900.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 10900.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 14.0,
+    "total_exited": 14.0,
+    "total_completed": 9.0,
+    "completion_rate": 0.64,
+    "credentials_earned": 9.0,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "15-1212",
+     "title": "Information Security Analysts",
+     "median_annual_wage": 142449.0,
+     "total_job_openings": 13930.0,
+     "percent_change": 29.1,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0411-31e5-11f1-9582-00155dd2f085",
+   "provider_name": "Bay Area Video Coalition",
+   "program_name": "Occupational Training For Beginning Video Production Certificate: Producer/Editor Fast-Track",
+   "description": "39635|Fast paced program that prepares individuals to communicate dramatic information, ideas, moods, and feelings through the making and production of films and videos. Courses include DSLR Bootcamp, Lighting, and Audio Post Production.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/7/beginning-video-production-producereditor-fast-track",
+   "entity_type": "Private Non-Profit",
+   "cip_code": "50.0602",
+   "soc_codes": [
+    "27-4032"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 16.0,
+    "hours": 50.0
+   },
+   "cost": {
+    "tuition": 2025.0,
+    "supplies": 240.0,
+    "total_out_of_pocket": 2265.0,
+    "wioa_funded_cost": 4420.0
+   },
+   "outcomes": {
+    "total_served": 16.0,
+    "total_exited": 16.0,
+    "total_completed": 16.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 16.0,
+    "median_earnings": null,
+    "employment_rate_q2": 0.94,
+    "employed_q2": 15.0,
+    "employed_q4": 13.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors",
+     "median_annual_wage": 90967.0,
+     "total_job_openings": 10010.0,
+     "percent_change": 7.9,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d04a9-31e5-11f1-91b0-00155dd2f085",
+   "provider_name": "Reach University",
+   "program_name": "Reach University K-12 Teacher Apprenticeship Program",
+   "description": "72155|The term of the competency-based apprenticeship with a minimum of 144 credit hours of relatedtechnical instruction (RTI) plus employer specific training and 2,000 hours of on-the-job learning(OJL) to achieve skills based on employer requirements per year. Term of apprenticeship will bedetermined by the apprentices educational level as outlined in the Minimum Qualifications.The estimated length of an apprenticeship program based on this occupation was set by the DOL tobe 3 years.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "http://www.reach.edu",
+   "entity_type": "Higher Ed: Baccalaureate or Higher",
+   "cip_code": "13.0201",
+   "soc_codes": [
+    "25-2021",
+    "25-2031"
+   ],
+   "location": {
+    "city": "Oakland",
+    "state": "CA",
+    "zip": "94612",
+    "lat": 37.81,
+    "lon": -122.27
+   },
+   "length": {
+    "weeks": 156.0,
+    "hours": 50.0
+   },
+   "cost": {
+    "tuition": 12374.0,
+    "supplies": 12725.0,
+    "total_out_of_pocket": 25099.0,
+    "wioa_funded_cost": 75297.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "25-2021",
+     "title": "Elementary School Teachers, Except Special Education",
+     "median_annual_wage": 102439.0,
+     "total_job_openings": 96800.0,
+     "percent_change": -1.7,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "25-2031",
+     "title": "Secondary School Teachers, Except Special and Career/Technical Education",
+     "median_annual_wage": 104208.0,
+     "total_job_openings": 57820.0,
+     "percent_change": -1.5,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0c12-31e5-11f1-b47c-00155dd2f085",
+   "provider_name": "West Valley Occupational Center - LAUSD",
+   "program_name": "Medical Billing/Medical Front Office Assistant",
+   "description": "63479|This program prepares individuals for employment as a front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility.  Students learn medical terminology, abbreviations, procedures, and common diseases.  The Medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics.  Telecommunications, file management and preparing correspondence will also be covered in the program.  Students will have hands-or practice with electronic records management and the insurance billing process.  Medicare, Medicaid, HMOS, PPOS and commercial plans will be discussed.  HIPAA compliance, fraud/abuse, ethics, professionalism, and job search strategies will be emphasized throughout the course. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0714",
+   "soc_codes": [
+    "43-3011",
+    "43-3021",
+    "43-6013"
+   ],
+   "location": {
+    "city": "Woodland Hills",
+    "state": "CA",
+    "zip": "91367",
+    "lat": 34.17,
+    "lon": -118.61
+   },
+   "length": {
+    "weeks": 27.0,
+    "hours": 17.0
+   },
+   "cost": {
+    "tuition": 1575.0,
+    "supplies": 1160.0,
+    "total_out_of_pocket": 2735.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 411.0,
+    "total_exited": 315.0,
+    "total_completed": 234.0,
+    "completion_rate": 0.74,
+    "credentials_earned": 22.0,
+    "median_earnings": 10499.0,
+    "employment_rate_q2": 0.57,
+    "employed_q2": 180.0,
+    "employed_q4": 37.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "43-3011",
+     "title": "Bill and Account Collectors",
+     "median_annual_wage": 59301.0,
+     "total_job_openings": 11890.0,
+     "percent_change": -9.2,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks",
+     "median_annual_wage": 57591.0,
+     "total_job_openings": 44130.0,
+     "percent_change": 4.8,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d1112-31e5-11f1-a794-00155dd2f085",
+   "provider_name": "Shasta College",
+   "program_name": "Accounting Clerk/Bookkeeper Certificate",
+   "description": "3245|A program that prepares individuals to provide technical administrative support to professional accountants and other financial management personnel.  Includes instruction in posting transactions to accounts  record-keeping systems  accounting software operation  and general accounting principles and practices.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://www.shastacollege.edu/academics/programs/accounting/",
+   "entity_type": "Public",
+   "cip_code": "52.0302",
+   "soc_codes": [
+    "43-3031",
+    "43-3051"
+   ],
+   "location": {
+    "city": "Redding",
+    "state": "CA",
+    "zip": "96003",
+    "lat": 40.68,
+    "lon": -122.25
+   },
+   "length": {
+    "weeks": 34.0,
+    "hours": 15.0
+   },
+   "cost": {
+    "tuition": 1311.0,
+    "supplies": 1346.0,
+    "total_out_of_pocket": 2657.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 588.0,
+    "total_exited": 207.0,
+    "total_completed": 52.0,
+    "completion_rate": 0.25,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": 27.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1,
+     "entry_level_education": "Some college, no degree"
+    },
+    {
+     "soc_code": "43-3051",
+     "title": "Payroll and Timekeeping Clerks",
+     "median_annual_wage": 66886.0,
+     "total_job_openings": 17950.0,
+     "percent_change": -13.8,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d118b-31e5-11f1-a64a-00155dd2f085",
+   "provider_name": "Shasta College",
+   "program_name": "Shasta College Accounting Clerk Apprenticeship",
+   "description": "71929|A state-approved registered apprenticeship program. Apprentices follow the program Standards, outlining related instruction and on-the-job training hours required to receive a certificate from the state upon completion. Related instruction includes, but is not limited to, accounting principles and theory, financial accounting, managerial accounting, cost accounting, budget control, legal aspects of accounting, reporting procedures, statement analysis, business information systems, professional standards and ethics.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.shastacollege.edu/about/economic-workforce-development/apprenticeship/",
+   "entity_type": "Public",
+   "cip_code": "52.0301",
+   "soc_codes": [
+    "43-3031",
+    "43-3051"
+   ],
+   "location": {
+    "city": "Redding",
+    "state": "CA",
+    "zip": "96003",
+    "lat": 40.68,
+    "lon": -122.25
+   },
+   "length": {
+    "weeks": 99.0,
+    "hours": 40.0
+   },
+   "cost": {
+    "tuition": 0.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 0.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1,
+     "entry_level_education": "Some college, no degree"
+    },
+    {
+     "soc_code": "43-3051",
+     "title": "Payroll and Timekeeping Clerks",
+     "median_annual_wage": 66886.0,
+     "total_job_openings": 17950.0,
+     "percent_change": -13.8,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f6969d0c-31e5-11f1-9977-00155dd2f085",
+   "provider_name": "Animal Behavior",
+   "program_name": "Dog Obedience Program",
+   "description": "The curriculum for the Dog Obedience Instructor Training Program is broken down into 11 stages that cover topics ranging from basic study of canines to business building tips. Each stage equips you with the knowledge and dog training skills necessary to advance to the externship portion of the dog training program. In stage 10  you can apply everything you?ve learned throughout your dog training course in a real-life setting.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.animalbehaviorcollege.com/dog-trainer/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "1.0505",
+   "soc_codes": [
+    "39-2011"
+   ],
+   "location": {
+    "city": "Valencia",
+    "state": "CA",
+    "zip": "91355",
+    "lat": 34.41,
+    "lon": -118.56
+   },
+   "length": {
+    "weeks": 52.0,
+    "hours": 10.0
+   },
+   "cost": {
+    "tuition": 4131.0,
+    "supplies": 1517.0,
+    "total_out_of_pocket": 5648.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 51.0,
+    "total_exited": 21.0,
+    "total_completed": 18.0,
+    "completion_rate": 0.86,
+    "credentials_earned": 24.0,
+    "median_earnings": 5000.0,
+    "employment_rate_q2": 0.46,
+    "employed_q2": 12.0,
+    "employed_q4": 18.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-2011",
+     "title": "Animal Trainers",
+     "median_annual_wage": 50303.0,
+     "total_job_openings": 7160.0,
+     "percent_change": 8.7,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f6969d2b-31e5-11f1-8c35-00155dd2f085",
+   "provider_name": "Animal Behavior",
+   "program_name": "Grooming Instruction Program",
+   "description": "As a student enrolled in ABC?s dog groomer course  you?ll receive a complete grooming toolkit. Our pet grooming certification program wouldn?t be complete without the essential hands-on training component. Once you finish the online dog grooming portion of this program  you?ll have the unique opportunity to work with professional dog groomers. You?ll be able to apply everything you?ve learned up to this point to complete a full groom on your own.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.animalbehaviorcollege.com/grooming/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "1.0504",
+   "soc_codes": [
+    "39-2021"
+   ],
+   "location": {
+    "city": "Valencia",
+    "state": "CA",
+    "zip": "91355",
+    "lat": 34.41,
+    "lon": -118.56
+   },
+   "length": {
+    "weeks": 52.0,
+    "hours": 10.0
+   },
+   "cost": {
+    "tuition": 3542.0,
+    "supplies": 2120.0,
+    "total_out_of_pocket": 5662.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 51.0,
+    "total_exited": 25.0,
+    "total_completed": 14.0,
+    "completion_rate": 0.56,
+    "credentials_earned": 13.0,
+    "median_earnings": 5000.0,
+    "employment_rate_q2": 0.53,
+    "employed_q2": 9.0,
+    "employed_q4": 12.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f6969d4a-31e5-11f1-bc5b-00155dd2f085",
+   "provider_name": "Animal Behavior",
+   "program_name": "Veterinary Assistant Training Program",
+   "description": "Our Veterinary Assistant Program is designed to prepare you for a career with animals. When you enroll  you learn everything from surgical preparation to small animal nursing. After successful completion of the prior stages  you?ll then be placed in a veterinary environment to complete your externship. During your externship  you?ll be given the opportunity to interact with professionals in the veterinary industry.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://www.animalbehaviorcollege.com/veterinary-assistant/",
+   "entity_type": "Private For-Profit",
+   "cip_code": "1.8301",
+   "soc_codes": [
+    "31-9096"
+   ],
+   "location": {
+    "city": "Valencia",
+    "state": "CA",
+    "zip": "91355",
+    "lat": 34.41,
+    "lon": -118.56
+   },
+   "length": {
+    "weeks": 52.0,
+    "hours": 10.0
+   },
+   "cost": {
+    "tuition": 3901.0,
+    "supplies": 1729.0,
+    "total_out_of_pocket": 5630.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 49.0,
+    "total_exited": 25.0,
+    "total_completed": 14.0,
+    "completion_rate": 0.56,
+    "credentials_earned": 15.0,
+    "median_earnings": 5000.0,
+    "employment_rate_q2": 0.52,
+    "employed_q2": 11.0,
+    "employed_q4": 16.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d042f-31e5-11f1-a9f9-00155dd2f085",
+   "provider_name": "Bay Area Video Coalition",
+   "program_name": "Occupational Training For Intermediate Multimedia Certificate: After Effects Fast Track",
+   "description": "39639|Fast paced program that prepares individuals to use computer applications and related visual and sound imaging techniques to manipulate images and information originating as film, video, still photographs, digital copy, soundtracks, and physical objects.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/8/beginning-multimedia-after-effects-fast-track",
+   "entity_type": "Private Non-Profit",
+   "cip_code": "10.0304",
+   "soc_codes": [
+    "27-1014"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 16.0,
+    "hours": 50.0
+   },
+   "cost": {
+    "tuition": 1830.0,
+    "supplies": 240.0,
+    "total_out_of_pocket": 2070.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "27-1014",
+     "title": "Special Effects Artists and Animators",
+     "median_annual_wage": 134194.0,
+     "total_job_openings": 17760.0,
+     "percent_change": 7.0,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d046b-31e5-11f1-8304-00155dd2f085",
+   "provider_name": "Bay Area Video Coalition",
+   "program_name": "Occupational Training for Intermediate Digital Post Production: Video Post-production Full Certificate",
+   "description": "54831|Comprehensive certificate training to learn video and audio editing, special effects, motion graphics, color correction, aesthetics and workflow.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/4/beginning-digital-post-production-video-post-production-full-certificate",
+   "entity_type": "Private Non-Profit",
+   "cip_code": "50.0602",
+   "soc_codes": [
+    "27-2012",
+    "27-4032"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 40.0,
+    "hours": 50.0
+   },
+   "cost": {
+    "tuition": 3750.0,
+    "supplies": 640.0,
+    "total_out_of_pocket": 4390.0,
+    "wioa_funded_cost": 61590.0
+   },
+   "outcomes": {
+    "total_served": 13.0,
+    "total_exited": 15.0,
+    "total_completed": 15.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 13.0,
+    "median_earnings": 15625.0,
+    "employment_rate_q2": 0.81,
+    "employed_q2": 13.0,
+    "employed_q4": 13.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors",
+     "median_annual_wage": 133423.0,
+     "total_job_openings": 31850.0,
+     "percent_change": 12.2,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors",
+     "median_annual_wage": 90967.0,
+     "total_job_openings": 10010.0,
+     "percent_change": 7.9,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d048a-31e5-11f1-b572-00155dd2f085",
+   "provider_name": "Bay Area Video Coalition",
+   "program_name": "Occupational Training For Beginning Digital Post Production: Editor Fast Track",
+   "description": "39622|A program that prepares individuals to communicate dramatic information  ideas  moods  and feelings through the making and producing of films and videos. Includes instruction in theory of film  film technology and equipment operation  film production  film directing  film editing  cinematographic art  film audio  techniques for making specific types of films and or videos  media technologies  computer image making  multi-media production  and the planning and management of film video operations.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/5/beginning-digital-post-production-editor-fast-track",
+   "entity_type": "Private Non-Profit",
+   "cip_code": "50.0602",
+   "soc_codes": [
+    "27-4032"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 16.0,
+    "hours": 50.0
+   },
+   "cost": {
+    "tuition": 2025.0,
+    "supplies": 240.0,
+    "total_out_of_pocket": 2265.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 10.0,
+    "total_exited": 10.0,
+    "total_completed": 10.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 10.0,
+    "median_earnings": 17600.0,
+    "employment_rate_q2": 0.7,
+    "employed_q2": 7.0,
+    "employed_q4": 5.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors",
+     "median_annual_wage": 90967.0,
+     "total_job_openings": 10010.0,
+     "percent_change": 7.9,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d09bc-31e5-11f1-ada9-00155dd2f085",
+   "provider_name": "United Youth of America, Inc",
+   "program_name": "Cyber Security Support Technician (Basic)",
+   "description": "65446|A program that prepares individuals to assess the security needs of computer and network systems  recommend safeguard solutions  and manage the implementation and maintenance of security devices  systems  and procedures.  Includes instruction in computer architecture  programming  and systems analysis  networking  telecommunications  cryptography  security system design  applicable law and regulations  risk assessment and policy analysis  contingency planning  user access issues  investigation techniques  and troubleshooting.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.uyoa.org",
+   "entity_type": "National Apprenticeship",
+   "cip_code": "11.1003",
+   "soc_codes": [
+    "11-3021",
+    "15-1212",
+    "15-1231"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90024",
+    "lat": 34.06,
+    "lon": -118.43
+   },
+   "length": {
+    "weeks": 99.0,
+    "hours": 40.0
+   },
+   "cost": {
+    "tuition": 9575.0,
+    "supplies": 1930.0,
+    "total_out_of_pocket": 11505.0,
+    "wioa_funded_cost": 87005.0
+   },
+   "outcomes": {
+    "total_served": 13.0,
+    "total_exited": 12.0,
+    "total_completed": 6.0,
+    "completion_rate": 0.5,
+    "credentials_earned": null,
+    "median_earnings": 12473.07,
+    "employment_rate_q2": 0.63,
+    "employed_q2": 5.0,
+    "employed_q4": null,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "11-3021",
+     "title": "Computer and Information Systems Managers",
+     "median_annual_wage": 221952.0,
+     "total_job_openings": 82270.0,
+     "percent_change": 16.5,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "15-1212",
+     "title": "Information Security Analysts",
+     "median_annual_wage": 142449.0,
+     "total_job_openings": 13930.0,
+     "percent_change": 29.1,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "15-1231",
+     "title": "Computer Network Support Specialists",
+     "median_annual_wage": 81407.0,
+     "total_job_openings": 9510.0,
+     "percent_change": 5.8,
+     "entry_level_education": "Associate's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0a37-31e5-11f1-86b1-00155dd2f085",
+   "provider_name": "West Valley Occupational Center - LAUSD",
+   "program_name": "Graphic Design",
+   "description": "75071|A program that prepares individuals to apply artistic and computer techniques to the interpretation of technical and commercial concepts. Includes instruction in computer-assisted art and design  printmaking  concepts sketching  technical drawing  color theory  imaging  studio technique  still and life modeling  multimedia applications  communication skills and commercial art business operations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "50.0409",
+   "soc_codes": [
+    "27-1024"
+   ],
+   "location": {
+    "city": "Woodland Hills",
+    "state": "CA",
+    "zip": "91367",
+    "lat": 34.17,
+    "lon": -118.61
+   },
+   "length": {
+    "weeks": 20.0,
+    "hours": 27.0
+   },
+   "cost": {
+    "tuition": 1890.0,
+    "supplies": 500.0,
+    "total_out_of_pocket": 2390.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 20.0,
+    "total_exited": 16.0,
+    "total_completed": 14.0,
+    "completion_rate": 0.88,
+    "credentials_earned": 6.0,
+    "median_earnings": 8700.0,
+    "employment_rate_q2": 0.75,
+    "employed_q2": 9.0,
+    "employed_q4": 11.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0aed-31e5-11f1-9d13-00155dd2f085",
+   "provider_name": "West Valley Occupational Center - LAUSD",
+   "program_name": "Construction Worker Apprenticeship Preparation-MC3",
+   "description": "75067|This 240 hour pre-apprenticeship course includes the North Americas Building Trade Unions sponsored Multi-Craft Core Curriculum (MC3) as well as trade union involvement and fieldtrips. This course is designed for students to find employment as indentured apprentices in the construction industry. The MC3 will cover Orientation and Safety, OSHA 10 (Construction), First Aid/CPR/AED, Labor History, Trade Math, Apprenticeship Preparation, Basic Blueprint & Estimating, Hand Tools, Power Tools, Building Codes & Green Codes, Concrete & Masonry, Basic Framing, Plumbing, Electrical & Lighting, Heating, Ventilation & Air Conditioning (HVAC), Doors, Windows & Finish Carpentry, Drywall Finishing, Painting: Commercial & Industrial, Roof Covering, Floor & Tiling, Job Readiness/Soft Skills and Trade Math Practice . The competencies in this course are aligned with the California High School Academic Content Standards.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "46",
+   "soc_codes": [
+    "47-4099"
+   ],
+   "location": {
+    "city": "Woodland Hills",
+    "state": "CA",
+    "zip": "91367",
+    "lat": 34.17,
+    "lon": -118.61
+   },
+   "length": {
+    "weeks": 10.0,
+    "hours": 24.0
+   },
+   "cost": {
+    "tuition": 840.0,
+    "supplies": 885.0,
+    "total_out_of_pocket": 1725.0,
+    "wioa_funded_cost": 3450.0
+   },
+   "outcomes": {
+    "total_served": 22.0,
+    "total_exited": 21.0,
+    "total_completed": 16.0,
+    "completion_rate": 0.76,
+    "credentials_earned": 10.0,
+    "median_earnings": 8800.0,
+    "employment_rate_q2": 0.58,
+    "employed_q2": 15.0,
+    "employed_q4": 19.0,
+    "reported": true
+   },
+   "occupations": []
+  },
+  {
+   "uuid": "f69d0c50-31e5-11f1-83a1-00155dd2f085",
+   "provider_name": "West Valley Occupational Center - LAUSD",
+   "program_name": "Home Health Aide",
+   "description": "63401|This competency-based course trains students to give basic nursing care in the home setting. Emphasis is given to the philosophy of nursing, safety principles in the home, and infection control methods as used by the home health aide. Nutrition in relation to maintenance of health is stressed. Integrated throughout the program are methods for meeting the social and psychological needs of the clients. The competencies in this course are aligned with the California high school academic content standards and the career technical education model curriculum standards.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.2602",
+   "soc_codes": [
+    "31-1121",
+    "31-1122"
+   ],
+   "location": {
+    "city": "Woodland Hills",
+    "state": "CA",
+    "zip": "91367",
+    "lat": 34.17,
+    "lon": -118.61
+   },
+   "length": {
+    "weeks": 2.0,
+    "hours": 40.0
+   },
+   "cost": {
+    "tuition": 140.0,
+    "supplies": 469.0,
+    "total_out_of_pocket": 609.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 54.0,
+    "total_exited": 41.0,
+    "total_completed": 31.0,
+    "completion_rate": 0.76,
+    "credentials_earned": 18.0,
+    "median_earnings": 8382.4,
+    "employment_rate_q2": 0.86,
+    "employed_q2": 38.0,
+    "employed_q4": 79.0,
+    "reported": true
+   },
+   "occupations": []
+  },
+  {
+   "uuid": "f69d0ce9-31e5-11f1-b946-00155dd2f085",
+   "provider_name": "Coastline Community College",
+   "program_name": "Multi-Craft Core Curriculum (MC3) w/Refinery Safety Attendant",
+   "description": "56069|This 156-hour pre-apprenticeship program is designed for those who are interested in postions in the construction and petrochemical industries through the building trades.  The program covers: OSHA 10, CPR/First Aid/AED, orientation and industry awareness, construction trade awareness, basic math for construction, health and safety issues for women, blueprint reading, Heritage of the American worker, as well as refinery safety attendant training.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.coastline.edu",
+   "entity_type": "Higher Ed: Associate's Degree",
+   "cip_code": "46.0499",
+   "soc_codes": [
+    "47-4099"
+   ],
+   "location": {
+    "city": "Fountain Valley",
+    "state": "CA",
+    "zip": "92708",
+    "lat": 33.71,
+    "lon": -117.94
+   },
+   "length": {
+    "weeks": 5.0,
+    "hours": 31.0
+   },
+   "cost": {
+    "tuition": 4725.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 4725.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": []
+  },
+  {
+   "uuid": "f69d0eb0-31e5-11f1-a8c8-00155dd2f085",
+   "provider_name": "Monrovia Community Adult School",
+   "program_name": "Independent Home Care Aide",
+   "description": "58729|This program trains students to become a home care aide, an individual authorized to provide non-medical services and assistance to an elderly or disabled client. Students learn HIPPA regulations, patient confidentiality, emergency preparedness, first aid and safety, proper positioning and transfer techniques, nutrition and dietary needs, and basic patient care such as dressing and undressing, shaving and hair care, nail and skin care, and oral hygiene. Students complete CPR training and upon completion of the program receive a CPR certificate and certificate of completion for the program.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "51.2602",
+   "soc_codes": [
+    "31-1121",
+    "31-1122"
+   ],
+   "location": {
+    "city": "Monrovia",
+    "state": "CA",
+    "zip": "91016",
+    "lat": 34.15,
+    "lon": -117.99
+   },
+   "length": {
+    "weeks": 3.0,
+    "hours": 28.0
+   },
+   "cost": {
+    "tuition": 445.0,
+    "supplies": 750.0,
+    "total_out_of_pocket": 1195.0,
+    "wioa_funded_cost": 16130.0
+   },
+   "outcomes": {
+    "total_served": 14.0,
+    "total_exited": 17.0,
+    "total_completed": 17.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 22.0,
+    "median_earnings": 9360.0,
+    "employment_rate_q2": 0.88,
+    "employed_q2": 21.0,
+    "employed_q4": 20.0,
+    "reported": true
+   },
+   "occupations": []
+  },
+  {
+   "uuid": "f69d044d-31e5-11f1-b96f-00155dd2f085",
+   "provider_name": "Bay Area Video Coalition",
+   "program_name": "Occupational Training for Intermediate Video Production Full Certificate",
+   "description": "39585|Program that aims to aid students in developing aesthetic skills along with learning how to communicate using HD video. Student will learn lighting, sound, editing, workflow, compression and output to web. This is recommended for people who are filling in the gaps in their skillsets or to gain a solid understanding of video.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/2/video-production-full-certificate",
+   "entity_type": "Private Non-Profit",
+   "cip_code": "50.0602",
+   "soc_codes": [
+    "27-4032"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 40.0,
+    "hours": 50.0
+   },
+   "cost": {
+    "tuition": 2965.0,
+    "supplies": 640.0,
+    "total_out_of_pocket": 3605.0,
+    "wioa_funded_cost": 20505.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors",
+     "median_annual_wage": 90967.0,
+     "total_job_openings": 10010.0,
+     "percent_change": 7.9,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d04c8-31e5-11f1-931a-00155dd2f085",
+   "provider_name": "Designs School of Cosmetology",
+   "program_name": "Skin Care / Esthetics",
+   "description": "55986|A program that prepares individuals to cleanse, depilate, massage, and beautify the human body and to function as licensed estheticians and skin care specialists.  Includes instruction in skin anatomy, physiology, and health principles of nutrition decontamination and infection control health and safety facial and body massage body wrapping and spa treatments temporary hair removal including waxing and tweezing color and skin analysis client consultation and care applicable laws and regulations business practices and sometimes related alternative healing regimens.  At the end of the program, Esthetician/Skin Care students will possess the skills and the necessary knowledge to take/pass the California State Board Exam.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Private For-Profit",
+   "cip_code": "12.0409",
+   "soc_codes": [
+    "39-5094"
+   ],
+   "location": {
+    "city": "Paso Robles",
+    "state": "CA",
+    "zip": "93446",
+    "lat": 35.61,
+    "lon": -120.76
+   },
+   "length": {
+    "weeks": 20.0,
+    "hours": 30.0
+   },
+   "cost": {
+    "tuition": 11125.0,
+    "supplies": 1060.0,
+    "total_out_of_pocket": 12185.0,
+    "wioa_funded_cost": 79635.0
+   },
+   "outcomes": {
+    "total_served": 242.0,
+    "total_exited": 235.0,
+    "total_completed": 218.0,
+    "completion_rate": 0.93,
+    "credentials_earned": 145.0,
+    "median_earnings": 4600.0,
+    "employment_rate_q2": 0.61,
+    "employed_q2": 129.0,
+    "employed_q4": 120.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-5094",
+     "title": "Skincare Specialists",
+     "median_annual_wage": 39752.0,
+     "total_job_openings": 23330.0,
+     "percent_change": 9.9,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d04e6-31e5-11f1-9494-00155dd2f085",
+   "provider_name": "Designs School of Cosmetology",
+   "program_name": "Cosmetology",
+   "description": "55922|State licensing program which gives students necessary training to gain eligibility for the state licensing exam. A program that generally prepares individuals to cut, trim, and style scalp, facial, and body hair apply cosmetic preparations perform manicures and pedicures massage the head and extremities and prepare for practice as licensed cosmetologists in specialized or full-service salons.  Includes instruction in hair cutting and styling, manicuring, pedicuring, facial treatments, shampooing, chemical applications, esthetics, shop management, sanitation and safety, customer service, and applicable professional and labor laws and regulations.  At the end of the program, cosmetology students will possess the skills and knowledge necessary to take/pass the California State Board exam.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.designsschool.edu",
+   "entity_type": "Private For-Profit",
+   "cip_code": "12.0499",
+   "soc_codes": [
+    "39-5012"
+   ],
+   "location": {
+    "city": "Paso Robles",
+    "state": "CA",
+    "zip": "93446",
+    "lat": 35.61,
+    "lon": -120.76
+   },
+   "length": {
+    "weeks": 32.0,
+    "hours": 32.0
+   },
+   "cost": {
+    "tuition": 14475.0,
+    "supplies": 2045.0,
+    "total_out_of_pocket": 16520.0,
+    "wioa_funded_cost": 7701.5
+   },
+   "outcomes": {
+    "total_served": 252.0,
+    "total_exited": 245.0,
+    "total_completed": 187.0,
+    "completion_rate": 0.76,
+    "credentials_earned": 111.0,
+    "median_earnings": 3475.0,
+    "employment_rate_q2": 0.56,
+    "employed_q2": 111.0,
+    "employed_q4": 96.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "median_annual_wage": 39639.0,
+     "total_job_openings": 68190.0,
+     "percent_change": 7.3,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0505-31e5-11f1-af10-00155dd2f085",
+   "provider_name": "Helix Opportunity LLC",
+   "program_name": "Digital Accessibility Developer",
+   "description": "74438|Digital Accessibility Developers program accessible software, websites, and other information communication technology (ICT). They make sure that digital products, environments, and services, are perceivable, operable, and sufficiently robust, to meet the user needs of the broadest range of disabilities, for instance by programming Accessibility Rich Internet Applications (ARIA) into ICT to interact with screen reader technologies. Students learn to plan, design, build, and implement accessible content. Once launched, they will perform research, analyze data, present results, and prepare publications as needed to advance the field of accessibility.",
+   "program_format": "This program provides online instruction, e-learning, or distance learning only.",
+   "program_url": "https://helixopp.institute/admin/2",
+   "entity_type": "Private For-Profit",
+   "cip_code": "11.0899",
+   "soc_codes": [
+    "15-1254"
+   ],
+   "location": {
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94103",
+    "lat": 37.77,
+    "lon": -122.41
+   },
+   "length": {
+    "weeks": 121.0,
+    "hours": 20.0
+   },
+   "cost": {
+    "tuition": 18150.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 18150.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "15-1254",
+     "title": "Web Developers",
+     "median_annual_wage": 122917.0,
+     "total_job_openings": 5070.0,
+     "percent_change": 9.0,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0523-31e5-11f1-bfaf-00155dd2f085",
+   "provider_name": "Merced Adult School",
+   "program_name": "Phlebotomy Technician",
+   "description": "61979|A program that prepares individuals under the supervision of physicians and other health care professionals to draw blood samples from patients using a variety of intrusive procedures. Includes instruction in basic vascular anatomy and physiology blood physiology skin puncture techniques venipuncture venous specimen collection and handling safety and sanitation procedures and applicable standards and regulations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "51.1009",
+   "soc_codes": [
+    "31-9097"
+   ],
+   "location": {
+    "city": "Merced",
+    "state": "CA",
+    "zip": "95340",
+    "lat": 37.35,
+    "lon": -120.42
+   },
+   "length": {
+    "weeks": 9.0,
+    "hours": 20.0
+   },
+   "cost": {
+    "tuition": 2995.0,
+    "supplies": 290.0,
+    "total_out_of_pocket": 3285.0,
+    "wioa_funded_cost": 89850.0
+   },
+   "outcomes": {
+    "total_served": 374.0,
+    "total_exited": 396.0,
+    "total_completed": 381.0,
+    "completion_rate": 0.96,
+    "credentials_earned": 210.0,
+    "median_earnings": 21160.0,
+    "employment_rate_q2": 0.46,
+    "employed_q2": 120.0,
+    "employed_q4": 109.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9097",
+     "title": "Phlebotomists",
+     "median_annual_wage": 57459.0,
+     "total_job_openings": 19970.0,
+     "percent_change": 14.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0541-31e5-11f1-9b52-00155dd2f085",
+   "provider_name": "Merced Adult School",
+   "program_name": "Solar Installation",
+   "description": "57050|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "47.0703",
+   "soc_codes": [
+    "47-2231"
+   ],
+   "location": {
+    "city": "Merced",
+    "state": "CA",
+    "zip": "95340",
+    "lat": 37.35,
+    "lon": -120.42
+   },
+   "length": {
+    "weeks": 26.0,
+    "hours": 10.0
+   },
+   "cost": {
+    "tuition": 0.0,
+    "supplies": 125.0,
+    "total_out_of_pocket": 125.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false
+   },
+   "occupations": [
+    {
+     "soc_code": "47-2231",
+     "title": "Solar Photovoltaic Installers",
+     "median_annual_wage": 62242.0,
+     "total_job_openings": 9860.0,
+     "percent_change": 42.0,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0560-31e5-11f1-8f39-00155dd2f085",
+   "provider_name": "Merced Adult School",
+   "program_name": "Clinical Medical Assistant",
+   "description": "61981|A program that prepares individuals, under the supervision of physicians, to provide medical office administrative services and perform clinical duties including patient intake and care, routine diagnostic and recording procedures, pre-examination and examination assistance, and the administration of medications and first aid. Includes instruction in basic anatomy and physiology medical terminology medical law and ethics patient psychology and communications medical office procedures and clinical diagnostic, examination, testing, and treatment procedures.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "51.0801",
+   "soc_codes": [
+    "29-2012",
+    "31-9092"
+   ],
+   "location": {
+    "city": "Merced",
+    "state": "CA",
+    "zip": "95340",
+    "lat": 37.35,
+    "lon": -120.42
+   },
+   "length": {
+    "weeks": 16.0,
+    "hours": 32.0
+   },
+   "cost": {
+    "tuition": 2995.0,
+    "supplies": 250.0,
+    "total_out_of_pocket": 3245.0,
+    "wioa_funded_cost": 100818.24
+   },
+   "outcomes": {
+    "total_served": 149.0,
+    "total_exited": 154.0,
+    "total_completed": 150.0,
+    "completion_rate": 0.97,
+    "credentials_earned": 74.0,
+    "median_earnings": null,
+    "employment_rate_q2": 0.51,
+    "employed_q2": 52.0,
+    "employed_q4": 47.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d057e-31e5-11f1-8a47-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Physical Therapy Aide",
+   "description": "63467|A program that prepares individuals  under the supervision of a physical therapist  to implement physical therapy treatment care plans  train patients  conduct treatment interventions  use equipment  and observe and record patient progress.  Includes instruction in applied anatomy and physiology  applied kinesiology  principles and procedures of physical therapy  basic neurology and orthopedics  physical therapy modalities  documentation skills  psychosocial aspects of health care  wound and injury care  electrotherapy  working with orthotics and prostheses  and personal and professional ethics.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0806",
+   "soc_codes": [
+    "31-2021"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 20.0,
+    "hours": 9.0
+   },
+   "cost": {
+    "tuition": 630.0,
+    "supplies": 970.0,
+    "total_out_of_pocket": 1600.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 49.0,
+    "total_exited": 79.0,
+    "total_completed": 47.0,
+    "completion_rate": 0.59,
+    "credentials_earned": 4.0,
+    "median_earnings": 8377.1,
+    "employment_rate_q2": 0.71,
+    "employed_q2": 30.0,
+    "employed_q4": 16.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-2021",
+     "title": "Physical Therapist Assistants",
+     "median_annual_wage": 85215.0,
+     "total_job_openings": 18930.0,
+     "percent_change": 41.1,
+     "entry_level_education": "Associate's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d059e-31e5-11f1-ae18-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Security Officer l",
+   "description": "63469|A program that prepares individuals to perform the duties of police and public security officers  including patrol and investigative activities  traffic control  crowd control and public relations  witness interviewing  evidence collection and management  basic crime prevention methods  weapon and equipment operation and maintenance  report preparation and other routine law enforcement responsibilities.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "43.0107",
+   "soc_codes": [
+    "33-9021",
+    "33-9032"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 5.0,
+    "hours": 40.0
+   },
+   "cost": {
+    "tuition": 140.0,
+    "supplies": 845.0,
+    "total_out_of_pocket": 985.0,
+    "wioa_funded_cost": 3940.0
+   },
+   "outcomes": {
+    "total_served": 90.0,
+    "total_exited": 114.0,
+    "total_completed": 101.0,
+    "completion_rate": 0.89,
+    "credentials_earned": 29.0,
+    "median_earnings": 9266.0,
+    "employment_rate_q2": 0.97,
+    "employed_q2": 63.0,
+    "employed_q4": 42.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "33-9021",
+     "title": "Private Detectives and Investigators",
+     "median_annual_wage": 62801.0,
+     "total_job_openings": 4230.0,
+     "percent_change": 6.4,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "33-9032",
+     "title": "Security Guards",
+     "median_annual_wage": 44335.0,
+     "total_job_openings": 264160.0,
+     "percent_change": 3.3,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d05ca-31e5-11f1-a2d6-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Medical Assistant and Health Information Technology",
+   "description": "63438|This training prepares you to work as clinical medical assistant. Classroom instruction includes: ethics, medical terminology, medical forms, ambulatory care, obstetrics, gynecology, pediatrics, out-patient surgery, urology, orthopedics, internal medicine, and cardiology. You will be able to practice techniques and topics learned to gain expertise through externships in a physician office or medical clinics.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.2706",
+   "soc_codes": [
+    "15-1299",
+    "29-2072",
+    "43-6013"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 26.0,
+    "hours": 23.0
+   },
+   "cost": {
+    "tuition": 2065.0,
+    "supplies": 1437.0,
+    "total_out_of_pocket": 3502.0,
+    "wioa_funded_cost": 4989.0
+   },
+   "outcomes": {
+    "total_served": 242.0,
+    "total_exited": 425.0,
+    "total_completed": 219.0,
+    "completion_rate": 0.52,
+    "credentials_earned": 48.0,
+    "median_earnings": 15600.0,
+    "employment_rate_q2": 0.81,
+    "employed_q2": 236.0,
+    "employed_q4": 64.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "29-2072",
+     "title": "Medical Records Specialists",
+     "median_annual_wage": 63540.0,
+     "total_job_openings": 15610.0,
+     "percent_change": 15.0,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d05ea-31e5-11f1-b119-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Automotive Brakes Specialist",
+   "description": "63366|The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems. Our program offers Snap-On Multimeter certification and allows completers to sit for the automotive service excellence (ASE) G1 certification exam {after completing two years of field experience).",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "47.0604",
+   "soc_codes": [
+    "49-3023"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 20.0,
+    "hours": 18.0
+   },
+   "cost": {
+    "tuition": 1260.0,
+    "supplies": 1055.0,
+    "total_out_of_pocket": 2315.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 87.0,
+    "total_exited": 186.0,
+    "total_completed": 68.0,
+    "completion_rate": 0.37,
+    "credentials_earned": 7.0,
+    "median_earnings": 11900.0,
+    "employment_rate_q2": 0.68,
+    "employed_q2": 36.0,
+    "employed_q4": 7.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0608-31e5-11f1-a2a1-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Medical Office Assistant",
+   "description": "63447|A modularized instructional program that prepares individuals to perform clerical duties utilizing knowledge of medical terminology and hospital, clinical, laboratory and/or medical office procedures. Also included are writing reports such as case histories; understanding medical knowledge and procedures. The program includes the following courses; general clerk, business english, business math, typist, keyboarding, computer operator, software applications, integrated applications, medical records clerk, terminology and records management.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "51.071",
+   "soc_codes": [
+    "31-9092",
+    "43-6013"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 18.0,
+    "hours": 30.0
+   },
+   "cost": {
+    "tuition": 1890.0,
+    "supplies": 1078.0,
+    "total_out_of_pocket": 2968.0,
+    "wioa_funded_cost": 2968.48
+   },
+   "outcomes": {
+    "total_served": 332.0,
+    "total_exited": 344.0,
+    "total_completed": 164.0,
+    "completion_rate": 0.48,
+    "credentials_earned": 67.0,
+    "median_earnings": 11960.0,
+    "employment_rate_q2": 0.63,
+    "employed_q2": 130.0,
+    "employed_q4": 149.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0627-31e5-11f1-842d-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Automotive Engine Repair Specialist",
+   "description": "63369|The east Los Angeles skills centers automotive engine repair specialist program prepares individuals to apply technical knowledge and skills to repair, service, and maintain small internal-combustion engines used on portable equipment such as lawnmowers, chain saws, rotary tillers, and snowmobiles. After two years working experience students qualify to take the automotive service excellence (ASE) a 1 certification exam.  Our program is also a certified multimeter snap-on certified program.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "15.0803",
+   "soc_codes": [
+    "49-3023"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 20.0,
+    "hours": 18.0
+   },
+   "cost": {
+    "tuition": 1260.0,
+    "supplies": 1055.0,
+    "total_out_of_pocket": 2315.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 52.0,
+    "total_exited": 123.0,
+    "total_completed": 88.0,
+    "completion_rate": 0.72,
+    "credentials_earned": 7.0,
+    "median_earnings": 11900.0,
+    "employment_rate_q2": 0.78,
+    "employed_q2": 47.0,
+    "employed_q4": 12.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0646-31e5-11f1-aaba-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Photovoltaic Installer",
+   "description": "63465|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "47.0703",
+   "soc_codes": [
+    "47-2231"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 12.0,
+    "hours": 30.0
+   },
+   "cost": {
+    "tuition": 1260.0,
+    "supplies": 900.97,
+    "total_out_of_pocket": 2160.9700000000003,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 645.0,
+    "total_exited": 731.0,
+    "total_completed": 425.0,
+    "completion_rate": 0.58,
+    "credentials_earned": 95.0,
+    "median_earnings": 12119.0,
+    "employment_rate_q2": 0.8,
+    "employed_q2": 156.0,
+    "employed_q4": 211.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "47-2231",
+     "title": "Solar Photovoltaic Installers",
+     "median_annual_wage": 62242.0,
+     "total_job_openings": 9860.0,
+     "percent_change": 42.0,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0664-31e5-11f1-af10-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Medical Coder",
+   "description": "63442|The health information technology program will prepare you for a career as a medical insurance coder. You will learn the basics of healthcare law, ethics, customer relations, appointment scheduling, minor accounting, chart noting, correspondence, protected health information standards, phone etiquette, paper and electronic health records, insurance programs, the insurance billing process. Diagnostic coding and procedure coding; through workplace simulations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0713",
+   "soc_codes": [
+    "29-2072",
+    "31-9092"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 56.0,
+    "hours": 10.0
+   },
+   "cost": {
+    "tuition": 1890.0,
+    "supplies": 1070.0,
+    "total_out_of_pocket": 2960.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 135.0,
+    "total_exited": 215.0,
+    "total_completed": 137.0,
+    "completion_rate": 0.64,
+    "credentials_earned": 41.0,
+    "median_earnings": 11960.0,
+    "employment_rate_q2": 0.59,
+    "employed_q2": 80.0,
+    "employed_q4": 57.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "29-2072",
+     "title": "Medical Records Specialists",
+     "median_annual_wage": 63540.0,
+     "total_job_openings": 15610.0,
+     "percent_change": 15.0,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0682-31e5-11f1-a086-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Graphic Designer",
+   "description": "63404|The east Los Angeles skills center graphic design program prepares individuals to apply artistic and computer techniques to the interpretation of technical commercial concepts.  Includes instruction in computer-assisted art and design , printmaking, concepts sketching, and technical drawing, color theory, imaging, studio technique, still and life modeling multimedia applications, communication skills and commercial art business operations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "50.0409",
+   "soc_codes": [
+    "27-1019",
+    "27-1024"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 74.0,
+    "hours": 10.0
+   },
+   "cost": {
+    "tuition": 2520.0,
+    "supplies": 975.0,
+    "total_out_of_pocket": 3495.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 48.0,
+    "total_exited": 71.0,
+    "total_completed": 36.0,
+    "completion_rate": 0.51,
+    "credentials_earned": null,
+    "median_earnings": 14715.0,
+    "employment_rate_q2": 0.69,
+    "employed_q2": 20.0,
+    "employed_q4": 10.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "27-1019",
+     "title": "Artists and Related Workers, All Other",
+     "median_annual_wage": 62235.0,
+     "total_job_openings": 1470.0,
+     "percent_change": 14.3,
+     "entry_level_education": "No formal educational credential"
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2,
+     "entry_level_education": "Bachelor's degree"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d06a0-31e5-11f1-adc0-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Automotive Technician",
+   "description": "63371|The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems.  Our program offers snap-on multimeter certification and allows completers to sit for the automotive service excellence (ASE) g1 certification exam {after completing two years of field experience).",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "47.0604",
+   "soc_codes": [
+    "49-2093",
+    "49-2096",
+    "49-3023"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 13.0,
+    "hours": 14.0
+   },
+   "cost": {
+    "tuition": 630.0,
+    "supplies": 705.0,
+    "total_out_of_pocket": 1335.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 137.0,
+    "total_exited": 212.0,
+    "total_completed": 142.0,
+    "completion_rate": 0.67,
+    "credentials_earned": 15.0,
+    "median_earnings": 11900.0,
+    "employment_rate_q2": 0.66,
+    "employed_q2": 128.0,
+    "employed_q4": 24.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "49-2093",
+     "title": "Electrical and Electronics Installers and Repairers, Transportation Equipment",
+     "median_annual_wage": 87218.0,
+     "total_job_openings": 1190.0,
+     "percent_change": 0.0,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "49-2096",
+     "title": "Electronic Equipment Installers and Repairers, Motor Vehicles",
+     "median_annual_wage": 49871.0,
+     "total_job_openings": 490.0,
+     "percent_change": -20.0,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d06be-31e5-11f1-acc3-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Nurse Assistant/ Long Term Care and Home Health Aide",
+   "description": "63459|A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.3902",
+   "soc_codes": [
+    "29-1141",
+    "31-1131"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 15.0,
+    "hours": 14.0
+   },
+   "cost": {
+    "tuition": 948.0,
+    "supplies": 1011.5,
+    "total_out_of_pocket": 1959.5,
+    "wioa_funded_cost": 23425.3
+   },
+   "outcomes": {
+    "total_served": 190.0,
+    "total_exited": 244.0,
+    "total_completed": 180.0,
+    "completion_rate": 0.74,
+    "credentials_earned": 38.0,
+    "median_earnings": 9360.0,
+    "employment_rate_q2": 0.51,
+    "employed_q2": 76.0,
+    "employed_q4": 75.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses",
+     "median_annual_wage": 144197.0,
+     "total_job_openings": 228840.0,
+     "percent_change": 13.5,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d06dd-31e5-11f1-a53e-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Medical Assistant",
+   "description": "63429|This competency-based course contains information and training to prepare persons to function as clinical medical assistants though training in ethics, medical terminology, and the preparation of medical forms. In addition, students will gain expertise in the day-to-day functions of the following specialties: ambulatory care, obstetrics and gynecology, pediatrics, outpatient surgery, urology, orthopedics, internal medicine, cardiology, and laboratory.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0899",
+   "soc_codes": [
+    "31-9092"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 20.0,
+    "hours": 25.0
+   },
+   "cost": {
+    "tuition": 1750.0,
+    "supplies": 1351.0,
+    "total_out_of_pocket": 3101.0,
+    "wioa_funded_cost": 17767.5
+   },
+   "outcomes": {
+    "total_served": 215.0,
+    "total_exited": 280.0,
+    "total_completed": 211.0,
+    "completion_rate": 0.75,
+    "credentials_earned": 58.0,
+    "median_earnings": 10499.0,
+    "employment_rate_q2": 0.69,
+    "employed_q2": 109.0,
+    "employed_q4": 140.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d06fc-31e5-11f1-976c-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Cosmetology",
+   "description": "63375|This competency-based outline is the second of the three-series cosmetology training and offers the 600-hour course conducted under the rules and regulations issued by the California state board of barbering and cosmetology (CSBBC). This course develops the skills needed to take and pass the license examination. Instruction includes wet and thermal hair styling, permanent waving, chemical straightening, and haircutting. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "12.0413",
+   "soc_codes": [
+    "39-5011",
+    "39-5012"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 30.0,
+    "hours": 40.0
+   },
+   "cost": {
+    "tuition": 3000.0,
+    "supplies": 2315.0,
+    "total_out_of_pocket": 5315.0,
+    "wioa_funded_cost": 48890.0
+   },
+   "outcomes": {
+    "total_served": 202.0,
+    "total_exited": 266.0,
+    "total_completed": 191.0,
+    "completion_rate": 0.72,
+    "credentials_earned": 19.0,
+    "median_earnings": 9200.0,
+    "employment_rate_q2": 0.71,
+    "employed_q2": 97.0,
+    "employed_q4": 45.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "39-5011",
+     "title": "Barbers",
+     "median_annual_wage": 39352.0,
+     "total_job_openings": 6380.0,
+     "percent_change": 7.1,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "median_annual_wage": 39639.0,
+     "total_job_openings": 68190.0,
+     "percent_change": 7.3,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d071b-31e5-11f1-a792-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Hospital Maintenance Technician",
+   "description": "63409|This competency-based course is designed to prepare students for employment in building maintenance and cleaning work. Instruction covers equipment, materials, and methods used in routine maintenance and cleaning of offices, shops, hospitals, schools, stores, and outdoor areas. Topics include commercial methods for floor care, wall and window washing, and making minor building repairs.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0702",
+   "soc_codes": [
+    "11-9111",
+    "37-2011",
+    "49-9099"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 22.0,
+    "hours": 9.0
+   },
+   "cost": {
+    "tuition": 700.0,
+    "supplies": 415.0,
+    "total_out_of_pocket": 1115.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 62.0,
+    "total_exited": 78.0,
+    "total_completed": 31.0,
+    "completion_rate": 0.4,
+    "credentials_earned": null,
+    "median_earnings": 13000.0,
+    "employment_rate_q2": 0.69,
+    "employed_q2": 33.0,
+    "employed_q4": 9.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "11-9111",
+     "title": "Medical and Health Services Managers",
+     "median_annual_wage": 143854.0,
+     "total_job_openings": 90810.0,
+     "percent_change": 34.9,
+     "entry_level_education": "Bachelor's degree"
+    },
+    {
+     "soc_code": "37-2011",
+     "title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+     "median_annual_wage": 42131.0,
+     "total_job_openings": 372180.0,
+     "percent_change": 4.9,
+     "entry_level_education": "No formal educational credential"
+    },
+    {
+     "soc_code": "49-9099",
+     "title": "Installation, Maintenance, and Repair Workers, All Other",
+     "median_annual_wage": 52679.0,
+     "total_job_openings": 27340.0,
+     "percent_change": 2.1,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d073a-31e5-11f1-ae8d-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Construction Worker",
+   "description": "63507|The East Los Angeles Skills Center's Construction Worker Program prepares students for careers in the Residential and Commercial Construction Career Pathway. Students will learn how to perform tasks involving physical labor at construction sites; operate hand and power tools of all types: air hammers, earth tampers, cement mixers, small mechanical hoists, surveying and measuring equipment, and a variety of other equipment and instruments; clean and prepare sites, dig trenches, set braces to support the sides of excavations, erect scaffolding, and clean up rubble, debris and other waste materials; and assist other craft workers. At the completion of this course students may apply for their OSHA-10 and HazMat certifications.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "entity_type": "Public",
+   "cip_code": "46.9999",
+   "soc_codes": [
+    "47-2061"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 22.0,
+    "hours": 25.0
+   },
+   "cost": {
+    "tuition": 1890.0,
+    "supplies": 1345.0,
+    "total_out_of_pocket": 3235.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 321.0,
+    "total_exited": 302.0,
+    "total_completed": 271.0,
+    "completion_rate": 0.9,
+    "credentials_earned": 18.0,
+    "median_earnings": 14180.0,
+    "employment_rate_q2": 0.67,
+    "employed_q2": 151.0,
+    "employed_q4": 26.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "47-2061",
+     "title": "Construction Laborers",
+     "median_annual_wage": 61903.0,
+     "total_job_openings": 111420.0,
+     "percent_change": 10.2,
+     "entry_level_education": "No formal educational credential"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0759-31e5-11f1-a39f-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Nursing Assistant, Home Health Aide, and Medical Terminology",
+   "description": "63461|A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.3902",
+   "soc_codes": [
+    "31-1131"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 13.0,
+    "hours": 23.0
+   },
+   "cost": {
+    "tuition": 1050.0,
+    "supplies": 1057.0,
+    "total_out_of_pocket": 2107.0,
+    "wioa_funded_cost": 1959.5
+   },
+   "outcomes": {
+    "total_served": 445.0,
+    "total_exited": 477.0,
+    "total_completed": 310.0,
+    "completion_rate": 0.65,
+    "credentials_earned": 51.0,
+    "median_earnings": 8382.4,
+    "employment_rate_q2": 0.68,
+    "employed_q2": 102.0,
+    "employed_q4": 112.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0777-31e5-11f1-b6e4-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Medical Biller",
+   "description": "63440|This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology, abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with workplace simulations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0714",
+   "soc_codes": [
+    "29-2072",
+    "43-3011"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 38.0,
+    "hours": 9.0
+   },
+   "cost": {
+    "tuition": 1260.0,
+    "supplies": 960.0,
+    "total_out_of_pocket": 2220.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 266.0,
+    "total_exited": 313.0,
+    "total_completed": 192.0,
+    "completion_rate": 0.61,
+    "credentials_earned": 36.0,
+    "median_earnings": 10900.0,
+    "employment_rate_q2": 0.43,
+    "employed_q2": 77.0,
+    "employed_q4": 72.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "29-2072",
+     "title": "Medical Records Specialists",
+     "median_annual_wage": 63540.0,
+     "total_job_openings": 15610.0,
+     "percent_change": 15.0,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "43-3011",
+     "title": "Bill and Account Collectors",
+     "median_annual_wage": 59301.0,
+     "total_job_openings": 11890.0,
+     "percent_change": -9.2,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0796-31e5-11f1-9ec5-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Solar Thermal Technician",
+   "description": "63473|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "47.0703",
+   "soc_codes": [
+    "17-3026",
+    "47-2152",
+    "47-2231"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 13.0,
+    "hours": 9.0
+   },
+   "cost": {
+    "tuition": 735.0,
+    "supplies": 755.0,
+    "total_out_of_pocket": 1490.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 166.0,
+    "total_exited": 205.0,
+    "total_completed": 103.0,
+    "completion_rate": 0.5,
+    "credentials_earned": 11.0,
+    "median_earnings": 15386.9,
+    "employment_rate_q2": 0.71,
+    "employed_q2": 37.0,
+    "employed_q4": 34.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "17-3026",
+     "title": "Industrial Engineering Technologists and Technicians",
+     "median_annual_wage": 81283.0,
+     "total_job_openings": 5290.0,
+     "percent_change": 7.0,
+     "entry_level_education": "Associate's degree"
+    },
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "47-2231",
+     "title": "Solar Photovoltaic Installers",
+     "median_annual_wage": 62242.0,
+     "total_job_openings": 9860.0,
+     "percent_change": 42.0,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d07b4-31e5-11f1-be7b-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Medical Secretary/Medical Front Office Assistant",
+   "description": "63450|This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic. Medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology. Abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with  workplace simulations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "51.0716",
+   "soc_codes": [
+    "31-9092",
+    "43-6013"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 10.0,
+    "hours": 36.0
+   },
+   "cost": {
+    "tuition": 1260.0,
+    "supplies": 705.0,
+    "total_out_of_pocket": 1965.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 290.0,
+    "total_exited": 305.0,
+    "total_completed": 161.0,
+    "completion_rate": 0.53,
+    "credentials_earned": 39.0,
+    "median_earnings": 9880.0,
+    "employment_rate_q2": 0.66,
+    "employed_q2": 139.0,
+    "employed_q4": 63.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d07d3-31e5-11f1-b508-00155dd2f085",
+   "provider_name": "East Los Angeles Skills Center - LAUSD",
+   "program_name": "Electrical Powerline Mechanic",
+   "description": "63396|This competency-based course is designed to prepare a student to enter an electrical distribution mechanic training program. This course covers the basic mechanical and electrical principles associated with the electrical line working trade. The goal of this course is to produce candidates for the edm training program, who as a result of this course will develop the basic skills needed to be successful trainees. These skills include: overall safety considerations, power pole climbing skills, knowledge of the basic tools and materials involved with the electrical line crafts, general construction standards, basic rigging principles, and basic electrical theory that is specific to this trade. A 175-hour power pole-climbing certificate of completion is granted to students who successfully complete the course. A component of this course includes preparation for civil service examination.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "http://www.laadulted.com",
+   "entity_type": "Public",
+   "cip_code": "47.0101",
+   "soc_codes": [
+    "49-9051"
+   ],
+   "location": {
+    "city": "Los Angeles",
+    "state": "CA",
+    "zip": "90031",
+    "lat": 34.09,
+    "lon": -118.21
+   },
+   "length": {
+    "weeks": 21.0,
+    "hours": 29.0
+   },
+   "cost": {
+    "tuition": 3244.0,
+    "supplies": 2146.1,
+    "total_out_of_pocket": 5390.1,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 173.0,
+    "total_exited": 325.0,
+    "total_completed": 298.0,
+    "completion_rate": 0.92,
+    "credentials_earned": 75.0,
+    "median_earnings": 21320.0,
+    "employment_rate_q2": 0.73,
+    "employed_q2": 180.0,
+    "employed_q4": 136.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "49-9051",
+     "title": "Electrical Power-Line Installers and Repairers",
+     "median_annual_wage": 132689.0,
+     "total_job_openings": 7690.0,
+     "percent_change": 7.8,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d07f2-31e5-11f1-8e2e-00155dd2f085",
+   "provider_name": "GROSSMONT ADULT SCHOOL",
+   "program_name": "Phlebotomy Technician and Medical Lab Assistant",
+   "description": "61404|A program that prepares individuals  under the supervision of physicians and other health care professionals  to draw blood samples from patients using a variety of intrusive procedures.  Includes instruction in basic vascular anatomy and physiology  blood physiology  skin puncture techniques  venipuncture  venous specimen collection and handling  safety and sanitation procedures  and applicable standards and regulations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "https://docs.google.com/document/d/1rRLBYaRwBVQ3lUuzrBx9KRVUVh1YEVlDQf3G92LAmXY/edit?tab=t.0",
+   "entity_type": "Public",
+   "cip_code": "51.1009",
+   "soc_codes": [
+    "31-9097"
+   ],
+   "location": {
+    "city": "El Cajon",
+    "state": "CA",
+    "zip": "92019",
+    "lat": 32.77,
+    "lon": -116.86
+   },
+   "length": {
+    "weeks": 19.0,
+    "hours": 16.0
+   },
+   "cost": {
+    "tuition": 875.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 875.0,
+    "wioa_funded_cost": 1050.0
+   },
+   "outcomes": {
+    "total_served": 451.0,
+    "total_exited": 399.0,
+    "total_completed": 359.0,
+    "completion_rate": 0.9,
+    "credentials_earned": 273.0,
+    "median_earnings": 10137.5,
+    "employment_rate_q2": 1.0,
+    "employed_q2": 294.0,
+    "employed_q4": 175.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9097",
+     "title": "Phlebotomists",
+     "median_annual_wage": 57459.0,
+     "total_job_openings": 19970.0,
+     "percent_change": 14.7,
+     "entry_level_education": "Postsecondary non-degree award"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d0810-31e5-11f1-882e-00155dd2f085",
+   "provider_name": "GROSSMONT ADULT SCHOOL",
+   "program_name": "Veterinary Assistant",
+   "description": "72299|A program that prepares individuals  under the supervision of veterinarians  laboratory animal specialists  and zoological professionals  to provide patient management  care  and clinical procedures assistance as well as owner communication.  Includes instruction in animal nursing care  animal health and nutrition  animal handling  clinical pathology  radiology  anesthesiology  dental prophylaxis  surgical assisting  clinical laboratory procedures  office administration skills  patient and owner management  and applicable standards and regulations.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "https://docs.google.com/document/d/1zFY57NDasI-e-XJax9iYhu2VbBBVYtkfssaXNRAXIxM/edit?tab=t.0",
+   "entity_type": "Public",
+   "cip_code": "1.8301",
+   "soc_codes": [
+    "31-9096"
+   ],
+   "location": {
+    "city": "El Cajon",
+    "state": "CA",
+    "zip": "92019",
+    "lat": 32.77,
+    "lon": -116.86
+   },
+   "length": {
+    "weeks": 15.0,
+    "hours": 2.0
+   },
+   "cost": {
+    "tuition": 375.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 375.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 272.0,
+    "total_exited": 279.0,
+    "total_completed": 264.0,
+    "completion_rate": 0.95,
+    "credentials_earned": 196.0,
+    "median_earnings": 10139.51,
+    "employment_rate_q2": 0.88,
+    "employed_q2": 202.0,
+    "employed_q4": 98.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d082f-31e5-11f1-8898-00155dd2f085",
+   "provider_name": "GROSSMONT ADULT SCHOOL",
+   "program_name": "SMAW - Stick Welding",
+   "description": "75364|A program that prepares individuals to apply basic engineering principles and technical skills to the design and engineering of welding and joining systems and the implementation of welding processes.  Includes instruction in materials science  computer-aided design  welding design  welding processes  welding metallurgy  automation and robotics  and codes  inspections  testing  and quality assurance.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "https://adultschool.guhsd.net/Find-Your-Program/Career-Training/AWS-Welding-Certification/SMAW-Shield-Metal-Arc-Welding-STICKARC/index.html",
+   "entity_type": "Public",
+   "cip_code": "15.0614",
+   "soc_codes": [
+    "47-2152",
+    "47-2181",
+    "47-2211"
+   ],
+   "location": {
+    "city": "El Cajon",
+    "state": "CA",
+    "zip": "92019",
+    "lat": 32.77,
+    "lon": -116.86
+   },
+   "length": {
+    "weeks": 18.0,
+    "hours": 6.0
+   },
+   "cost": {
+    "tuition": 400.0,
+    "supplies": 250.0,
+    "total_out_of_pocket": 650.0,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": 65.0,
+    "total_exited": 52.0,
+    "total_completed": 52.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 45.0,
+    "median_earnings": 22.0,
+    "employment_rate_q2": 1.0,
+    "employed_q2": 16.0,
+    "employed_q4": 45.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "47-2181",
+     "title": "Roofers",
+     "median_annual_wage": 65323.0,
+     "total_job_openings": 20430.0,
+     "percent_change": 6.8,
+     "entry_level_education": "No formal educational credential"
+    },
+    {
+     "soc_code": "47-2211",
+     "title": "Sheet Metal Workers",
+     "median_annual_wage": 78665.0,
+     "total_job_openings": 7970.0,
+     "percent_change": 5.5,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d084e-31e5-11f1-b062-00155dd2f085",
+   "provider_name": "GROSSMONT ADULT SCHOOL",
+   "program_name": "Class-B Commercial Truck Driver",
+   "description": "61534|A program that prepares individuals to apply technical knowledge and skills to drive trucks and buses  delivery vehicles  for-hire vehicles and other commercial vehicles  or to instruct commerical vehicle operators. Includes instruction in operating gas  diesel  or electrically-powered vehicles  loading and unloading cargo or passengers  reporting delays or accidents on the road  verifying load against shipping papers  arranging transportation for personnel  and keeping records of receipts and fares.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": "https://docs.google.com/document/d/12KEQZufu13FqEuH68JGuuneoBo_0aeBrufipwcjUo8c/edit?tab=t.0",
+   "entity_type": "Public",
+   "cip_code": "49.0205",
+   "soc_codes": [
+    "53-3032",
+    "53-3033",
+    "53-3051"
+   ],
+   "location": {
+    "city": "El Cajon",
+    "state": "CA",
+    "zip": "92019",
+    "lat": 32.77,
+    "lon": -116.86
+   },
+   "length": {
+    "weeks": 11.0,
+    "hours": 12.0
+   },
+   "cost": {
+    "tuition": 800.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 800.0,
+    "wioa_funded_cost": 600.0
+   },
+   "outcomes": {
+    "total_served": 41.0,
+    "total_exited": 33.0,
+    "total_completed": 33.0,
+    "completion_rate": 1.0,
+    "credentials_earned": 37.0,
+    "median_earnings": 11520.0,
+    "employment_rate_q2": 1.0,
+    "employed_q2": 21.0,
+    "employed_q4": 37.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "53-3032",
+     "title": "Heavy and Tractor-Trailer Truck Drivers",
+     "median_annual_wage": 61548.0,
+     "total_job_openings": 262610.0,
+     "percent_change": 11.4,
+     "entry_level_education": "Postsecondary non-degree award"
+    },
+    {
+     "soc_code": "53-3033",
+     "title": "Light Truck Drivers",
+     "median_annual_wage": 47814.0,
+     "total_job_openings": 157370.0,
+     "percent_change": 17.9,
+     "entry_level_education": "High school diploma or equivalent"
+    },
+    {
+     "soc_code": "53-3051",
+     "title": "Bus Drivers, School",
+     "median_annual_wage": 62376.0,
+     "total_job_openings": 26030.0,
+     "percent_change": 3.1,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  },
+  {
+   "uuid": "f69d086c-31e5-11f1-b6d6-00155dd2f085",
+   "provider_name": "GROSSMONT ADULT SCHOOL",
+   "program_name": "Pharmacy Technician",
+   "description": "61402|A program that prepares individuals  under the supervision of pharmacists  to prepare medications  provide medications and related assistance to patients  and manage pharmacy clinical and business operations.  Includes instruction in medical and pharmaceutical terminology  principles of pharmacology and pharmaceutics  drug identification  pharmacy laboratory procedures  prescription interpretation  patient communication and education  safety procedures  record-keeping  measurement and testing techniques  pharmacy business operations  prescription preparation  logistics and dispensing operations  and applicable standards and regulations.",
+   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
+   "program_url": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
+   "entity_type": "Public",
+   "cip_code": "51.0805",
+   "soc_codes": [
+    "29-2052"
+   ],
+   "location": {
+    "city": "El Cajon",
+    "state": "CA",
+    "zip": "92019",
+    "lat": 32.77,
+    "lon": -116.86
+   },
+   "length": {
+    "weeks": 16.0,
+    "hours": 8.0
+   },
+   "cost": {
+    "tuition": 750.0,
+    "supplies": 0.0,
+    "total_out_of_pocket": 750.0,
+    "wioa_funded_cost": 600.0
+   },
+   "outcomes": {
+    "total_served": 141.0,
+    "total_exited": 141.0,
+    "total_completed": 100.0,
+    "completion_rate": 0.71,
+    "credentials_earned": 100.0,
+    "median_earnings": null,
+    "employment_rate_q2": 0.97,
+    "employed_q2": 97.0,
+    "employed_q4": 64.0,
+    "reported": true
+   },
+   "occupations": [
+    {
+     "soc_code": "29-2052",
+     "title": "Pharmacy Technicians",
+     "median_annual_wage": 56653.0,
+     "total_job_openings": 41220.0,
+     "percent_change": 8.2,
+     "entry_level_education": "High school diploma or equivalent"
+    }
+   ]
+  }
+ ]
+}
