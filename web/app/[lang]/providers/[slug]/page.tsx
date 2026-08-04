@@ -71,6 +71,29 @@ export default async function ProviderPage({
   const reported = programs.filter((p) => p.r).length;
   const shrinking = programs.filter((p) => isShrinking(p.g)).length;
 
+  /*
+   * The published prices, lowest and highest. Programs with no figure are left out rather
+   * than counted as free: a missing cost is a cost nobody published, and folding it in as
+   * zero would advertise this provider as cheaper than anyone knows it to be.
+   */
+  const costs = programs.map((p) => p.$).filter((value): value is number => value !== null);
+  const lowest = costs.length > 0 ? Math.min(...costs) : null;
+  const highest = costs.length > 0 ? Math.max(...costs) : null;
+
+  /*
+   * The occupations across every program here, each named once. A provider running six
+   * medical assisting courses trains for one job, not six, and the reason to read this list
+   * is to find out what the place is for.
+   */
+  const trainsFor = new Map<string, string>();
+  for (const program of programs) {
+    program.o.forEach((title, index) => {
+      const soc = program.s[index];
+      if (soc !== undefined && !trainsFor.has(soc)) trainsFor.set(soc, title);
+    });
+  }
+  const occupations = [...trainsFor.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+
   return (
     <div className="shell detail">
       <p>
@@ -91,6 +114,17 @@ export default async function ProviderPage({
           value={`${reported} / ${programs.length}`}
           lang={lang}
         />
+        <Measure
+          label={lowest === highest ? t.providerCostOne : t.providerCostRange}
+          value={
+            lowest === null || highest === null
+              ? null
+              : lowest === highest
+                ? money(lowest, lang)
+                : `${money(lowest, lang)} – ${money(highest, lang)}`
+          }
+          lang={lang}
+        />
         {shrinking > 0 && (
           <Measure
             label={t.providerShrinking}
@@ -99,6 +133,33 @@ export default async function ProviderPage({
           />
         )}
       </dl>
+
+      {/*
+        Said once, at provider level, in the same voice a program page uses. Someone looking
+        at a school where every course reports nothing should be told what that does and does
+        not mean before they read a table of blanks.
+      */}
+      {reported === 0 && (
+        <div className="panel panel-quiet">
+          <p>
+            <strong>{t.providerNoneReportedTitle}</strong>
+          </p>
+          <p style={{ marginBottom: 0 }}>{t.providerNoneReportedBody}</p>
+        </div>
+      )}
+
+      {occupations.length > 0 && (
+        <>
+          <h2>{t.providerTrainsFor}</h2>
+          <ul className="provider-occupations">
+            {occupations.map(([soc, title]) => (
+              <li key={soc}>
+                <Link href={`/${lang}/occupations/${soc}/`}>{title}</Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <h2>{t.providerProgramList}</h2>
       <div className="table-scroll">

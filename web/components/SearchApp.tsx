@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import { dict, type Lang } from "@/lib/i18n";
 import { money, percent, signedPercent, tidyName } from "@/lib/format";
@@ -30,6 +30,15 @@ import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
 import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
+import { filtersToQueryString } from "@/lib/shareable";
+import {
+  MAX_ITEMS as MAX_SAVED,
+  type ShortlistItem,
+  isSaved as idIsSaved,
+  readShortlist,
+  toggle as toggleSaved,
+  writeShortlist,
+} from "@/lib/shortlist";
 import { slugify } from "@/lib/providers";
 
 const COST_CAPS = [2000, 5000, 10000, 20000];
@@ -482,6 +491,35 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [compareOpen, setCompareOpen] = useState(false);
 
+  /*
+   * The shortlist, which lives on this device and nowhere else.
+   *
+   * Read after mount rather than during render: the pages are statically exported and
+   * prerendered on a machine with no localStorage, so reading during render would make the
+   * server and client disagree about what is saved and React would discard the markup.
+   *
+   * What someone saves here is not a shopping basket. Taken together it can indicate that a
+   * person is out of work, roughly what they earn, where they live and — from a run of
+   * phlebotomy and nursing-assistant courses — something close to health information. That
+   * is the argument for localStorage over an account: the safest place to keep this is the
+   * reader's own machine, and the safest quantity to collect is none.
+   */
+  const [saved, setSaved] = useState<ShortlistItem[]>([]);
+  const [savedOnly, setSavedOnly] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setSaved(readShortlist());
+  }, []);
+
+  function onToggleSave(id: string) {
+    setSaved((current) => {
+      const next = toggleSaved(current, id, Date.now());
+      writeShortlist(next);
+      return next;
+    });
+  }
+
   const compareSelected = useMemo(
     () =>
       compareIds
@@ -499,6 +537,28 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   }
 
   const visible = results.slice(0, limit);
+
+  /*
+   * The saved view narrows what is already on screen rather than searching afresh: someone
+   * who saved four programs and then typed a new query is asking which of their four match
+   * it, not to have the query thrown away.
+   */
+  const shown = savedOnly ? visible.filter((entry) => idIsSaved(saved, entry.i)) : visible;
+
+  /*
+   * The current search, as a query string. Encoding the state in the URL makes the search
+   * shareable, bookmarkable and back-button-correct, and it is what turns "show someone" into
+   * a link rather than a feature that needs an account behind it.
+   */
+  const search = filtersToQueryString({
+    query,
+    onlyReported,
+    outlook,
+    maxCost,
+    area,
+    city,
+    sort,
+  });
   const anyFilterActive =
     filters.query.trim() !== "" ||
     onlyReported ||
@@ -832,6 +892,37 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </div>
         )}
 
+        {/*
+          The shortlist bar, shown only once something is in it.
+
+          An empty control explaining a feature nobody has used yet is an advertisement. The
+          bar appears the moment the first program is saved, which is also the moment the
+          sentence about where it is stored becomes true and worth reading.
+        */}
+        {saved.length > 0 && (
+          <div className="saved-bar">
+            <p className="saved-bar-count">
+              <strong>{t.savedCount(saved.length)}</strong>
+            </p>
+            <div className="saved-bar-actions">
+              <button type="button" onClick={() => setSavedOnly((v) => !v)}>
+                {savedOnly ? t.savedShowAll : t.savedShow}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSaved([]);
+                  writeShortlist([]);
+                  setSavedOnly(false);
+                }}
+              >
+                {t.savedClear}
+              </button>
+            </div>
+            <p className="saved-bar-note">{t.savedWhere}</p>
+          </div>
+        )}
+
         <div className="results-head">
           {/*
             The count is the results section's own heading as well as its live region: it is
@@ -842,6 +933,24 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           <h2 className="results-count" aria-live="polite" aria-atomic="true">
             {t.resultsCount(results.length, programs.length)}
           </h2>
+          {/*
+            Sharing is the thing people actually do with this site: send it to a case manager,
+            a partner, the person at the job center. A URL does that better than an account
+            would, because whoever receives it does not have to sign up to open it.
+          */}
+          <button
+            type="button"
+            className="copy-link"
+            onClick={() => {
+              const url = `${window.location.origin}${window.location.pathname}${search}`;
+              void navigator.clipboard?.writeText(url).then(() => {
+                setCopied(true);
+                window.setTimeout(() => setCopied(false), 2000);
+              });
+            }}
+          >
+            {copied ? t.copyLinkDone : t.copyLink}
+          </button>
         </div>
 
         {/*
@@ -905,7 +1014,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         ) : (
           <>
             <ul className="card-list">
-              {visible.map((entry) => (
+              {shown.map((entry) => (
                 <ResultCard
                   key={entry.i}
                   entry={entry}
@@ -913,6 +1022,9 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
                   compared={compareIds.includes(entry.i)}
                   compareFull={compareIds.length >= MAX_COMPARE}
                   onToggleCompare={toggleCompare}
+                  saved={idIsSaved(saved, entry.i)}
+                  savedFull={saved.length >= MAX_SAVED}
+                  onToggleSave={onToggleSave}
                 />
               ))}
             </ul>
@@ -952,12 +1064,18 @@ function ResultCard({
   compared,
   compareFull,
   onToggleCompare,
+  saved,
+  savedFull,
+  onToggleSave,
 }: {
   entry: SearchEntry;
   lang: Lang;
   compared: boolean;
   compareFull: boolean;
   onToggleCompare: (id: string) => void;
+  saved: boolean;
+  savedFull: boolean;
+  onToggleSave: (id: string) => void;
 }) {
   const t = dict(lang);
   const shrinking = isShrinking(entry.g);
@@ -982,6 +1100,21 @@ function ResultCard({
           />
           <span>{t.compareAdd}</span>
         </label>
+        {/*
+          A button, not a checkbox. Comparing is a selection within this page; saving is an
+          action with a consequence that outlives it, and the control says which state it is
+          in rather than which state it would move to.
+        */}
+        <button
+          type="button"
+          className={`save-toggle${saved ? " is-saved" : ""}`}
+          aria-pressed={saved}
+          disabled={savedFull && !saved}
+          title={savedFull && !saved ? t.savedFull : undefined}
+          onClick={() => onToggleSave(entry.i)}
+        >
+          {saved ? t.savedProgram : t.saveProgram}
+        </button>
       </div>
       <p className="card-provider">
         {entry.p ? (

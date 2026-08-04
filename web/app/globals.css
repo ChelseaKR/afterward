@@ -1361,3 +1361,129 @@ td.num {
 .occ-detail > summary {
   margin: 0 0 0.25rem;
 }
+
+/*
+  The browse filter.
+
+  Sits with the jump links rather than at the top of the page: someone who knows what they are
+  looking for types, and someone who does not still browses the bands, and neither has to
+  scroll past the other's tool to reach their own.
+*/
+.table-filter {
+  margin: 1.25rem 0 1.5rem;
+}
+.table-filter label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.table-filter input {
+  width: 100%;
+  max-width: 28rem;
+}
+.table-filter-count {
+  margin: 0.5rem 0 0;
+  /* --gray-70 measured 4.66:1 here: passing AA by 0.16, which is a rounding error away from
+     failing and not a margin worth shipping on the one line that reports the filter's result. */
+  color: var(--gray-90);
+  font-size: 0.9375rem;
+}
+
+/* ---------- Saved programs ---------- */
+
+/*
+  Colored with --link, not --primary-70.
+  
+  --primary-70 is the teal the design system uses for rules and accents; against the page
+  background it measures 3.63:1, which is a border colour wearing a text colour's clothes.
+  --white does not exist in this theme at all, so `background: var(--white)` resolved to
+  nothing and these buttons were transparent. Both faults measured on the rendered page —
+  the analytical audit checks twenty fixed pairings and these were not among them.
+*/
+.save-toggle {
+  background: transparent;
+  border: 1px solid var(--link);
+  border-radius: var(--border-radius-sm);
+  color: var(--link);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.375rem 0.875rem;
+  white-space: nowrap;
+}
+.save-toggle:hover:not(:disabled) {
+  background: var(--gray-20);
+}
+.save-toggle.is-saved {
+  background: var(--link);
+  border-color: var(--link);
+  color: #fff;
+}
+.save-toggle:disabled {
+  border-color: var(--gray-40);
+  color: var(--gray-70);
+  cursor: not-allowed;
+}
+.save-toggle:focus-visible,
+.copy-link:focus-visible,
+.saved-bar button:focus-visible {
+  outline: 2px solid var(--primary-60);
+  outline-offset: 2px;
+}
+
+.saved-bar {
+  background: var(--gray-20);
+  border-left: 4px solid var(--primary-60);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+}
+.saved-bar-count {
+  margin: 0 0 0.5rem;
+}
+.saved-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.saved-bar button {
+  background: transparent;
+  border: 1px solid var(--gray-50);
+  color: var(--link);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  padding: 0.375rem 0.875rem;
+}
+.saved-bar button:hover {
+  background: var(--gray-30);
+}
+.saved-bar-note {
+  color: var(--gray-90);
+  font-size: 0.875rem;
+  margin: 0.75rem 0 0;
+}
+
+.copy-link {
+  background: transparent;
+  border: 1px solid var(--gray-50);
+  border-radius: var(--border-radius-sm);
+  color: var(--link);
+  cursor: pointer;
+  font-size: 0.9375rem;
+  padding: 0.375rem 0.875rem;
+  white-space: nowrap;
+}
+.copy-link:hover {
+  background: var(--gray-20);
+}
+
+.provider-occupations {
+  columns: 2;
+  column-gap: 2rem;
+}
+@media (max-width: 40rem) {
+  .provider-occupations {
+    columns: 1;
+  }
+}

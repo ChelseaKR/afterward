@@ -132,6 +132,23 @@ const PAIRS = [
   ["hovered row link", "--primary-100", "--gray-20", AA_NORMAL],
   ["hovered row text", "--gray-120", "--gray-20", AA_NORMAL],
   ["hovered row unreported", "--gray-80", "--gray-20", AA_NORMAL],
+  /*
+   * The save, share and filter controls, added after this list was first written — and the
+   * reason this list now exists as something to append to rather than a fixed set.
+   *
+   * All three shipped briefly with `color: var(--primary-70)`, which is the teal used for
+   * rules and accents: 3.63:1 against the page, comfortably failing AA. Two of them also had
+   * `background: var(--white)`, a token this theme does not define, so the declaration was
+   * dropped and the buttons rendered transparent. This audit passed throughout, because it
+   * checks the pairings named here and none of those were among them. A new control needs a
+   * new line here, or it is unchecked rather than correct.
+   */
+  ["save button", "--link", "--gray-10", AA_NORMAL],
+  ["save button, saved", "--gray-10", "--link", AA_NORMAL],
+  ["copy-link button", "--link", "--gray-10", AA_NORMAL],
+  ["saved bar button", "--link", "--gray-20", AA_NORMAL],
+  ["saved bar note", "--gray-90", "--gray-20", AA_NORMAL],
+  ["browse filter count", "--gray-90", "--gray-10", AA_NORMAL],
 ];
 
 const statics = staticTokens();

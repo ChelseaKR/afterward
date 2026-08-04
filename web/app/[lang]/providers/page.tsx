@@ -11,6 +11,7 @@ import {
 } from "@/lib/browse";
 import { getSearchIndex } from "@/lib/data";
 import { count, tidyName } from "@/lib/format";
+import { TableFilter } from "@/components/TableFilter";
 import { LANGUAGES, type Lang, dict, isLang } from "@/lib/i18n";
 import { groupByProvider } from "@/lib/providers";
 
@@ -100,6 +101,8 @@ export default async function ProvidersIndexPage({
           ))}
         </ul>
       </nav>
+
+      <TableFilter lang={lang} scope=".browse" />
 
       {groups.map(({ letter, providers }) => (
         <section key={letter}>

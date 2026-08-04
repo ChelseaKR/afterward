@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Measure } from "@/components/Measure";
+import { TableFilter } from "@/components/TableFilter";
 import {
   type OccupationRow,
   type OutlookBand,
@@ -123,6 +124,8 @@ export default async function OccupationsIndexPage({
         </ul>
       </nav>
       <p className="compare-note">{t.sortedByOpenings}</p>
+
+      <TableFilter lang={lang} scope=".browse" />
 
       {bands.map(({ band, rows: banded }) => {
         const { heading, note } = bandText(band, t);
