@@ -272,7 +272,7 @@ all required one-stop partners", with "at least one title I staff person physica
 ([20 CFR 678.305](https://www.ecfr.gov/current/title-20/section-678.305)) — from an
 *affiliated site*, which "does not need to provide access to every required one-stop partner
 program" ([678.310](https://www.ecfr.gov/current/title-20/section-678.310)). Both are worth
-listing; the type is worth labelling.
+listing; the type is worth labeling.
 
 **EDD delegates its own office finding to CareerOneStop.** From EDD's Office Locator page:
 "To find an AJCC near you, visit CareerOneStop's American Job Center Finder." It adds a
