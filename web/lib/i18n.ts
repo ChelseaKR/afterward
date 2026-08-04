@@ -74,6 +74,12 @@ const en = {
   byRegion: "Pay by region",
   region: "Region",
 
+  vsState: "California average",
+  vsStateAbove: "Above the California average",
+  vsStateBelow: "Below the California average",
+  benchmarkNote:
+    "Compared with every California program that reported this measure. The statewide average is low, so beating it is a floor, not a guarantee.",
+
   aboutData: "Where this comes from",
   snapshot: (d: string) => `Data snapshot: ${d}`,
   viewProgram: "Program details",
@@ -148,6 +154,12 @@ const es: Dictionary = {
   perYear: "al año",
   byRegion: "Pago por región",
   region: "Región",
+
+  vsState: "Promedio de California",
+  vsStateAbove: "Por encima del promedio de California",
+  vsStateBelow: "Por debajo del promedio de California",
+  benchmarkNote:
+    "Comparado con todos los programas de California que reportaron esta medida. El promedio estatal es bajo, así que superarlo es un mínimo, no una garantía.",
 
   aboutData: "De dónde vienen estos datos",
   snapshot: (d: string) => `Datos actualizados: ${d}`,

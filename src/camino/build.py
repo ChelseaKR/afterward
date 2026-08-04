@@ -244,6 +244,7 @@ def build(
     snapshot = snapshot or date.today().isoformat()
 
     programs = list(dol_etp.fetch_programs(state))
+    benchmark = dol_etp.fetch_state_benchmark(state)
     projections = edd_lmi.fetch_projections()
     occupations = index_occupations(projections)
 
@@ -282,6 +283,7 @@ def build(
             | {
                 "outcome_coverage_pct": report.outcome_coverage_pct,
                 "occupation_match_pct": report.occupation_match_pct,
+                "state_benchmark": benchmark.as_dict() if benchmark else None,
             },
             indent=1,
         ),

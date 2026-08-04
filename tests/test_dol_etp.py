@@ -8,7 +8,12 @@ from __future__ import annotations
 
 import pytest
 
-from camino.sources.dol_etp import Program, clean_measure, parse_program
+from camino.sources.dol_etp import (
+    Program,
+    clean_measure,
+    parse_program,
+    parse_state_benchmark,
+)
 
 
 class TestCleanMeasure:
@@ -100,3 +105,41 @@ class TestProgramParsing:
             }
         )
         assert program.total_cost is None
+
+
+class TestStateBenchmark:
+    """The statewide aggregate gives a bare program rate something to be read against."""
+
+    def _source(self, **overrides: object) -> dict[str, object]:
+        return {
+            "field_c_completed_percent": 0.71,
+            "field_c_q2_employment_percent": 0.27,
+            "field_c_median_earnings": 16978.95,
+            "field_c_cred_attainment_percent": 0.37,
+            "field_c_total_exited": 664260,
+            "field_c_total_completed": 469808,
+            **overrides,
+        }
+
+    def test_parses_the_published_measures(self) -> None:
+        benchmark = parse_state_benchmark("CA", self._source())
+        assert benchmark.completion_rate == 0.71
+        assert benchmark.q2_employment_rate == 0.27
+        assert benchmark.median_earnings == 16978.95
+        assert benchmark.total_exited == 664260
+
+    def test_suppressed_state_measures_stay_none(self) -> None:
+        benchmark = parse_state_benchmark("CA", self._source(field_c_median_earnings=-1))
+        assert benchmark.median_earnings is None
+
+    def test_missing_fields_do_not_raise(self) -> None:
+        benchmark = parse_state_benchmark("CA", {})
+        assert benchmark.state == "CA"
+        assert benchmark.completion_rate is None
+
+    def test_as_dict_uses_the_same_keys_as_program_outcomes(self) -> None:
+        """The UI compares these side by side, so the names must line up."""
+        payload = parse_state_benchmark("CA", self._source()).as_dict()
+        assert payload["employment_rate_q2"] == 0.27
+        assert payload["median_earnings"] == 16978.95
+        assert payload["state"] == "CA"

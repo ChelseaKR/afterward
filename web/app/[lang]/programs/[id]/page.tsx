@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Measure } from "@/components/Measure";
-import { allProgramIds, getProgram } from "@/lib/data";
+import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang } from "@/lib/i18n";
+import { translateTerm } from "@/lib/vocabulary";
 
 export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allProgramIds().map((id) => ({ lang, id })));
@@ -22,6 +23,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
+/**
+ * Build the statewide comparison for one measure, or undefined when either side is missing.
+ * Never invents a comparison out of a null: an unreported program value has nothing to
+ * compare, and saying "below average" about it would be an accusation, not a fact.
+ */
+function compare(
+  programValue: number | null,
+  stateValue: number | null | undefined,
+  format: (value: number) => string | null,
+): { formatted: string; programBeatsState: boolean | null } | undefined {
+  if (programValue === null || stateValue === null || stateValue === undefined) return undefined;
+  const formatted = format(stateValue);
+  if (formatted === null) return undefined;
+  return { formatted, programBeatsState: programValue > stateValue };
+}
+
 export default async function ProgramPage({
   params,
 }: {
@@ -34,6 +51,7 @@ export default async function ProgramPage({
   if (!program) notFound();
 
   const t = dict(lang);
+  const state = getCoverage().state_benchmark;
   const { outcomes, cost, length, location } = program;
   const occupation = program.occupations[0];
   const shrinking = occupation?.percent_change !== undefined && (occupation?.percent_change ?? 0) < 0;
@@ -78,16 +96,25 @@ export default async function ProgramPage({
               value={percent(outcomes.completion_rate, lang)}
               note={outcomes.total_exited !== null ? t.basedOn(outcomes.total_exited) : undefined}
               lang={lang}
+              benchmark={compare(outcomes.completion_rate, state?.completion_rate, (v) =>
+                percent(v, lang),
+              )}
             />
             <Measure
               label={t.employmentRate}
               value={percent(outcomes.employment_rate_q2, lang)}
               lang={lang}
+              benchmark={compare(outcomes.employment_rate_q2, state?.employment_rate_q2, (v) =>
+                percent(v, lang),
+              )}
             />
             <Measure
               label={t.medianEarnings}
               value={money(outcomes.median_earnings, lang)}
               lang={lang}
+              benchmark={compare(outcomes.median_earnings, state?.median_earnings, (v) =>
+                money(v, lang),
+              )}
             />
           </dl>
         </>
@@ -130,7 +157,7 @@ export default async function ProgramPage({
             />
             <Measure
               label={t.entryEducation}
-              value={occupation.entry_level_education}
+              value={translateTerm(occupation.entry_level_education, lang)}
               lang={lang}
             />
           </dl>

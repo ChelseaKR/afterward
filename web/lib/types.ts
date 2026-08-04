@@ -98,8 +98,19 @@ export interface SearchIndex {
   programs: SearchEntry[];
 }
 
+export interface StateBenchmark {
+  state: string;
+  completion_rate: number | null;
+  employment_rate_q2: number | null;
+  median_earnings: number | null;
+  credential_rate: number | null;
+  total_exited: number | null;
+  total_completed: number | null;
+}
+
 export interface Coverage {
   snapshot_date: string;
+  state_benchmark: StateBenchmark | null;
   total_programs: number;
   programs_with_any_outcome: number;
   programs_with_median_earnings: number;

@@ -82,6 +82,61 @@ scan now excludes vendored directories.
 - Program length turned out to be near-complete (`weeks` present for 3,254 of 3,266), so a
   duration filter is safe to design around. Resolved on the day it was raised.
 
+---
+
+## 2026-08-04 (later) — Front end, and what building it exposed
+
+### D7 — The site says it is not a government site, in the banner
+
+Using the California Design System means the pages look official at a glance. The
+non-affiliation notice therefore sits in permanent chrome on every page, in both languages,
+not in footer small print. The first accessibility audit proved why placement matters: the
+notice was originally outside every landmark, so a screen reader user navigating by landmark
+would have skipped the one sentence telling them this is not a state website. It now lives
+inside the banner.
+
+### D8 — Absence gets a designed state
+
+The design system fixes the palette and type, so the design work went into the information
+design instead. A withheld measure renders as an explicit, italicised "Not reported" with a
+tooltip explaining that it may have been suppressed to protect a small cohort's privacy —
+never as 0, `$0`, `0%`, or a dash. A program that reported nothing gets a full explanatory
+panel rather than a blank card, because that absence is one of the more useful things a
+prospective student can learn.
+
+### D9 — Statewide benchmark, because a bare rate is unreadable
+
+Nobody knows whether "45% employed" is good. The DOL `etp_scorecard_states` index publishes
+California's own aggregate, so every program measure is now shown against it.
+
+**California's statewide figures: 71% completion, 27% employed at two quarters, $16,979
+median earnings, across 664,260 exits.** The 27% is strikingly low and is itself an argument
+for the product. The UI notes that beating a low average is a floor, not a guarantee.
+
+A comparison is only drawn when both sides exist. Calling an unreported program
+"below average" would be an accusation rather than a fact.
+
+### D10 — Translate the data's controlled vocabularies, not just the chrome
+
+Translating the interface while leaving the data in English produces pages that read
+"Normalmente requiere: Associate's degree". Education (9 values), work experience (4), and
+job training (7) are closed lists, so they are translated, with unknown values falling
+through to the source text so gaps stay visible.
+
+**Known limitation:** occupation titles (764) and program descriptions (thousands) are
+open-ended and remain in English. A Spanish page is therefore not yet fully Spanish. Machine
+translation of occupation titles is the obvious next step and needs review by a Spanish
+speaker before it ships — an incorrect job title is worse than an English one.
+
+### Still open
+
+- Does California's own ETPL list programs the federal file omits? Unresolved. The federal
+  file has 3,266 California programs; CalJOBS is the authoritative state list and was not
+  extracted, because the federal endpoint made scraping unnecessary for everything else.
+- Colour contrast is unverified. The audit runs in jsdom, which has no layout engine, so
+  contrast is reported as needing review rather than counted as passing. Requires a browser
+  before any public launch.
+
 ### One finding worth surfacing in the product
 
 **219 California programs train people for occupations the state itself projects will

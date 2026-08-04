@@ -160,6 +160,83 @@ def parse_program(hit: dict[str, Any]) -> Program:
     )
 
 
+STATES_INDEX = "etp_scorecard_states"
+
+
+@dataclass(frozen=True)
+class StateBenchmark:
+    """Statewide totals, so a single program's numbers can be read against something.
+
+    Without this a rate is unanchored: a reader has no way to know whether 45% employed is
+    strong or dismal. California's own statewide figure is the fairest available yardstick,
+    since it is the same measure computed over the same population by the same reporters.
+    """
+
+    state: str
+    completion_rate: float | None
+    q2_employment_rate: float | None
+    median_earnings: float | None
+    credential_rate: float | None
+    total_exited: float | None
+    total_completed: float | None
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "state": self.state,
+            "completion_rate": self.completion_rate,
+            "employment_rate_q2": self.q2_employment_rate,
+            "median_earnings": self.median_earnings,
+            "credential_rate": self.credential_rate,
+            "total_exited": self.total_exited,
+            "total_completed": self.total_completed,
+        }
+
+
+def parse_state_benchmark(state: str, source: dict[str, Any]) -> StateBenchmark:
+    """Build a benchmark from a states-index document."""
+    return StateBenchmark(
+        state=state,
+        completion_rate=clean_measure(source.get("field_c_completed_percent")),
+        q2_employment_rate=clean_measure(source.get("field_c_q2_employment_percent")),
+        median_earnings=clean_measure(source.get("field_c_median_earnings")),
+        credential_rate=clean_measure(source.get("field_c_cred_attainment_percent")),
+        total_exited=clean_measure(source.get("field_c_total_exited")),
+        total_completed=clean_measure(source.get("field_c_total_completed")),
+    )
+
+
+def fetch_state_benchmark(
+    state: str = "CA", *, client: httpx.Client | None = None
+) -> StateBenchmark | None:
+    """Fetch the statewide aggregate for ``state``, or None if it is not published."""
+    body = {
+        "size": 1,
+        "query": {
+            "bool": {
+                "filter": [
+                    {"term": {"_index": STATES_INDEX}},
+                    {"term": {"field_state": state}},
+                ]
+            }
+        },
+    }
+    owns_client = client is None
+    http = client or httpx.Client(timeout=REQUEST_TIMEOUT, follow_redirects=True)
+    try:
+        response = http.get(
+            f"{BASE_URL}/_search",
+            params={"source": json.dumps(body), "source_content_type": "application/json"},
+        )
+        response.raise_for_status()
+        hits = response.json().get("hits", {}).get("hits", [])
+        if not hits:
+            return None
+        return parse_state_benchmark(state, hits[0].get("_source", {}))
+    finally:
+        if owns_client:
+            http.close()
+
+
 def _query_body(state: str, page_size: int, after: list[Any] | None) -> dict[str, Any]:
     body: dict[str, Any] = {
         "size": page_size,

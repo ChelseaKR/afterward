@@ -12,11 +12,18 @@ export function Measure({
   value,
   note,
   lang,
+  benchmark,
 }: {
   label: string;
   value: string | null;
   note?: string;
   lang: Lang;
+  /**
+   * Optional statewide comparison. A rate on its own is unreadable — nobody knows whether
+   * 45% employed is good — so where California publishes a statewide figure for the same
+   * measure, it is shown next to the program's.
+   */
+  benchmark?: { formatted: string; programBeatsState: boolean | null };
 }) {
   const t = dict(lang);
   return (
@@ -30,6 +37,17 @@ export function Measure({
         <dd>
           {value}
           {note ? <small>{note}</small> : null}
+          {benchmark ? (
+            <small title={t.benchmarkNote}>
+              {t.vsState}: {benchmark.formatted}
+              {benchmark.programBeatsState !== null && (
+                <>
+                  {" · "}
+                  {benchmark.programBeatsState ? t.vsStateAbove : t.vsStateBelow}
+                </>
+              )}
+            </small>
+          ) : null}
         </dd>
       )}
     </div>

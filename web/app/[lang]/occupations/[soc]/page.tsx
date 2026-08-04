@@ -5,6 +5,7 @@ import { Measure } from "@/components/Measure";
 import { allOccupationCodes, getOccupation, programsForOccupation } from "@/lib/data";
 import { count, money, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang } from "@/lib/i18n";
+import { translateTerm } from "@/lib/vocabulary";
 
 export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allOccupationCodes().map((soc) => ({ lang, soc })));
@@ -70,7 +71,7 @@ export default async function OccupationPage({
         />
         <Measure
           label={t.entryEducation}
-          value={occupation.entry_level_education}
+          value={translateTerm(occupation.entry_level_education, lang)}
           lang={lang}
         />
       </dl>
