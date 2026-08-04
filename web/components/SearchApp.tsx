@@ -4,34 +4,13 @@ import Link from "next/link";
 import { useDeferredValue, useMemo, useState } from "react";
 
 import { dict, type Lang } from "@/lib/i18n";
-import { isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
+import { money, percent, signedPercent, tidyName } from "@/lib/format";
+import { runSearch, type Sort } from "@/lib/search";
 import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 
-type Sort = "relevance" | "earnings" | "cost" | "openings";
-
 const COST_CAPS = [2000, 5000, 10000, 20000];
 const PAGE_SIZE = 25;
-
-/** Cheap substring scoring: the dataset is 3,266 rows, so no index structure is warranted. */
-function score(entry: SearchEntry, terms: string[]): number {
-  if (terms.length === 0) return 0;
-  const name = (entry.n ?? "").toLowerCase();
-  const provider = (entry.p ?? "").toLowerCase();
-  const occupation = (entry.o ?? "").toLowerCase();
-  const city = (entry.c ?? "").toLowerCase();
-
-  let total = 0;
-  for (const term of terms) {
-    if (name.startsWith(term)) total += 6;
-    else if (name.includes(term)) total += 4;
-    else if (occupation.includes(term)) total += 3;
-    else if (provider.includes(term)) total += 2;
-    else if (city.includes(term)) total += 2;
-    else return -1; // every term must match something
-  }
-  return total;
-}
 
 export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: Lang }) {
   const t = dict(lang);
@@ -44,31 +23,17 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
 
   const deferredQuery = useDeferredValue(query);
 
-  const results = useMemo(() => {
-    const terms = deferredQuery.toLowerCase().split(/\s+/).filter(Boolean);
-
-    const matched = programs
-      .map((entry) => ({ entry, rank: score(entry, terms) }))
-      .filter(({ entry, rank }) => {
-        if (rank < 0) return false;
-        if (onlyReported && !entry.r) return false;
-        // Unknown growth is not treated as shrinking; only filter what we actually know.
-        if (hideShrinking && entry.g !== null && entry.g < 0) return false;
-        if (maxCost !== null && (entry.$ === null || entry.$ > maxCost)) return false;
-        return true;
-      });
-
-    const by: Record<Sort, (a: typeof matched[number], b: typeof matched[number]) => number> = {
-      relevance: (a, b) => b.rank - a.rank || (a.entry.n ?? "").localeCompare(b.entry.n ?? ""),
-      // Nulls sort last in every ordering: a program that reported nothing has not earned
-      // the top of the list, and has not earned the bottom either.
-      earnings: (a, b) => (b.entry.me ?? -1) - (a.entry.me ?? -1),
-      cost: (a, b) => (a.entry.$ ?? Infinity) - (b.entry.$ ?? Infinity),
-      openings: (a, b) => (b.entry.op ?? -1) - (a.entry.op ?? -1),
-    };
-
-    return matched.sort(by[sort]).map(({ entry }) => entry);
-  }, [programs, deferredQuery, onlyReported, hideShrinking, maxCost, sort]);
+  const results = useMemo(
+    () =>
+      runSearch(programs, {
+        query: deferredQuery,
+        onlyReported,
+        hideShrinking,
+        maxCost,
+        sort,
+      }),
+    [programs, deferredQuery, onlyReported, hideShrinking, maxCost, sort],
+  );
 
   const visible = results.slice(0, limit);
 

@@ -9,7 +9,10 @@
     "dev": "next dev",
     "build": "next build",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "a11y": "node scripts/a11y-audit.mjs out",
+    "verify": "npm run typecheck && npm run test && npm run build && npm run a11y"
   },
   "dependencies": {
     "@cagovweb/design-system": "^0.2.0",
@@ -21,8 +24,12 @@
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@vitest/coverage-v8": "^4.1.10",
+    "axe-core": "^4.12.1",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.0",
-    "typescript": "^6.0.3"
+    "jsdom": "^30.0.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }

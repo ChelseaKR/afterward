@@ -33,6 +33,35 @@ jobs:
       - name: Verify
         run: make verify
 
+  web:
+    # Typecheck, unit tests, static export, and an axe pass over the built pages.
+    # Needs a dataset to build against, so it fetches from the public sources first.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          make install
+          make web-install
+
+      - name: Build dataset
+        run: make data
+
+      - name: Verify site
+        run: make web-verify
+
   data-freshness:
     # Confirms the public sources still respond and still contain California data.
     # Never blocks a pull request; upstream outages are not this repo's fault.

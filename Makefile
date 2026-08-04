@@ -49,7 +49,11 @@ web-dev:
 
 # Static export of the whole site. Requires `make data` to have run at least once.
 web-build:
-	cd web && npm run typecheck && npm run build
+	cd web && npm run build
+
+# Typecheck, unit tests, static export, then an axe pass over the built pages.
+web-verify:
+	cd web && npm run verify
 
 verify: provenance-check lint typecheck test security audit
 

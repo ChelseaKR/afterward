@@ -29,26 +29,29 @@ export default async function LangLayout({
           {t.skipToContent}
         </a>
 
-        {/*
-          Sits above the masthead, not in the footer. The site uses California's official
-          design system, so it can read as a state website at a glance; saying otherwise
-          quietly at the bottom of the page would not be good enough.
-        */}
-        <div className="disclaimer">
-          <div className="shell">{t.notAffiliated}</div>
-        </div>
+        <header>
+          {/*
+            Sits above the masthead, not in the footer. The site uses California's official
+            design system, so it can read as a state website at a glance; saying otherwise
+            quietly at the bottom of the page would not be good enough. It lives inside the
+            banner landmark so screen reader users reach it in the same place.
+          */}
+          <div className="disclaimer">
+            <div className="shell">{t.notAffiliated}</div>
+          </div>
 
-        <header className="masthead">
-          <div className="shell masthead-row">
-            <div>
-              <Link href={`/${lang}/`} className="wordmark">
-                Camino<span> · CA</span>
+          <div className="masthead">
+            <div className="shell masthead-row">
+              <div>
+                <Link href={`/${lang}/`} className="wordmark">
+                  Camino<span> · CA</span>
+                </Link>
+                <p className="tagline">{t.tagline}</p>
+              </div>
+              <Link href={`/${other}/`} lang={other} hrefLang={other}>
+                {LANG_NAME[other]}
               </Link>
-              <p className="tagline">{t.tagline}</p>
             </div>
-            <Link href={`/${other}/`} lang={other} hrefLang={other}>
-              {LANG_NAME[other]}
-            </Link>
           </div>
         </header>
 
