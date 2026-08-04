@@ -22,17 +22,19 @@ without tasks, never as an error.
 **Bulk tables, not 670 per-occupation calls.** The occupation records are HATEOAS -- each one
 links its sub-resources by ``href`` -- and reading tasks, tools, job zone and reported titles
 that way costs four requests per occupation, some 2,700 for California's 670. The same four
-things are published whole under ``/database/rows/``, and the whole set costs 60 requests. The
+things are published whole under ``/database/rows/``, and the whole set costs 61 requests. The
 tables are served in the same order as the per-occupation views (verified against
 ``details/tasks``: identical set *and* identical importance ordering for 29-1141.00), so this
 is cheaper without being different. Same reasoning as ``dol_etp``: a public service funded by
 taxpayers is not a firehose.
 
 **Spanish is the point.** O*NET runs *Mi Próximo Paso* at ``/mpp/``, and it serves Spanish
-occupation titles and descriptions for 923 of the 1,016 O*NET-SOC occupations. That is the
-one thing here that fixes a real defect rather than adding a feature: the site's Spanish pages
-currently render occupation titles and descriptions in English. Spanish has no bulk table, so
-it is the one thing fetched per occupation -- throttled, serialised, and cached.
+occupation titles and descriptions for every one of the 923 occupations O*NET holds data for
+-- set-identical to the coverage of the English tables above, so there is no field this
+project can show in English and not in Spanish. That is the one thing here that fixes a real
+defect rather than adding a feature: the site's Spanish pages currently render occupation
+titles and descriptions in English. Spanish has no bulk table, so it is the one thing fetched
+per occupation -- throttled, serialised, and cached.
 """
 
 from __future__ import annotations
@@ -364,7 +366,9 @@ def parse_job_zones(rows: Rows, reference: Rows) -> dict[str, JobZone]:
     The reference table publishes four rows, not five: O*NET merges zones 1 and 2 into a
     single "Job Zone 1-2" entry keyed on 2. An occupation rated 1 therefore has no matching
     description, and it keeps its number with empty prose rather than being dropped or
-    silently promoted to zone 2.
+    silently promoted to zone 2. That branch is defensive rather than observed -- no
+    occupation in O*NET 30.3 is rated zone 1 -- but promoting one to zone 2 would overstate
+    the preparation a job needs, which is precisely the error this site cannot afford.
     """
     described: dict[int, dict[str, Any]] = {}
     for row in reference:
@@ -471,11 +475,15 @@ def fetch_table(
         payload = response.json()
         page = payload.get("row") or []
         rows.extend(page)
-        end = int(payload.get("end") or 0)
-        total = int(payload.get("total") or 0)
-        if not page or end >= total:
+        # Pagination metadata, deliberately not run through _count: these are the envelope's
+        # own cursors, not measures, and an absent one means "stop" rather than "not reported".
+        # An empty page is the backstop, so a malformed envelope ends the loop instead of
+        # spinning on it.
+        end = _count(payload.get("end"))
+        total = _count(payload.get("total"))
+        if not page or end is None or total is None or end >= total:
             break
-        start = end + 1
+        start = int(end) + 1
         time.sleep(PAUSE_BETWEEN_CALLS)
 
     _write_cache(cache_dir, f"table-{table}", rows)

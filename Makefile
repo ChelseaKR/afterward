@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
-	dataset-verify dataset-package dataset-publish
+	link-check dataset-verify dataset-package dataset-publish
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -47,6 +47,19 @@ provenance-check:
 # Emits straight into the web app's public directory, which is where the site reads it.
 data:
 	uv run camino build --output-dir web/public/data
+
+# Ask every provider URL in the current dataset whether it still goes anywhere, and leave a
+# report for the next `make data` to read.
+#
+# Deliberately NOT part of `data`, and never part of `verify`. It spends ~1,500 HTTP requests
+# on small colleges and adult schools, so it belongs to a person who decided to spend them --
+# quarterly, alongside a data refresh, not on every build. Results are cached per URL under
+# data/raw/link-cache (alive 30 days, dead 7, indeterminate 1), so a re-run asks only about
+# what has expired. A build that finds no report publishes every link exactly as filed.
+#
+# Run `make data` first, then this, then `make data` again to publish the result.
+link-check:
+	uv run camino check-links --dataset-dir $(DATASET_DIR)
 
 # Build the site dataset from the committed fixture, with no network access.
 # CI uses this: the DOL endpoint refuses GitHub Actions runners, and a build that depends on

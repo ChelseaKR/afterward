@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import ClassVar
 
+import httpx
 import pytest
 
 from camino.build import (
@@ -12,22 +15,42 @@ from camino.build import (
     RELATED_SOURCE_ONET,
     RELATED_SOURCE_SOC_SIBLINGS,
     EnrichmentCoverage,
+    LinkCheckRun,
     aggregate_match_coverage,
     area_coverage,
+    build_offline,
+    check_provider_links,
     cohort_integrity_coverage,
     detailed_soc_codes,
     enrichment_coverage,
     fetch_enrichment,
     index_occupations,
+    load_link_checks,
     match_occupations,
     peer_medians,
     program_payload,
+    provider_link_coverage,
+    provider_link_pages,
     search_entry,
     unmapped_cities,
 )
+from camino.sources import link_check
 from camino.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
 from camino.sources.dol_etp import CohortFiling, cohort_integrity, parse_program
 from camino.sources.edd_lmi import area_definitions, parse_projections, principal_city_areas
+from camino.sources.link_check import (
+    LABEL_PROGRAM_PAGE,
+    LABEL_PROVIDER_HOME,
+    NOTICE_UNREACHABLE,
+    SUBSTITUTION_FRONT_PAGE,
+    SUBSTITUTION_HTTPS,
+    VERDICT_BY_REASON,
+    LinkCheck,
+    Reason,
+    checks_document,
+)
+
+FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "data"
 
 PROJECTION_CSV = """Area Type,Area Name,Period,SOC Level,Standard Occupational Classification (SOC),Occupational Title,Base Year Employment Estimate,Projected Year Employment Estimate,Numeric Change,Percentage Change,Exits,Transfers,Total Job Openings,Median Hourly Wage,Median Annual Wage,Entry Level Education,Work Experience,Job Training
 State,California,2024-2034,1,00-0000,"Total, All Occupations",100,110,10,10.0,5,5,20,25.00,52000,N/A,N/A,N/A
@@ -1008,3 +1031,351 @@ class TestCohortIntegrityCoverage:
         for key in ("total_served", "total_exited", "total_completed"):
             payloads[0]["outcomes"][key] = None
         assert cohort_integrity_coverage(payloads).programs_with_cohort_counts == 1
+
+
+# --------------------------------------------------------------------------------------
+# Provider links
+# --------------------------------------------------------------------------------------
+
+GOOD = "https://a.edu/welding"
+MISSING = "https://b.edu/programs/welding.aspx"
+B_ROOT = "https://b.edu/"
+
+
+def _check(url: str, reason: Reason, upgrade: str | None = None) -> LinkCheck:
+    return LinkCheck(
+        url=url,
+        verdict=VERDICT_BY_REASON[reason],
+        reason=reason,
+        status_code=None,
+        final_url=None,
+        https_alternative=upgrade,
+        detail=None,
+        checked_at=datetime(2026, 8, 4, 9, 0, tzinfo=UTC),
+        attempts=1,
+    )
+
+
+def _checks(*checks: LinkCheck) -> dict[str, LinkCheck]:
+    return {check.url: check for check in checks}
+
+
+def _with_url(uuid: str, url: str | None) -> dict:
+    source: dict[str, object] = {"field_uuid": uuid, "field_etp": "Provider"}
+    if url is not None:
+        source["field_program_url"] = url
+    return {"_source": source}
+
+
+def _payload(url: str | None, checks: dict[str, LinkCheck] | None = None) -> dict:
+    return program_payload(
+        parse_program(_with_url("u", url)), _occupations(), link_checks=checks or {}
+    )
+
+
+class TestProviderLinkOnProgramRecords:
+    """What a program record says about the link the site puts in front of a reader."""
+
+    def test_a_build_with_no_link_data_publishes_the_link_exactly_as_filed(self) -> None:
+        """The CI case, and the case before any of this existed. Unchecked is not dead."""
+        link = _payload(GOOD)["provider_link"]
+        assert link["href"] == GOOD
+        assert link["linked"] is True
+        assert link["label"] == LABEL_PROGRAM_PAGE
+
+    def test_a_build_with_no_link_data_claims_nothing(self) -> None:
+        link = _payload(GOOD)["provider_link"]
+        assert link["verdict"] is None
+        assert link["checked_on"] is None
+        assert link["notice"] is None
+
+    def test_the_block_is_always_written_so_a_gap_is_visible(self) -> None:
+        """Absent would be indistinguishable from a dataset built before the field existed;
+        the key is present and its verdict is null, which says "nobody looked"."""
+        assert "provider_link" in _payload(GOOD)
+
+    def test_a_program_with_no_website_has_no_link_block(self) -> None:
+        """Null here is "this provider filed no URL", which is 1,430 of California's 3,266
+        programs and has nothing to do with the check."""
+        payload = _payload(None)
+        assert payload["program_url"] is None
+        assert payload["provider_link"] is None
+
+    def test_a_dead_name_is_published_without_a_link(self) -> None:
+        link = _payload(GOOD, _checks(_check(GOOD, "dns_failure")))["provider_link"]
+        assert link["href"] is None
+        assert link["linked"] is False
+        assert link["notice"] == NOTICE_UNREACHABLE
+        assert link["checked_on"] == "2026-08-04"
+
+    def test_a_suppressed_link_still_carries_the_federal_records_url(self) -> None:
+        payload = _payload(GOOD, _checks(_check(GOOD, "dns_failure")))
+        assert payload["program_url"] == GOOD
+        assert payload["provider_link"]["url"] == GOOD
+
+    def test_a_404_with_a_working_front_page_is_sent_there_instead(self) -> None:
+        checks = _checks(_check(MISSING, "not_found"), _check(B_ROOT, "ok"))
+        link = _payload(MISSING, checks)["provider_link"]
+        assert link["href"] == B_ROOT
+        assert link["label"] == LABEL_PROVIDER_HOME
+        assert link["substitution"] == SUBSTITUTION_FRONT_PAGE
+
+    def test_a_verified_https_equivalent_is_swapped_in(self) -> None:
+        insecure = "http://a.edu/welding"
+        link = _payload(insecure, _checks(_check(insecure, "ok", upgrade=GOOD)))["provider_link"]
+        assert link["href"] == GOOD
+        assert link["substitution"] == SUBSTITUTION_HTTPS
+
+    def test_the_records_own_url_is_never_rewritten(self) -> None:
+        """`program_url` is the source's value. The decision sits beside it, not on top."""
+        insecure = "http://a.edu/welding"
+        payload = _payload(insecure, _checks(_check(insecure, "ok", upgrade=GOOD)))
+        assert payload["program_url"] == insecure
+
+    def test_a_link_we_could_not_judge_is_left_exactly_as_it_was(self) -> None:
+        link = _payload(GOOD, _checks(_check(GOOD, "forbidden")))["provider_link"]
+        assert link["href"] == GOOD
+        assert link["linked"] is True
+        assert link["notice"] is None
+
+
+class TestProviderLinkPages:
+    def test_counts_the_pages_behind_each_url(self) -> None:
+        payloads = [{"program_url": GOOD}, {"program_url": GOOD}, {"program_url": MISSING}]
+        assert provider_link_pages(payloads) == {GOOD: 2, MISSING: 1}
+
+    def test_a_program_with_no_url_contributes_nothing(self) -> None:
+        assert provider_link_pages([{"program_url": None}]) == {}
+
+
+class TestLoadLinkChecks:
+    def test_no_path_is_no_link_data(self) -> None:
+        assert load_link_checks(None) == {}
+
+    def test_an_absent_report_is_the_ordinary_case_not_an_error(self, tmp_path: Path) -> None:
+        assert load_link_checks(tmp_path / "nothing-here.json") == {}
+
+    def test_a_report_round_trips(self, tmp_path: Path) -> None:
+        path = tmp_path / "link-checks.json"
+        checks = _checks(_check(GOOD, "ok"))
+        path.write_text(json.dumps(checks_document(checks)), encoding="utf-8")
+        assert load_link_checks(path) == checks
+
+    def test_a_report_that_cannot_be_read_is_raised_not_swallowed(self, tmp_path: Path) -> None:
+        """Treating it as "nothing was checked" would republish links already established
+        as broken, silently, because a file was malformed."""
+        path = tmp_path / "link-checks.json"
+        path.write_text('{"version": 99, "checks": []}', encoding="utf-8")
+        with pytest.raises(ValueError, match="version"):
+            load_link_checks(path)
+
+
+class TestProviderLinkCoverage:
+    def _payloads(self) -> list[dict]:
+        checks = _checks(
+            _check(GOOD, "ok"),
+            _check(MISSING, "not_found"),
+            _check(B_ROOT, "ok"),
+            _check("http://c.edu", "ok", upgrade="https://c.edu/"),
+            _check("https://d.edu/x", "dns_failure"),
+            _check("https://e.edu/x", "forbidden"),
+        )
+        urls = [
+            GOOD,
+            GOOD,
+            MISSING,
+            "http://c.edu",
+            "https://d.edu/x",
+            "https://e.edu/x",
+            "https://unchecked.edu/x",
+            None,
+        ]
+        return [_payload(url, checks) for url in urls]
+
+    def test_counts_the_programs_that_show_a_link_at_all(self) -> None:
+        coverage = provider_link_coverage(self._payloads())
+        assert coverage.programs_with_link == 7
+        assert coverage.distinct_urls == 6
+
+    def test_unchecked_is_its_own_number_and_never_folded_into_alive(self) -> None:
+        coverage = provider_link_coverage(self._payloads())
+        assert coverage.programs_unchecked == 1
+        assert coverage.unchecked_urls == 1
+        assert coverage.programs_alive == 3
+        assert coverage.programs_checked == 6
+
+    def test_counts_each_verdict_over_pages_rather_than_urls(self) -> None:
+        """One dead domain on 126 pages is a 126-page problem."""
+        coverage = provider_link_coverage(self._payloads())
+        assert coverage.programs_dead == 2
+        assert coverage.programs_indeterminate == 1
+
+    def test_counts_what_the_reader_actually_gets(self) -> None:
+        coverage = provider_link_coverage(self._payloads())
+        assert coverage.programs_linked == 6
+        assert coverage.programs_not_linked == 1
+        assert coverage.programs_upgraded_to_https == 1
+        assert coverage.programs_sent_to_front_page == 1
+        assert coverage.programs_labelled_home_page == 1
+
+    def test_publishes_when_the_observation_was_made(self) -> None:
+        coverage = provider_link_coverage(self._payloads())
+        assert coverage.earliest_check == "2026-08-04"
+        assert coverage.latest_check == "2026-08-04"
+
+    def test_a_build_with_no_link_data_reports_nothing_established(self) -> None:
+        """Every count that would imply a finding is zero, and the dates are null: nothing
+        was looked at, which is not the same as nothing being wrong."""
+        coverage = provider_link_coverage([_payload(GOOD), _payload(None)])
+        assert coverage.programs_with_link == 1
+        assert coverage.programs_checked == 0
+        assert coverage.programs_unchecked == 1
+        assert coverage.programs_dead == 0
+        assert coverage.programs_not_linked == 0
+        assert coverage.earliest_check is None
+        assert coverage.latest_check is None
+
+
+class _Server:
+    """A scripted site that counts every knock, so politeness stays measurable."""
+
+    def __init__(self, routes: dict[str, int]) -> None:
+        self.routes = routes
+        self.requests: list[tuple[str, str]] = []
+
+    def __call__(self, request: httpx.Request) -> httpx.Response:
+        self.requests.append((request.method, str(request.url)))
+        return httpx.Response(self.routes.get(str(request.url), 404))
+
+
+class TestCheckProviderLinks:
+    """The explicitly-invoked pass. It writes a report; it never touches the dataset."""
+
+    ROUTES: ClassVar[dict[str, int]] = {GOOD: 200, MISSING: 404, B_ROOT: 200}
+
+    def _dataset(self, tmp_path: Path) -> Path:
+        dataset = tmp_path / "processed"
+        dataset.mkdir(exist_ok=True)
+        (dataset / "programs.json").write_text(
+            json.dumps(
+                {
+                    "programs": [
+                        {"program_url": GOOD},
+                        {"program_url": GOOD},
+                        {"program_url": MISSING},
+                        {"program_url": None},
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        return dataset
+
+    def _run(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        cache_dir: Path | None = None,
+    ) -> tuple[LinkCheckRun, _Server]:
+        server = _Server(self.ROUTES)
+        monkeypatch.setattr(
+            link_check,
+            "build_client",
+            lambda *a, **k: httpx.Client(transport=httpx.MockTransport(server)),
+        )
+        run = check_provider_links(
+            self._dataset(tmp_path),
+            output_path=tmp_path / "link-checks.json",
+            cache_dir=cache_dir,
+            max_workers=2,
+            sleep=lambda _: None,
+        )
+        return run, server
+
+    def test_reports_urls_and_the_pages_that_depend_on_them(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        run, _ = self._run(tmp_path, monkeypatch)
+        assert run.urls == 2
+        assert run.pages == 3
+        assert run.pages_by_verdict == {"alive": 2, "dead": 1}
+
+    def test_the_front_page_of_a_404_is_read_but_not_counted_as_a_link(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """It is evidence about a substitution, not a link this dataset publishes. Counting
+        it would inflate every figure in the report that motivated this work."""
+        run, server = self._run(tmp_path, monkeypatch)
+        assert run.front_pages_checked == 1
+        assert run.by_verdict == {"alive": 1, "dead": 1}
+        assert ("HEAD", B_ROOT) in server.requests
+
+    def test_nothing_negative_is_believed_on_a_head_alone(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        _, server = self._run(tmp_path, monkeypatch)
+        assert ("HEAD", MISSING) in server.requests
+        assert ("GET", MISSING) in server.requests
+
+    def test_the_report_drives_the_next_builds_decision(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        self._run(tmp_path, monkeypatch)
+        checks = load_link_checks(tmp_path / "link-checks.json")
+        link = _payload(MISSING, checks)["provider_link"]
+        assert link["href"] == B_ROOT
+        assert link["substitution"] == SUBSTITUTION_FRONT_PAGE
+
+    def test_a_warm_cache_asks_nobody_anything(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """1,000 providers should not be re-asked whether they exist on every re-run."""
+        cache = tmp_path / "cache"
+        self._run(tmp_path, monkeypatch, cache_dir=cache)
+        _, second = self._run(tmp_path, monkeypatch, cache_dir=cache)
+        assert second.requests == []
+
+    def test_it_refuses_to_guess_at_a_dataset_that_is_not_there(self, tmp_path: Path) -> None:
+        with pytest.raises(FileNotFoundError, match="camino build"):
+            check_provider_links(tmp_path / "nowhere", output_path=tmp_path / "out.json")
+
+
+class TestOfflineBuildLinks:
+    """The hermetic build. It has no network, so it establishes nothing about any link."""
+
+    def test_every_link_is_published_as_filed(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        programs = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))
+        linked = [p for p in programs["programs"] if p["program_url"]]
+        assert linked, "fixture has no provider links left to exercise this"
+        for program in linked:
+            assert program["provider_link"]["href"] == program["program_url"]
+            assert program["provider_link"]["verdict"] is None
+            assert program["provider_link"]["notice"] is None
+
+    def test_the_coverage_block_says_nothing_was_established(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        coverage = json.loads((tmp_path / "coverage.json").read_text(encoding="utf-8"))
+        links = coverage["provider_links"]
+        assert links["programs_checked"] == 0
+        assert links["programs_dead"] == 0
+        assert links["programs_not_linked"] == 0
+        assert links["earliest_check"] is None
+
+    def test_a_report_is_used_when_one_is_handed_to_it(self, tmp_path: Path) -> None:
+        """Offline means no network, not no knowledge: a report read from disk is fine."""
+        programs = json.loads((FIXTURE_DIR / "programs.json").read_text(encoding="utf-8"))
+        url = next(p["program_url"] for p in programs["programs"] if p["program_url"])
+        report = tmp_path / "link-checks.json"
+        report.write_text(
+            json.dumps(checks_document(_checks(_check(url, "dns_failure")))), encoding="utf-8"
+        )
+
+        out = tmp_path / "out"
+        build_offline(FIXTURE_DIR, output_dir=out, link_checks_path=report)
+        built = json.loads((out / "programs.json").read_text(encoding="utf-8"))["programs"]
+        suppressed = [p for p in built if p["program_url"] == url]
+        assert suppressed
+        for program in suppressed:
+            assert program["provider_link"]["linked"] is False
+            assert program["provider_link"]["notice"] == NOTICE_UNREACHABLE

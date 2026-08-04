@@ -106,6 +106,7 @@ function program(occupations: ProgramOccupation[]): Program {
     description: null,
     program_format: null,
     program_url: null,
+    provider_link: null,
     entity_type: null,
     cip_code: null,
     soc_codes: [],

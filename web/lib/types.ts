@@ -319,6 +319,40 @@ export interface ProgramOutcomes {
   cohort: CohortIntegrity;
 }
 
+/**
+ * Where a program's "provider's website" link should actually point, and whether to make it
+ * a link at all.
+ *
+ * `program_url` is what the provider filed and is never rewritten. This block is what we
+ * observed when we tried it. Three rules the UI must follow:
+ *
+ * - Link `href`, never `url`. They differ for the 473 pages upgraded to https and the 151
+ *   sent to a provider's home page because the filed page was gone.
+ * - Show the notice when `notice` is set, never when `verdict` is a particular value. The
+ *   two are deliberately not the same test.
+ * - `verdict: "indeterminate"` must render exactly like `verdict: null`. 177 pages sit
+ *   there, mostly hosts that dislike automated requests. Calling a working college page
+ *   unreachable beside its performance figures would be a false claim about a real
+ *   institution, so those are left completely alone.
+ *
+ * A missing block means never checked, which is not the same as dead.
+ */
+export interface ProviderLink {
+  /** The URL as the provider filed it. */
+  url: string;
+  /** Where to link, or null to publish no link at all. */
+  href: string | null;
+  linked: boolean;
+  label: "program_page" | "provider_home_page";
+  /** Null means never checked — neither alive nor dead. */
+  verdict: "alive" | "dead" | "indeterminate" | null;
+  reason: string | null;
+  /** ISO date of our observation. Null when never checked. */
+  checked_on: string | null;
+  notice: "page_unreachable" | null;
+  substitution: "https_upgrade" | "provider_front_page" | null;
+}
+
 export interface Program {
   uuid: string;
   provider_name: string | null;
@@ -326,6 +360,7 @@ export interface Program {
   description: string | null;
   program_format: string | null;
   program_url: string | null;
+  provider_link: ProviderLink | null;
   entity_type: string | null;
   cip_code: string | null;
   soc_codes: string[];

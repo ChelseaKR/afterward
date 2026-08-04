@@ -6,7 +6,15 @@ from pathlib import Path
 
 import typer
 
-from camino.build import build, build_offline
+from camino.build import (
+    LINK_CACHE_DIR,
+    LINK_CHECK_PATH,
+    ProviderLinkCoverage,
+    build,
+    build_offline,
+    check_provider_links,
+)
+from camino.sources import link_check
 
 app = typer.Typer(
     add_completion=False,
@@ -25,10 +33,16 @@ def build_command(
     output_dir: Path = typer.Option(
         Path("data/processed"), "--output-dir", help="Where to write the emitted JSON."
     ),
+    link_checks: Path = typer.Option(
+        LINK_CHECK_PATH,
+        "--link-checks",
+        help="Provider-link report to read, if it exists. Produced by `camino check-links`; "
+        "a build that finds none publishes every link exactly as filed.",
+    ),
 ) -> None:
     """Fetch source data, join it, and emit the site dataset."""
     typer.echo(f"Fetching {state} training programs and California occupation projections...")
-    report = build(state, output_dir=output_dir)
+    report = build(state, output_dir=output_dir, link_checks_path=link_checks)
 
     typer.echo(f"\nSnapshot {report.snapshot_date} -> {output_dir}")
     typer.echo(f"  programs                  {report.total_programs:>6}")
@@ -60,6 +74,107 @@ def build_command(
     typer.echo(f"    neither                 {enrichment.without_related:>6}")
     if not enrichment.enriched:
         typer.echo("  (no CareerOneStop credentials configured; enrichment skipped)")
+
+    _echo_provider_links(report.provider_links, link_checks)
+
+
+def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None:
+    """Say what became of the "Provider's website" links, in our own voice.
+
+    Every line here is a count of what *this build did*, phrased as an observation. Nothing
+    printed is a claim about a provider: "we could not reach" is true and checkable, "the
+    site is down" would be a statement about a named organisation that this project cannot
+    support, and the summary is not the place to start making one.
+    """
+    typer.echo(f"\nProvider links              {links.programs_with_link:>6}")
+    if not links.programs_checked:
+        typer.echo(f"  checked                   {0:>6}")
+        typer.echo(f"  (no link report at {report_path}; every link published as filed.")
+        typer.echo("   Run `camino check-links` to establish which of them still go anywhere.)")
+        return
+
+    typer.echo(
+        f"  checked                   {links.programs_checked:>6}"
+        f"  ({links.checked_urls} URLs, read {links.earliest_check}"
+        + (f" to {links.latest_check}" if links.latest_check != links.earliest_check else "")
+        + ")"
+    )
+    typer.echo(f"    answered                {links.programs_alive:>6}")
+    typer.echo(f"    we could not reach      {links.programs_dead:>6}")
+    typer.echo(f"    could not be judged     {links.programs_indeterminate:>6}")
+    if links.programs_unchecked:
+        typer.echo(f"  not checked               {links.programs_unchecked:>6}")
+    typer.echo(f"  published as a link       {links.programs_linked:>6}")
+    typer.echo(f"    upgraded to https       {links.programs_upgraded_to_https:>6}")
+    typer.echo(f"    sent to the front page  {links.programs_sent_to_front_page:>6}")
+    typer.echo(f"  published without a link  {links.programs_not_linked:>6}")
+
+
+@app.command("check-links")
+def check_links_command(
+    dataset_dir: Path = typer.Option(
+        Path("data/processed"),
+        "--dataset-dir",
+        help="Emitted dataset whose programs.json supplies the URLs to check.",
+    ),
+    output: Path = typer.Option(
+        LINK_CHECK_PATH, "--output", help="Where to leave the report for the next build."
+    ),
+    cache_dir: Path = typer.Option(
+        LINK_CACHE_DIR,
+        "--cache-dir",
+        help="On-disk cache of per-URL verdicts. Safe to delete; deleting it only costs a "
+        "re-check.",
+    ),
+    max_workers: int = typer.Option(
+        link_check.MAX_WORKERS,
+        "--max-workers",
+        help="Providers read at once. Never two requests to one provider at a time.",
+    ),
+) -> None:
+    """Ask each provider URL in the dataset whether it still goes anywhere.
+
+    Deliberately separate from `build`, and deliberately not run by it. This spends roughly
+    1,500 HTTP requests on small colleges and adult schools, so it belongs to a person who
+    decided to spend them -- on a quarterly refresh cadence, not on every build. Results are
+    cached per URL, so a re-run asks only about what has expired.
+
+    Nothing here changes the dataset. It writes a report; the next `camino build` reads it.
+    """
+    typer.echo(f"Reading provider links from {dataset_dir}/programs.json...")
+    seen = 0
+
+    def progress(_: link_check.LinkCheck) -> None:
+        nonlocal seen
+        seen += 1
+        if seen % 100 == 0:
+            typer.echo(f"  {seen} URLs read")
+
+    run = check_provider_links(
+        dataset_dir,
+        output_path=output,
+        cache_dir=cache_dir,
+        max_workers=max_workers,
+        on_result=progress,
+    )
+
+    typer.echo(f"\n{run.urls} provider URLs on {run.pages} program pages -> {run.output_path}")
+    wordings: tuple[tuple[link_check.Verdict, str], ...] = (
+        ("alive", "answered"),
+        ("dead", "we could not reach"),
+        ("indeterminate", "could not be judged"),
+    )
+    for verdict, wording in wordings:
+        urls = run.by_verdict.get(verdict, 0)
+        pages = run.pages_by_verdict.get(verdict, 0)
+        typer.echo(f"  {wording:<22}{urls:>6} URLs {pages:>6} pages")
+    typer.echo(
+        f"  {'http upgradeable':<22}{run.upgradeable_urls:>6} URLs {run.upgradeable_pages:>6} pages"
+    )
+    typer.echo(f"\n  front pages read for the 404s   {run.front_pages_checked:>6}")
+    typer.echo(f"  HTTP requests these results cost  {run.recorded_requests:>6} (cached entries")
+    typer.echo("    carry the cost of the run that made them, not of this one)")
+    typer.echo("\nRun `camino build` again to publish with these results.")
 
 
 @app.command("build-offline")

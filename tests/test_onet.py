@@ -244,6 +244,8 @@ class TestParseJobZones:
     def test_zone_one_keeps_its_number_without_prose(self) -> None:
         # O*NET's reference table merges zones 1 and 2 under a row keyed on 2, so a zone-1
         # occupation has no description. It must not be dropped or promoted to zone 2.
+        # Defensive: no occupation in O*NET 30.3 is rated zone 1. Promoting one would
+        # overstate the preparation a job needs, which is the error that costs a reader a year.
         zone = parse_job_zones(ZONE_ROWS, ZONE_REFERENCE)["35-9021.00"]
         assert zone.code == 1
         assert zone.title is None

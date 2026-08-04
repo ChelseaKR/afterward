@@ -983,3 +983,12 @@ td.num {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* A provider URL we could not reach, shown as text so a reader can still try it or look it
+   up in an archive. These are long and unbroken, so they must wrap rather than overflow. */
+.provider-link-plain {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  color: var(--gray-90);
+  font-size: 0.9375rem;
+}

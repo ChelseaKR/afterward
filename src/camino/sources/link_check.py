@@ -10,11 +10,12 @@ This module answers one question per URL, and it answers it in three values, not
 ``alive``
     Something answered and there is a page there.
 ``dead``
-    The host does not resolve, refuses a connection, or the server says the page is gone.
+    DNS does not know the host at all, or the server itself says the page is not there.
 ``indeterminate``
-    We got *an* answer and it does not settle the question. A 403 or a 405 usually means the
+    Something happened and it does not settle the question. A 403 or a 405 usually means the
     host dislikes automated requests, not that the page vanished; a timeout means slow, not
-    absent; a persistent 5xx means broken, which is not the same claim as gone.
+    absent; a persistent 5xx means broken, which is not the same claim as gone; and a failure
+    to connect to a name that *does* resolve may just as easily be this end of the wire.
 
 The third value is the whole point. Wrongly marking a real provider's live website as dead
 is its own harm -- it hides a school from someone trying to enrol -- so anything short of
@@ -42,6 +43,12 @@ which is exactly why a refusal is classified ``indeterminate`` instead of ``dead
 
 Results are cached on disk by URL so a rebuild does not re-ask 1,000 providers whether they
 still exist.
+
+Reading a URL is only half of it. :func:`decide` turns one check into the decision an
+interface needs -- link this, link that instead, or link nothing and say why -- so that the
+rule lives in one tested place instead of being reinvented by whatever renders the page.
+Its first case is the unchecked one, and it reproduces exactly what was published before any
+of this existed.
 """
 
 from __future__ import annotations
@@ -130,15 +137,14 @@ VERDICT_BY_REASON: Final[Mapping[Reason, Verdict]] = {
     "ok": "alive",
     "redirected_to_site_root": "alive",
     "redirected_offsite": "alive",
-    # Dead. Only two kinds of evidence qualify: the name does not exist or the connection is
-    # refused, and the server itself says the page is not there. ``connection_failed`` is the
-    # weaker of the two -- a firewall that drops this client would look identical -- so it
-    # stays a separate reason that a caller can choose to treat differently.
+    # Dead. Two kinds of evidence qualify, and only two: the name does not exist anywhere in
+    # DNS, or the server itself states the page is not there.
     "dns_failure": "dead",
-    "connection_failed": "dead",
     "not_found": "dead",
     "gone": "dead",
-    # Indeterminate. Every one of these is a host that is plainly *there*.
+    # Indeterminate. Every one of these is a host that is plainly *there*, or a failure this
+    # client cannot prove belongs to the provider rather than to itself.
+    "connection_failed": "indeterminate",
     "forbidden": "indeterminate",
     "method_not_allowed": "indeterminate",
     "rate_limited": "indeterminate",
@@ -285,6 +291,19 @@ def _caused_by_ssl(exc: BaseException) -> bool:
     return False
 
 
+def _failing_url(exc: httpx.HTTPError, url: str) -> httpx.URL:
+    """Where the failure actually happened, which need not be where the request started.
+
+    ``https://www.sanjuan.edu/sunrisetc`` redirects to ``https://adulted.sanjuan.edu``, and it
+    is the *second* name that does not resolve. Blaming the first would report a live host as
+    refusing connections, so the failing request's own URL wins when the exception carries it.
+    """
+    try:
+        return exc.request.url
+    except RuntimeError:
+        return httpx.URL(url)
+
+
 def _transport_reason(exc: httpx.HTTPError, url: str) -> Reason:
     """Classify a request that never produced a response."""
     if isinstance(exc, httpx.TooManyRedirects):
@@ -296,8 +315,13 @@ def _transport_reason(exc: httpx.HTTPError, url: str) -> Reason:
     if isinstance(exc, httpx.RemoteProtocolError):
         # The host accepted a connection and then mishandled it. Present, not absent.
         return "protocol_error"
-    if isinstance(exc, httpx.ConnectError) and not _host_resolves(httpx.URL(url).host):
+    if isinstance(exc, httpx.ConnectError) and not _host_resolves(_failing_url(exc, url).host):
         return "dns_failure"
+    # Resolves, would not connect. Deliberately *not* "dead": measured against the real
+    # corpus, every URL that landed here turned out to be reachable by other clients on the
+    # same machine at the same moment, and the failure was ours. A name that DNS has never
+    # heard of is evidence about a provider; a socket that would not open is evidence about
+    # a socket.
     return "connection_failed"
 
 
@@ -732,6 +756,292 @@ def upgrade_for(checks: Mapping[str, LinkCheck], url: str | None) -> str | None:
         return None
     check = checks.get(url)
     return None if check is None else check.https_alternative
+
+
+# --------------------------------------------------------------------------------------
+# The provider's front page
+# --------------------------------------------------------------------------------------
+
+FRONT_PAGE_REASONS: Final[frozenset[str]] = frozenset({"not_found", "gone"})
+"""The dead reasons for which a front page is worth asking about.
+
+A 404 is the server saying *this page* is not there while plainly still being there itself,
+so the provider's own front door is a real alternative destination. ``dns_failure`` is not in
+this set: the name does not exist, so neither does anything under it, and there is nothing to
+offer instead.
+"""
+
+FRONT_PAGE_ACCEPTED_REASONS: Final[frozenset[str]] = frozenset({"ok", "redirected_to_site_root"})
+"""Front-page results good enough to send a reader to.
+
+``redirected_offsite`` is excluded on purpose. Measured on the real corpus, a root that lands
+on another domain is as likely to be ``hugedomains.com`` as a legitimate rebrand, and no
+mechanical rule tells them apart -- so a reader is better served by no link than by one this
+project cannot vouch for.
+"""
+
+
+def site_root(url: str) -> str | None:
+    """The provider's front page for ``url``, or ``None`` when ``url`` *is* the front page.
+
+    Same scheme as the record's own URL, deliberately: whether the front page is better over
+    https is a question :func:`check_url` answers by asking, not one to assume here.
+    """
+    parsed = httpx.URL(url)
+    if not parsed.host or not _has_path(parsed):
+        return None
+    return str(parsed.copy_with(path="/", query=None, fragment=None))
+
+
+def front_page_candidates(checks: Mapping[str, LinkCheck]) -> list[str]:
+    """Front pages worth checking, given what is already known.
+
+    One entry per distinct root behind a 404 or a 410, minus anything already checked. This
+    is the second, much smaller pass of a run: on the August 2026 corpus it is ~100 URLs
+    against the first pass's 1,016, and it is what makes a substitution possible rather than
+    a suppression.
+    """
+    roots: dict[str, None] = {}
+    for check in checks.values():
+        if check.verdict != "dead" or check.reason not in FRONT_PAGE_REASONS:
+            continue
+        root = site_root(check.url)
+        if root is not None and root not in checks:
+            roots[root] = None
+    return list(roots)
+
+
+def front_page_for(checks: Mapping[str, LinkCheck], url: str | None) -> str | None:
+    """A working front page on the same host as ``url``, or ``None``.
+
+    ``None`` covers every way there might not be one -- unchecked, not dead, dead for a
+    reason a front page cannot answer, no front page checked, or a front page that did not
+    answer either. None of those is a claim about the provider.
+    """
+    if url is None:
+        return None
+    check = checks.get(url)
+    if check is None or check.verdict != "dead" or check.reason not in FRONT_PAGE_REASONS:
+        return None
+    root = site_root(check.url)
+    front = None if root is None else checks.get(root)
+    if front is None or front.reason not in FRONT_PAGE_ACCEPTED_REASONS:
+        return None
+    return front.https_alternative or front.url
+
+
+# --------------------------------------------------------------------------------------
+# What to publish
+# --------------------------------------------------------------------------------------
+
+LinkLabel = Literal["program_page", "provider_home_page"]
+"""What the link reaches, which is not always what the record said it would."""
+
+LinkNotice = Literal["page_unreachable"]
+"""What must be said. One value, because there is exactly one thing this module has ever
+established that is worth printing beside a link."""
+
+LinkSubstitution = Literal["https_upgrade", "provider_front_page"]
+"""Why the published destination differs from the recorded one."""
+
+LABEL_PROGRAM_PAGE: Final[LinkLabel] = "program_page"
+"""The link goes where the federal record said it does: the provider's page for this
+program."""
+
+LABEL_PROVIDER_HOME: Final[LinkLabel] = "provider_home_page"
+"""The link goes to the provider's front door, not to this program. The interface must say
+so, because "Provider's website" over a link that reaches a home page implies a page about
+the program that is not there."""
+
+SUBSTITUTION_HTTPS: Final[LinkSubstitution] = "https_upgrade"
+"""Same page, same site, over TLS. A verified equivalent, never a guessed one."""
+
+SUBSTITUTION_FRONT_PAGE: Final[LinkSubstitution] = "provider_front_page"
+"""A different page on the same host, offered because the recorded one is not there."""
+
+NOTICE_UNREACHABLE: Final[LinkNotice] = "page_unreachable"
+"""Something must be said about the recorded URL, and it is a statement about *our* reading
+of it on a date -- never about the provider. See :attr:`LinkDecision.checked_on`."""
+
+
+@dataclass(frozen=True)
+class LinkDecision:
+    """What an interface should do with one program's provider link.
+
+    Every field is answerable from a single :class:`LinkCheck` plus, for a 404, the check of
+    the same host's front page. The decision is made here rather than in the interface so
+    that the rule is in one place, is tested, and cannot drift between two renderers.
+
+    The unchecked case is not a special case with a default -- it is the *first* case, and it
+    reproduces exactly what a build with no link data has always published: link the URL as
+    filed, say nothing about it, claim nothing.
+    """
+
+    url: str
+    """The URL as the federal record filed it. Always shown, even when not linked: it is the
+    source's own value, and a reader may want to try the Internet Archive with it."""
+    href: str | None
+    """Where the link should point, or ``None`` for "publish no link". ``None`` here is a
+    decision reached from evidence, unlike every other ``None`` in this module."""
+    linked: bool
+    label: LinkLabel
+    verdict: Verdict | None
+    """``None`` means this URL was never checked. Not alive, not dead -- unexamined."""
+    reason: Reason | None
+    checked_on: str | None
+    """ISO date of the observation, ``None`` when there was none. Any sentence an interface
+    prints about this link must carry it: a verdict has a shelf life."""
+    notice: LinkNotice | None
+    """Set only when something must be said. ``None`` for every alive and every
+    indeterminate result, so an interface cannot annotate a page nobody established anything
+    about."""
+    substitution: LinkSubstitution | None
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "url": self.url,
+            "href": self.href,
+            "linked": self.linked,
+            "label": self.label,
+            "verdict": self.verdict,
+            "reason": self.reason,
+            "checked_on": self.checked_on,
+            "notice": self.notice,
+            "substitution": self.substitution,
+        }
+
+
+def _unchecked(url: str) -> LinkDecision:
+    """What to publish about a URL nobody read: exactly what was published before any of
+    this existed."""
+    return LinkDecision(
+        url=url,
+        href=url,
+        linked=True,
+        label=LABEL_PROGRAM_PAGE,
+        verdict=None,
+        reason=None,
+        checked_on=None,
+        notice=None,
+        substitution=None,
+    )
+
+
+def decide(checks: Mapping[str, LinkCheck], url: str | None) -> LinkDecision | None:
+    """Decide what to publish for one provider URL. ``None`` when there is no URL at all.
+
+    The rule, class by class, and the reasoning for each is in
+    ``docs/dead-provider-links-2026-08-04.md``:
+
+    * **unchecked** -- link it as filed. An unchecked URL is not a dead URL.
+    * **alive** -- link it, swapped for a verified ``https`` equivalent where one was
+      observed. A deep path that answered only at the site root is relabelled, not
+      suppressed: the provider is there, the specific page is not.
+    * **indeterminate** -- link it as filed, say nothing. A 403 is a statement about the
+      requester and a timeout is a statement about the wire; neither is evidence about a
+      school, and printing "we could not reach this" next to a working institution's WIOA
+      figures would be a false claim about a named organisation.
+    * **dead** -- do not link the dead path. Where the same host's front page answers, link
+      *that*, labelled as the provider's home page. Where it does not, publish no link and
+      keep the URL as plain text.
+
+    A ``dead`` decision always carries :data:`NOTICE_UNREACHABLE` and a date, whether or not
+    a front page was substituted: silently rerouting a reader to a different page, or
+    silently dropping a URL the federal record contains, would each be a quiet lie of its
+    own kind.
+    """
+    if url is None:
+        return None
+    check = checks.get(url)
+    if check is None:
+        return _unchecked(url)
+
+    checked_on = check.checked_at.date().isoformat()
+    if check.verdict == "alive":
+        upgraded = check.https_alternative
+        return LinkDecision(
+            url=url,
+            href=upgraded or check.url,
+            linked=True,
+            label=(
+                LABEL_PROVIDER_HOME
+                if check.reason == "redirected_to_site_root"
+                else LABEL_PROGRAM_PAGE
+            ),
+            verdict=check.verdict,
+            reason=check.reason,
+            checked_on=checked_on,
+            notice=None,
+            substitution=SUBSTITUTION_HTTPS if upgraded else None,
+        )
+
+    if check.verdict == "indeterminate":
+        # Change nothing. Not even the scheme: an https equivalent is only offered on the
+        # strength of an answer, and this URL did not give us one to reason from.
+        return LinkDecision(
+            url=url,
+            href=url,
+            linked=True,
+            label=LABEL_PROGRAM_PAGE,
+            verdict=check.verdict,
+            reason=check.reason,
+            checked_on=checked_on,
+            notice=None,
+            substitution=None,
+        )
+
+    front = front_page_for(checks, url)
+    return LinkDecision(
+        url=url,
+        href=front,
+        linked=front is not None,
+        label=LABEL_PROVIDER_HOME if front is not None else LABEL_PROGRAM_PAGE,
+        verdict=check.verdict,
+        reason=check.reason,
+        checked_on=checked_on,
+        notice=NOTICE_UNREACHABLE,
+        substitution=SUBSTITUTION_FRONT_PAGE if front is not None else None,
+    )
+
+
+# --------------------------------------------------------------------------------------
+# The report a build reads
+# --------------------------------------------------------------------------------------
+
+DOCUMENT_VERSION: Final = 1
+"""Bumped if the on-disk shape ever changes incompatibly, so a build can refuse an old file
+rather than misread one."""
+
+
+def checks_document(
+    checks: Mapping[str, LinkCheck], *, checked_at: datetime | None = None
+) -> dict[str, Any]:
+    """The run's results, as the document a later build reads.
+
+    A list rather than an object keyed by URL: the URL is already inside each entry, and one
+    place for it means a file that cannot disagree with itself.
+    """
+    return {
+        "version": DOCUMENT_VERSION,
+        "checked_at": (checked_at or _utcnow()).isoformat(),
+        "urls": len(checks),
+        "checks": [check.as_dict() for check in checks.values()],
+    }
+
+
+def checks_from_document(payload: Mapping[str, Any]) -> dict[str, LinkCheck]:
+    """Rebuild a run's results from :func:`checks_document`.
+
+    Strict on purpose, unlike :class:`LinkCheckCache`. A cache that cannot be read costs a
+    re-check; a *report* that cannot be read is an operator pointing a build at a file that
+    does not say what they think it says, and quietly treating it as "nothing was checked"
+    would publish links this project had already established were broken.
+    """
+    version = payload.get("version")
+    if version != DOCUMENT_VERSION:
+        raise ValueError(f"unsupported link-check document version {version!r}")
+    checks = [LinkCheck.from_dict(entry) for entry in payload["checks"]]
+    return {check.url: check for check in checks}
 
 
 @dataclass(frozen=True)

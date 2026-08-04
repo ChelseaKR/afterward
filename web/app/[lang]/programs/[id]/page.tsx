@@ -877,6 +877,25 @@ export default async function ProgramPage({
   const { outcomes, cost, length, location } = program;
   // False when the filing describes the provider's whole institution rather than this program.
   const attributable = outcomes.cohort.attributable;
+  /*
+   * Falls back to the filed URL when the dataset predates link checking. Unchecked is not
+   * dead, so the fallback links exactly as the page always did rather than withholding.
+   */
+  const link =
+    program.provider_link ??
+    (program.program_url
+      ? {
+          url: program.program_url,
+          href: program.program_url,
+          linked: true,
+          label: "program_page" as const,
+          verdict: null,
+          reason: null,
+          checked_on: null,
+          notice: null,
+          substitution: null,
+        }
+      : null);
   // Every occupation this program feeds. Showing only the first named the wrong job on
   // hundreds of pages and hid the shrinking one whenever it was not listed first.
   const occupations = program.occupations;
@@ -1199,12 +1218,38 @@ export default async function ProgramPage({
         </>
       )}
 
-      {program.program_url && (
-        <p>
-          <a href={program.program_url} rel="nofollow noopener noreferrer" target="_blank">
-            {t.providerSite} →
-          </a>
-        </p>
+      {/*
+        Where this link goes is the last thing between a reader and enrolling, and 333 of
+        these pages pointed somewhere that no longer answers. Three rules, all deliberate:
+
+        - Link `href`, not `url`. They differ where a page was upgraded to https or the
+          filed page was gone and the provider's home page stood in.
+        - Show the notice on `notice`, never on `verdict`. 177 links are "indeterminate" —
+          mostly hosts that dislike automated requests — and those must render exactly as
+          an unchecked link does. Telling a reader a working college page is unreachable,
+          beside that college's performance figures, would be a false claim about a real
+          institution.
+        - When there is nothing to link to, show the URL as text rather than dropping it,
+          so a reader can still try it or look it up in an archive.
+      */}
+      {link && (
+        <div className="provider-link">
+          {link.linked && link.href !== null ? (
+            <p>
+              <a href={link.href} rel="nofollow noopener noreferrer" target="_blank">
+                {link.label === "provider_home_page" ? t.providerHomePage : t.providerSite} →
+              </a>
+            </p>
+          ) : (
+            <p className="provider-link-plain">{link.url}</p>
+          )}
+
+          {link.notice === "page_unreachable" && link.checked_on !== null && (
+            <p className="compare-note">
+              {link.linked ? t.linkSubstituted(link.checked_on) : t.linkUnreachable(link.checked_on)}
+            </p>
+          )}
+        </div>
       )}
 
       {/*

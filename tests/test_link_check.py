@@ -25,8 +25,14 @@ from camino.sources import link_check
 from camino.sources.dol_etp import USER_AGENT
 from camino.sources.link_check import (
     CACHE_TTL,
+    DOCUMENT_VERSION,
+    LABEL_PROGRAM_PAGE,
+    LABEL_PROVIDER_HOME,
     MAX_ATTEMPTS,
+    NOTICE_UNREACHABLE,
     RETRYABLE_REASONS,
+    SUBSTITUTION_FRONT_PAGE,
+    SUBSTITUTION_HTTPS,
     VERDICT_BY_REASON,
     LinkCheck,
     LinkCheckCache,
@@ -35,8 +41,14 @@ from camino.sources.link_check import (
     build_client,
     check_url,
     check_urls,
+    checks_document,
+    checks_from_document,
+    decide,
+    front_page_candidates,
+    front_page_for,
     https_variant,
     is_dead,
+    site_root,
     summarise,
     upgrade_for,
     verdict_for,
@@ -68,7 +80,10 @@ class Replayer:
         assert self._outcomes, f"unexpected extra request: {request.method} {request.url}"
         outcome = self._outcomes.pop(0)
         if isinstance(outcome, httpx.RequestError):
-            outcome.request = request
+            # Only fill it in when the test has not deliberately set one, so a test can
+            # model a failure that happened at a redirect target.
+            if getattr(outcome, "_request", None) is None:
+                outcome.request = request
             raise outcome
         if isinstance(outcome, Exception):
             raise outcome
@@ -124,6 +139,36 @@ def probe(*outcomes: httpx.Response | Exception, url: str = PAGE, **kwargs: Any)
         return check_url(url, client=client, now=at(), **kwargs)
 
 
+def checked(
+    url: str,
+    reason: Reason,
+    *,
+    upgrade: str | None = None,
+    final: str | None = None,
+    when: datetime = NOW,
+) -> LinkCheck:
+    """A finished check, written by hand.
+
+    The decision layer is a pure function of results, so its tests state the result they mean
+    rather than staging an HTTP conversation that produces it.
+    """
+    return LinkCheck(
+        url=url,
+        verdict=VERDICT_BY_REASON[reason],
+        reason=reason,
+        status_code=None,
+        final_url=final,
+        https_alternative=upgrade,
+        detail=None,
+        checked_at=when,
+        attempts=1,
+    )
+
+
+def results(*checks: LinkCheck) -> dict[str, LinkCheck]:
+    return {check.url: check for check in checks}
+
+
 class TestClassificationTable:
     """The reason -> verdict mapping is the whole argument, so it is checked as data."""
 
@@ -136,7 +181,17 @@ class TestClassificationTable:
 
     def test_only_conclusive_evidence_counts_as_dead(self) -> None:
         dead = {reason for reason, verdict in VERDICT_BY_REASON.items() if verdict == "dead"}
-        assert dead == {"dns_failure", "connection_failed", "not_found", "gone"}
+        assert dead == {"dns_failure", "not_found", "gone"}
+
+    def test_a_socket_that_would_not_open_is_not_evidence_about_a_provider(self) -> None:
+        """Measured: every ``connection_failed`` in the real corpus was our end of the wire.
+
+        ``http://www.ueicollege.com`` answered curl, netcat and httpx-given-the-IP on the
+        same machine at the same moment, while httpx-given-the-name raised ENETUNREACH three
+        times running. A name DNS has never heard of is evidence about a provider; a socket
+        that would not open is evidence about a socket.
+        """
+        assert VERDICT_BY_REASON["connection_failed"] == "indeterminate"
 
     def test_a_refusal_is_never_dead(self) -> None:
         """403 and 405 mean "not for robots", which is not a claim about the page."""
@@ -149,6 +204,48 @@ class TestClassificationTable:
     def test_deterministic_failures_are_not_retried(self) -> None:
         assert "tls_failure" not in RETRYABLE_REASONS
         assert "too_many_redirects" not in RETRYABLE_REASONS
+
+
+class TestHostResolution:
+    """DNS is what separates "this provider's domain is gone" from "we could not connect"."""
+
+    def test_a_missing_host_does_not_reach_the_resolver(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(
+            link_check.socket,
+            "getaddrinfo",
+            lambda *a, **k: pytest.fail("looked up an empty host"),
+        )
+        assert link_check._host_resolves(None) is False
+        assert link_check._host_resolves("") is False
+
+    def test_a_name_the_resolver_rejects_does_not_resolve(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        def refuse(*args: object, **kwargs: object) -> None:
+            raise link_check.socket.gaierror(8, "nodename nor servname provided")
+
+        monkeypatch.setattr(link_check.socket, "getaddrinfo", refuse)
+        assert link_check._host_resolves("gone.example") is False
+
+    def test_our_own_networking_failing_does_not_blame_the_provider(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An OSError that is not a lookup failure is our problem, not theirs."""
+
+        def broken(*args: object, **kwargs: object) -> None:
+            raise OSError(65, "No route to host")
+
+        monkeypatch.setattr(link_check.socket, "getaddrinfo", broken)
+        assert link_check._host_resolves("real-school.example") is True
+
+    def test_a_resolvable_name_resolves(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(link_check.socket, "getaddrinfo", lambda *a, **k: [object()])
+        assert link_check._host_resolves("real-school.example") is True
+
+    def test_a_urlless_comparison_is_not_the_same_site(self) -> None:
+        assert link_check._same_site("https://a.edu/", "https://") is False
 
 
 class TestIdentity:
@@ -252,12 +349,39 @@ class TestDead:
             check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert set(handler.methods) == {"HEAD"}
 
-    def test_a_refused_connection_is_dead_but_named_separately(self, resolving: None) -> None:
-        """It resolves and will not talk. Weaker evidence than DNS, so a distinct reason."""
+    def test_a_redirect_to_a_dead_name_blames_the_dead_name(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The first host is alive and redirects to one that is not. Blame the second.
+
+        ``https://www.sanjuan.edu/sunrisetc`` really does 301 to ``adulted.sanjuan.edu``,
+        which does not resolve, and httpx reports the failing hop rather than the URL the
+        request started from. Testing DNS on the starting URL would file a live school
+        district's website as refusing connections.
+        """
+        asked: list[str | None] = []
+
+        def resolves(host: str | None) -> bool:
+            asked.append(host)
+            return host != "adulted.example.edu"
+
+        monkeypatch.setattr(link_check, "_host_resolves", resolves)
+        failure = httpx.ConnectError("no such host")
+        failure.request = httpx.Request("GET", "https://adulted.example.edu/")
+        assert link_check._transport_reason(failure, PAGE) == "dns_failure"
+        assert asked == ["adulted.example.edu"]
+
+    def test_a_failure_with_no_request_attached_falls_back_to_the_url(
+        self, unresolvable: None
+    ) -> None:
+        assert link_check._transport_reason(httpx.ConnectError("boom"), PAGE) == "dns_failure"
+
+    def test_a_refused_connection_is_not_dead(self, resolving: None) -> None:
+        """It resolves and would not talk. That is not the same finding as "it is gone"."""
         client, _ = replay(*[httpx.ConnectError("connection refused")] * (2 * MAX_ATTEMPTS))
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert (check.verdict, check.reason) == ("dead", "connection_failed")
+        assert (check.verdict, check.reason) == ("indeterminate", "connection_failed")
 
 
 class TestConservatism:
@@ -334,6 +458,11 @@ class TestConservatism:
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("indeterminate", "too_many_redirects")
+
+    def test_a_host_still_rate_limiting_after_every_retry_is_indeterminate(self) -> None:
+        """Being asked to slow down is not a statement about whether the page exists."""
+        check = probe(*[httpx.Response(429)] * (2 * MAX_ATTEMPTS))
+        assert (check.verdict, check.reason) == ("indeterminate", "rate_limited")
 
     def test_a_soft_404_served_as_200_is_reported_alive(self) -> None:
         """Documented limitation: this cannot be detected without reading the body."""
@@ -699,6 +828,23 @@ class TestCheckUrls:
             check_urls(["https://a.edu/x"], client=client, sleep=Clock(), now=at(), max_workers=1)
             assert client.is_closed is False
 
+    def test_a_client_it_made_itself_is_closed_again(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        made: list[httpx.Client] = []
+
+        def factory(*args: object, **kwargs: object) -> httpx.Client:
+            client, _ = replay(httpx.Response(200))
+            made.append(client)
+            return client
+
+        monkeypatch.setattr(link_check, "build_client", factory)
+        results = check_urls(["https://a.edu/x"], sleep=Clock(), now=at(), max_workers=1)
+        assert results["https://a.edu/x"].verdict == "alive"
+        assert made[0].is_closed is True
+
+    def test_nothing_to_check_is_not_an_error(self) -> None:
+        """An empty corpus produces an empty mapping, not a mapping full of defaults."""
+        assert check_urls([], sleep=Clock(), now=at()) == {}
+
 
 class TestUncheckedIsNotDead:
     """The invariant. An absent result is a gap in knowledge, never a verdict."""
@@ -779,3 +925,363 @@ class TestSummarise:
         summary = summarise({})
         assert summary.urls_checked == 0
         assert summary.by_verdict == {}
+
+
+class TestSiteRoot:
+    def test_a_deep_path_has_a_front_page(self) -> None:
+        assert site_root("https://example.edu/a/b/c.aspx?x=1") == "https://example.edu/"
+
+    def test_a_front_page_has_no_front_page_of_its_own(self) -> None:
+        """Nothing to offer instead: the URL that 404'd *is* the root."""
+        assert site_root("https://example.edu/") is None
+        assert site_root("https://example.edu") is None
+
+    def test_a_query_string_alone_still_counts_as_a_page(self) -> None:
+        assert site_root("https://example.edu/?course=welding") == "https://example.edu/"
+
+    def test_the_scheme_is_left_alone(self) -> None:
+        """Whether the front page is better over https is answered by asking, not assuming."""
+        assert site_root("http://example.edu/programs") == "http://example.edu/"
+
+
+class TestFrontPageCandidates:
+    def test_a_404_earns_a_front_page_check(self) -> None:
+        checks = results(checked(PAGE, "not_found"))
+        assert front_page_candidates(checks) == [ROOT]
+
+    def test_a_410_earns_one_too(self) -> None:
+        assert front_page_candidates(results(checked(PAGE, "gone"))) == [ROOT]
+
+    def test_a_name_that_does_not_resolve_earns_nothing(self) -> None:
+        """The host does not exist, so neither does anything under it."""
+        assert front_page_candidates(results(checked(PAGE, "dns_failure"))) == []
+
+    def test_a_live_url_earns_nothing(self) -> None:
+        assert front_page_candidates(results(checked(PAGE, "ok"))) == []
+
+    def test_a_refusal_earns_nothing(self) -> None:
+        """A 403 is not evidence the page is gone, so there is nothing to replace."""
+        assert front_page_candidates(results(checked(PAGE, "forbidden"))) == []
+
+    def test_one_host_with_many_dead_pages_is_asked_once(self) -> None:
+        checks = results(
+            checked("https://example.edu/a", "not_found"),
+            checked("https://example.edu/b", "not_found"),
+        )
+        assert front_page_candidates(checks) == [ROOT]
+
+    def test_a_front_page_already_checked_is_not_asked_again(self) -> None:
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
+        assert front_page_candidates(checks) == []
+
+    def test_a_dead_front_page_asks_for_nothing_further(self) -> None:
+        assert front_page_candidates(results(checked(ROOT, "not_found"))) == []
+
+
+class TestDecideUnchecked:
+    """The first case, and the one the whole design turns on."""
+
+    def test_a_url_nobody_read_is_published_exactly_as_filed(self) -> None:
+        decision = decide({}, PAGE)
+        assert decision is not None
+        assert decision.href == PAGE
+        assert decision.linked is True
+        assert decision.label == LABEL_PROGRAM_PAGE
+
+    def test_a_url_nobody_read_carries_no_verdict_and_no_date(self) -> None:
+        decision = decide({}, PAGE)
+        assert decision is not None
+        assert decision.verdict is None
+        assert decision.reason is None
+        assert decision.checked_on is None
+
+    def test_a_url_nobody_read_is_never_annotated(self) -> None:
+        """There is nothing to say about a page nobody looked at."""
+        decision = decide({}, PAGE)
+        assert decision is not None
+        assert decision.notice is None
+        assert decision.substitution is None
+
+    def test_a_run_that_checked_other_urls_does_not_leak_onto_this_one(self) -> None:
+        decision = decide(results(checked("https://other.edu/", "not_found")), PAGE)
+        assert decision is not None
+        assert decision.verdict is None
+        assert decision.linked is True
+
+    def test_a_program_with_no_url_has_no_decision_at_all(self) -> None:
+        assert decide({}, None) is None
+        assert decide(results(checked(PAGE, "ok")), None) is None
+
+
+class TestDecideAlive:
+    def test_a_working_page_is_linked_unchanged(self) -> None:
+        decision = decide(results(checked(PAGE, "ok")), PAGE)
+        assert decision is not None
+        assert decision.href == PAGE
+        assert decision.substitution is None
+        assert decision.notice is None
+        assert decision.label == LABEL_PROGRAM_PAGE
+
+    def test_a_verified_https_equivalent_is_swapped_in(self) -> None:
+        checks = results(checked(INSECURE, "ok", upgrade=PAGE))
+        decision = decide(checks, INSECURE)
+        assert decision is not None
+        assert decision.href == PAGE
+        assert decision.substitution == SUBSTITUTION_HTTPS
+        # The record's own value is still published beside it.
+        assert decision.url == INSECURE
+
+    def test_an_upgrade_is_not_an_annotation(self) -> None:
+        """A scheme change is a transport improvement, not a finding about the provider."""
+        decision = decide(results(checked(INSECURE, "ok", upgrade=PAGE)), INSECURE)
+        assert decision is not None
+        assert decision.notice is None
+
+    def test_a_page_that_lands_on_the_site_root_is_relabelled_not_suppressed(self) -> None:
+        decision = decide(results(checked(PAGE, "redirected_to_site_root")), PAGE)
+        assert decision is not None
+        assert decision.linked is True
+        assert decision.href == PAGE
+        assert decision.label == LABEL_PROVIDER_HOME
+        assert decision.notice is None
+
+    def test_an_offsite_redirect_is_left_alone(self) -> None:
+        """A catalogue vendor and a domain squatter are indistinguishable mechanically.
+
+        Both answer 200 from another domain. The report leaves this class to a human review
+        queue rather than inventing a rule, so nothing here changes.
+        """
+        decision = decide(results(checked(PAGE, "redirected_offsite")), PAGE)
+        assert decision is not None
+        assert decision.linked is True
+        assert decision.href == PAGE
+        assert decision.label == LABEL_PROGRAM_PAGE
+        assert decision.notice is None
+
+
+class TestDecideIndeterminate:
+    """113 URLs on 163 pages that could not be judged. Nothing may happen to them."""
+
+    @pytest.mark.parametrize(
+        "reason",
+        ["forbidden", "method_not_allowed", "rate_limited", "server_error", "timeout"],
+    )
+    def test_a_page_we_could_not_judge_renders_as_it_always_has(self, reason: Reason) -> None:
+        decision = decide(results(checked(PAGE, reason)), PAGE)
+        assert decision is not None
+        assert decision.href == PAGE
+        assert decision.linked is True
+        assert decision.label == LABEL_PROGRAM_PAGE
+
+    def test_a_page_we_could_not_judge_is_never_annotated(self) -> None:
+        """Printing "we could not reach this" next to a working institution's WIOA figures
+        on the strength of a bot filter is a false claim about a named organisation."""
+        decision = decide(results(checked(PAGE, "forbidden")), PAGE)
+        assert decision is not None
+        assert decision.notice is None
+
+    def test_a_bad_certificate_still_publishes_the_link(self) -> None:
+        decision = decide(results(checked(PAGE, "tls_failure")), PAGE)
+        assert decision is not None
+        assert decision.linked is True
+        assert decision.notice is None
+
+    def test_the_verdict_is_still_recorded_even_though_nothing_changes(self) -> None:
+        """The interface must not act on it; the dataset should still say what was seen."""
+        decision = decide(results(checked(PAGE, "forbidden")), PAGE)
+        assert decision is not None
+        assert decision.verdict == "indeterminate"
+        assert decision.reason == "forbidden"
+        assert decision.checked_on == "2026-08-04"
+
+    def test_not_even_the_scheme_changes(self) -> None:
+        """An https equivalent is earned by an answer, and this URL gave us none to reason
+        from -- so there is nothing to swap and no swap is made."""
+        checks = results(checked(INSECURE, "forbidden", upgrade=PAGE))
+        decision = decide(checks, INSECURE)
+        assert decision is not None
+        assert decision.href == INSECURE
+        assert decision.substitution is None
+
+
+class TestDecideDead:
+    def test_a_name_that_does_not_resolve_publishes_no_link(self) -> None:
+        decision = decide(results(checked(PAGE, "dns_failure")), PAGE)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.linked is False
+
+    def test_a_suppressed_link_still_publishes_the_url_and_the_date(self) -> None:
+        """Suppression alone would hide that the federal record contains a URL at all, and a
+        reader may want to try the Internet Archive with it."""
+        decision = decide(results(checked(PAGE, "dns_failure")), PAGE)
+        assert decision is not None
+        assert decision.url == PAGE
+        assert decision.notice == NOTICE_UNREACHABLE
+        assert decision.checked_on == "2026-08-04"
+
+    def test_a_dead_name_is_never_sent_to_a_front_page(self) -> None:
+        """Even with a live root on file: the host in the record does not exist, and
+        inferring a provider's successor is a judgement about identity, not a measurement."""
+        checks = results(checked(PAGE, "dns_failure"), checked(ROOT, "ok"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.substitution is None
+
+    def test_a_404_with_a_working_front_page_goes_to_the_front_page(self) -> None:
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href == ROOT
+        assert decision.linked is True
+        assert decision.substitution == SUBSTITUTION_FRONT_PAGE
+
+    def test_a_substituted_link_says_so_rather_than_pretending(self) -> None:
+        """The reader is being sent somewhere other than where the record pointed. Saying
+        nothing would be a quieter lie, not an absence of one."""
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.label == LABEL_PROVIDER_HOME
+        assert decision.notice == NOTICE_UNREACHABLE
+        assert decision.url == PAGE
+
+    def test_a_front_page_upgrade_is_carried_through(self) -> None:
+        checks = results(
+            checked("http://example.edu/p", "not_found"),
+            checked("http://example.edu/", "ok", upgrade=ROOT),
+        )
+        decision = decide(checks, "http://example.edu/p")
+        assert decision is not None
+        assert decision.href == ROOT
+
+    def test_a_site_that_404s_its_own_front_page_offers_nothing(self) -> None:
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "not_found"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.linked is False
+
+    def test_a_front_page_that_only_refused_us_is_not_a_destination(self) -> None:
+        """Weaker evidence both ways: the 404 is less trustworthy and the root is unproven.
+        Neither justifies sending a reader somewhere."""
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "forbidden"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href is None
+
+    def test_a_front_page_that_lands_on_another_domain_is_not_offered(self) -> None:
+        """Measured on the real corpus, that is as likely to be a domain-sale page."""
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "redirected_offsite"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href is None
+
+    def test_a_front_page_nobody_checked_is_not_assumed_to_work(self) -> None:
+        decision = decide(results(checked(PAGE, "not_found")), PAGE)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.substitution is None
+
+    def test_a_dead_root_has_nothing_to_fall_back_to(self) -> None:
+        decision = decide(results(checked(ROOT, "not_found")), ROOT)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.label == LABEL_PROGRAM_PAGE
+
+    def test_the_wording_hook_is_an_observation_not_a_diagnosis(self) -> None:
+        """The only notice this module emits is about our own reading, and it never travels
+        without the date that gives it a shelf life."""
+        decision = decide(results(checked(PAGE, "not_found")), PAGE)
+        assert decision is not None
+        assert decision.notice == NOTICE_UNREACHABLE
+        assert decision.checked_on is not None
+
+
+class TestFrontPageFor:
+    def test_an_unchecked_url_has_no_front_page(self) -> None:
+        assert front_page_for({}, PAGE) is None
+
+    def test_a_url_that_is_not_dead_has_no_front_page(self) -> None:
+        checks = results(checked(PAGE, "forbidden"), checked(ROOT, "ok"))
+        assert front_page_for(checks, PAGE) is None
+
+    def test_no_url_at_all_has_no_front_page(self) -> None:
+        assert front_page_for(results(checked(PAGE, "not_found")), None) is None
+
+
+class TestDecisionSerialisation:
+    def test_every_field_the_interface_needs_is_published(self) -> None:
+        decision = decide(results(checked(PAGE, "not_found"), checked(ROOT, "ok")), PAGE)
+        assert decision is not None
+        assert decision.as_dict() == {
+            "url": PAGE,
+            "href": ROOT,
+            "linked": True,
+            "label": LABEL_PROVIDER_HOME,
+            "verdict": "dead",
+            "reason": "not_found",
+            "checked_on": "2026-08-04",
+            "notice": NOTICE_UNREACHABLE,
+            "substitution": SUBSTITUTION_FRONT_PAGE,
+        }
+
+    def test_an_unchecked_decision_publishes_nulls_not_omissions(self) -> None:
+        """A consumer must be able to tell "checked, nothing to say" from "never looked",
+        which it cannot do if the keys are missing."""
+        decision = decide({}, PAGE)
+        assert decision is not None
+        assert decision.as_dict() == {
+            "url": PAGE,
+            "href": PAGE,
+            "linked": True,
+            "label": LABEL_PROGRAM_PAGE,
+            "verdict": None,
+            "reason": None,
+            "checked_on": None,
+            "notice": None,
+            "substitution": None,
+        }
+
+
+class TestChecksDocument:
+    def test_a_run_survives_a_round_trip(self) -> None:
+        checks = results(
+            checked(PAGE, "not_found"),
+            checked(ROOT, "ok"),
+            checked(INSECURE, "ok", upgrade=PAGE),
+        )
+        restored = checks_from_document(json.loads(json.dumps(checks_document(checks))))
+        assert restored == checks
+
+    def test_a_decision_is_the_same_either_side_of_the_file(self) -> None:
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
+        restored = checks_from_document(checks_document(checks))
+        assert decide(restored, PAGE) == decide(checks, PAGE)
+
+    def test_an_empty_run_is_a_valid_document(self) -> None:
+        assert checks_from_document(checks_document({})) == {}
+
+    def test_a_document_from_another_shape_is_refused_rather_than_guessed_at(self) -> None:
+        document = checks_document(results(checked(PAGE, "ok")))
+        document["version"] = DOCUMENT_VERSION + 1
+        with pytest.raises(ValueError, match="version"):
+            checks_from_document(document)
+
+    def test_a_versionless_document_is_refused(self) -> None:
+        with pytest.raises(ValueError, match="version"):
+            checks_from_document({"checks": []})
+
+    def test_an_unknown_reason_is_refused_rather_than_trusted(self) -> None:
+        """Unlike the cache, which shrugs: a report that cannot be read is an operator
+        pointing a build at the wrong file, and reading it as "nothing was checked" would
+        republish links this project had already established were broken."""
+        document = checks_document(results(checked(PAGE, "not_found")))
+        document["checks"][0]["reason"] = "vanished"
+        with pytest.raises(ValueError, match="reason"):
+            checks_from_document(document)
+
+    def test_the_document_records_when_the_run_finished(self) -> None:
+        document = checks_document({}, checked_at=NOW)
+        assert document["checked_at"] == NOW.isoformat()

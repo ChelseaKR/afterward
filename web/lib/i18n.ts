@@ -142,6 +142,11 @@ areaNote: (unplaced: number, total: number) =>
   snapshot: (d: string) => `Data snapshot: ${d}`,
   viewProgram: "Program details",
   providerSite: "Provider's website",
+  providerHomePage: "Provider's home page",
+  // Always about what we saw, on a date. Never "this provider's website is down".
+  linkUnreachable: (date: string) => `We could not reach this page when we checked on ${date}.`,
+  linkSubstituted: (date: string) =>
+    `We could not reach the page in the federal record when we checked on ${date}, so this links to the provider's home page instead.`,
   backToSearch: "Back to search",
   coverageNote: (pct: number) =>
     `${pct}% of California programs report at least one outcome. The rest are listed with what is known.`,
@@ -630,6 +635,11 @@ areaNote: (unplaced, total) =>
   snapshot: (d: string) => `Datos actualizados: ${d}`,
   viewProgram: "Detalles del programa",
   providerSite: "Sitio de la institución",
+  providerHomePage: "Página principal de la institución",
+  linkUnreachable: (date: string) =>
+    `No pudimos abrir esta página cuando la revisamos el ${date}.`,
+  linkSubstituted: (date: string) =>
+    `No pudimos abrir la página que aparece en el registro federal cuando la revisamos el ${date}, así que este enlace lleva a la página principal de la institución.`,
   backToSearch: "Volver a la búsqueda",
   coverageNote: (pct: number) =>
     `${pct}% de los programas de California reportan al menos un resultado. Los demás se muestran con lo que se sabe.`,

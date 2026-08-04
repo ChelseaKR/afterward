@@ -15,8 +15,11 @@ import {
   cities,
   isShrinking,
   matchesArea,
+  matchesFilters,
   runSearch,
+  score,
   summarise,
+  terms,
   unplacedMatches,
   type AreaFilter,
   type Filters,
@@ -33,9 +36,278 @@ const COST_CAPS = [2000, 5000, 10000, 20000];
 const PAGE_SIZE = 25;
 
 /** Matches the private helper in lib/i18n.ts: grouped digits, the same in both languages. */
+function fmt(n: number): string {
+  return new Intl.NumberFormat("en-US").format(n);
+}
+
+/*
+ * TODO(i18n): every string in `COPY` belongs in `web/lib/i18n.ts`, under the key named in the
+ * comment above it. They live here because that file was owned by a concurrent change when
+ * this landed. Both languages are complete, and the Spanish is written for a Spanish reader
+ * rather than rendered from the English — the search hint in particular says something the
+ * English one has no reason to say, because the searchable corpus is English-only and that
+ * costs a Spanish speaker a result set and an English speaker nothing.
+ */
+interface SearchCopy {
+  /** i18n key: searchIntroHeading */
+  introHeading: string;
+  /** i18n key: searchIntroBody */
+  introBody: string;
+  /** i18n key: resultsRegion */
+  resultsRegion: string;
+
+  /** i18n key: filterUnreportedLegend */
+  unreportedLegend: string;
+  /** i18n key: filterHideUnreported */
+  unreportedCheckbox: (missing: number) => string;
+  /** i18n key: filterHideUnreportedNote */
+  unreportedNote: (missing: number) => string;
+
+  /** i18n key: filterOutlook (replaces) */
+  outlookLabel: string;
+  /** i18n key: outlookAny (replaces) */
+  outlookAny: string;
+  /** i18n key: outlookGrowing (replaces) */
+  outlookGrowing: string;
+  /** i18n key: outlookShrinking (replaces) */
+  outlookShrinking: string;
+  /** i18n key: filterOutlookNoProjection */
+  outlookNoProjection: (n: number) => string;
+
+  /** i18n key: areaNote (replaces) */
+  areaNote: (unplaced: number, total: number) => string;
+
+  /** i18n key: filterMaxCost (replaces) */
+  costLabel: string;
+  /** i18n key: costAtMost */
+  costAtMost: (value: string) => string;
+  /** i18n key: filterMaxCostNote */
+  costNote: string;
+
+  /** i18n key: sortEarnings (replaces) */
+  sortEarnings: string;
+  /** i18n key: sortOpenings (replaces) */
+  sortOpenings: string;
+
+  /** i18n key: statReported (replaces) */
+  statReported: (reported: number, total: number) => string;
+  /** i18n key: statShrinking (replaces) */
+  statShrinking: (n: number) => string;
+  /** i18n key: statUnplaced (replaces) */
+  statUnplaced: (unplaced: number, total: number) => string;
+  /** i18n key: showTheseN (replaces showThese, which reads the same on every button) */
+  showTheseN: (n: number) => string;
+  /** i18n key: showOnlyReported */
+  showOnlyReported: (n: number) => string;
+
+  /** i18n key: noResultsRelaxLead */
+  relaxLead: string;
+  /** i18n key: noResultsRelaxOption */
+  relaxOption: (label: string, n: number) => string;
+  /** i18n key: noResultsNothingHelps */
+  nothingHelps: string;
+  /** i18n key: searchEnglishOnly */
+  englishOnly: string;
+
+  /*
+   * Each active control, named as something a sentence can remove. "Region: Fresno MSA" is
+   * how a filter panel labels itself; it is not how anyone says which one to drop.
+   */
+  /** i18n key: filterNameQuery */
+  nameQuery: (query: string) => string;
+  /** i18n key: filterNameReported */
+  nameReported: string;
+  /** i18n key: filterNameOutlook */
+  nameOutlook: (option: string) => string;
+  /** i18n key: filterNameCost */
+  nameCost: (cap: string) => string;
+  /** i18n key: filterNameArea */
+  nameArea: (area: string) => string;
+  /** i18n key: filterNameUnplaced */
+  nameUnplaced: string;
+  /** i18n key: filterNameCity */
+  nameCity: (city: string) => string;
+}
+
+const COPY: Record<Lang, SearchCopy> = {
+  en: {
+    introHeading: "Search California training programs",
+    introBody:
+      "Every California training program in the federal record: what it costs, how long it " +
+      "takes, and — where the provider reported it — how many people finished, how many " +
+      "were working six months later, and what they earned. Free to use, no account, and " +
+      "the roughly one program in three that reported nothing is listed here too, saying so.",
+    resultsRegion: "Search results",
+
+    unreportedLegend: "Programs that reported nothing",
+    unreportedCheckbox: (missing) => `Hide the ${fmt(missing)} programs that reported nothing`,
+    unreportedNote: (missing) =>
+      `Hiding them is not the same as hiding bad programs. Nobody knows how those ` +
+      `${fmt(missing)} did — only that they did not say: some filed nothing, and for others ` +
+      `the figure was withheld to protect the privacy of a small group.`,
+
+    outlookLabel: "What California expects of the job",
+    outlookAny: "All jobs",
+    outlookGrowing: "Only jobs California expects to grow",
+    outlookShrinking: "Only jobs California expects to shrink",
+    outlookNoProjection: (n) =>
+      `This filter also leaves out ${fmt(n)} of the programs that match the rest of your ` +
+      `search: California publishes no ten-year projection for the work they train for, so ` +
+      `there is nothing here for the filter to test. Missing information is not a ` +
+      `projection of zero.`,
+
+    areaNote: (unplaced, total) =>
+      `California's labour-market regions are each named after two or three cities, and a ` +
+      `program counts as being in one only when its city is one of those. That leaves ` +
+      `${fmt(unplaced)} of these ${fmt(total)} programs in no region at all — some in the ` +
+      `same county as a region listed here, some right next door to one. Choosing a region ` +
+      `hides those ${fmt(unplaced)}; it does not move them somewhere else.`,
+
+    costLabel: "Most you can pay",
+    costAtMost: (value) => `${value} or less`,
+    costNote:
+      "Tuition and supplies as the provider reported them, for someone paying without public " +
+      "workforce funding. No grant or aid you might qualify for is taken off it.",
+
+    sortEarnings: "Highest reported earnings (one quarter)",
+    sortOpenings: "Most openings projected for the job",
+
+    statReported: (reported, total) =>
+      `${fmt(reported)} of these ${fmt(total)} programs reported what happened to their ` +
+      `students. The other ${fmt(total - reported)} reported nothing at all, which is not ` +
+      `evidence that they are worse.`,
+    statShrinking: (n) =>
+      `${fmt(n)} of these programs train for work California expects there to be less of ` +
+      `in ten years.`,
+    statUnplaced: (unplaced, total) =>
+      `${fmt(unplaced)} of the ${fmt(total)} are in cities California's own published ` +
+      `regions do not name, so no region's pay or openings figures are claimed for them.`,
+    showTheseN: (n) => (n === 1 ? "Show that one" : `Show those ${fmt(n)}`),
+    showOnlyReported: (n) => `Show only the ${fmt(n)} that reported`,
+
+    relaxLead: "Removing any one of these would find programs:",
+    relaxOption: (label, n) =>
+      n === 1
+        ? `Remove ${label} — 1 program matches`
+        : `Remove ${label} — ${fmt(n)} programs match`,
+    nothingHelps:
+      "Removing any single one of them still finds nothing, so more than one is doing the " +
+      "excluding.",
+    englishOnly:
+      "Program names and job titles here are recorded in English only, exactly as the " +
+      "provider filed them and the state published them. A search term in another language " +
+      "will not match one.",
+
+    nameQuery: (query) => `your search for “${query}”`,
+    nameReported: "the filter hiding programs that reported nothing",
+    nameOutlook: (option) => `the job filter “${option}”`,
+    nameCost: (cap) => `the price limit “${cap}”`,
+    nameArea: (area) => `the region “${area}”`,
+    nameUnplaced: "the choice to show only programs California places in no region",
+    nameCity: (city) => `the city “${city}”`,
+  },
+  es: {
+    introHeading: "Busque programas de capacitación en California",
+    introBody:
+      "Aquí está cada programa de capacitación de California que consta en el registro " +
+      "federal: cuánto cuesta, cuánto dura y —cuando la institución lo reportó— cuántas " +
+      "personas terminaron, cuántas estaban trabajando seis meses después y cuánto ganaron. " +
+      "Es gratis y sin cuenta, y alrededor de uno de cada tres programas no reportó nada: " +
+      "esos también aparecen aquí, y lo dicen.",
+    resultsRegion: "Resultados de la búsqueda",
+
+    unreportedLegend: "Programas que no reportaron nada",
+    unreportedCheckbox: (missing) =>
+      `Ocultar los ${fmt(missing)} programas que no reportaron nada`,
+    unreportedNote: (missing) =>
+      `Ocultarlos no es lo mismo que ocultar los programas malos. Nadie sabe cómo les fue a ` +
+      `esos ${fmt(missing)}; solo que no lo dijeron: unos no presentaron nada y a otros se ` +
+      `les omitió la cifra para proteger la privacidad de un grupo pequeño.`,
+
+    outlookLabel: "Qué espera California de la ocupación",
+    outlookAny: "Todas las ocupaciones",
+    outlookGrowing: "Solo ocupaciones que California espera que crezcan",
+    outlookShrinking: "Solo ocupaciones que California espera que se reduzcan",
+    outlookNoProjection: (n) =>
+      `Este filtro también deja fuera ${fmt(n)} de los programas que coinciden con el resto ` +
+      `de su búsqueda: California no publica una proyección a diez años para el trabajo que ` +
+      `enseñan, así que el filtro no tiene nada que evaluar. Que falte el dato no es una ` +
+      `proyección de cero.`,
+
+    areaNote: (unplaced, total) =>
+      `Las regiones laborales de California llevan el nombre de dos o tres ciudades cada ` +
+      `una, y un programa cuenta como parte de una región solo si su ciudad es una de esas. ` +
+      `Por eso ${fmt(unplaced)} de estos ${fmt(total)} programas no quedan en ninguna ` +
+      `región: algunos están en el mismo condado que una región de esta lista, y algunos ` +
+      `justo al lado de una. Elegir una región oculta esos ${fmt(unplaced)}; no los coloca ` +
+      `en otro lugar.`,
+
+    costLabel: "Lo máximo que puede pagar",
+    costAtMost: (value) => `${value} o menos`,
+    costNote:
+      "La colegiatura y los materiales tal como los reportó la institución, para quien paga " +
+      "sin fondos públicos de capacitación. No se le descuenta ninguna beca ni ayuda a la " +
+      "que usted pudiera calificar.",
+
+    sortEarnings: "Mayores ingresos reportados (un trimestre)",
+    sortOpenings: "Más vacantes proyectadas para la ocupación",
+
+    statReported: (reported, total) =>
+      `${fmt(reported)} de estos ${fmt(total)} programas reportaron qué pasó con sus ` +
+      `estudiantes. Los otros ${fmt(total - reported)} no reportaron nada, lo cual no es ` +
+      `prueba de que sean peores.`,
+    statShrinking: (n) =>
+      `${fmt(n)} de estos programas preparan para trabajos de los que California espera que ` +
+      `haya menos dentro de diez años.`,
+    statUnplaced: (unplaced, total) =>
+      `${fmt(unplaced)} de los ${fmt(total)} están en ciudades que las regiones publicadas ` +
+      `de California no nombran, así que no se les atribuye el pago ni las vacantes de ` +
+      `ninguna región.`,
+    showTheseN: (n) => (n === 1 ? "Ver ese" : `Ver esos ${fmt(n)}`),
+    showOnlyReported: (n) => `Ver solo los ${fmt(n)} que reportaron`,
+
+    relaxLead: "Quitar cualquiera de estos sí encontraría programas:",
+    relaxOption: (label, n) =>
+      n === 1
+        ? `Quitar ${label}: coincide 1 programa`
+        : `Quitar ${label}: coinciden ${fmt(n)} programas`,
+    nothingHelps:
+      "Quitar uno solo de ellos sigue sin encontrar nada, así que hay más de uno dejando " +
+      "programas fuera.",
+    englishOnly:
+      "Los nombres de los programas y de las ocupaciones están registrados solo en inglés, " +
+      "tal como los presentó la institución y los publicó el estado. Un término en español " +
+      "no va a coincidir con ninguno: pruebe la palabra en inglés — «welding» en lugar de " +
+      "«soldadura», «medical assistant» en lugar de «asistente médico».",
+
+    nameQuery: (query) => `su búsqueda de «${query}»`,
+    nameReported: "el filtro que oculta los programas que no reportaron nada",
+    nameOutlook: (option) => `el filtro de ocupación «${option}»`,
+    nameCost: (cap) => `el límite de precio «${cap}»`,
+    nameArea: (area) => `la región «${area}»`,
+    nameUnplaced: "la opción de ver solo los programas que California no ubica en ninguna región",
+    nameCity: (city) => `la ciudad «${city}»`,
+  },
+};
+
+/**
+ * One filter the reader could drop, and what dropping it would find.
+ *
+ * Assembled only when the search returns nothing. "Try removing a filter" asks the reader to
+ * do the work of guessing which of six controls is the one excluding everything, when the
+ * page can simply run the search six more times and tell them — including telling them, when
+ * it is true, that no single removal helps.
+ */
+interface Relaxation {
+  key: string;
+  label: string;
+  count: number;
+  apply: () => void;
+}
 
 export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: Lang }) {
   const t = dict(lang);
+  const copy = COPY[lang];
   const [query, setQuery] = useState("");
   const [onlyReported, setOnlyReported] = useState(false);
   const [outlook, setOutlook] = useState<Outlook>("any");
@@ -56,6 +328,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
 
   const stats = useMemo(() => summarise(programs), [programs]);
   const areaOptions = useMemo(() => areas(programs), [programs]);
+  const unreported = stats.total - stats.reported;
 
   /*
     Region and city, and why both survive.
@@ -92,6 +365,32 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     [programs, filters, area.kind],
   );
 
+  /*
+    Programs the outlook filter removes for having no projection at all.
+
+    "Only jobs California expects to grow" is read as a claim about every program it leaves
+    out, and for these it is not one: the state publishes no ten-year figure for the work,
+    so the filter has nothing to test. Saying so is the same rule the site follows for a
+    suppressed outcome — an absent number is never quietly converted into a bad one.
+
+    A job the state expects to stay the same size is a different case and is deliberately
+    left silent: it really is not growing, and the option says "expects to grow".
+  */
+  const hiddenNoProjection = useMemo(() => {
+    if (filters.outlook === "any") return 0;
+    const searchTerms = terms(filters.query);
+    const ignoringOutlook: Filters = { ...filters, outlook: "any" };
+
+    let found = 0;
+    for (const entry of programs) {
+      if (entry.g !== null) continue;
+      if (score(entry, searchTerms) < 0) continue;
+      if (!matchesFilters(entry, ignoringOutlook)) continue;
+      found += 1;
+    }
+    return found;
+  }, [programs, filters]);
+
   function selectArea(next: AreaFilter) {
     setArea(next);
     // The city list is a subset of the region, so a city carried over from another one would
@@ -100,6 +399,83 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     setCity(null);
     setLimit(PAGE_SIZE);
   }
+
+  /*
+    What each active filter is costing this search, computed only when the answer is empty.
+
+    Each entry re-runs the whole search with exactly one control returned to its default, so
+    the count beside it is the real number of programs that control is holding back rather
+    than an estimate. Entries that would still find nothing are dropped: offering a reader a
+    button that leads to another empty screen is the same failure as the hint this replaces.
+  */
+  const relaxations = useMemo<Relaxation[]>(() => {
+    if (results.length > 0) return [];
+
+    const options: Relaxation[] = [];
+    const found = (override: Partial<Filters>) => runSearch(programs, { ...filters, ...override }).length;
+
+    if (filters.query.trim() !== "") {
+      options.push({
+        key: "query",
+        label: copy.nameQuery(filters.query.trim()),
+        count: found({ query: "" }),
+        apply: () => setQuery(""),
+      });
+    }
+    if (onlyReported) {
+      options.push({
+        key: "reported",
+        label: copy.nameReported,
+        count: found({ onlyReported: false }),
+        apply: () => setOnlyReported(false),
+      });
+    }
+    if (outlook !== "any") {
+      options.push({
+        key: "outlook",
+        label: copy.nameOutlook(
+          outlook === "growing" ? copy.outlookGrowing : copy.outlookShrinking,
+        ),
+        count: found({ outlook: "any" }),
+        apply: () => setOutlook("any"),
+      });
+    }
+    if (maxCost !== null) {
+      options.push({
+        key: "cost",
+        label: copy.nameCost(copy.costAtMost(money(maxCost, lang) ?? "")),
+        count: found({ maxCost: null }),
+        apply: () => setMaxCost(null),
+      });
+    }
+    if (area.kind !== "any") {
+      // The unplaced selection is a real choice with a real name, so removing it is named
+      // after what it selects rather than after the absence of a region.
+      options.push({
+        key: "area",
+        label: area.kind === "area" ? copy.nameArea(area.name) : copy.nameUnplaced,
+        count: found({ area: ANY_AREA }),
+        apply: () => {
+          setArea(ANY_AREA);
+          setCity(null);
+          setLimit(PAGE_SIZE);
+        },
+      });
+    }
+    if (city !== null) {
+      options.push({
+        key: "city",
+        label: copy.nameCity(city),
+        count: found({ city: null }),
+        apply: () => {
+          setCity(null);
+          setLimit(PAGE_SIZE);
+        },
+      });
+    }
+
+    return options.filter((option) => option.count > 0).sort((a, b) => b.count - a.count);
+  }, [results.length, programs, filters, copy, t, lang, onlyReported, outlook, maxCost, area, city]);
 
   // Comparison selection, kept as ids so it survives filtering: picking two programs and
   // then narrowing the search should not silently discard the choice.
@@ -123,6 +499,13 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   }
 
   const visible = results.slice(0, limit);
+  const anyFilterActive =
+    filters.query.trim() !== "" ||
+    onlyReported ||
+    outlook !== "any" ||
+    maxCost !== null ||
+    area.kind !== "any" ||
+    city !== null;
 
   function clear() {
     setQuery("");
@@ -137,7 +520,40 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
 
   return (
     <div className="shell search-layout">
-      <form className="filters" role="search" onSubmit={(e) => e.preventDefault()}>
+      {/*
+        The one thing the search page never said: what it is.
+
+        A first-time visitor previously met a filter panel and a list of program names with
+        no statement of whose data this is, what it costs them, or what a blank means — the
+        tagline in the masthead was the whole of it, and the page that explains the figures
+        was reachable only from an individual program. Spanning both grid columns so it sits
+        above the panel rather than inside it, and kept to a heading, two sentences and a
+        link so the results stay within a screen or so of the top on a phone.
+      */}
+      <div style={{ gridColumn: "1 / -1" }}>
+        <h1
+          style={{
+            margin: "0 0 0.5rem",
+            fontSize: "clamp(1.375rem, 3.5vw, 1.75rem)",
+            lineHeight: 1.2,
+          }}
+        >
+          {copy.introHeading}
+        </h1>
+        <p style={{ margin: "0 0 0.5rem", maxWidth: "var(--measure)", lineHeight: 1.5 }}>
+          {copy.introBody}
+        </p>
+        <p style={{ margin: 0 }}>
+          <Link href={`/${lang}/about/`}>{t.methodologyLink} →</Link>
+        </p>
+      </div>
+
+      <form
+        className="filters"
+        role="search"
+        aria-label={t.filters}
+        onSubmit={(e) => e.preventDefault()}
+      >
         <div className="field">
           <label htmlFor="q">{t.searchLabel}</label>
           <input
@@ -152,29 +568,54 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           />
         </div>
 
+        {/*
+          The checkbox names its own consequence and the note underneath refuses the
+          inference it invites. "Only programs with reported outcomes" was true and unusable:
+          it did not say that a third of the dataset is on the other side of it, and it read
+          as a quality filter, which is exactly what it is not.
+        */}
         <fieldset style={{ border: 0, margin: 0, padding: 0 }}>
-          <legend>{t.filters}</legend>
+          <legend>{copy.unreportedLegend}</legend>
           <label className="checkline">
             <input
               type="checkbox"
               checked={onlyReported}
-              onChange={(e) => setOnlyReported(e.target.checked)}
+              aria-describedby="reported-note"
+              onChange={(e) => {
+                setOnlyReported(e.target.checked);
+                setLimit(PAGE_SIZE);
+              }}
             />
-            <span>{t.filterOutcomes}</span>
+            <span>{copy.unreportedCheckbox(unreported)}</span>
           </label>
+          <p
+            id="reported-note"
+            style={{ margin: "0.5rem 0 0", fontSize: "0.8125rem", lineHeight: 1.45 }}
+          >
+            {copy.unreportedNote(unreported)}
+          </p>
         </fieldset>
 
         <div className="field">
-          <label htmlFor="outlook">{t.filterOutlook}</label>
+          <label htmlFor="outlook">{copy.outlookLabel}</label>
           <select
             id="outlook"
             value={outlook}
-            onChange={(e) => setOutlook(e.target.value as Outlook)}
+            aria-describedby={hiddenNoProjection > 0 ? "outlook-note" : undefined}
+            onChange={(e) => {
+              setOutlook(e.target.value as Outlook);
+              setLimit(PAGE_SIZE);
+            }}
           >
-            <option value="any">{t.outlookAny}</option>
-            <option value="growing">{t.outlookGrowing}</option>
-            <option value="shrinking">{t.outlookShrinking}</option>
+            <option value="any">{copy.outlookAny}</option>
+            <option value="growing">{copy.outlookGrowing}</option>
+            <option value="shrinking">{copy.outlookShrinking}</option>
           </select>
+          {hiddenNoProjection > 0 && (
+            <p id="outlook-note" style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}>
+              {copy.outlookNoProjection(hiddenNoProjection)}
+            </p>
+          )}
         </div>
 
         <div className="field">
@@ -206,7 +647,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             )}
           </select>
           <p id="area-note" style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}>
-            {t.areaNote(stats.unplaced, stats.total)}
+            {copy.areaNote(stats.unplaced, stats.total)}
           </p>
         </div>
 
@@ -239,29 +680,42 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </select>
         </div>
 
+        {/*
+          Cost is the decision for someone out of work, so the note says what the price
+          covers and — as importantly — what it does not net off. The federal field is the
+          tuition and supplies a student pays without WIOA funding; naming it "out-of-pocket"
+          with no gloss invited the reading that aid had already been deducted.
+        */}
         <div className="field">
-          <label htmlFor="cost">{t.filterMaxCost}</label>
+          <label htmlFor="cost">{copy.costLabel}</label>
           <select
             id="cost"
             value={maxCost ?? ""}
-            onChange={(e) => setMaxCost(e.target.value === "" ? null : Number(e.target.value))}
+            aria-describedby="cost-note"
+            onChange={(e) => {
+              setMaxCost(e.target.value === "" ? null : Number(e.target.value));
+              setLimit(PAGE_SIZE);
+            }}
           >
             <option value="">{t.filterAnyCost}</option>
             {COST_CAPS.map((cap) => (
               <option key={cap} value={cap}>
-                {money(cap, lang)}
+                {copy.costAtMost(money(cap, lang) ?? "")}
               </option>
             ))}
           </select>
+          <p id="cost-note" style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}>
+            {copy.costNote}
+          </p>
         </div>
 
         <div className="field">
           <label htmlFor="sort">{t.sortBy}</label>
           <select id="sort" value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
             <option value="relevance">{t.sortRelevance}</option>
-            <option value="earnings">{t.sortEarnings}</option>
+            <option value="earnings">{copy.sortEarnings}</option>
             <option value="cost">{t.sortCost}</option>
-            <option value="openings">{t.sortOpenings}</option>
+            <option value="openings">{copy.sortOpenings}</option>
           </select>
         </div>
 
@@ -270,18 +724,34 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         </button>
       </form>
 
-      <section aria-label={t.searchLabel}>
+      <section aria-label={copy.resultsRegion}>
         {/*
           The facts that justify the whole dataset, stated before any result. The first two
           are public today and neither is discoverable beside the other anywhere else. The
           third is about the dataset's own reach rather than California's training system,
           and it sits here because a reader deserves it before, not after, they narrow by
           region and wonder where everything went.
+
+          Each button names the number it will show, so the three do not read as three
+          identical "Show these" and so a screen-reader user hearing them out of context can
+          tell them apart.
         */}
         <ul className="stat-strip">
-          <li>{t.statReported(stats.reported, stats.total)}</li>
           <li>
-            {t.statShrinking(stats.shrinking)}{" "}
+            {copy.statReported(stats.reported, stats.total)}{" "}
+            <button
+              type="button"
+              className="linklike"
+              onClick={() => {
+                setOnlyReported(true);
+                setLimit(PAGE_SIZE);
+              }}
+            >
+              {copy.showOnlyReported(stats.reported)}
+            </button>
+          </li>
+          <li>
+            {copy.statShrinking(stats.shrinking)}{" "}
             <button
               type="button"
               className="linklike"
@@ -290,7 +760,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
                 setLimit(PAGE_SIZE);
               }}
             >
-              {t.showThese}
+              {copy.showTheseN(stats.shrinking)}
             </button>
           </li>
           {/*
@@ -300,16 +770,16 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           */}
           {stats.unplaced > 0 && (
             <li>
-              {t.statUnplaced(stats.unplaced, stats.total)}{" "}
+              {copy.statUnplaced(stats.unplaced, stats.total)}{" "}
               <button type="button" className="linklike" onClick={() => selectArea(UNPLACED_AREA)}>
-                {t.showThese}
+                {copy.showTheseN(stats.unplaced)}
               </button>
             </li>
           )}
         </ul>
 
         {/*
-          The cost of the region filter, in the exact terms of the search that is runnint.
+          The cost of the region filter, in the exact terms of the search that is running.
           A reader who narrowed to Fresno MSA must not read the result as "everything near
           Fresno", and the honest correction is the count of what a region can never include.
         */}
@@ -318,7 +788,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             <p style={{ margin: 0 }}>
               {t.areaHidesUnplaced(hiddenUnplaced)}{" "}
               <button type="button" className="linklike" onClick={() => selectArea(UNPLACED_AREA)}>
-                {t.showThese}
+                {copy.showTheseN(hiddenUnplaced)}
               </button>
             </p>
           </div>
@@ -334,9 +804,15 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         )}
 
         <div className="results-head">
-          <p className="results-count" role="status" aria-live="polite">
+          {/*
+            The count is the results section's own heading as well as its live region: it is
+            the only true title the section has, and making it one gives the page an h1 → h2
+            → h3 outline it previously lacked entirely. `aria-live` rather than
+            `role="status"`, which would replace the heading role and take the outline back.
+          */}
+          <h2 className="results-count" aria-live="polite" aria-atomic="true">
             {t.resultsCount(results.length, programs.length)}
-          </p>
+          </h2>
         </div>
 
         {/*
@@ -349,11 +825,53 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         )}
 
         {results.length === 0 ? (
+          /*
+            The empty state does the arithmetic instead of asking the reader to.
+
+            "Try removing a filter or searching for a broader term" is advice the page is far
+            better placed to give than to receive: it knows which controls are set, and it can
+            afford to re-run a 3,266-row scan once per control to find out which of them is
+            the one holding everything back. So it names them, with the count each would
+            return, strongest first.
+          */
           <div className="panel panel-quiet">
             <p>
               <strong>{t.noResults}</strong>
             </p>
-            <p>{t.noResultsHint}</p>
+
+            {relaxations.length > 0 ? (
+              <>
+                <p>{copy.relaxLead}</p>
+                <ul style={{ margin: "0 0 0.5rem", paddingLeft: "1.25rem" }}>
+                  {relaxations.map((option) => (
+                    <li key={option.key} style={{ marginBottom: "0.375rem" }}>
+                      <button type="button" className="linklike" onClick={option.apply}>
+                        {copy.relaxOption(option.label, option.count)}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : anyFilterActive ? (
+              <p>
+                {copy.nothingHelps}{" "}
+                <button type="button" className="linklike" onClick={clear}>
+                  {t.clearFilters}
+                </button>
+              </p>
+            ) : (
+              <p>{t.noResultsHint}</p>
+            )}
+
+            {/*
+              Said whenever a search term found nothing, in both languages. It is the whole
+              explanation for a Spanish speaker — the corpus is English-only, so a Spanish
+              term cannot match — and the Spanish wording carries the worked examples for
+              that reason rather than mirroring the English sentence for sentence.
+            */}
+            {filters.query.trim() !== "" && (
+              <p style={{ marginBottom: 0 }}>{copy.englishOnly}</p>
+            )}
           </div>
         ) : (
           <>

@@ -8,19 +8,30 @@ on the other. Nothing in California publishes those two facts next to each other
 from __future__ import annotations
 
 import json
+import time
 from collections import Counter
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any, Final
 
-from camino.sources import careeronestop, dol_etp, edd_lmi, soc_vintage
+from camino.sources import careeronestop, dol_etp, edd_lmi, link_check, soc_vintage
 
 DEFAULT_STATE = "CA"
 
 COS_CACHE_DIR = Path("data/raw/cos-cache")
 """Where CareerOneStop responses are kept so a rebuild does not re-ask for unchanged data."""
+
+LINK_CACHE_DIR = Path("data/raw") / link_check.DEFAULT_CACHE_SUBDIR
+"""Per-URL link verdicts, kept so a re-run asks only about what has expired."""
+
+LINK_CHECK_PATH = Path("data/interim/link-checks.json")
+"""Where ``camino check-links`` leaves its report and where ``camino build`` looks for one.
+
+Under ``data/interim`` rather than ``data/processed`` because it is not part of the site
+dataset: it is advisory input to the build, produced by a separate, explicitly-invoked step,
+and a build that finds nothing here is a complete build."""
 
 
 @dataclass(frozen=True)
@@ -97,6 +108,42 @@ class CohortIntegrityCoverage:
     not_attributable: int
 
 
+@dataclass(frozen=True)
+class ProviderLinkCoverage:
+    """What this build does with the "Provider's website" link on each program page.
+
+    Published because the link is an assertion this project makes on a reader's behalf and
+    the federal feed does not maintain it. A reader who is shown fewer links than the dataset
+    contains URLs is owed the count and the reason.
+
+    The three-state rule is visible in the shape rather than implied by it.
+    ``programs_unchecked`` is its own number and is never folded into ``programs_alive``:
+    nothing was established about those links, which is a different fact from establishing
+    that they work. ``earliest_check`` and ``latest_check`` are null on a build that read no
+    link data, and a null there means "nothing was looked at", never "nothing was wrong".
+    """
+
+    programs_with_link: int
+    distinct_urls: int
+    checked_urls: int
+    unchecked_urls: int
+    programs_checked: int
+    programs_unchecked: int
+    # By verdict, counted over program pages rather than URLs, because one dead domain on 126
+    # pages is a 126-page problem and a per-URL count would report it as one.
+    programs_alive: int
+    programs_dead: int
+    programs_indeterminate: int
+    # What the reader actually gets.
+    programs_linked: int
+    programs_not_linked: int
+    programs_upgraded_to_https: int
+    programs_sent_to_front_page: int
+    programs_labelled_home_page: int
+    earliest_check: str | None
+    latest_check: str | None
+
+
 @dataclass
 class CoverageReport:
     """Honest accounting of what the data does and does not cover.
@@ -131,6 +178,9 @@ class CoverageReport:
     # Occupation-side coverage from CareerOneStop (D6). Zeroed, not absent, when the build
     # ran without credentials.
     enrichment: EnrichmentCoverage
+    # What became of the provider links. All-unchecked, not absent, when the build read no
+    # link report -- which is the CI case and a complete build.
+    provider_links: ProviderLinkCoverage
 
     @property
     def outcome_coverage_pct(self) -> float:
@@ -243,6 +293,199 @@ def fetch_enrichment(
             if enrichment is not None:
                 found[soc_code] = enrichment
     return found
+
+
+# --------------------------------------------------------------------------------------
+# Provider links
+#
+# The check is not part of a build and must never become one. It costs ~1,500 HTTP requests
+# against small colleges and adult schools, CI has no network at all, and a build that
+# depends on a thousand third parties being reachable fails for reasons that have nothing to
+# do with the data. So it is a separate command, cached on disk, whose report a later build
+# reads if it is there. No report is not an error and not a gap to be filled with a default:
+# it means nothing was established, and the build publishes every link exactly as filed.
+# --------------------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class LinkCheckRun:
+    """What one explicit link-check pass established, for the operator who invoked it."""
+
+    urls: int
+    pages: int
+    front_pages_checked: int
+    by_verdict: Mapping[link_check.Verdict, int]
+    pages_by_verdict: Mapping[link_check.Verdict, int]
+    upgradeable_urls: int
+    upgradeable_pages: int
+    recorded_requests: int
+    """HTTP requests these results cost. A cached entry carries the cost of the run that
+    made it, so on a warm cache this is a record of the traffic, not of this pass."""
+    output_path: Path
+
+
+def provider_link_pages(payloads: Iterable[Mapping[str, Any]]) -> dict[str, int]:
+    """Each distinct provider URL in a dataset, and how many program pages render it.
+
+    The weighting is the point. 1,016 URLs sit on 1,836 pages and the distribution is
+    extremely top-heavy -- one lapsed adult-education domain is on 126 of them -- so a
+    per-URL count would describe the wrong problem.
+    """
+    counts = Counter(url for payload in payloads if (url := payload.get("program_url")) is not None)
+    return dict(counts)
+
+
+def load_link_checks(path: Path | None) -> dict[str, link_check.LinkCheck]:
+    """Read a link-check report, or return nothing at all.
+
+    An absent file is the ordinary case and returns an empty mapping, which every consumer
+    treats as "unchecked" rather than as any verdict. A file that exists and cannot be read
+    raises: an operator pointed the build at it, and silently downgrading a malformed report
+    to "nothing was checked" would republish links this project had already established were
+    broken.
+    """
+    if path is None or not path.exists():
+        return {}
+    return link_check.checks_from_document(json.loads(path.read_text(encoding="utf-8")))
+
+
+def check_provider_links(
+    dataset_dir: Path,
+    *,
+    output_path: Path = LINK_CHECK_PATH,
+    cache_dir: Path | None = LINK_CACHE_DIR,
+    max_workers: int = link_check.MAX_WORKERS,
+    on_result: Callable[[link_check.LinkCheck], None] | None = None,
+    sleep: Callable[[float], None] = time.sleep,
+) -> LinkCheckRun:
+    """Ask every provider URL in an emitted dataset whether it still goes anywhere.
+
+    Two passes over one client. The first reads every distinct ``program_url``. The second
+    reads the front page of each host that answered a 404, because "this page is gone" and
+    "this provider is gone" are different findings and the first one has a better answer than
+    suppression: link the front door instead. The second pass is roughly a tenth the size of
+    the first.
+
+    The URLs come from a dataset this pipeline has already emitted rather than from a fresh
+    fetch, so checking links costs DOL nothing and can be run against exactly what is
+    published. Run ``camino build`` first; run it again afterwards to pick the report up.
+
+    ``sleep`` is injectable for the reason
+    :func:`camino.sources.link_check.check_urls` makes it injectable: the pacing between
+    requests to one provider is a property worth testing and not worth waiting for.
+    """
+    programs_path = dataset_dir / "programs.json"
+    if not programs_path.exists():
+        raise FileNotFoundError(
+            f"no dataset at {programs_path}. Run `camino build` first: the check reads the "
+            "URLs from an emitted dataset rather than re-fetching them."
+        )
+    document = json.loads(programs_path.read_text(encoding="utf-8"))
+    pages = provider_link_pages(document["programs"])
+
+    cache = link_check.LinkCheckCache(cache_dir)
+    with link_check.build_client(max_workers=max_workers) as client:
+        checks = link_check.check_urls(
+            pages,
+            client=client,
+            cache=cache,
+            max_workers=max_workers,
+            on_result=on_result,
+            sleep=sleep,
+        )
+        front_pages = link_check.check_urls(
+            link_check.front_page_candidates(checks),
+            client=client,
+            cache=cache,
+            max_workers=max_workers,
+            on_result=on_result,
+            sleep=sleep,
+        )
+
+    # Front pages are merged into one mapping because that is what `decide` reads, but they
+    # are summarised out of the headline counts: they are evidence about a substitution, not
+    # links this dataset publishes, and counting them would inflate every figure in the
+    # report that motivated this work.
+    merged = {**checks, **front_pages}
+    summary = link_check.summarise(checks, pages_per_url=pages)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(link_check.checks_document(merged), indent=1), encoding="utf-8"
+    )
+    return LinkCheckRun(
+        urls=summary.urls_checked,
+        pages=summary.pages_affected,
+        front_pages_checked=len(front_pages),
+        by_verdict=summary.by_verdict,
+        pages_by_verdict=summary.pages_by_verdict,
+        upgradeable_urls=summary.upgradeable_urls,
+        upgradeable_pages=summary.upgradeable_pages,
+        recorded_requests=sum(check.attempts for check in merged.values()),
+        output_path=output_path,
+    )
+
+
+def provider_link(
+    url: str | None, checks: Mapping[str, link_check.LinkCheck]
+) -> dict[str, Any] | None:
+    """The provider-link block for one program, or ``None`` when it has no URL at all.
+
+    Null means this program filed no provider website, which is 1,430 of California's 3,266
+    programs and has nothing to do with the check. It is not "we suppressed it": that case is
+    a populated block whose ``href`` is null and whose ``notice`` says on what date we failed
+    to reach the page.
+    """
+    decision = link_check.decide(checks, url)
+    return None if decision is None else decision.as_dict()
+
+
+def _attach_provider_links(
+    payloads: list[dict[str, Any]], checks: Mapping[str, link_check.LinkCheck]
+) -> None:
+    """Write every record's link decision, in place.
+
+    Always written, even with no link data, for the same reason the cohort verdict always is:
+    a consumer must be able to tell "checked, and there is nothing to say" from "built before
+    this existed". With no link data every block reads unchecked, and unchecked renders
+    exactly as this dataset has always rendered -- the URL, linked, unannotated.
+    """
+    for payload in payloads:
+        payload["provider_link"] = provider_link(payload["program_url"], checks)
+
+
+def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCoverage:
+    """Count what became of the links, from the emitted records rather than the checks.
+
+    Same discipline as :func:`enrichment_coverage` and :func:`cohort_integrity_coverage`:
+    the only honest count is of what a reader will actually meet on the pages.
+    """
+    links = [payload["provider_link"] for payload in payloads if payload["provider_link"]]
+    checked = [link for link in links if link["verdict"] is not None]
+    dates = sorted(link["checked_on"] for link in checked)
+    urls = {link["url"] for link in links}
+    checked_urls = {link["url"] for link in checked}
+    verdicts = Counter(link["verdict"] for link in checked)
+    substitutions = Counter(link["substitution"] for link in links)
+    return ProviderLinkCoverage(
+        programs_with_link=len(links),
+        distinct_urls=len(urls),
+        checked_urls=len(checked_urls),
+        unchecked_urls=len(urls - checked_urls),
+        programs_checked=len(checked),
+        programs_unchecked=len(links) - len(checked),
+        programs_alive=verdicts["alive"],
+        programs_dead=verdicts["dead"],
+        programs_indeterminate=verdicts["indeterminate"],
+        programs_linked=sum(1 for link in links if link["linked"]),
+        programs_not_linked=sum(1 for link in links if not link["linked"]),
+        programs_upgraded_to_https=substitutions[link_check.SUBSTITUTION_HTTPS],
+        programs_sent_to_front_page=substitutions[link_check.SUBSTITUTION_FRONT_PAGE],
+        programs_labelled_home_page=sum(
+            1 for link in links if link["label"] == link_check.LABEL_PROVIDER_HOME
+        ),
+        earliest_check=dates[0] if dates else None,
+        latest_check=dates[-1] if dates else None,
+    )
 
 
 def index_occupations(
@@ -675,6 +918,7 @@ def program_payload(
     occupations: dict[str, dict[str, Any]],
     city_areas: Mapping[str, edd_lmi.ProjectionArea] | None = None,
     cohort: dol_etp.CohortIntegrity | None = None,
+    link_checks: Mapping[str, link_check.LinkCheck] | None = None,
 ) -> dict[str, Any]:
     """One program record, with its outcomes labelled by who they actually describe.
 
@@ -683,6 +927,10 @@ def program_payload(
     inside any one of them. Omitting it judges the program against itself alone, which is a
     real answer -- the contradiction checks still run -- and is what a caller holding a
     single record can honestly say.
+
+    ``link_checks`` comes from a separate, explicitly-invoked pass over the provider URLs.
+    Omitting it is the ordinary case -- CI has no network -- and produces a record that
+    publishes its link exactly as the federal feed filed it, claiming nothing about it.
     """
     integrity = (
         cohort
@@ -701,7 +949,11 @@ def program_payload(
         "program_name": program.program_name,
         "description": program.description,
         "program_format": program.program_format,
+        # The URL exactly as filed, never rewritten. What to *do* with it -- link it, link
+        # the provider's front page instead, or link nothing and say why -- is the block
+        # below, so a consumer can always see the source's own value alongside the decision.
         "program_url": program.program_url,
+        "provider_link": provider_link(program.program_url, link_checks or {}),
         "entity_type": program.entity_type,
         "cip_code": program.cip_code,
         "soc_codes": list(program.soc_codes),
@@ -1040,13 +1292,23 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
         payload["outcomes"]["cohort"] = verdict.as_dict()
 
 
-def build_offline(fixture_dir: Path, *, output_dir: Path | None = None) -> int:
+def build_offline(
+    fixture_dir: Path, *, output_dir: Path | None = None, link_checks_path: Path | None = None
+) -> int:
     """Emit the site bundle from a committed fixture instead of the live sources.
 
     CI uses this. The upstream DOL endpoint refuses requests from GitHub Actions runners,
     and a build that depends on a third party being reachable fails for reasons that have
     nothing to do with the change under test. This runs the same emit code as a real build,
     so the shape of what the site consumes is exercised either way.
+
+    ``link_checks_path`` defaults to nothing, so this build establishes nothing about any
+    provider link and publishes every one as filed. That is deliberate: the fixture build is
+    the hermetic one, and a link verdict copied out of some other machine's report would be
+    an observation this build did not make. It is recomputed rather than trusted from the
+    fixture for the same reason :func:`_attach_cohort_integrity` recomputes -- a fixture
+    predating the field carries no block, and defaulting one in would publish "we checked
+    this" about a link nothing had checked.
     """
     output_dir = output_dir or Path("web/public/data")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1059,7 +1321,9 @@ def build_offline(fixture_dir: Path, *, output_dir: Path | None = None) -> int:
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
     _attach_cohort_integrity(payloads)
+    _attach_provider_links(payloads, load_link_checks(link_checks_path))
     coverage["cohort_integrity"] = asdict(cohort_integrity_coverage(payloads))
+    coverage["provider_links"] = asdict(provider_link_coverage(payloads))
     coverage["peer_medians"] = peer_medians(payloads)
 
     for name, document in (
@@ -1084,10 +1348,18 @@ def build(
     *,
     output_dir: Path | None = None,
     snapshot: str | None = None,
+    link_checks_path: Path | None = LINK_CHECK_PATH,
 ) -> CoverageReport:
+    """Fetch, join and emit. Reads a provider-link report if one has been left for it.
+
+    ``link_checks_path`` is consumed, never produced: the check is
+    :func:`check_provider_links`, invoked deliberately by ``camino check-links``, and a build
+    that found no report is a complete build whose links are published exactly as filed.
+    """
     output_dir = output_dir or Path("data/processed")
     output_dir.mkdir(parents=True, exist_ok=True)
     snapshot = snapshot or date.today().isoformat()
+    link_checks = load_link_checks(link_checks_path)
 
     programs = list(dol_etp.fetch_programs(state))
     benchmark = dol_etp.fetch_state_benchmark(state)
@@ -1106,7 +1378,7 @@ def build(
     # from inside a single row.
     integrity = dol_etp.cohort_integrity([dol_etp.CohortFiling.of(p) for p in programs])
     payloads = [
-        program_payload(p, occupations, city_areas, cohort=c)
+        program_payload(p, occupations, city_areas, cohort=c, link_checks=link_checks)
         for p, c in zip(programs, integrity, strict=True)
     ]
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
@@ -1138,6 +1410,7 @@ def build(
         ),
         cohort_integrity=cohort_integrity_coverage(payloads),
         enrichment=enrichment_coverage(occupations),
+        provider_links=provider_link_coverage(payloads),
     )
 
     (output_dir / "programs.json").write_text(
