@@ -582,6 +582,11 @@ areaNote: (unplaced: number, total: number) =>
   jobsHeading: (n: number): string =>
     n === 1 ? "The job this trains for" : "The jobs this trains for",
   jobDetail: "Pay, hiring, and what people studied",
+  fundingGuideTitle: "Paying for training in California",
+  fundingGuideIntro:
+    "Federal and state money can pay for training for people who qualify. None of it is decided on this site, and nothing here is a promise that a particular person will be funded. What follows is what the public rules say, who decides, and what to ask them.",
+  fundingGuideLink: "How this gets paid for, and what to ask",
+  navPaying: "Paying for it",
   fundingHowSummary: "How this gets paid for, and what to ask",
   fundingQuestionsHeading: "What to ask before you commit",
   fundingQuestionsJobCenter: "Questions for the America's Job Center",
@@ -605,6 +610,13 @@ areaNote: (unplaced: number, total: number) =>
  * character-identical to the English.
  */
 type Dictionary = typeof en;
+
+/**
+ * The dictionary as a parameter type, for modules that take `t` rather than a language.
+ * Exported so the funding copy tables can live beside the components that render them
+ * instead of inside a single page file.
+ */
+export type Copy = Dictionary;
 
 const es: Dictionary = {
   siteName: "Camino",
@@ -1130,6 +1142,11 @@ areaNote: (unplaced, total) =>
   jobsHeading: (n: number) =>
     n === 1 ? "El empleo para el que capacita" : "Los empleos para los que capacita",
   jobDetail: "Sueldo, contratación y qué estudió la gente",
+  fundingGuideTitle: "Pagar la capacitación en California",
+  fundingGuideIntro:
+    "Hay fondos federales y estatales que pueden pagar la capacitación de quienes reúnen los requisitos. Nada de eso se decide en este sitio, y nada de lo aquí escrito promete que una persona vaya a recibir fondos. Lo que sigue es lo que dicen las reglas públicas, quién decide y qué conviene preguntarles.",
+  fundingGuideLink: "Cómo se paga esto y qué preguntar",
+  navPaying: "Cómo pagarlo",
   fundingHowSummary: "Cómo se paga esto y qué preguntar",
   fundingQuestionsHeading: "Qué preguntar antes de comprometerse",
   fundingQuestionsJobCenter: "Preguntas para el America's Job Center",

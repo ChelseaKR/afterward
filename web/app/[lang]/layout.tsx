@@ -212,6 +212,12 @@ export default async function LangLayout({
                 <li>
                   <Link href={`/${lang}/providers/`}>{t.navProviders}</Link>
                 </li>
+                <li>
+                  {/* Reachable without first finding a program: someone who wants to know
+                      whether any of this can be paid for should not have to pick a course
+                      before the answer is offered to them. */}
+                  <Link href={`/${lang}/paying-for-training/`}>{t.navPaying}</Link>
+                </li>
               </ul>
             </nav>
 

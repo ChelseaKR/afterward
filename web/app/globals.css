@@ -468,8 +468,13 @@ body {
   padding-block: 1.5rem 4rem;
   /* Centered rather than left-aligned in the wider shell. Left-aligned it stranded roughly a
      third of a desktop viewport as empty space beside every page, which reads as a layout
-     that failed rather than as breathing room. */
-  max-width: 54rem;
+     that failed rather than as breathing room.
+
+     Narrowed from 54rem to sit closer to the 62ch measure the prose is set to. At 54rem the
+     data panels ran the full width while every paragraph stopped two hundred pixels short,
+     so the page had two different right edges and looked unresolved even once it was half
+     the length. */
+  max-width: 46rem;
   margin-inline: auto;
 }
 

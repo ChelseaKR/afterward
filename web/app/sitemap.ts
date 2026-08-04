@@ -35,6 +35,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...LANGUAGES.flatMap((lang) => [
       { path: `/${lang}/occupations/`, priority: 0.8 },
       { path: `/${lang}/providers/`, priority: 0.8 },
+      // The funding rules, which used to be repeated inside every program page and are now
+      // one page those pages link to. A crawler that never reaches it would see 6,532 links
+      // pointing at a page absent from the sitemap.
+      { path: `/${lang}/paying-for-training/`, priority: 0.8 },
     ]),
     ...LANGUAGES.flatMap((lang) =>
       allOccupationCodes().map((soc) => ({

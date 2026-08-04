@@ -2,6 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import {
+  CENTERS_STEP,
+  Citations,
+  LEAD_STEP,
+  Questions,
+  stepCopy,
+} from "@/components/funding";
 import { Measure } from "@/components/Measure";
 import { allProgramIds, getCoverage, getOccupation, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
@@ -920,96 +927,6 @@ function Attainment({
  * ========================================================================================== */
 
 /**
- * The localised text for each claim the pipeline publishes, keyed by the claim's stable id.
- *
- * Keyed by id rather than by position, because a step inserted upstream would otherwise
- * silently re-point every translation after it, and keyed on ids rather than on the English so
- * that a comma moving does not orphan a Spanish sentence.
- *
- * A claim with no entry here falls back to the pipeline's English. That is deliberately the
- * weakest of the three possible behaviours to leave in place — dropping the claim would silently
- * withhold something about money from exactly one language, and crashing would take down the
- * export — and it is unreachable in a passing build: a Python test fails when the module
- * publishes a string this file cannot render.
- */
-const STEP_COPY: Record<string, (t: Copy) => { heading: string; detail: string }> = {
-  ita: (t) => ({ heading: t.fundingHeading, detail: t.fundingIta }),
-  where_to_ask: (t) => ({ heading: t.fundingCentersHeading, detail: t.fundingCenters }),
-  who_can_be_served: (t) => ({
-    heading: t.fundingWhoCanBeServedHeading,
-    detail: t.fundingWhoCanBeServed,
-  }),
-  say_your_priority_status: (t) => ({
-    heading: t.fundingPriorityHeading,
-    detail: t.fundingPriority,
-  }),
-  supportive_services: (t) => ({ heading: t.fundingSupportHeading, detail: t.fundingSupport }),
-  local_and_annual: (t) => ({ heading: t.fundingLocalHeading, detail: t.fundingLocal }),
-};
-
-const QUESTION_COPY: Record<string, (t: Copy) => { ask: string; because: string }> = {
-  etpl_now: (t) => ({ ask: t.fundingAskEtplNow, because: t.fundingWhyEtplNow }),
-  full_price: (t) => ({ ask: t.fundingAskFullPrice, because: t.fundingWhyFullPrice }),
-  credential: (t) => ({ ask: t.fundingAskCredential, because: t.fundingWhyCredential }),
-  withdrawal: (t) => ({ ask: t.fundingAskWithdrawal, because: t.fundingWhyWithdrawal }),
-  schedule: (t) => ({ ask: t.fundingAskSchedule, because: t.fundingWhySchedule }),
-  funding_stream: (t) => ({ ask: t.fundingAskFundingStream, because: t.fundingWhyFundingStream }),
-  local_demand: (t) => ({ ask: t.fundingAskLocalDemand, because: t.fundingWhyLocalDemand }),
-  ita_cap: (t) => ({ ask: t.fundingAskItaCap, because: t.fundingWhyItaCap }),
-  self_sufficiency: (t) => ({
-    ask: t.fundingAskSelfSufficiency,
-    because: t.fundingWhySelfSufficiency,
-  }),
-  out_of_area: (t) => ({ ask: t.fundingAskOutOfArea, because: t.fundingWhyOutOfArea }),
-  funds_left: (t) => ({ ask: t.fundingAskFundsLeft, because: t.fundingWhyFundsLeft }),
-  other_grants_first: (t) => ({
-    ask: t.fundingAskOtherGrantsFirst,
-    because: t.fundingWhyOtherGrantsFirst,
-  }),
-  support_costs: (t) => ({ ask: t.fundingAskSupportCosts, because: t.fundingWhySupportCosts }),
-  what_to_bring: (t) => ({ ask: t.fundingAskWhatToBring, because: t.fundingWhyWhatToBring }),
-};
-
-/** The step whose heading opens the block, so it is not printed twice. */
-const LEAD_STEP = "ita";
-
-/** The step the offices belong under: it is the one that says what an office is. */
-const CENTERS_STEP = "where_to_ask";
-
-function stepCopy(step: FundingStep, t: Copy): { heading: string; detail: string } {
-  return STEP_COPY[step.id]?.(t) ?? { heading: step.heading, detail: step.detail };
-}
-
-function questionCopy(question: FundingQuestion, t: Copy): { ask: string; because: string } {
-  return QUESTION_COPY[question.id]?.(t) ?? { ask: question.ask, because: question.because };
-}
-
-/**
- * The rules a claim rests on, as links a reader can open.
- *
- * Every claim on this block is about somebody else's money and somebody else's rules, so none of
- * it is published without the citation the pipeline attached to it. The labels are the official
- * titles of federal regulations and state pages, which exist in English only; the note at the
- * foot of the block says so rather than leaving a Spanish reader to wonder.
- */
-function Citations({ citations, label }: { citations: FundingCitation[]; label: string }) {
-  if (citations.length === 0) return null;
-  return (
-    <p className="funding-cite">
-      <span className="funding-cite-label">{label}</span>{" "}
-      {citations.map((citation, index) => (
-        <span key={citation.url}>
-          {index > 0 ? " · " : ""}
-          <a href={citation.url} rel="nofollow noopener noreferrer" target="_blank">
-            {citation.label}
-          </a>
-        </span>
-      ))}
-    </p>
-  );
-}
-
-/**
  * A dialable form of a published phone number, or null.
  *
  * Only digits and a leading `+` reach the href: the number is a third-party string arriving from
@@ -1189,40 +1106,6 @@ function NearestCenters({
 }
 
 /** The questions worth asking, split by who can answer them, collapsed but never omitted. */
-function Questions({
-  questions,
-  heading,
-  lang,
-}: {
-  questions: FundingQuestion[];
-  heading: string;
-  lang: Lang;
-}) {
-  const t = dict(lang);
-  if (questions.length === 0) return null;
-
-  return (
-    <details className="funding-questions">
-      <summary>
-        {heading} ({questions.length})
-      </summary>
-      <ol>
-        {questions.map((question) => {
-          const copy = questionCopy(question, t);
-          return (
-            <li key={question.id}>
-              <p className="funding-ask">
-                <strong>{copy.ask}</strong>
-              </p>
-              <p>{copy.because}</p>
-              <Citations citations={question.citations} label={t.fundingRuleLabel} />
-            </li>
-          );
-        })}
-      </ol>
-    </details>
-  );
-}
 
 function FundingBlock({
   program,
@@ -1260,12 +1143,6 @@ function FundingBlock({
         * not, and listings lapse.
         */}
       <p className="funding-lede">{t.fundingLede(snapshot)}</p>
-      {lead !== undefined && (
-        <>
-          <p>{stepCopy(lead, t).detail}</p>
-          <Citations citations={lead.citations} label={t.fundingRuleLabel} />
-        </>
-      )}
 
       {/*
         The offices come before the explanation of them.
@@ -1286,35 +1163,16 @@ function FundingBlock({
       )}
 
       {/*
-        Collapsed, but never the sentence that says none of this is an offer — that one stays
-        outside, below, exactly as it always has.
+        The rules live on one page now, not on 6,532 copies of themselves.
+
+        This block held about 1,071 words, every one of them identical on every program page,
+        because it describes a federal program rather than a course. What is left here is the
+        two things that are actually about this program: the dated sentence saying it was on
+        the state's list, and the offices nearest to it.
       */}
-      <details className="funding-detail">
-        <summary>{t.fundingHowSummary}</summary>
-
-        {others.map((step) => {
-          const copy = stepCopy(step, t);
-          return (
-            <section key={step.id} className="funding-step">
-              <h3>{copy.heading}</h3>
-              <p>{copy.detail}</p>
-              <Citations citations={step.citations} label={t.fundingRuleLabel} />
-            </section>
-          );
-        })}
-
-        <h3>{t.fundingQuestionsHeading}</h3>
-        <Questions
-          questions={localHelp.guidance.questions.filter((q) => q.audience === "job_center")}
-          heading={t.fundingQuestionsJobCenter}
-          lang={lang}
-        />
-        <Questions
-          questions={localHelp.guidance.questions.filter((q) => q.audience === "provider")}
-          heading={t.fundingQuestionsProvider}
-          lang={lang}
-        />
-      </details>
+      <p>
+        <Link href={`/${lang}/paying-for-training/`}>{t.fundingGuideLink} →</Link>
+      </p>
 
       {/*
         * Never inside a <details>, never moved to the footer, and never conditional on anything
@@ -1543,9 +1401,19 @@ export default async function ProgramPage({
 
       <h2>{t.outcomes}</h2>
 
-      <dl className="measure-grid panel">
-        <Measure label={t.peopleServed} value={count(outcomes.total_served, lang)} lang={lang} />
-      </dl>
+      {/*
+        Only when there is a number.
+
+        A program that reported nothing opened this section with "People enrolled — Not
+        reported" and then, immediately below, a panel explaining that no outcomes were
+        reported. The panel is the better sentence and it says the same thing, so the
+        measure is not printed to say it first and worse.
+      */}
+      {outcomes.total_served !== null && (
+        <dl className="measure-grid panel">
+          <Measure label={t.peopleServed} value={count(outcomes.total_served, lang)} lang={lang} />
+        </dl>
+      )}
 
       {outcomes.reported ? (
         <>
