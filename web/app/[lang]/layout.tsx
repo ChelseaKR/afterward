@@ -8,6 +8,41 @@ export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
 }
 
+/**
+ * Marks the section link for wherever the visitor currently is.
+ *
+ * This has to run in the browser, for two reasons that both rule out doing it at build
+ * time. A layout is a server component and is never told the path being rendered. More
+ * decisively, a layout is rendered once and then *kept* across client-side navigations —
+ * only the page segment is re-fetched — so a value baked in at build time would be right
+ * on first load and wrong from the first link onwards, which is worse than absent. The
+ * marking therefore follows the router: `pushState` is what the App Router calls on every
+ * client navigation, and `popstate` covers back and forward.
+ *
+ * Ten lines of inline script rather than making the whole masthead a client component,
+ * which would pull the coverage figures and both dictionaries into the bundle to decorate
+ * two links. Without JavaScript the nav still works and still reads correctly; what is lost
+ * is the announcement of which section you are already in, not the ability to get there.
+ */
+const MARK_CURRENT_SECTION = `(function () {
+  function mark() {
+    var here = location.pathname;
+    document.querySelectorAll(".site-nav a").forEach(function (link) {
+      var section = new URL(link.href).pathname;
+      if (here === section) link.setAttribute("aria-current", "page");
+      else if (here.indexOf(section) === 0) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+  }
+  var push = history.pushState;
+  history.pushState = function () {
+    push.apply(this, arguments);
+    mark();
+  };
+  addEventListener("popstate", mark);
+  mark();
+})();`;
+
 export default async function LangLayout({
   children,
   params,
@@ -52,6 +87,28 @@ export default async function LangLayout({
                 {LANG_NAME[other]}
               </Link>
             </div>
+
+            {/*
+              The two browse indexes were reachable only by typing the URL. They are the
+              site's other two ways in — by the job you want or by the school you were
+              about to enrol in — so they belong in the chrome rather than in a link at the
+              bottom of one page. Their own row under the wordmark: dropping them into the
+              masthead row would either crowd the tagline or push the language toggle off a
+              narrow screen, and the language toggle is not something to make harder to find.
+            */}
+            <nav className="shell site-nav" aria-label={t.navLabel}>
+              <ul>
+                <li>
+                  <Link href={`/${lang}/occupations/`}>{t.navOccupations}</Link>
+                </li>
+                <li>
+                  <Link href={`/${lang}/providers/`}>{t.navProviders}</Link>
+                </li>
+              </ul>
+            </nav>
+
+            {/* Inline and immediately after the nav, so the links exist when it runs. */}
+            <script dangerouslySetInnerHTML={{ __html: MARK_CURRENT_SECTION }} />
           </div>
         </header>
 

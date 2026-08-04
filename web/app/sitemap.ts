@@ -29,6 +29,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const paths = [
     ...LANGUAGES.map((lang) => ({ path: `/${lang}/`, priority: 1 })),
+    // The browse indexes rank above any single occupation or provider: each one is the
+    // whole set in one page, and they are the two pages a crawler needs in order to reach
+    // the rest of the site without executing the search.
+    ...LANGUAGES.flatMap((lang) => [
+      { path: `/${lang}/occupations/`, priority: 0.8 },
+      { path: `/${lang}/providers/`, priority: 0.8 },
+    ]),
     ...LANGUAGES.flatMap((lang) =>
       allOccupationCodes().map((soc) => ({
         path: `/${lang}/occupations/${soc}/`,

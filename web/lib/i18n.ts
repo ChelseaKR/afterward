@@ -166,6 +166,16 @@ const en = {
 
   browseAllOccupations: "Browse all occupations",
   browseAllProviders: "Browse all providers",
+
+  // ---- Site chrome ----
+  navLabel: "Main navigation",
+  navOccupations: "Occupations",
+  navProviders: "Providers",
+
+  // Shown at the site root, where a visitor arriving from a search engine has been told
+  // nothing yet. Two sentences: what it costs them, and what the numbers are.
+  siteSummary:
+    "Free to use, with no account. Every figure comes from public federal and state records, and a program that reported nothing is shown as having reported nothing.",
 };
 
 /**
@@ -330,6 +340,14 @@ const es: Dictionary = {
 
   browseAllOccupations: "Ver todas las ocupaciones",
   browseAllProviders: "Ver todas las instituciones",
+
+  // ---- Site chrome ----
+  navLabel: "Navegación principal",
+  navOccupations: "Ocupaciones",
+  navProviders: "Instituciones",
+
+  siteSummary:
+    "De uso gratuito y sin cuenta. Cada cifra viene de registros públicos federales y estatales, y un programa que no reportó nada aparece justamente así: sin nada reportado.",
 };
 
 function fmt(n: number): string {

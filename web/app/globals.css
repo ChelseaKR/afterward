@@ -629,6 +629,98 @@ td.num {
   font-size: 0.875rem;
 }
 
+/* ---------- Site chrome: section nav and language chooser ---------- */
+
+/*
+ * The browse indexes get their own row under the wordmark, inside the masthead and on the
+ * masthead's own background, so they inherit its one foreground colour rather than
+ * introducing a second. Everything here is layout and weight for that reason.
+ */
+.site-nav {
+  margin-top: 0.875rem;
+}
+
+/* The rule sits on the list, not on the `.shell` around it, so it starts and ends level
+   with the wordmark instead of running to the edge of a phone screen. */
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0 0;
+  border-top: 1px solid rgb(255 255 255 / 25%);
+  font-size: 0.9375rem;
+}
+
+/* Flex, so the line box's descender space does not leave the masthead bottom-heavy. */
+.site-nav li {
+  display: flex;
+}
+
+/* Padding rather than margin: the whole height is the tap target, which matters most on the
+   phone this is most likely to be read on. */
+.site-nav a {
+  display: inline-block;
+  padding: 0.5rem 0;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
+
+/*
+ * The current section. Weight and a rule in the text's own colour — the same reasoning as
+ * the comparison table's best-in-row cell, and it keeps the masthead to the single
+ * foreground/background pairing the contrast audit already covers.
+ */
+.site-nav a[aria-current] {
+  font-weight: 700;
+  border-bottom-color: currentColor;
+}
+
+/*
+ * A focus ring the masthead can actually show. The design system styles focus for buttons
+ * and its own nav component but leaves a plain link to the browser default, which assumes a
+ * light page — on this background Safari's is close to invisible. Drawn in the colour the
+ * masthead already uses for its text, so it adds no pairing the contrast audit does not
+ * already cover, and applied to every masthead link so the wordmark and language toggle do
+ * not behave differently from the two links added beside them.
+ */
+.masthead a:focus-visible {
+  outline: 2px solid var(--gray-10);
+  outline-offset: 2px;
+}
+
+/* The root chooser carries the notice in both languages, so it holds more than one line. */
+.disclaimer p {
+  margin: 0;
+}
+
+.disclaimer p + p {
+  margin-top: 0.25rem;
+}
+
+.lang-choice {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 2rem;
+}
+
+.lang-choice h2 {
+  margin: 0 0 0.375rem;
+  font-size: 1.25rem;
+}
+
+.lang-choice p {
+  margin: 0 0 0.375rem;
+  max-width: var(--measure);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
