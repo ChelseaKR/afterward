@@ -130,7 +130,7 @@ speaker before it ships — an incorrect job title is worse than an English one.
 
 ### D11 — The shrinking-jobs finding is now a control, not a footnote
 
-The earlier entry said the 219 programs training for declining occupations should be a
+The earlier entry said the programs training for declining occupations should be a
 first-class view. It is: the search page opens with two sentences of context — how many
 programs report anything, and how many train for work California expects less of — with a
 button that filters to the second. The outlook filter is three-way (any / growing /
@@ -222,7 +222,8 @@ places nobody had thought to look.
 
 ### One finding worth surfacing in the product
 
-**219 California programs train people for occupations the state itself projects will
-shrink.** Both halves of that sentence are public today and neither is discoverable next to
+**518 California programs train people for occupations the state itself projects will
+shrink.** (Originally recorded as 219; see the review entry below — that figure counted only
+each program's first occupation.) Both halves of that sentence are public today and neither is discoverable next to
 the other. It is the clearest single argument for why this join should exist, and it should
 be a first-class view rather than a statistic buried in a report.

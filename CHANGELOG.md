@@ -15,7 +15,7 @@ All notable changes to this project are documented here. The format follows
   California's own figures.
 - Bilingual (English/Spanish) static site built with the California Design System: search
   with filters, program detail, and occupation detail.
-- Three-way job outlook filter, surfacing the 219 programs training for occupations the
+- Three-way job outlook filter, surfacing the 518 programs training for occupations the
   state projects will shrink.
 - Coverage reporting as a published artifact rather than a debug log.
 - Accessibility audit over the built pages, failing the build on any axe violation.
