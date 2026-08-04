@@ -79,5 +79,12 @@ scan now excludes vendored directories.
 - `occupations.json` is 9.1 MB; it likely needs splitting per-occupation for the site.
 - 584 distinct providers across 3,266 programs — provider-name normalisation is unverified
   and may be inflating that count.
-- Program length is sparsely populated (`weeks` is often null); worth quantifying before
-  designing a duration filter around it.
+- Program length turned out to be near-complete (`weeks` present for 3,254 of 3,266), so a
+  duration filter is safe to design around. Resolved on the day it was raised.
+
+### One finding worth surfacing in the product
+
+**219 California programs train people for occupations the state itself projects will
+shrink.** Both halves of that sentence are public today and neither is discoverable next to
+the other. It is the clearest single argument for why this join should exist, and it should
+be a first-class view rather than a statistic buried in a report.
