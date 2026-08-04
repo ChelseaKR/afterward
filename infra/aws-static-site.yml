@@ -1,0 +1,311 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Private S3 and CloudFront origin for camino.chelseakr.com, including
+  Route 53 DNS, an ACM certificate, and a least-privilege GitHub OIDC deploy role.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: camino.chelseakr.com
+    AllowedPattern: ^[a-z0-9.-]+$
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Default: Z09063681IX9IVZF7L6YB
+  SiteBucketName:
+    Type: String
+    Default: camino.chelseakr.com
+  GitHubRepository:
+    Type: String
+    Default: ChelseaKR/camino
+    AllowedPattern: ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$
+  PublishDns:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+
+Conditions:
+  PublishDnsRecords: !Equals [!Ref PublishDns, "true"]
+
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref SiteBucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireNoncurrentVersions
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 30
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  SiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+      ValidationMethod: DNS
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Description: !Sub "Private ${DomainName} S3 origin"
+        Name: !Sub "${AWS::StackName}-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  RouteRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      AutoPublish: true
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri;
+          if (uri.endsWith('/')) {
+            request.uri += 'index.html';
+          } else if (!uri.split('/').pop().includes('.')) {
+            request.uri += '/index.html';
+          }
+          return request;
+        }
+      FunctionConfig:
+        Comment: Resolve directory-style public routes to their reviewed index documents.
+        Runtime: cloudfront-js-2.0
+      Name: !Sub "${AWS::StackName}-route-rewrite"
+
+  SiteResponseHeaders:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Comment: Security headers for a static site that collects nothing and embeds nothing.
+        CustomHeadersConfig:
+          Items:
+            - Header: Cache-Control
+              Override: true
+              Value: public, max-age=0, must-revalidate
+            # This site asks for no device capability at all. Denying the lot is not
+            # defensive posturing; there is genuinely nothing here that needs any of it.
+            - Header: Permissions-Policy
+              Override: true
+              Value: camera=(), geolocation=(), microphone=(), payment=(), usb=(), interest-cohort=()
+            # Everything is first-party and static. No inline event handlers, no third-party
+            # scripts, no remote fonts, no analytics, and no form posts anywhere.
+            - Header: Content-Security-Policy
+              Override: true
+              Value: >-
+                default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'
+                'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self';
+                form-action 'none'; frame-ancestors 'none'; base-uri 'self';
+                object-src 'none'; upgrade-insecure-requests
+        Name: !Sub "${AWS::StackName}-security-headers"
+        SecurityHeadersConfig:
+          ContentTypeOptions:
+            Override: true
+          # Nothing here is meant to be framed, and a site wearing California's design
+          # system is exactly the sort of thing worth refusing to let someone else reframe.
+          FrameOptions:
+            FrameOption: DENY
+            Override: true
+          ReferrerPolicy:
+            Override: true
+            ReferrerPolicy: strict-origin-when-cross-origin
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 63072000
+            IncludeSubdomains: true
+            Override: true
+            Preload: true
+          XSSProtection:
+            ModeBlock: true
+            Override: true
+            Protection: true
+
+  SiteCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: >-
+          Cache public assets at the edge while keeping verifier query tokens distinct.
+        DefaultTTL: 300
+        MaxTTL: 86400
+        MinTTL: 0
+        Name: !Sub "${AWS::StackName}-public-cache"
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: whitelist
+            QueryStrings:
+              - verify
+
+  SiteDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref DomainName
+        Comment: !Sub "Public NearMiss evidence site at ${DomainName}"
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachePolicyId: !Ref SiteCachePolicy
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt RouteRewriteFunction.FunctionMetadata.FunctionARN
+          ResponseHeadersPolicyId: !Ref SiteResponseHeaders
+          TargetOriginId: private-site-bucket
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        Origins:
+          - DomainName: !GetAtt SiteBucket.RegionalDomainName
+            Id: private-site-bucket
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SiteCertificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub >-
+                  arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution}
+
+  SiteDnsA:
+    Type: AWS::Route53::RecordSet
+    Condition: PublishDnsRecords
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt SiteDistribution.DomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: Z2FDTNDATAQYW2
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+
+  SiteDnsAAAA:
+    Type: AWS::Route53::RecordSet
+    Condition: PublishDnsRecords
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt SiteDistribution.DomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: Z2FDTNDATAQYW2
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: AAAA
+
+  GitHubDeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub >-
+                arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+                "token.actions.githubusercontent.com:sub": !Sub >-
+                  repo:${GitHubRepository}:environment:production
+      Description: Deploy the reviewed NearMiss static artifact from the production environment.
+      Policies:
+        - PolicyName: DeployNearMissStaticSite
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ListSiteBucket
+                Effect: Allow
+                Action:
+                  - s3:GetBucketLocation
+                  - s3:ListBucket
+                Resource: !GetAtt SiteBucket.Arn
+              - Sid: PublishSiteObjects
+                Effect: Allow
+                Action:
+                  - s3:DeleteObject
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub "${SiteBucket.Arn}/*"
+              - Sid: InvalidateSiteDistribution
+                Effect: Allow
+                Action:
+                  - cloudfront:CreateInvalidation
+                  - cloudfront:GetInvalidation
+                Resource: !Sub >-
+                  arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution}
+      RoleName: !Sub "${AWS::StackName}-github-deploy"
+
+Outputs:
+  CloudFrontDistributionId:
+    Value: !Ref SiteDistribution
+  CloudFrontDomainName:
+    Value: !GetAtt SiteDistribution.DomainName
+  DeploymentRoleArn:
+    Value: !GetAtt GitHubDeployRole.Arn
+  ProductionUrl:
+    Value: !Sub "https://${DomainName}"
+  SiteBucketName:
+    Value: !Ref SiteBucket

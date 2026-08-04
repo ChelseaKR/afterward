@@ -129,8 +129,8 @@ if (SINGLE) {
   if (contrastPending > 0) {
     console.log(
       "\nnote  colour contrast is not machine-checkable here (jsdom has no layout engine)." +
-        "\n      The palette comes from the California Design System, which ships AA-conformant" +
-        "\n      pairings, but verify in a browser before any public launch.",
+        "\n      `npm run contrast` checks it separately, resolving the design system's own" +
+        "\n      tokens and computing real WCAG ratios for both light and dark.",
     );
   }
 
