@@ -51,6 +51,10 @@ const en = {
   sortOpenings: "Most job openings",
 
   cost: "Cost",
+  costAtLeast: (v: string) => `At least ${v}`,
+  costPartial:
+    "One cost component was not reported, so the real total is higher than this.",
+  leadsToSeveral: "Trains for more than one job. The outlook shown is the weakest of them.",
   length: "Length",
   weeks: (n: number) => `${fmt(n)} weeks`,
   provider: "Provider",
@@ -133,7 +137,9 @@ const es: Dictionary = {
   skipToContent: "Saltar al contenido principal",
 
   searchLabel: "Busque programas, instituciones u ocupaciones",
-  searchPlaceholder: "asistente médico, soldadura, Fresno…",
+  // Program and occupation names in the source data are English only, so a Spanish
+  // example would return nothing. These terms actually match.
+  searchPlaceholder: "medical assistant, welding, Fresno…",
   filters: "Filtros",
   clearFilters: "Borrar filtros",
   resultsCount: (n: number, total: number) => `${fmt(n)} de ${fmt(total)} programas`,
@@ -161,6 +167,11 @@ const es: Dictionary = {
   sortOpenings: "Más vacantes",
 
   cost: "Costo",
+  costAtLeast: (v: string) => `Al menos ${v}`,
+  costPartial:
+    "No se reportó uno de los componentes del costo, así que el total real es más alto que este.",
+  leadsToSeveral:
+    "Prepara para más de una ocupación. La perspectiva mostrada es la más débil de ellas.",
   length: "Duración",
   weeks: (n: number) => `${fmt(n)} semanas`,
   provider: "Institución",

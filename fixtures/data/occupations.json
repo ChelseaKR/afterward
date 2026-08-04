@@ -260,8 +260,8 @@
      "soc_code": "11-3021",
      "title": "Computer and Information Systems Managers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 930.0,
      "percent_change": 12.4,
      "numeric_change": 140.0,
@@ -379,8 +379,8 @@
      "soc_code": "11-3021",
      "title": "Computer and Information Systems Managers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 16630.0,
      "percent_change": 12.7,
      "numeric_change": 2550.0,
@@ -546,27 +546,6 @@
    ],
    "related": [
     {
-     "soc_code": "11-9000",
-     "title": "Other Management Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 672950.0,
-     "percent_change": 10.3
-    },
-    {
-     "soc_code": "11-3000",
-     "title": "Operations Specialties Managers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 309140.0,
-     "percent_change": 12.1
-    },
-    {
-     "soc_code": "11-1000",
-     "title": "Top Executives",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 303250.0,
-     "percent_change": 6.8
-    },
-    {
      "soc_code": "11-1021",
      "title": "General and Operations Managers",
      "median_annual_wage": 126477.0,
@@ -581,11 +560,32 @@
      "percent_change": 9.7
     },
     {
-     "soc_code": "11-2000",
-     "title": "Advertising, Marketing, Promotions, Public Relations, and Sales Managers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 154060.0,
-     "percent_change": 5.0
+     "soc_code": "11-9111",
+     "title": "Medical and Health Services Managers",
+     "median_annual_wage": 143854.0,
+     "total_job_openings": 90810.0,
+     "percent_change": 34.9
+    },
+    {
+     "soc_code": "11-9013",
+     "title": "Farmers, Ranchers, and Other Agricultural Managers",
+     "median_annual_wage": 110971.0,
+     "total_job_openings": 89600.0,
+     "percent_change": -2.5
+    },
+    {
+     "soc_code": "11-2022",
+     "title": "Sales Managers",
+     "median_annual_wage": 137173.0,
+     "total_job_openings": 88500.0,
+     "percent_change": 2.9
+    },
+    {
+     "soc_code": "11-3031",
+     "title": "Financial Managers",
+     "median_annual_wage": 183803.0,
+     "total_job_openings": 84770.0,
+     "percent_change": 16.3
     }
    ]
   },
@@ -1134,27 +1134,6 @@
    ],
    "related": [
     {
-     "soc_code": "11-9000",
-     "title": "Other Management Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 672950.0,
-     "percent_change": 10.3
-    },
-    {
-     "soc_code": "11-3000",
-     "title": "Operations Specialties Managers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 309140.0,
-     "percent_change": 12.1
-    },
-    {
-     "soc_code": "11-1000",
-     "title": "Top Executives",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 303250.0,
-     "percent_change": 6.8
-    },
-    {
      "soc_code": "11-1021",
      "title": "General and Operations Managers",
      "median_annual_wage": 126477.0,
@@ -1169,11 +1148,32 @@
      "percent_change": 9.7
     },
     {
-     "soc_code": "11-2000",
-     "title": "Advertising, Marketing, Promotions, Public Relations, and Sales Managers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 154060.0,
-     "percent_change": 5.0
+     "soc_code": "11-9111",
+     "title": "Medical and Health Services Managers",
+     "median_annual_wage": 143854.0,
+     "total_job_openings": 90810.0,
+     "percent_change": 34.9
+    },
+    {
+     "soc_code": "11-9013",
+     "title": "Farmers, Ranchers, and Other Agricultural Managers",
+     "median_annual_wage": 110971.0,
+     "total_job_openings": 89600.0,
+     "percent_change": -2.5
+    },
+    {
+     "soc_code": "11-2022",
+     "title": "Sales Managers",
+     "median_annual_wage": 137173.0,
+     "total_job_openings": 88500.0,
+     "percent_change": 2.9
+    },
+    {
+     "soc_code": "11-3031",
+     "title": "Financial Managers",
+     "median_annual_wage": 183803.0,
+     "total_job_openings": 84770.0,
+     "percent_change": 16.3
     }
    ]
   },
@@ -1334,8 +1334,8 @@
      "soc_code": "11-9111",
      "title": "Medical and Health Services Managers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 270.0,
      "percent_change": 21.4,
      "numeric_change": 60.0,
@@ -1688,27 +1688,6 @@
    ],
    "related": [
     {
-     "soc_code": "11-9000",
-     "title": "Other Management Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 672950.0,
-     "percent_change": 10.3
-    },
-    {
-     "soc_code": "11-3000",
-     "title": "Operations Specialties Managers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 309140.0,
-     "percent_change": 12.1
-    },
-    {
-     "soc_code": "11-1000",
-     "title": "Top Executives",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 303250.0,
-     "percent_change": 6.8
-    },
-    {
      "soc_code": "11-1021",
      "title": "General and Operations Managers",
      "median_annual_wage": 126477.0,
@@ -1723,11 +1702,32 @@
      "percent_change": 9.7
     },
     {
-     "soc_code": "11-2000",
-     "title": "Advertising, Marketing, Promotions, Public Relations, and Sales Managers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 154060.0,
-     "percent_change": 5.0
+     "soc_code": "11-9013",
+     "title": "Farmers, Ranchers, and Other Agricultural Managers",
+     "median_annual_wage": 110971.0,
+     "total_job_openings": 89600.0,
+     "percent_change": -2.5
+    },
+    {
+     "soc_code": "11-2022",
+     "title": "Sales Managers",
+     "median_annual_wage": 137173.0,
+     "total_job_openings": 88500.0,
+     "percent_change": 2.9
+    },
+    {
+     "soc_code": "11-3031",
+     "title": "Financial Managers",
+     "median_annual_wage": 183803.0,
+     "total_job_openings": 84770.0,
+     "percent_change": 16.3
+    },
+    {
+     "soc_code": "11-3021",
+     "title": "Computer and Information Systems Managers",
+     "median_annual_wage": 221952.0,
+     "total_job_openings": 82270.0,
+     "percent_change": 16.5
     }
    ]
   },
@@ -2276,20 +2276,6 @@
    ],
    "related": [
     {
-     "soc_code": "13-1000",
-     "title": "Business Operations Specialists",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 895750.0,
-     "percent_change": 8.5
-    },
-    {
-     "soc_code": "13-2000",
-     "title": "Financial Specialists",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 293940.0,
-     "percent_change": 6.4
-    },
-    {
      "soc_code": "13-2011",
      "title": "Accountants and Auditors",
      "median_annual_wage": 98678.0,
@@ -2316,6 +2302,20 @@
      "median_annual_wage": 84901.0,
      "total_job_openings": 97470.0,
      "percent_change": 10.4
+    },
+    {
+     "soc_code": "13-1082",
+     "title": "Project Management Specialists",
+     "median_annual_wage": 122938.0,
+     "total_job_openings": 89550.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "13-1020",
+     "title": "Buyers and Purchasing Agents",
+     "median_annual_wage": 84108.0,
+     "total_job_openings": 52140.0,
+     "percent_change": 6.6
     }
    ]
   },
@@ -2592,13 +2592,6 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1252",
      "title": "Software Developers",
      "median_annual_wage": 179292.0,
@@ -2613,13 +2606,6 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
-    },
-    {
      "soc_code": "15-1232",
      "title": "Computer User Support Specialists",
      "median_annual_wage": 81797.0,
@@ -2632,6 +2618,20 @@
      "median_annual_wage": 131295.0,
      "total_job_openings": 41500.0,
      "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
     }
    ]
   },
@@ -3129,13 +3129,6 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1252",
      "title": "Software Developers",
      "median_annual_wage": 179292.0,
@@ -3150,13 +3143,6 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
-    },
-    {
      "soc_code": "15-1232",
      "title": "Computer User Support Specialists",
      "median_annual_wage": 81797.0,
@@ -3169,6 +3155,20 @@
      "median_annual_wage": 131295.0,
      "total_job_openings": 41500.0,
      "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
     }
    ]
   },
@@ -3683,25 +3683,11 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1299",
      "title": "Computer Occupations, All Other",
      "median_annual_wage": 138203.0,
      "total_job_openings": 59320.0,
      "percent_change": 11.1
-    },
-    {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
     },
     {
      "soc_code": "15-1232",
@@ -3723,6 +3709,20 @@
      "median_annual_wage": 145554.0,
      "total_job_openings": 40180.0,
      "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
+    },
+    {
+     "soc_code": "15-1253",
+     "title": "Software Quality Assurance Analysts and Testers",
+     "median_annual_wage": 132344.0,
+     "total_job_openings": 19160.0,
+     "percent_change": 9.3
     }
    ]
   },
@@ -4033,13 +4033,6 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1252",
      "title": "Software Developers",
      "median_annual_wage": 179292.0,
@@ -4054,13 +4047,6 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
-    },
-    {
      "soc_code": "15-1232",
      "title": "Computer User Support Specialists",
      "median_annual_wage": 81797.0,
@@ -4073,6 +4059,20 @@
      "median_annual_wage": 131295.0,
      "total_job_openings": 41500.0,
      "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
     }
    ]
   },
@@ -4468,13 +4468,6 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1252",
      "title": "Software Developers",
      "median_annual_wage": 179292.0,
@@ -4489,13 +4482,6 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
-    },
-    {
      "soc_code": "15-1232",
      "title": "Computer User Support Specialists",
      "median_annual_wage": 81797.0,
@@ -4508,6 +4494,20 @@
      "median_annual_wage": 131295.0,
      "total_job_openings": 41500.0,
      "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1253",
+     "title": "Software Quality Assurance Analysts and Testers",
+     "median_annual_wage": 132344.0,
+     "total_job_openings": 19160.0,
+     "percent_change": 9.3
     }
    ]
   },
@@ -5056,25 +5056,11 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1252",
      "title": "Software Developers",
      "median_annual_wage": 179292.0,
      "total_job_openings": 207260.0,
      "percent_change": 18.4
-    },
-    {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
     },
     {
      "soc_code": "15-1232",
@@ -5096,6 +5082,20 @@
      "median_annual_wage": 145554.0,
      "total_job_openings": 40180.0,
      "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
+    },
+    {
+     "soc_code": "15-1253",
+     "title": "Software Quality Assurance Analysts and Testers",
+     "median_annual_wage": 132344.0,
+     "total_job_openings": 19160.0,
+     "percent_change": 9.3
     }
    ]
   },
@@ -5239,8 +5239,8 @@
      "soc_code": "15-2051",
      "title": "Data Scientists",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 30.0,
      "percent_change": 33.3,
      "numeric_change": 10.0,
@@ -5348,23 +5348,6 @@
      "numeric_change": 910.0,
      "base_employment": 2720.0,
      "projected_employment": 3630.0,
-     "entry_level_education": "Bachelor's degree",
-     "work_experience": "None",
-     "job_training": "None"
-    },
-    {
-     "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "15-2051",
-     "title": "Data Scientists",
-     "period": "2023-2033",
-     "median_annual_wage": 99061.0,
-     "median_hourly_wage": 47.63,
-     "total_job_openings": 50.0,
-     "percent_change": 33.3,
-     "numeric_change": 20.0,
-     "base_employment": 60.0,
-     "projected_employment": 80.0,
      "entry_level_education": "Bachelor's degree",
      "work_experience": "None",
      "job_training": "None"
@@ -5559,13 +5542,6 @@
    ],
    "related": [
     {
-     "soc_code": "15-1200",
-     "title": "Computer Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 467020.0,
-     "percent_change": 12.1
-    },
-    {
      "soc_code": "15-1252",
      "title": "Software Developers",
      "median_annual_wage": 179292.0,
@@ -5580,13 +5556,6 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-2000",
-     "title": "Mathematical Science Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 52610.0,
-     "percent_change": 32.3
-    },
-    {
      "soc_code": "15-1232",
      "title": "Computer User Support Specialists",
      "median_annual_wage": 81797.0,
@@ -5599,6 +5568,20 @@
      "median_annual_wage": 131295.0,
      "total_job_openings": 41500.0,
      "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
+    },
+    {
+     "soc_code": "15-1253",
+     "title": "Software Quality Assurance Analysts and Testers",
+     "median_annual_wage": 132344.0,
+     "total_job_openings": 19160.0,
+     "percent_change": 9.3
     }
    ]
   },
@@ -6113,20 +6096,6 @@
    ],
    "related": [
     {
-     "soc_code": "17-2000",
-     "title": "Engineers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 159020.0,
-     "percent_change": 7.8
-    },
-    {
-     "soc_code": "17-3000",
-     "title": "Drafters, Engineering Technicians, and Mapping Technicians",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 61060.0,
-     "percent_change": 1.9
-    },
-    {
      "soc_code": "17-2051",
      "title": "Civil Engineers",
      "median_annual_wage": 125929.0,
@@ -6153,6 +6122,20 @@
      "median_annual_wage": 134513.0,
      "total_job_openings": 19090.0,
      "percent_change": 6.4
+    },
+    {
+     "soc_code": "17-2071",
+     "title": "Electrical Engineers",
+     "median_annual_wage": 148072.0,
+     "total_job_openings": 15160.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "17-2061",
+     "title": "Computer Hardware Engineers",
+     "median_annual_wage": 190364.0,
+     "total_job_openings": 12740.0,
+     "percent_change": 7.8
     }
    ]
   },
@@ -6327,20 +6310,6 @@
    ],
    "related": [
     {
-     "soc_code": "17-2000",
-     "title": "Engineers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 159020.0,
-     "percent_change": 7.8
-    },
-    {
-     "soc_code": "17-3000",
-     "title": "Drafters, Engineering Technicians, and Mapping Technicians",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 61060.0,
-     "percent_change": 1.9
-    },
-    {
      "soc_code": "17-2051",
      "title": "Civil Engineers",
      "median_annual_wage": 125929.0,
@@ -6367,6 +6336,20 @@
      "median_annual_wage": 134513.0,
      "total_job_openings": 19090.0,
      "percent_change": 6.4
+    },
+    {
+     "soc_code": "17-2071",
+     "title": "Electrical Engineers",
+     "median_annual_wage": 148072.0,
+     "total_job_openings": 15160.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "17-2061",
+     "title": "Computer Hardware Engineers",
+     "median_annual_wage": 190364.0,
+     "total_job_openings": 12740.0,
+     "percent_change": 7.8
     }
    ]
   },
@@ -6541,20 +6524,6 @@
    ],
    "related": [
     {
-     "soc_code": "17-2000",
-     "title": "Engineers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 159020.0,
-     "percent_change": 7.8
-    },
-    {
-     "soc_code": "17-3000",
-     "title": "Drafters, Engineering Technicians, and Mapping Technicians",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 61060.0,
-     "percent_change": 1.9
-    },
-    {
      "soc_code": "17-2051",
      "title": "Civil Engineers",
      "median_annual_wage": 125929.0,
@@ -6581,6 +6550,20 @@
      "median_annual_wage": 134513.0,
      "total_job_openings": 19090.0,
      "percent_change": 6.4
+    },
+    {
+     "soc_code": "17-2071",
+     "title": "Electrical Engineers",
+     "median_annual_wage": 148072.0,
+     "total_job_openings": 15160.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "17-2061",
+     "title": "Computer Hardware Engineers",
+     "median_annual_wage": 190364.0,
+     "total_job_openings": 12740.0,
+     "percent_change": 7.8
     }
    ]
   },
@@ -6589,7 +6572,7 @@
    "title": "Elementary School Teachers, Except Special Education",
    "period": "2024-2034",
    "median_annual_wage": 102439.0,
-   "median_hourly_wage": 0.0,
+   "median_hourly_wage": null,
    "total_job_openings": 96800.0,
    "percent_change": -1.7,
    "numeric_change": -2600.0,
@@ -6606,7 +6589,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 103046.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 6550.0,
      "percent_change": 0.4,
      "numeric_change": 40.0,
@@ -6623,7 +6606,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 79113.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 3200.0,
      "percent_change": 9.9,
      "numeric_change": 400.0,
@@ -6640,7 +6623,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 96216.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 620.0,
      "percent_change": 1.1,
      "numeric_change": 10.0,
@@ -6657,7 +6640,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 84095.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 460.0,
      "percent_change": -3.9,
      "numeric_change": -30.0,
@@ -6674,7 +6657,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 104731.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 480.0,
      "percent_change": 2.9,
      "numeric_change": 20.0,
@@ -6691,7 +6674,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 82215.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 2830.0,
      "percent_change": -0.7,
      "numeric_change": -30.0,
@@ -6708,7 +6691,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100920.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 480.0,
      "percent_change": 4.5,
      "numeric_change": 30.0,
@@ -6725,7 +6708,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 103312.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 24840.0,
      "percent_change": 5.1,
      "numeric_change": 1750.0,
@@ -6742,7 +6725,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100047.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 850.0,
      "percent_change": 5.1,
      "numeric_change": 60.0,
@@ -6759,7 +6742,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100047.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1670.0,
      "percent_change": 3.4,
      "numeric_change": 80.0,
@@ -6776,7 +6759,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 83530.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 300.0,
      "percent_change": -4.1,
      "numeric_change": -20.0,
@@ -6793,7 +6776,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 81055.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 960.0,
      "percent_change": -3.8,
      "numeric_change": -60.0,
@@ -6810,7 +6793,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 80808.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1070.0,
      "percent_change": -4.0,
      "numeric_change": -70.0,
@@ -6827,7 +6810,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 103266.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 6400.0,
      "percent_change": 5.0,
      "numeric_change": 440.0,
@@ -6844,7 +6827,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100437.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1730.0,
      "percent_change": 2.0,
      "numeric_change": 50.0,
@@ -6861,7 +6844,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 82708.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 530.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -6878,7 +6861,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100211.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 12550.0,
      "percent_change": 4.5,
      "numeric_change": 790.0,
@@ -6895,7 +6878,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100941.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 7710.0,
      "percent_change": 12.9,
      "numeric_change": 1200.0,
@@ -6912,7 +6895,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 104053.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1170.0,
      "percent_change": 2.4,
      "numeric_change": 40.0,
@@ -6929,7 +6912,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 80562.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 8630.0,
      "percent_change": 4.2,
      "numeric_change": 510.0,
@@ -6946,7 +6929,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 95594.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 3680.0,
      "percent_change": 2.4,
      "numeric_change": 130.0,
@@ -6963,7 +6946,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 102492.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 5340.0,
      "percent_change": 7.8,
      "numeric_change": 550.0,
@@ -6980,7 +6963,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 94706.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 720.0,
      "percent_change": 1.9,
      "numeric_change": 20.0,
@@ -6997,7 +6980,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 98360.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 790.0,
      "percent_change": 3.5,
      "numeric_change": 40.0,
@@ -7014,7 +6997,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 82821.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 690.0,
      "percent_change": 3.0,
      "numeric_change": 30.0,
@@ -7031,7 +7014,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 102779.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1300.0,
      "percent_change": 1.0,
      "numeric_change": 20.0,
@@ -7048,7 +7031,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 99801.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1440.0,
      "percent_change": 0.9,
      "numeric_change": 20.0,
@@ -7065,7 +7048,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 97962.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1860.0,
      "percent_change": 8.2,
      "numeric_change": 200.0,
@@ -7082,7 +7065,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 100869.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 990.0,
      "percent_change": 7.7,
      "numeric_change": 100.0,
@@ -7099,7 +7082,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 104094.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1680.0,
      "percent_change": 3.3,
      "numeric_change": 80.0,
@@ -7116,7 +7099,7 @@
      "title": "Elementary School Teachers, Except Special Education",
      "period": "2023-2033",
      "median_annual_wage": 98650.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 420.0,
      "percent_change": 1.6,
      "numeric_change": 10.0,
@@ -7128,27 +7111,6 @@
     }
    ],
    "related": [
-    {
-     "soc_code": "25-3000",
-     "title": "Other Teachers and Instructors",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 372490.0,
-     "percent_change": 5.1
-    },
-    {
-     "soc_code": "25-2000",
-     "title": "Preschool, Elementary, Middle, Secondary, and Special Education Teachers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 301940.0,
-     "percent_change": 0.6
-    },
-    {
-     "soc_code": "25-9000",
-     "title": "Other Educational Instruction and Library Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 301410.0,
-     "percent_change": 0.8
-    },
     {
      "soc_code": "25-9045",
      "title": "Teaching Assistants, Except Postsecondary",
@@ -7164,11 +7126,32 @@
      "percent_change": 2.2
     },
     {
-     "soc_code": "25-1000",
-     "title": "Postsecondary Teachers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 128790.0,
-     "percent_change": 4.1
+     "soc_code": "25-3021",
+     "title": "Self-Enrichment Teachers",
+     "median_annual_wage": 50958.0,
+     "total_job_openings": 97020.0,
+     "percent_change": 10.2
+    },
+    {
+     "soc_code": "25-3041",
+     "title": "Tutors",
+     "median_annual_wage": 46362.0,
+     "total_job_openings": 91790.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "25-2011",
+     "title": "Preschool Teachers, Except Special Education",
+     "median_annual_wage": 48727.0,
+     "total_job_openings": 80570.0,
+     "percent_change": 13.1
+    },
+    {
+     "soc_code": "25-2031",
+     "title": "Secondary School Teachers, Except Special and Career/Technical Education",
+     "median_annual_wage": 104208.0,
+     "total_job_openings": 57820.0,
+     "percent_change": -1.5
     }
    ]
   },
@@ -7177,7 +7160,7 @@
    "title": "Secondary School Teachers, Except Special and Career/Technical Education",
    "period": "2024-2034",
    "median_annual_wage": 104208.0,
-   "median_hourly_wage": 0.0,
+   "median_hourly_wage": null,
    "total_job_openings": 57820.0,
    "percent_change": -1.5,
    "numeric_change": -1400.0,
@@ -7194,7 +7177,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 101204.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 3870.0,
      "percent_change": 0.5,
      "numeric_change": 30.0,
@@ -7211,7 +7194,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102071.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 2460.0,
      "percent_change": 9.9,
      "numeric_change": 330.0,
@@ -7228,7 +7211,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 85143.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 280.0,
      "percent_change": 2.2,
      "numeric_change": 10.0,
@@ -7245,7 +7228,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 101578.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 270.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -7262,7 +7245,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 98989.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 330.0,
      "percent_change": 1.9,
      "numeric_change": 10.0,
@@ -7279,7 +7262,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100160.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1830.0,
      "percent_change": -0.3,
      "numeric_change": -10.0,
@@ -7296,7 +7279,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102512.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 450.0,
      "percent_change": 4.4,
      "numeric_change": 30.0,
@@ -7313,7 +7296,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100503.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 15070.0,
      "percent_change": 5.2,
      "numeric_change": 1170.0,
@@ -7330,7 +7313,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100119.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 620.0,
      "percent_change": 5.4,
      "numeric_change": 50.0,
@@ -7347,7 +7330,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100119.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1120.0,
      "percent_change": 3.6,
      "numeric_change": 60.0,
@@ -7364,7 +7347,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 103457.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 150.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -7381,7 +7364,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 88101.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 480.0,
      "percent_change": -3.5,
      "numeric_change": -30.0,
@@ -7398,7 +7381,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 81209.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 430.0,
      "percent_change": -2.7,
      "numeric_change": -20.0,
@@ -7415,7 +7398,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102401.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 4880.0,
      "percent_change": 5.1,
      "numeric_change": 370.0,
@@ -7432,7 +7415,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100489.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1340.0,
      "percent_change": 2.9,
      "numeric_change": 60.0,
@@ -7449,7 +7432,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 94336.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 220.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -7466,7 +7449,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100571.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 8150.0,
      "percent_change": 4.7,
      "numeric_change": 570.0,
@@ -7483,7 +7466,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 106457.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 4860.0,
      "percent_change": 13.1,
      "numeric_change": 820.0,
@@ -7500,7 +7483,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100992.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 830.0,
      "percent_change": 2.4,
      "numeric_change": 30.0,
@@ -7517,7 +7500,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102451.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 4390.0,
      "percent_change": 4.2,
      "numeric_change": 280.0,
@@ -7534,7 +7517,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102800.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 2880.0,
      "percent_change": 2.7,
      "numeric_change": 120.0,
@@ -7551,7 +7534,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 106457.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 3360.0,
      "percent_change": 8.0,
      "numeric_change": 380.0,
@@ -7568,7 +7551,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 95579.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 350.0,
      "percent_change": 1.8,
      "numeric_change": 10.0,
@@ -7585,7 +7568,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 101350.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 600.0,
      "percent_change": 4.5,
      "numeric_change": 40.0,
@@ -7602,7 +7585,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 84403.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 380.0,
      "percent_change": 3.4,
      "numeric_change": 20.0,
@@ -7619,7 +7602,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102646.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 750.0,
      "percent_change": 0.8,
      "numeric_change": 10.0,
@@ -7636,7 +7619,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 100181.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 640.0,
      "percent_change": 1.0,
      "numeric_change": 10.0,
@@ -7653,7 +7636,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 96544.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 1390.0,
      "percent_change": 8.2,
      "numeric_change": 160.0,
@@ -7670,7 +7653,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 102862.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 560.0,
      "percent_change": 7.6,
      "numeric_change": 60.0,
@@ -7687,7 +7670,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 97911.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 940.0,
      "percent_change": 2.7,
      "numeric_change": 40.0,
@@ -7704,7 +7687,7 @@
      "title": "Secondary School Teachers, Except Special and Career/Technical Education",
      "period": "2023-2033",
      "median_annual_wage": 94870.0,
-     "median_hourly_wage": 0.0,
+     "median_hourly_wage": null,
      "total_job_openings": 460.0,
      "percent_change": 1.4,
      "numeric_change": 10.0,
@@ -7716,27 +7699,6 @@
     }
    ],
    "related": [
-    {
-     "soc_code": "25-3000",
-     "title": "Other Teachers and Instructors",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 372490.0,
-     "percent_change": 5.1
-    },
-    {
-     "soc_code": "25-2000",
-     "title": "Preschool, Elementary, Middle, Secondary, and Special Education Teachers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 301940.0,
-     "percent_change": 0.6
-    },
-    {
-     "soc_code": "25-9000",
-     "title": "Other Educational Instruction and Library Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 301410.0,
-     "percent_change": 0.8
-    },
     {
      "soc_code": "25-9045",
      "title": "Teaching Assistants, Except Postsecondary",
@@ -7752,11 +7714,32 @@
      "percent_change": 2.2
     },
     {
-     "soc_code": "25-1000",
-     "title": "Postsecondary Teachers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 128790.0,
-     "percent_change": 4.1
+     "soc_code": "25-3021",
+     "title": "Self-Enrichment Teachers",
+     "median_annual_wage": 50958.0,
+     "total_job_openings": 97020.0,
+     "percent_change": 10.2
+    },
+    {
+     "soc_code": "25-2021",
+     "title": "Elementary School Teachers, Except Special Education",
+     "median_annual_wage": 102439.0,
+     "total_job_openings": 96800.0,
+     "percent_change": -1.7
+    },
+    {
+     "soc_code": "25-3041",
+     "title": "Tutors",
+     "median_annual_wage": 46362.0,
+     "total_job_openings": 91790.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "25-2011",
+     "title": "Preschool Teachers, Except Special Education",
+     "median_annual_wage": 48727.0,
+     "total_job_openings": 80570.0,
+     "percent_change": 13.1
     }
    ]
   },
@@ -7798,8 +7781,8 @@
      "soc_code": "27-1014",
      "title": "Special Effects Artists and Animators",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 20.0,
      "percent_change": -25.0,
      "numeric_change": -10.0,
@@ -7999,34 +7982,6 @@
    ],
    "related": [
     {
-     "soc_code": "27-2000",
-     "title": "Entertainers and Performers, Sports and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 172630.0,
-     "percent_change": 8.3
-    },
-    {
-     "soc_code": "27-1000",
-     "title": "Art and Design Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 140080.0,
-     "percent_change": 3.4
-    },
-    {
-     "soc_code": "27-3000",
-     "title": "Media and Communication Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 103570.0,
-     "percent_change": 5.7
-    },
-    {
-     "soc_code": "27-4000",
-     "title": "Media and Communication Equipment Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 58130.0,
-     "percent_change": 6.1
-    },
-    {
      "soc_code": "27-2022",
      "title": "Coaches and Scouts",
      "median_annual_wage": 48994.0,
@@ -8036,9 +7991,37 @@
     {
      "soc_code": "27-2011",
      "title": "Actors",
-     "median_annual_wage": 0.0,
+     "median_annual_wage": null,
      "total_job_openings": 39840.0,
      "percent_change": 4.4
+    },
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors",
+     "median_annual_wage": 133423.0,
+     "total_job_openings": 31850.0,
+     "percent_change": 12.2
+    },
+    {
+     "soc_code": "27-3031",
+     "title": "Public Relations Specialists",
+     "median_annual_wage": 87410.0,
+     "total_job_openings": 31480.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors",
+     "median_annual_wage": 141637.0,
+     "total_job_openings": 30370.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2
     }
    ]
   },
@@ -8111,34 +8094,6 @@
    ],
    "related": [
     {
-     "soc_code": "27-2000",
-     "title": "Entertainers and Performers, Sports and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 172630.0,
-     "percent_change": 8.3
-    },
-    {
-     "soc_code": "27-1000",
-     "title": "Art and Design Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 140080.0,
-     "percent_change": 3.4
-    },
-    {
-     "soc_code": "27-3000",
-     "title": "Media and Communication Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 103570.0,
-     "percent_change": 5.7
-    },
-    {
-     "soc_code": "27-4000",
-     "title": "Media and Communication Equipment Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 58130.0,
-     "percent_change": 6.1
-    },
-    {
      "soc_code": "27-2022",
      "title": "Coaches and Scouts",
      "median_annual_wage": 48994.0,
@@ -8148,9 +8103,37 @@
     {
      "soc_code": "27-2011",
      "title": "Actors",
-     "median_annual_wage": 0.0,
+     "median_annual_wage": null,
      "total_job_openings": 39840.0,
      "percent_change": 4.4
+    },
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors",
+     "median_annual_wage": 133423.0,
+     "total_job_openings": 31850.0,
+     "percent_change": 12.2
+    },
+    {
+     "soc_code": "27-3031",
+     "title": "Public Relations Specialists",
+     "median_annual_wage": 87410.0,
+     "total_job_openings": 31480.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors",
+     "median_annual_wage": 141637.0,
+     "total_job_openings": 30370.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2
     }
    ]
   },
@@ -8460,29 +8443,12 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "27-1024",
-     "title": "Graphic Designers",
-     "period": "2023-2033",
-     "median_annual_wage": 68790.0,
-     "median_hourly_wage": 33.08,
-     "total_job_openings": 90.0,
-     "percent_change": 10.0,
-     "numeric_change": 10.0,
-     "base_employment": 100.0,
-     "projected_employment": 110.0,
-     "entry_level_education": "Bachelor's degree",
-     "work_experience": "None",
-     "job_training": "None"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "27-1024",
      "title": "Graphic Designers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 2260.0,
      "percent_change": 7.2,
      "numeric_change": 190.0,
@@ -8532,8 +8498,8 @@
      "soc_code": "27-1024",
      "title": "Graphic Designers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 140.0,
      "percent_change": 6.3,
      "numeric_change": 10.0,
@@ -8583,8 +8549,8 @@
      "soc_code": "27-1024",
      "title": "Graphic Designers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 240.0,
      "percent_change": 7.4,
      "numeric_change": 20.0,
@@ -8682,34 +8648,6 @@
    ],
    "related": [
     {
-     "soc_code": "27-2000",
-     "title": "Entertainers and Performers, Sports and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 172630.0,
-     "percent_change": 8.3
-    },
-    {
-     "soc_code": "27-1000",
-     "title": "Art and Design Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 140080.0,
-     "percent_change": 3.4
-    },
-    {
-     "soc_code": "27-3000",
-     "title": "Media and Communication Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 103570.0,
-     "percent_change": 5.7
-    },
-    {
-     "soc_code": "27-4000",
-     "title": "Media and Communication Equipment Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 58130.0,
-     "percent_change": 6.1
-    },
-    {
      "soc_code": "27-2022",
      "title": "Coaches and Scouts",
      "median_annual_wage": 48994.0,
@@ -8719,9 +8657,37 @@
     {
      "soc_code": "27-2011",
      "title": "Actors",
-     "median_annual_wage": 0.0,
+     "median_annual_wage": null,
      "total_job_openings": 39840.0,
      "percent_change": 4.4
+    },
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors",
+     "median_annual_wage": 133423.0,
+     "total_job_openings": 31850.0,
+     "percent_change": 12.2
+    },
+    {
+     "soc_code": "27-3031",
+     "title": "Public Relations Specialists",
+     "median_annual_wage": 87410.0,
+     "total_job_openings": 31480.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors",
+     "median_annual_wage": 141637.0,
+     "total_job_openings": 30370.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "27-3043",
+     "title": "Writers and Authors",
+     "median_annual_wage": 88901.0,
+     "total_job_openings": 23670.0,
+     "percent_change": 7.0
     }
    ]
   },
@@ -8916,8 +8882,8 @@
      "soc_code": "27-2012",
      "title": "Producers and Directors",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 210.0,
      "percent_change": 8.0,
      "numeric_change": 20.0,
@@ -8980,23 +8946,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "27-2012",
-     "title": "Producers and Directors",
-     "period": "2023-2033",
-     "median_annual_wage": 70998.0,
-     "median_hourly_wage": 34.13,
-     "total_job_openings": 90.0,
-     "percent_change": 22.2,
-     "numeric_change": 20.0,
-     "base_employment": 90.0,
-     "projected_employment": 110.0,
-     "entry_level_education": "Bachelor's degree",
-     "work_experience": "Less than 5 years",
-     "job_training": "None"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "27-2012",
      "title": "Producers and Directors",
@@ -9035,8 +8984,8 @@
      "soc_code": "27-2012",
      "title": "Producers and Directors",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 940.0,
      "percent_change": 7.9,
      "numeric_change": 90.0,
@@ -9151,34 +9100,6 @@
    ],
    "related": [
     {
-     "soc_code": "27-2000",
-     "title": "Entertainers and Performers, Sports and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 172630.0,
-     "percent_change": 8.3
-    },
-    {
-     "soc_code": "27-1000",
-     "title": "Art and Design Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 140080.0,
-     "percent_change": 3.4
-    },
-    {
-     "soc_code": "27-3000",
-     "title": "Media and Communication Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 103570.0,
-     "percent_change": 5.7
-    },
-    {
-     "soc_code": "27-4000",
-     "title": "Media and Communication Equipment Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 58130.0,
-     "percent_change": 6.1
-    },
-    {
      "soc_code": "27-2022",
      "title": "Coaches and Scouts",
      "median_annual_wage": 48994.0,
@@ -9188,9 +9109,37 @@
     {
      "soc_code": "27-2011",
      "title": "Actors",
-     "median_annual_wage": 0.0,
+     "median_annual_wage": null,
      "total_job_openings": 39840.0,
      "percent_change": 4.4
+    },
+    {
+     "soc_code": "27-3031",
+     "title": "Public Relations Specialists",
+     "median_annual_wage": 87410.0,
+     "total_job_openings": 31480.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors",
+     "median_annual_wage": 141637.0,
+     "total_job_openings": 30370.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2
+    },
+    {
+     "soc_code": "27-3043",
+     "title": "Writers and Authors",
+     "median_annual_wage": 88901.0,
+     "total_job_openings": 23670.0,
+     "percent_change": 7.0
     }
    ]
   },
@@ -9402,8 +9351,8 @@
      "soc_code": "27-4032",
      "title": "Film and Video Editors",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 30.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -9450,34 +9399,6 @@
    ],
    "related": [
     {
-     "soc_code": "27-2000",
-     "title": "Entertainers and Performers, Sports and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 172630.0,
-     "percent_change": 8.3
-    },
-    {
-     "soc_code": "27-1000",
-     "title": "Art and Design Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 140080.0,
-     "percent_change": 3.4
-    },
-    {
-     "soc_code": "27-3000",
-     "title": "Media and Communication Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 103570.0,
-     "percent_change": 5.7
-    },
-    {
-     "soc_code": "27-4000",
-     "title": "Media and Communication Equipment Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 58130.0,
-     "percent_change": 6.1
-    },
-    {
      "soc_code": "27-2022",
      "title": "Coaches and Scouts",
      "median_annual_wage": 48994.0,
@@ -9487,9 +9408,37 @@
     {
      "soc_code": "27-2011",
      "title": "Actors",
-     "median_annual_wage": 0.0,
+     "median_annual_wage": null,
      "total_job_openings": 39840.0,
      "percent_change": 4.4
+    },
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors",
+     "median_annual_wage": 133423.0,
+     "total_job_openings": 31850.0,
+     "percent_change": 12.2
+    },
+    {
+     "soc_code": "27-3031",
+     "title": "Public Relations Specialists",
+     "median_annual_wage": 87410.0,
+     "total_job_openings": 31480.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors",
+     "median_annual_wage": 141637.0,
+     "total_job_openings": 30370.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2
     }
    ]
   },
@@ -9684,8 +9633,8 @@
      "soc_code": "29-1141",
      "title": "Registered Nurses",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 790.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -10038,20 +9987,6 @@
    ],
    "related": [
     {
-     "soc_code": "29-1000",
-     "title": "Health Diagnosing or Treating Practitioners",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 430190.0,
-     "percent_change": 15.7
-    },
-    {
-     "soc_code": "29-2000",
-     "title": "Health Technologists and Technicians",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 299210.0,
-     "percent_change": 14.8
-    },
-    {
      "soc_code": "29-2061",
      "title": "Licensed Practical and Licensed Vocational Nurses",
      "median_annual_wage": 81982.0,
@@ -10078,6 +10013,20 @@
      "median_annual_wage": 78138.0,
      "total_job_openings": 22820.0,
      "percent_change": 11.9
+    },
+    {
+     "soc_code": "29-2099",
+     "title": "Health Technologists and Technicians, All Other",
+     "median_annual_wage": 62080.0,
+     "total_job_openings": 22750.0,
+     "percent_change": 14.3
+    },
+    {
+     "soc_code": "29-2042",
+     "title": "Emergency Medical Technicians",
+     "median_annual_wage": 47678.0,
+     "total_job_openings": 19450.0,
+     "percent_change": 15.0
     }
    ]
   },
@@ -10626,20 +10575,6 @@
    ],
    "related": [
     {
-     "soc_code": "29-1000",
-     "title": "Health Diagnosing or Treating Practitioners",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 430190.0,
-     "percent_change": 15.7
-    },
-    {
-     "soc_code": "29-2000",
-     "title": "Health Technologists and Technicians",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 299210.0,
-     "percent_change": 14.8
-    },
-    {
      "soc_code": "29-1141",
      "title": "Registered Nurses",
      "median_annual_wage": 144197.0,
@@ -10666,6 +10601,20 @@
      "median_annual_wage": 78138.0,
      "total_job_openings": 22820.0,
      "percent_change": 11.9
+    },
+    {
+     "soc_code": "29-2099",
+     "title": "Health Technologists and Technicians, All Other",
+     "median_annual_wage": 62080.0,
+     "total_job_openings": 22750.0,
+     "percent_change": 14.3
+    },
+    {
+     "soc_code": "29-2042",
+     "title": "Emergency Medical Technicians",
+     "median_annual_wage": 47678.0,
+     "total_job_openings": 19450.0,
+     "percent_change": 15.0
     }
    ]
   },
@@ -11214,20 +11163,6 @@
    ],
    "related": [
     {
-     "soc_code": "29-1000",
-     "title": "Health Diagnosing or Treating Practitioners",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 430190.0,
-     "percent_change": 15.7
-    },
-    {
-     "soc_code": "29-2000",
-     "title": "Health Technologists and Technicians",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 299210.0,
-     "percent_change": 14.8
-    },
-    {
      "soc_code": "29-1141",
      "title": "Registered Nurses",
      "median_annual_wage": 144197.0,
@@ -11254,6 +11189,20 @@
      "median_annual_wage": 173237.0,
      "total_job_openings": 26610.0,
      "percent_change": 52.2
+    },
+    {
+     "soc_code": "29-2010",
+     "title": "Clinical Laboratory Technologists and Technicians",
+     "median_annual_wage": 78138.0,
+     "total_job_openings": 22820.0,
+     "percent_change": 11.9
+    },
+    {
+     "soc_code": "29-2099",
+     "title": "Health Technologists and Technicians, All Other",
+     "median_annual_wage": 62080.0,
+     "total_job_openings": 22750.0,
+     "percent_change": 14.3
     }
    ]
   },
@@ -11785,25 +11734,11 @@
    ],
    "related": [
     {
-     "soc_code": "31-1100",
-     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 2311500.0,
-     "percent_change": 37.9
-    },
-    {
      "soc_code": "31-1120",
      "title": "Home Health and Personal Care Aides",
      "median_annual_wage": 35189.0,
      "total_job_openings": 2125350.0,
      "percent_change": 41.3
-    },
-    {
-     "soc_code": "31-9000",
-     "title": "Other Healthcare Support Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 417690.0,
-     "percent_change": 16.2
     },
     {
      "soc_code": "31-9092",
@@ -11825,6 +11760,20 @@
      "median_annual_wage": 47134.0,
      "total_job_openings": 38120.0,
      "percent_change": 20.9
+    },
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2
+    },
+    {
+     "soc_code": "31-9099",
+     "title": "Healthcare Support Workers, All Other",
+     "median_annual_wage": 50374.0,
+     "total_job_openings": 32750.0,
+     "percent_change": 7.1
     }
    ]
   },
@@ -12254,25 +12203,11 @@
    ],
    "related": [
     {
-     "soc_code": "31-1100",
-     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 2311500.0,
-     "percent_change": 37.9
-    },
-    {
      "soc_code": "31-1120",
      "title": "Home Health and Personal Care Aides",
      "median_annual_wage": 35189.0,
      "total_job_openings": 2125350.0,
      "percent_change": 41.3
-    },
-    {
-     "soc_code": "31-9000",
-     "title": "Other Healthcare Support Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 417690.0,
-     "percent_change": 16.2
     },
     {
      "soc_code": "31-9092",
@@ -12294,6 +12229,20 @@
      "median_annual_wage": 51379.0,
      "total_job_openings": 81180.0,
      "percent_change": 10.0
+    },
+    {
+     "soc_code": "31-9011",
+     "title": "Massage Therapists",
+     "median_annual_wage": 47134.0,
+     "total_job_openings": 38120.0,
+     "percent_change": 20.9
+    },
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2
     }
    ]
   },
@@ -12842,25 +12791,11 @@
    ],
    "related": [
     {
-     "soc_code": "31-1100",
-     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 2311500.0,
-     "percent_change": 37.9
-    },
-    {
      "soc_code": "31-1120",
      "title": "Home Health and Personal Care Aides",
      "median_annual_wage": 35189.0,
      "total_job_openings": 2125350.0,
      "percent_change": 41.3
-    },
-    {
-     "soc_code": "31-9000",
-     "title": "Other Healthcare Support Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 417690.0,
-     "percent_change": 16.2
     },
     {
      "soc_code": "31-1131",
@@ -12882,6 +12817,20 @@
      "median_annual_wage": 47134.0,
      "total_job_openings": 38120.0,
      "percent_change": 20.9
+    },
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2
+    },
+    {
+     "soc_code": "31-9099",
+     "title": "Healthcare Support Workers, All Other",
+     "median_annual_wage": 50374.0,
+     "total_job_openings": 32750.0,
+     "percent_change": 7.1
     }
    ]
   },
@@ -13362,25 +13311,11 @@
    ],
    "related": [
     {
-     "soc_code": "31-1100",
-     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 2311500.0,
-     "percent_change": 37.9
-    },
-    {
      "soc_code": "31-1120",
      "title": "Home Health and Personal Care Aides",
      "median_annual_wage": 35189.0,
      "total_job_openings": 2125350.0,
      "percent_change": 41.3
-    },
-    {
-     "soc_code": "31-9000",
-     "title": "Other Healthcare Support Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 417690.0,
-     "percent_change": 16.2
     },
     {
      "soc_code": "31-9092",
@@ -13402,6 +13337,20 @@
      "median_annual_wage": 51379.0,
      "total_job_openings": 81180.0,
      "percent_change": 10.0
+    },
+    {
+     "soc_code": "31-9011",
+     "title": "Massage Therapists",
+     "median_annual_wage": 47134.0,
+     "total_job_openings": 38120.0,
+     "percent_change": 20.9
+    },
+    {
+     "soc_code": "31-9099",
+     "title": "Healthcare Support Workers, All Other",
+     "median_annual_wage": 50374.0,
+     "total_job_openings": 32750.0,
+     "percent_change": 7.1
     }
    ]
   },
@@ -13899,25 +13848,11 @@
    ],
    "related": [
     {
-     "soc_code": "31-1100",
-     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 2311500.0,
-     "percent_change": 37.9
-    },
-    {
      "soc_code": "31-1120",
      "title": "Home Health and Personal Care Aides",
      "median_annual_wage": 35189.0,
      "total_job_openings": 2125350.0,
      "percent_change": 41.3
-    },
-    {
-     "soc_code": "31-9000",
-     "title": "Other Healthcare Support Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 417690.0,
-     "percent_change": 16.2
     },
     {
      "soc_code": "31-9092",
@@ -13939,6 +13874,20 @@
      "median_annual_wage": 51379.0,
      "total_job_openings": 81180.0,
      "percent_change": 10.0
+    },
+    {
+     "soc_code": "31-9011",
+     "title": "Massage Therapists",
+     "median_annual_wage": 47134.0,
+     "total_job_openings": 38120.0,
+     "percent_change": 20.9
+    },
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2
     }
    ]
   },
@@ -14215,25 +14164,11 @@
    ],
    "related": [
     {
-     "soc_code": "33-9000",
-     "title": "Other Protective Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 434450.0,
-     "percent_change": 3.5
-    },
-    {
      "soc_code": "33-9032",
      "title": "Security Guards",
      "median_annual_wage": 44335.0,
      "total_job_openings": 264160.0,
      "percent_change": 3.3
-    },
-    {
-     "soc_code": "33-3000",
-     "title": "Law Enforcement Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 95720.0,
-     "percent_change": 1.7
     },
     {
      "soc_code": "33-9099",
@@ -14255,6 +14190,20 @@
      "median_annual_wage": 121891.0,
      "total_job_openings": 52390.0,
      "percent_change": 5.2
+    },
+    {
+     "soc_code": "33-3012",
+     "title": "Correctional Officers and Jailers",
+     "median_annual_wage": 98811.0,
+     "total_job_openings": 31850.0,
+     "percent_change": -5.1
+    },
+    {
+     "soc_code": "33-2011",
+     "title": "Firefighters",
+     "median_annual_wage": 87276.0,
+     "total_job_openings": 25610.0,
+     "percent_change": 5.0
     }
    ]
   },
@@ -14803,20 +14752,6 @@
    ],
    "related": [
     {
-     "soc_code": "33-9000",
-     "title": "Other Protective Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 434450.0,
-     "percent_change": 3.5
-    },
-    {
-     "soc_code": "33-3000",
-     "title": "Law Enforcement Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 95720.0,
-     "percent_change": 1.7
-    },
-    {
      "soc_code": "33-9099",
      "title": "Protective Service Workers, All Other",
      "median_annual_wage": 40326.0,
@@ -14838,11 +14773,25 @@
      "percent_change": 5.2
     },
     {
-     "soc_code": "33-1000",
-     "title": "Supervisors of Protective Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 32440.0,
-     "percent_change": 4.8
+     "soc_code": "33-3012",
+     "title": "Correctional Officers and Jailers",
+     "median_annual_wage": 98811.0,
+     "total_job_openings": 31850.0,
+     "percent_change": -5.1
+    },
+    {
+     "soc_code": "33-2011",
+     "title": "Firefighters",
+     "median_annual_wage": 87276.0,
+     "total_job_openings": 25610.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "33-9091",
+     "title": "Crossing Guards and Flaggers",
+     "median_annual_wage": 51892.0,
+     "total_job_openings": 18950.0,
+     "percent_change": 4.2
     }
    ]
   },
@@ -15169,23 +15118,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "37-2011",
-     "title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
-     "period": "2023-2033",
-     "median_annual_wage": 40602.0,
-     "median_hourly_wage": 19.52,
-     "total_job_openings": 3430.0,
-     "percent_change": 11.7,
-     "numeric_change": 250.0,
-     "base_employment": 2140.0,
-     "projected_employment": 2390.0,
-     "entry_level_education": "No formal educational credential",
-     "work_experience": "None",
-     "job_training": "Short-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "37-2011",
      "title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
@@ -15391,25 +15323,11 @@
    ],
    "related": [
     {
-     "soc_code": "37-2000",
-     "title": "Building Cleaning and Pest Control Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 603010.0,
-     "percent_change": 4.6
-    },
-    {
      "soc_code": "37-2012",
      "title": "Maids and Housekeeping Cleaners",
      "median_annual_wage": 43741.0,
      "total_job_openings": 206290.0,
      "percent_change": 3.7
-    },
-    {
-     "soc_code": "37-3000",
-     "title": "Grounds Maintenance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 206230.0,
-     "percent_change": 5.7
     },
     {
      "soc_code": "37-3011",
@@ -15419,18 +15337,32 @@
      "percent_change": 5.8
     },
     {
-     "soc_code": "37-1000",
-     "title": "Supervisors of Building and Grounds Cleaning and Maintenance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 62520.0,
-     "percent_change": 4.7
-    },
-    {
      "soc_code": "37-1011",
      "title": "First-Line Supervisors of Housekeeping and Janitorial Workers",
      "median_annual_wage": 63027.0,
      "total_job_openings": 34020.0,
      "percent_change": 4.4
+    },
+    {
+     "soc_code": "37-1012",
+     "title": "First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",
+     "median_annual_wage": 64873.0,
+     "total_job_openings": 28520.0,
+     "percent_change": 4.9
+    },
+    {
+     "soc_code": "37-3013",
+     "title": "Tree Trimmers and Pruners",
+     "median_annual_wage": 64134.0,
+     "total_job_openings": 14990.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "37-3019",
+     "title": "Grounds Maintenance Workers, All Other",
+     "median_annual_wage": 50108.0,
+     "total_job_openings": 5300.0,
+     "percent_change": 5.3
     }
    ]
   },
@@ -15792,27 +15724,6 @@
    ],
    "related": [
     {
-     "soc_code": "39-9000",
-     "title": "Other Personal Care and Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 375190.0,
-     "percent_change": 8.2
-    },
-    {
-     "soc_code": "39-3000",
-     "title": "Entertainment Attendants and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 239440.0,
-     "percent_change": 5.6
-    },
-    {
-     "soc_code": "39-5000",
-     "title": "Personal Appearance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 166140.0,
-     "percent_change": 8.8
-    },
-    {
      "soc_code": "39-3091",
      "title": "Amusement and Recreation Attendants",
      "median_annual_wage": 37937.0,
@@ -15832,6 +15743,27 @@
      "median_annual_wage": 59459.0,
      "total_job_openings": 105200.0,
      "percent_change": 16.7
+    },
+    {
+     "soc_code": "39-9032",
+     "title": "Recreation Workers",
+     "median_annual_wage": 40788.0,
+     "total_job_openings": 104970.0,
+     "percent_change": 9.1
+    },
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "median_annual_wage": 39639.0,
+     "total_job_openings": 68190.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3
     }
    ]
   },
@@ -16380,27 +16312,6 @@
    ],
    "related": [
     {
-     "soc_code": "39-9000",
-     "title": "Other Personal Care and Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 375190.0,
-     "percent_change": 8.2
-    },
-    {
-     "soc_code": "39-3000",
-     "title": "Entertainment Attendants and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 239440.0,
-     "percent_change": 5.6
-    },
-    {
-     "soc_code": "39-5000",
-     "title": "Personal Appearance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 166140.0,
-     "percent_change": 8.8
-    },
-    {
      "soc_code": "39-3091",
      "title": "Amusement and Recreation Attendants",
      "median_annual_wage": 37937.0,
@@ -16420,6 +16331,27 @@
      "median_annual_wage": 59459.0,
      "total_job_openings": 105200.0,
      "percent_change": 16.7
+    },
+    {
+     "soc_code": "39-9032",
+     "title": "Recreation Workers",
+     "median_annual_wage": 40788.0,
+     "total_job_openings": 104970.0,
+     "percent_change": 9.1
+    },
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "median_annual_wage": 39639.0,
+     "total_job_openings": 68190.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists",
+     "median_annual_wage": 37558.0,
+     "total_job_openings": 65240.0,
+     "percent_change": 10.0
     }
    ]
   },
@@ -16444,8 +16376,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 1250.0,
      "percent_change": 2.6,
      "numeric_change": 30.0,
@@ -16461,8 +16393,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 120.0,
      "percent_change": 10.0,
      "numeric_change": 10.0,
@@ -16478,8 +16410,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 360.0,
      "percent_change": 10.3,
      "numeric_change": 30.0,
@@ -16512,8 +16444,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 80.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -16529,8 +16461,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 50.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -16546,8 +16478,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 80.0,
      "percent_change": 16.7,
      "numeric_change": 10.0,
@@ -16563,8 +16495,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 730.0,
      "percent_change": 8.2,
      "numeric_change": 50.0,
@@ -16580,8 +16512,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 150.0,
      "percent_change": 7.7,
      "numeric_change": 10.0,
@@ -16597,8 +16529,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 30.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -16614,8 +16546,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 800.0,
      "percent_change": 1.4,
      "numeric_change": 10.0,
@@ -16631,8 +16563,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 550.0,
      "percent_change": 8.7,
      "numeric_change": 40.0,
@@ -16648,8 +16580,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 1180.0,
      "percent_change": 2.8,
      "numeric_change": 30.0,
@@ -16665,8 +16597,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 470.0,
      "percent_change": 4.9,
      "numeric_change": 20.0,
@@ -16682,8 +16614,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 350.0,
      "percent_change": 6.5,
      "numeric_change": 20.0,
@@ -16699,8 +16631,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 80.0,
      "percent_change": 16.7,
      "numeric_change": 10.0,
@@ -16716,8 +16648,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 60.0,
      "percent_change": 25.0,
      "numeric_change": 10.0,
@@ -16733,8 +16665,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 60.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -16750,8 +16682,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 80.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -16767,8 +16699,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 110.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -16784,8 +16716,8 @@
      "soc_code": "39-5011",
      "title": "Barbers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 60.0,
      "percent_change": 25.0,
      "numeric_change": 10.0,
@@ -16797,27 +16729,6 @@
     }
    ],
    "related": [
-    {
-     "soc_code": "39-9000",
-     "title": "Other Personal Care and Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 375190.0,
-     "percent_change": 8.2
-    },
-    {
-     "soc_code": "39-3000",
-     "title": "Entertainment Attendants and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 239440.0,
-     "percent_change": 5.6
-    },
-    {
-     "soc_code": "39-5000",
-     "title": "Personal Appearance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 166140.0,
-     "percent_change": 8.8
-    },
     {
      "soc_code": "39-3091",
      "title": "Amusement and Recreation Attendants",
@@ -16838,6 +16749,27 @@
      "median_annual_wage": 59459.0,
      "total_job_openings": 105200.0,
      "percent_change": 16.7
+    },
+    {
+     "soc_code": "39-9032",
+     "title": "Recreation Workers",
+     "median_annual_wage": 40788.0,
+     "total_job_openings": 104970.0,
+     "percent_change": 9.1
+    },
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "median_annual_wage": 39639.0,
+     "total_job_openings": 68190.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3
     }
    ]
   },
@@ -17202,8 +17134,8 @@
      "soc_code": "39-5012",
      "title": "Hairdressers, Hairstylists, and Cosmetologists",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 770.0,
      "percent_change": 13.7,
      "numeric_change": 70.0,
@@ -17335,27 +17267,6 @@
    ],
    "related": [
     {
-     "soc_code": "39-9000",
-     "title": "Other Personal Care and Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 375190.0,
-     "percent_change": 8.2
-    },
-    {
-     "soc_code": "39-3000",
-     "title": "Entertainment Attendants and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 239440.0,
-     "percent_change": 5.6
-    },
-    {
-     "soc_code": "39-5000",
-     "title": "Personal Appearance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 166140.0,
-     "percent_change": 8.8
-    },
-    {
      "soc_code": "39-3091",
      "title": "Amusement and Recreation Attendants",
      "median_annual_wage": 37937.0,
@@ -17375,6 +17286,27 @@
      "median_annual_wage": 59459.0,
      "total_job_openings": 105200.0,
      "percent_change": 16.7
+    },
+    {
+     "soc_code": "39-9032",
+     "title": "Recreation Workers",
+     "median_annual_wage": 40788.0,
+     "total_job_openings": 104970.0,
+     "percent_change": 9.1
+    },
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3
+    },
+    {
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists",
+     "median_annual_wage": 37558.0,
+     "total_job_openings": 65240.0,
+     "percent_change": 10.0
     }
    ]
   },
@@ -17671,8 +17603,8 @@
      "soc_code": "39-5094",
      "title": "Skincare Specialists",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 250.0,
      "percent_change": 21.4,
      "numeric_change": 30.0,
@@ -17770,27 +17702,6 @@
    ],
    "related": [
     {
-     "soc_code": "39-9000",
-     "title": "Other Personal Care and Service Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 375190.0,
-     "percent_change": 8.2
-    },
-    {
-     "soc_code": "39-3000",
-     "title": "Entertainment Attendants and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 239440.0,
-     "percent_change": 5.6
-    },
-    {
-     "soc_code": "39-5000",
-     "title": "Personal Appearance Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 166140.0,
-     "percent_change": 8.8
-    },
-    {
      "soc_code": "39-3091",
      "title": "Amusement and Recreation Attendants",
      "median_annual_wage": 37937.0,
@@ -17810,6 +17721,27 @@
      "median_annual_wage": 59459.0,
      "total_job_openings": 105200.0,
      "percent_change": 16.7
+    },
+    {
+     "soc_code": "39-9032",
+     "title": "Recreation Workers",
+     "median_annual_wage": 40788.0,
+     "total_job_openings": 104970.0,
+     "percent_change": 9.1
+    },
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists",
+     "median_annual_wage": 39639.0,
+     "total_job_openings": 68190.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3
     }
    ]
   },
@@ -18358,13 +18290,6 @@
    ],
    "related": [
     {
-     "soc_code": "41-2000",
-     "title": "Retail Sales Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 1271640.0,
-     "percent_change": -2.5
-    },
-    {
      "soc_code": "41-2011",
      "title": "Cashiers",
      "median_annual_wage": 37438.0,
@@ -18379,13 +18304,6 @@
      "percent_change": -1.3
     },
     {
-     "soc_code": "41-3000",
-     "title": "Sales Representatives, Services",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 258360.0,
-     "percent_change": 2.4
-    },
-    {
      "soc_code": "41-3091",
      "title": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
      "median_annual_wage": 81587.0,
@@ -18393,11 +18311,25 @@
      "percent_change": 4.7
     },
     {
-     "soc_code": "41-9000",
-     "title": "Other Sales and Related Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 148700.0,
-     "percent_change": 2.4
+     "soc_code": "41-1011",
+     "title": "First-Line Supervisors of Retail Sales Workers",
+     "median_annual_wage": 55370.0,
+     "total_job_openings": 126230.0,
+     "percent_change": -3.4
+    },
+    {
+     "soc_code": "41-2021",
+     "title": "Counter and Rental Clerks",
+     "median_annual_wage": 45420.0,
+     "total_job_openings": 77120.0,
+     "percent_change": 3.2
+    },
+    {
+     "soc_code": "41-9099",
+     "title": "Sales and Related Workers, All Other",
+     "median_annual_wage": 53291.0,
+     "total_job_openings": 43060.0,
+     "percent_change": 0.3
     }
    ]
   },
@@ -18830,8 +18762,8 @@
      "soc_code": "43-3011",
      "title": "Bill and Account Collectors",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 80.0,
      "percent_change": -11.1,
      "numeric_change": -10.0,
@@ -18878,27 +18810,6 @@
    ],
    "related": [
     {
-     "soc_code": "43-4000",
-     "title": "Information and Record Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 543750.0,
-     "percent_change": -2.0
-    },
-    {
-     "soc_code": "43-9000",
-     "title": "Other Office and Administrative Support Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 426020.0,
-     "percent_change": -6.2
-    },
-    {
-     "soc_code": "43-6000",
-     "title": "Secretaries and Administrative Assistants",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 409280.0,
-     "percent_change": 4.7
-    },
-    {
      "soc_code": "43-9061",
      "title": "Office Clerks, General",
      "median_annual_wage": 49607.0,
@@ -18906,18 +18817,39 @@
      "percent_change": -4.5
     },
     {
-     "soc_code": "43-3000",
-     "title": "Financial Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 282660.0,
-     "percent_change": -5.0
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives",
+     "median_annual_wage": 50733.0,
+     "total_job_openings": 219040.0,
+     "percent_change": -5.6
     },
     {
-     "soc_code": "43-5000",
-     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 249440.0,
-     "percent_change": 0.1
+     "soc_code": "43-6014",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "median_annual_wage": 56711.0,
+     "total_job_openings": 182240.0,
+     "percent_change": 1.4
+    },
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1
+    },
+    {
+     "soc_code": "43-1011",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers",
+     "median_annual_wage": 79426.0,
+     "total_job_openings": 146890.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6
     }
    ]
   },
@@ -19466,27 +19398,6 @@
    ],
    "related": [
     {
-     "soc_code": "43-4000",
-     "title": "Information and Record Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 543750.0,
-     "percent_change": -2.0
-    },
-    {
-     "soc_code": "43-9000",
-     "title": "Other Office and Administrative Support Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 426020.0,
-     "percent_change": -6.2
-    },
-    {
-     "soc_code": "43-6000",
-     "title": "Secretaries and Administrative Assistants",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 409280.0,
-     "percent_change": 4.7
-    },
-    {
      "soc_code": "43-9061",
      "title": "Office Clerks, General",
      "median_annual_wage": 49607.0,
@@ -19494,18 +19405,39 @@
      "percent_change": -4.5
     },
     {
-     "soc_code": "43-3000",
-     "title": "Financial Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 282660.0,
-     "percent_change": -5.0
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives",
+     "median_annual_wage": 50733.0,
+     "total_job_openings": 219040.0,
+     "percent_change": -5.6
     },
     {
-     "soc_code": "43-5000",
-     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 249440.0,
-     "percent_change": 0.1
+     "soc_code": "43-6014",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "median_annual_wage": 56711.0,
+     "total_job_openings": 182240.0,
+     "percent_change": 1.4
+    },
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1
+    },
+    {
+     "soc_code": "43-1011",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers",
+     "median_annual_wage": 79426.0,
+     "total_job_openings": 146890.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6
     }
    ]
   },
@@ -20054,27 +19986,6 @@
    ],
    "related": [
     {
-     "soc_code": "43-4000",
-     "title": "Information and Record Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 543750.0,
-     "percent_change": -2.0
-    },
-    {
-     "soc_code": "43-9000",
-     "title": "Other Office and Administrative Support Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 426020.0,
-     "percent_change": -6.2
-    },
-    {
-     "soc_code": "43-6000",
-     "title": "Secretaries and Administrative Assistants",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 409280.0,
-     "percent_change": 4.7
-    },
-    {
      "soc_code": "43-9061",
      "title": "Office Clerks, General",
      "median_annual_wage": 49607.0,
@@ -20082,18 +19993,39 @@
      "percent_change": -4.5
     },
     {
-     "soc_code": "43-3000",
-     "title": "Financial Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 282660.0,
-     "percent_change": -5.0
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives",
+     "median_annual_wage": 50733.0,
+     "total_job_openings": 219040.0,
+     "percent_change": -5.6
     },
     {
-     "soc_code": "43-5000",
-     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 249440.0,
-     "percent_change": 0.1
+     "soc_code": "43-6014",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "median_annual_wage": 56711.0,
+     "total_job_openings": 182240.0,
+     "percent_change": 1.4
+    },
+    {
+     "soc_code": "43-1011",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers",
+     "median_annual_wage": 79426.0,
+     "total_job_openings": 146890.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6
+    },
+    {
+     "soc_code": "43-4171",
+     "title": "Receptionists and Information Clerks",
+     "median_annual_wage": 45143.0,
+     "total_job_openings": 112320.0,
+     "percent_change": 5.3
     }
    ]
   },
@@ -20420,23 +20352,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "43-3051",
-     "title": "Payroll and Timekeeping Clerks",
-     "period": "2023-2033",
-     "median_annual_wage": 59310.0,
-     "median_hourly_wage": 28.51,
-     "total_job_openings": 340.0,
-     "percent_change": 3.2,
-     "numeric_change": 10.0,
-     "base_employment": 310.0,
-     "projected_employment": 320.0,
-     "entry_level_education": "High school diploma or equivalent",
-     "work_experience": "None",
-     "job_training": "Moderate-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "43-3051",
      "title": "Payroll and Timekeeping Clerks",
@@ -20642,27 +20557,6 @@
    ],
    "related": [
     {
-     "soc_code": "43-4000",
-     "title": "Information and Record Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 543750.0,
-     "percent_change": -2.0
-    },
-    {
-     "soc_code": "43-9000",
-     "title": "Other Office and Administrative Support Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 426020.0,
-     "percent_change": -6.2
-    },
-    {
-     "soc_code": "43-6000",
-     "title": "Secretaries and Administrative Assistants",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 409280.0,
-     "percent_change": 4.7
-    },
-    {
      "soc_code": "43-9061",
      "title": "Office Clerks, General",
      "median_annual_wage": 49607.0,
@@ -20670,18 +20564,39 @@
      "percent_change": -4.5
     },
     {
-     "soc_code": "43-3000",
-     "title": "Financial Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 282660.0,
-     "percent_change": -5.0
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives",
+     "median_annual_wage": 50733.0,
+     "total_job_openings": 219040.0,
+     "percent_change": -5.6
     },
     {
-     "soc_code": "43-5000",
-     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 249440.0,
-     "percent_change": 0.1
+     "soc_code": "43-6014",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "median_annual_wage": 56711.0,
+     "total_job_openings": 182240.0,
+     "percent_change": 1.4
+    },
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1
+    },
+    {
+     "soc_code": "43-1011",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers",
+     "median_annual_wage": 79426.0,
+     "total_job_openings": 146890.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6
     }
    ]
   },
@@ -21230,27 +21145,6 @@
    ],
    "related": [
     {
-     "soc_code": "43-4000",
-     "title": "Information and Record Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 543750.0,
-     "percent_change": -2.0
-    },
-    {
-     "soc_code": "43-9000",
-     "title": "Other Office and Administrative Support Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 426020.0,
-     "percent_change": -6.2
-    },
-    {
-     "soc_code": "43-6000",
-     "title": "Secretaries and Administrative Assistants",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 409280.0,
-     "percent_change": 4.7
-    },
-    {
      "soc_code": "43-9061",
      "title": "Office Clerks, General",
      "median_annual_wage": 49607.0,
@@ -21258,18 +21152,39 @@
      "percent_change": -4.5
     },
     {
-     "soc_code": "43-3000",
-     "title": "Financial Clerks",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 282660.0,
-     "percent_change": -5.0
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives",
+     "median_annual_wage": 50733.0,
+     "total_job_openings": 219040.0,
+     "percent_change": -5.6
     },
     {
-     "soc_code": "43-5000",
-     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 249440.0,
-     "percent_change": 0.1
+     "soc_code": "43-6014",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+     "median_annual_wage": 56711.0,
+     "total_job_openings": 182240.0,
+     "percent_change": 1.4
+    },
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1
+    },
+    {
+     "soc_code": "43-1011",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers",
+     "median_annual_wage": 79426.0,
+     "total_job_openings": 146890.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "43-4171",
+     "title": "Receptionists and Information Clerks",
+     "median_annual_wage": 45143.0,
+     "total_job_openings": 112320.0,
+     "percent_change": 5.3
     }
    ]
   },
@@ -21818,13 +21733,6 @@
    ],
    "related": [
     {
-     "soc_code": "47-2000",
-     "title": "Construction Trades Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 577650.0,
-     "percent_change": 8.2
-    },
-    {
      "soc_code": "47-2031",
      "title": "Carpenters",
      "median_annual_wage": 77977.0,
@@ -21839,13 +21747,6 @@
      "percent_change": 14.9
     },
     {
-     "soc_code": "47-1000",
-     "title": "Supervisors of Construction and Extraction Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
      "soc_code": "47-1011",
      "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
      "median_annual_wage": 100326.0,
@@ -21858,6 +21759,20 @@
      "median_annual_wage": 60619.0,
      "total_job_openings": 48920.0,
      "percent_change": 5.3
+    },
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6
+    },
+    {
+     "soc_code": "47-2073",
+     "title": "Operating Engineers and Other Construction Equipment Operators",
+     "median_annual_wage": 89521.0,
+     "total_job_openings": 33360.0,
+     "percent_change": 7.0
     }
    ]
   },
@@ -22389,13 +22304,6 @@
    ],
    "related": [
     {
-     "soc_code": "47-2000",
-     "title": "Construction Trades Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 577650.0,
-     "percent_change": 8.2
-    },
-    {
      "soc_code": "47-2061",
      "title": "Construction Laborers",
      "median_annual_wage": 61903.0,
@@ -22417,18 +22325,25 @@
      "percent_change": 14.9
     },
     {
-     "soc_code": "47-1000",
-     "title": "Supervisors of Construction and Extraction Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
      "soc_code": "47-1011",
      "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
      "median_annual_wage": 100326.0,
      "total_job_openings": 68670.0,
      "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance",
+     "median_annual_wage": 60619.0,
+     "total_job_openings": 48920.0,
+     "percent_change": 5.3
+    },
+    {
+     "soc_code": "47-2073",
+     "title": "Operating Engineers and Other Construction Equipment Operators",
+     "median_annual_wage": 89521.0,
+     "total_job_openings": 33360.0,
+     "percent_change": 7.0
     }
    ]
   },
@@ -22793,8 +22708,8 @@
      "soc_code": "47-2181",
      "title": "Roofers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 80.0,
      "percent_change": 11.1,
      "numeric_change": 10.0,
@@ -22909,13 +22824,6 @@
    ],
    "related": [
     {
-     "soc_code": "47-2000",
-     "title": "Construction Trades Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 577650.0,
-     "percent_change": 8.2
-    },
-    {
      "soc_code": "47-2061",
      "title": "Construction Laborers",
      "median_annual_wage": 61903.0,
@@ -22937,18 +22845,25 @@
      "percent_change": 14.9
     },
     {
-     "soc_code": "47-1000",
-     "title": "Supervisors of Construction and Extraction Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
      "soc_code": "47-1011",
      "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
      "median_annual_wage": 100326.0,
      "total_job_openings": 68670.0,
      "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance",
+     "median_annual_wage": 60619.0,
+     "total_job_openings": 48920.0,
+     "percent_change": 5.3
+    },
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6
     }
    ]
   },
@@ -23173,23 +23088,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "47-2211",
-     "title": "Sheet Metal Workers",
-     "period": "2023-2033",
-     "median_annual_wage": 102023.0,
-     "median_hourly_wage": 49.05,
-     "total_job_openings": 60.0,
-     "percent_change": 14.3,
-     "numeric_change": 10.0,
-     "base_employment": 70.0,
-     "projected_employment": 80.0,
-     "entry_level_education": "High school diploma or equivalent",
-     "work_experience": "None",
-     "job_training": "Apprenticeship"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "47-2211",
      "title": "Sheet Metal Workers",
@@ -23327,13 +23225,6 @@
    ],
    "related": [
     {
-     "soc_code": "47-2000",
-     "title": "Construction Trades Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 577650.0,
-     "percent_change": 8.2
-    },
-    {
      "soc_code": "47-2061",
      "title": "Construction Laborers",
      "median_annual_wage": 61903.0,
@@ -23355,18 +23246,25 @@
      "percent_change": 14.9
     },
     {
-     "soc_code": "47-1000",
-     "title": "Supervisors of Construction and Extraction Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
      "soc_code": "47-1011",
      "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
      "median_annual_wage": 100326.0,
      "total_job_openings": 68670.0,
      "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance",
+     "median_annual_wage": 60619.0,
+     "total_job_openings": 48920.0,
+     "percent_change": 5.3
+    },
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6
     }
    ]
   },
@@ -23612,8 +23510,8 @@
      "soc_code": "47-2231",
      "title": "Solar Photovoltaic Installers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 70.0,
      "percent_change": 16.7,
      "numeric_change": 10.0,
@@ -23677,13 +23575,6 @@
    ],
    "related": [
     {
-     "soc_code": "47-2000",
-     "title": "Construction Trades Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 577650.0,
-     "percent_change": 8.2
-    },
-    {
      "soc_code": "47-2061",
      "title": "Construction Laborers",
      "median_annual_wage": 61903.0,
@@ -23705,18 +23596,25 @@
      "percent_change": 14.9
     },
     {
-     "soc_code": "47-1000",
-     "title": "Supervisors of Construction and Extraction Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
      "soc_code": "47-1011",
      "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
      "median_annual_wage": 100326.0,
      "total_job_openings": 68670.0,
      "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance",
+     "median_annual_wage": 60619.0,
+     "total_job_openings": 48920.0,
+     "percent_change": 5.3
+    },
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6
     }
    ]
   },
@@ -23792,8 +23690,8 @@
      "soc_code": "49-2093",
      "title": "Electrical and Electronics Installers and Repairers, Transportation Equipment",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 260.0,
      "percent_change": 11.5,
      "numeric_change": 30.0,
@@ -23805,20 +23703,6 @@
     }
    ],
    "related": [
-    {
-     "soc_code": "49-9000",
-     "title": "Other Installation, Maintenance, and Repair Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 304990.0,
-     "percent_change": 7.0
-    },
-    {
-     "soc_code": "49-3000",
-     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 163020.0,
-     "percent_change": 5.0
-    },
     {
      "soc_code": "49-9071",
      "title": "Maintenance and Repair Workers, General",
@@ -23834,18 +23718,32 @@
      "percent_change": 4.1
     },
     {
-     "soc_code": "49-1000",
-     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
-    },
-    {
      "soc_code": "49-1011",
      "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
      "median_annual_wage": 96308.0,
      "total_job_openings": 45620.0,
      "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+     "median_annual_wage": 74612.0,
+     "total_job_openings": 37750.0,
+     "percent_change": 12.8
+    },
+    {
+     "soc_code": "49-9041",
+     "title": "Industrial Machinery Mechanics",
+     "median_annual_wage": 76504.0,
+     "total_job_openings": 28510.0,
+     "percent_change": 13.8
+    },
+    {
+     "soc_code": "49-9099",
+     "title": "Installation, Maintenance, and Repair Workers, All Other",
+     "median_annual_wage": 52679.0,
+     "total_job_openings": 27340.0,
+     "percent_change": 2.1
     }
    ]
   },
@@ -23901,20 +23799,6 @@
    ],
    "related": [
     {
-     "soc_code": "49-9000",
-     "title": "Other Installation, Maintenance, and Repair Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 304990.0,
-     "percent_change": 7.0
-    },
-    {
-     "soc_code": "49-3000",
-     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 163020.0,
-     "percent_change": 5.0
-    },
-    {
      "soc_code": "49-9071",
      "title": "Maintenance and Repair Workers, General",
      "median_annual_wage": 58612.0,
@@ -23929,18 +23813,32 @@
      "percent_change": 4.1
     },
     {
-     "soc_code": "49-1000",
-     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
-    },
-    {
      "soc_code": "49-1011",
      "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
      "median_annual_wage": 96308.0,
      "total_job_openings": 45620.0,
      "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+     "median_annual_wage": 74612.0,
+     "total_job_openings": 37750.0,
+     "percent_change": 12.8
+    },
+    {
+     "soc_code": "49-9041",
+     "title": "Industrial Machinery Mechanics",
+     "median_annual_wage": 76504.0,
+     "total_job_openings": 28510.0,
+     "percent_change": 13.8
+    },
+    {
+     "soc_code": "49-9099",
+     "title": "Installation, Maintenance, and Repair Workers, All Other",
+     "median_annual_wage": 52679.0,
+     "total_job_openings": 27340.0,
+     "percent_change": 2.1
     }
    ]
   },
@@ -24267,23 +24165,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "49-3023",
-     "title": "Automotive Service Technicians and Mechanics",
-     "period": "2023-2033",
-     "median_annual_wage": 63939.0,
-     "median_hourly_wage": 30.74,
-     "total_job_openings": 640.0,
-     "percent_change": 5.6,
-     "numeric_change": 40.0,
-     "base_employment": 720.0,
-     "projected_employment": 760.0,
-     "entry_level_education": "Postsecondary non-degree award",
-     "work_experience": "None",
-     "job_training": "Short-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "49-3023",
      "title": "Automotive Service Technicians and Mechanics",
@@ -24489,32 +24370,11 @@
    ],
    "related": [
     {
-     "soc_code": "49-9000",
-     "title": "Other Installation, Maintenance, and Repair Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 304990.0,
-     "percent_change": 7.0
-    },
-    {
-     "soc_code": "49-3000",
-     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 163020.0,
-     "percent_change": 5.0
-    },
-    {
      "soc_code": "49-9071",
      "title": "Maintenance and Repair Workers, General",
      "median_annual_wage": 58612.0,
      "total_job_openings": 151500.0,
      "percent_change": 7.3
-    },
-    {
-     "soc_code": "49-1000",
-     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
     },
     {
      "soc_code": "49-1011",
@@ -24524,11 +24384,32 @@
      "percent_change": 4.8
     },
     {
-     "soc_code": "49-2000",
-     "title": "Electrical and Electronic Equipment Mechanics, Installers, and Repairers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 42200.0,
-     "percent_change": -0.2
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+     "median_annual_wage": 74612.0,
+     "total_job_openings": 37750.0,
+     "percent_change": 12.8
+    },
+    {
+     "soc_code": "49-9041",
+     "title": "Industrial Machinery Mechanics",
+     "median_annual_wage": 76504.0,
+     "total_job_openings": 28510.0,
+     "percent_change": 13.8
+    },
+    {
+     "soc_code": "49-9099",
+     "title": "Installation, Maintenance, and Repair Workers, All Other",
+     "median_annual_wage": 52679.0,
+     "total_job_openings": 27340.0,
+     "percent_change": 2.1
+    },
+    {
+     "soc_code": "49-3031",
+     "title": "Bus and Truck Mechanics and Diesel Engine Specialists",
+     "median_annual_wage": 76041.0,
+     "total_job_openings": 20390.0,
+     "percent_change": 5.1
     }
    ]
   },
@@ -24587,8 +24468,8 @@
      "soc_code": "49-9051",
      "title": "Electrical Power-Line Installers and Repairers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 50.0,
      "percent_change": 20.0,
      "numeric_change": 10.0,
@@ -24842,8 +24723,8 @@
      "soc_code": "49-9051",
      "title": "Electrical Power-Line Installers and Repairers",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 100.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -24890,20 +24771,6 @@
    ],
    "related": [
     {
-     "soc_code": "49-9000",
-     "title": "Other Installation, Maintenance, and Repair Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 304990.0,
-     "percent_change": 7.0
-    },
-    {
-     "soc_code": "49-3000",
-     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 163020.0,
-     "percent_change": 5.0
-    },
-    {
      "soc_code": "49-9071",
      "title": "Maintenance and Repair Workers, General",
      "median_annual_wage": 58612.0,
@@ -24918,18 +24785,32 @@
      "percent_change": 4.1
     },
     {
-     "soc_code": "49-1000",
-     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
-    },
-    {
      "soc_code": "49-1011",
      "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
      "median_annual_wage": 96308.0,
      "total_job_openings": 45620.0,
      "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+     "median_annual_wage": 74612.0,
+     "total_job_openings": 37750.0,
+     "percent_change": 12.8
+    },
+    {
+     "soc_code": "49-9041",
+     "title": "Industrial Machinery Mechanics",
+     "median_annual_wage": 76504.0,
+     "total_job_openings": 28510.0,
+     "percent_change": 13.8
+    },
+    {
+     "soc_code": "49-9099",
+     "title": "Installation, Maintenance, and Repair Workers, All Other",
+     "median_annual_wage": 52679.0,
+     "total_job_openings": 27340.0,
+     "percent_change": 2.1
     }
    ]
   },
@@ -25256,23 +25137,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "49-9099",
-     "title": "Installation, Maintenance, and Repair Workers, All Other",
-     "period": "2023-2033",
-     "median_annual_wage": 52149.0,
-     "median_hourly_wage": 25.08,
-     "total_job_openings": 240.0,
-     "percent_change": 4.2,
-     "numeric_change": 10.0,
-     "base_employment": 240.0,
-     "projected_employment": 250.0,
-     "entry_level_education": "High school diploma or equivalent",
-     "work_experience": "None",
-     "job_training": "Moderate-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "49-9099",
      "title": "Installation, Maintenance, and Repair Workers, All Other",
@@ -25478,20 +25342,6 @@
    ],
    "related": [
     {
-     "soc_code": "49-9000",
-     "title": "Other Installation, Maintenance, and Repair Occupations",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 304990.0,
-     "percent_change": 7.0
-    },
-    {
-     "soc_code": "49-3000",
-     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 163020.0,
-     "percent_change": 5.0
-    },
-    {
      "soc_code": "49-9071",
      "title": "Maintenance and Repair Workers, General",
      "median_annual_wage": 58612.0,
@@ -25506,18 +25356,32 @@
      "percent_change": 4.1
     },
     {
-     "soc_code": "49-1000",
-     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
-    },
-    {
      "soc_code": "49-1011",
      "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
      "median_annual_wage": 96308.0,
      "total_job_openings": 45620.0,
      "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+     "median_annual_wage": 74612.0,
+     "total_job_openings": 37750.0,
+     "percent_change": 12.8
+    },
+    {
+     "soc_code": "49-9041",
+     "title": "Industrial Machinery Mechanics",
+     "median_annual_wage": 76504.0,
+     "total_job_openings": 28510.0,
+     "percent_change": 13.8
+    },
+    {
+     "soc_code": "49-3031",
+     "title": "Bus and Truck Mechanics and Diesel Engine Specialists",
+     "median_annual_wage": 76041.0,
+     "total_job_openings": 20390.0,
+     "percent_change": 5.1
     }
    ]
   },
@@ -25844,23 +25708,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "53-3032",
-     "title": "Heavy and Tractor-Trailer Truck Drivers",
-     "period": "2023-2033",
-     "median_annual_wage": 55548.0,
-     "median_hourly_wage": 26.7,
-     "total_job_openings": 3190.0,
-     "percent_change": 9.3,
-     "numeric_change": 260.0,
-     "base_employment": 2790.0,
-     "projected_employment": 3050.0,
-     "entry_level_education": "Postsecondary non-degree award",
-     "work_experience": "None",
-     "job_training": "Short-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "53-3032",
      "title": "Heavy and Tractor-Trailer Truck Drivers",
@@ -26066,20 +25913,6 @@
    ],
    "related": [
     {
-     "soc_code": "53-7000",
-     "title": "Material Moving Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 1382230.0,
-     "percent_change": 9.7
-    },
-    {
-     "soc_code": "53-3000",
-     "title": "Motor Vehicle Operators",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 651840.0,
-     "percent_change": 16.0
-    },
-    {
      "soc_code": "53-7065",
      "title": "Stockers and Order Fillers",
      "median_annual_wage": 43808.0,
@@ -26106,6 +25939,20 @@
      "median_annual_wage": 38076.0,
      "total_job_openings": 104810.0,
      "percent_change": -3.1
+    },
+    {
+     "soc_code": "53-7051",
+     "title": "Industrial Truck and Tractor Operators",
+     "median_annual_wage": 48816.0,
+     "total_job_openings": 100140.0,
+     "percent_change": 11.4
+    },
+    {
+     "soc_code": "53-1047",
+     "title": "FirstLine Supervisors of Transportation & Material Moving Workers, Exc Aircraft Cargo Handling Supervisor",
+     "median_annual_wage": 66985.0,
+     "total_job_openings": 75030.0,
+     "percent_change": 10.0
     }
    ]
   },
@@ -26432,23 +26279,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "53-3033",
-     "title": "Light Truck Drivers",
-     "period": "2023-2033",
-     "median_annual_wage": 46944.0,
-     "median_hourly_wage": 22.58,
-     "total_job_openings": 1220.0,
-     "percent_change": 10.5,
-     "numeric_change": 110.0,
-     "base_employment": 1050.0,
-     "projected_employment": 1160.0,
-     "entry_level_education": "High school diploma or equivalent",
-     "work_experience": "None",
-     "job_training": "Short-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "53-3033",
      "title": "Light Truck Drivers",
@@ -26654,20 +26484,6 @@
    ],
    "related": [
     {
-     "soc_code": "53-7000",
-     "title": "Material Moving Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 1382230.0,
-     "percent_change": 9.7
-    },
-    {
-     "soc_code": "53-3000",
-     "title": "Motor Vehicle Operators",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 651840.0,
-     "percent_change": 16.0
-    },
-    {
      "soc_code": "53-7065",
      "title": "Stockers and Order Fillers",
      "median_annual_wage": 43808.0,
@@ -26694,6 +26510,20 @@
      "median_annual_wage": 38076.0,
      "total_job_openings": 104810.0,
      "percent_change": -3.1
+    },
+    {
+     "soc_code": "53-7051",
+     "title": "Industrial Truck and Tractor Operators",
+     "median_annual_wage": 48816.0,
+     "total_job_openings": 100140.0,
+     "percent_change": 11.4
+    },
+    {
+     "soc_code": "53-1047",
+     "title": "FirstLine Supervisors of Transportation & Material Moving Workers, Exc Aircraft Cargo Handling Supervisor",
+     "median_annual_wage": 66985.0,
+     "total_job_openings": 75030.0,
+     "percent_change": 10.0
     }
    ]
   },
@@ -27020,23 +26850,6 @@
     },
     {
      "area_type": "Metropolitan Area",
-     "area_name": "Salinas MSA (Monterey County)",
-     "soc_code": "53-3051",
-     "title": "Bus Drivers, School",
-     "period": "2023-2033",
-     "median_annual_wage": 64050.0,
-     "median_hourly_wage": 30.79,
-     "total_job_openings": 200.0,
-     "percent_change": 0.0,
-     "numeric_change": 0.0,
-     "base_employment": 120.0,
-     "projected_employment": 120.0,
-     "entry_level_education": "High school diploma or equivalent",
-     "work_experience": "None",
-     "job_training": "Short-term on-the-job training"
-    },
-    {
-     "area_type": "Metropolitan Area",
      "area_name": "San Diego-Chula Vista-Carlsbad MSA (San Diego County)",
      "soc_code": "53-3051",
      "title": "Bus Drivers, School",
@@ -27092,8 +26905,8 @@
      "soc_code": "53-3051",
      "title": "Bus Drivers, School",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 120.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -27143,8 +26956,8 @@
      "soc_code": "53-3051",
      "title": "Bus Drivers, School",
      "period": "2023-2033",
-     "median_annual_wage": 0.0,
-     "median_hourly_wage": 0.0,
+     "median_annual_wage": null,
+     "median_hourly_wage": null,
      "total_job_openings": 250.0,
      "percent_change": 0.0,
      "numeric_change": 0.0,
@@ -27225,20 +27038,6 @@
    ],
    "related": [
     {
-     "soc_code": "53-7000",
-     "title": "Material Moving Workers",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 1382230.0,
-     "percent_change": 9.7
-    },
-    {
-     "soc_code": "53-3000",
-     "title": "Motor Vehicle Operators",
-     "median_annual_wage": 0.0,
-     "total_job_openings": 651840.0,
-     "percent_change": 16.0
-    },
-    {
      "soc_code": "53-7065",
      "title": "Stockers and Order Fillers",
      "median_annual_wage": 43808.0,
@@ -27265,6 +27064,20 @@
      "median_annual_wage": 47814.0,
      "total_job_openings": 157370.0,
      "percent_change": 17.9
+    },
+    {
+     "soc_code": "53-7064",
+     "title": "Packers and Packagers, Hand",
+     "median_annual_wage": 38076.0,
+     "total_job_openings": 104810.0,
+     "percent_change": -3.1
+    },
+    {
+     "soc_code": "53-7051",
+     "title": "Industrial Truck and Tractor Operators",
+     "median_annual_wage": 48816.0,
+     "total_job_openings": 100140.0,
+     "percent_change": 11.4
     }
    ]
   }

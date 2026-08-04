@@ -67,14 +67,14 @@ export function score(entry: SearchEntry, searchTerms: string[]): number {
 
   const name = (entry.n ?? "").toLowerCase();
   const provider = (entry.p ?? "").toLowerCase();
-  const occupation = (entry.o ?? "").toLowerCase();
+  const occupations = entry.o.join(" ").toLowerCase();
   const city = (entry.c ?? "").toLowerCase();
 
   let total = 0;
   for (const term of searchTerms) {
     if (name.startsWith(term)) total += 6;
     else if (name.includes(term)) total += 4;
-    else if (occupation.includes(term)) total += 3;
+    else if (occupations.includes(term)) total += 3;
     else if (provider.includes(term)) total += 2;
     else if (city.includes(term)) total += 2;
     else return -1;

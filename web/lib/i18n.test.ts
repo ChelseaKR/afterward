@@ -6,6 +6,16 @@ const en = dict("en");
 const es = dict("es");
 
 /**
+ * Keys allowed to be identical across languages, each for a stated reason.
+ *
+ * `siteName` is a proper noun. `searchPlaceholder` holds example search terms, and the
+ * searchable corpus — program names, provider names, occupation titles — is English only,
+ * so Spanish examples would send a Spanish speaker straight to an empty result set. The
+ * honest placeholder is one that actually matches something.
+ */
+const DELIBERATELY_SHARED = new Set(["siteName", "searchPlaceholder"]);
+
+/**
  * TypeScript already guarantees every key exists in every dictionary. What it cannot catch
  * is a key that was copied from English and never actually translated, which is the failure
  * mode that quietly ships a half-Spanish page.
@@ -18,11 +28,16 @@ describe("translation completeness", () => {
   it("has no user-facing string left identical to the English", () => {
     const untranslated = Object.entries(en)
       .filter(([key, value]) => typeof value === "string" && value === (es as never)[key])
-      // Proper nouns are the same in both languages and are the only legitimate exception.
-      .filter(([key]) => key !== "siteName")
+      .filter(([key]) => !DELIBERATELY_SHARED.has(key))
       .map(([key]) => key);
 
     expect(untranslated).toEqual([]);
+  });
+
+  it("keeps the shared-string exceptions to the documented few", () => {
+    // Guards the exception list itself: it should stay a short, justified set rather than
+    // becoming somewhere to park anything that fails the test above.
+    expect(DELIBERATELY_SHARED.size).toBeLessThanOrEqual(3);
   });
 
   it("keeps interpolating strings as functions in both languages", () => {

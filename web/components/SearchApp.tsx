@@ -278,6 +278,7 @@ function ResultCard({
             checked={compared}
             disabled={atLimit}
             onChange={() => onToggleCompare(entry.i)}
+            aria-label={`${t.compareAdd}: ${entry.n ?? ""}`}
           />
           <span>{t.compareAdd}</span>
         </label>
@@ -290,15 +291,25 @@ function ResultCard({
       </p>
 
       <dl className="facts">
-        <Fact label={t.cost} value={money(entry.$, lang)} lang={lang} />
+        <Fact
+          label={t.cost}
+          value={
+            entry.$ === null
+              ? null
+              : entry.$partial
+                ? t.costAtLeast(money(entry.$, lang) ?? "")
+                : money(entry.$, lang)
+          }
+          lang={lang}
+        />
         <Fact label={t.length} value={entry.w === null ? null : t.weeks(entry.w)} lang={lang} />
         <Fact label={t.employmentRate} value={percent(entry.er, lang)} lang={lang} />
         <Fact label={t.medianEarnings} value={money(entry.me, lang)} lang={lang} />
       </dl>
 
-      {entry.o && (
+      {entry.o.length > 0 && (
         <p style={{ marginBottom: 0, marginTop: "0.875rem", fontSize: "0.9375rem" }}>
-          {t.leadsTo}: <strong>{entry.o}</strong>
+          {t.leadsTo}: <strong>{entry.o.join(" · ")}</strong>
           {shrinking && (
             <>
               {" "}

@@ -161,7 +161,7 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
             <Row
               label={t.leadsTo}
               lang={lang}
-              values={entries.map((e) => e.o)}
+              values={entries.map((e) => (e.o.length > 0 ? e.o.join(" · ") : null))}
               best={null}
             />
             <Row

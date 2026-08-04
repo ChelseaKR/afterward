@@ -97,18 +97,24 @@ export default async function ProviderPage({
                   <Link href={`/${lang}/programs/${program.i}/`}>{program.n ?? "—"}</Link>
                 </th>
                 <td className="num">
-                  {money(program.$, lang) ?? <span className="unreported">{t.notReported}</span>}
+                  {money(program.$, lang) ?? <span className="unreported" title={t.notReportedLong}>{t.notReported}</span>}
                 </td>
                 <td className="num">
                   {percent(program.er, lang) ?? (
-                    <span className="unreported">{t.notReported}</span>
+                    <span className="unreported" title={t.notReportedLong}>{t.notReported}</span>
                   )}
                 </td>
                 <td className="num">
-                  {money(program.me, lang) ?? <span className="unreported">{t.notReported}</span>}
+                  {money(program.me, lang) ?? <span className="unreported" title={t.notReportedLong}>{t.notReported}</span>}
                 </td>
                 <td>
-                  {program.o}
+                  {program.o.length > 0 ? (
+                    program.o.join(" · ")
+                  ) : (
+                    <span className="unreported" title={t.notReportedLong}>
+                      {t.notReported}
+                    </span>
+                  )}
                   {isShrinking(program.g) && (
                     <>
                       {" "}

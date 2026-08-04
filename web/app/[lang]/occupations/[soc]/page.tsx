@@ -98,8 +98,20 @@ export default async function OccupationPage({
                     <th scope="row" style={{ fontWeight: 400 }}>
                       {region.area_name}
                     </th>
-                    <td className="num">{money(region.median_annual_wage, lang)}</td>
-                    <td className="num">{count(region.total_job_openings, lang)}</td>
+                    <td className="num">
+                      {money(region.median_annual_wage, lang) ?? (
+                        <span className="unreported" title={t.notReportedLong}>
+                          {t.notReported}
+                        </span>
+                      )}
+                    </td>
+                    <td className="num">
+                      {count(region.total_job_openings, lang) ?? (
+                        <span className="unreported" title={t.notReportedLong}>
+                          {t.notReported}
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -140,11 +152,23 @@ export default async function OccupationPage({
                         sibling.title
                       )}
                     </th>
-                    <td className="num">{money(sibling.median_annual_wage, lang)}</td>
-                    <td className="num">{count(sibling.total_job_openings, lang)}</td>
+                    <td className="num">
+                      {money(sibling.median_annual_wage, lang) ?? (
+                        <span className="unreported" title={t.notReportedLong}>
+                          {t.notReported}
+                        </span>
+                      )}
+                    </td>
+                    <td className="num">
+                      {count(sibling.total_job_openings, lang) ?? (
+                        <span className="unreported" title={t.notReportedLong}>
+                          {t.notReported}
+                        </span>
+                      )}
+                    </td>
                     <td className="num">
                       {signedPercent(sibling.percent_change, lang) ?? (
-                        <span className="unreported">{t.notReported}</span>
+                        <span className="unreported" title={t.notReportedLong}>{t.notReported}</span>
                       )}
                     </td>
                   </tr>

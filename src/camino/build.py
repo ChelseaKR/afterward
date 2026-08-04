@@ -118,7 +118,15 @@ def _attach_related(occupations: dict[str, dict[str, Any]]) -> None:
         siblings = [
             occupations[other] for other in by_group.get(soc_code[:2], []) if other != soc_code
         ]
-        siblings.sort(key=lambda o: o.get("total_job_openings") or -1, reverse=True)
+        # `or -1` would fold a reported zero openings into the same bucket as unreported.
+        # Nothing has zero openings today, but this is the exact confusion the project
+        # exists to avoid, and it has no business sitting inside a sort key.
+        siblings.sort(
+            key=lambda o: (
+                o["total_job_openings"] if o.get("total_job_openings") is not None else -1
+            ),
+            reverse=True,
+        )
         occupation["related"] = [
             {
                 "soc_code": sibling["soc_code"],
@@ -180,6 +188,9 @@ def program_payload(
             "tuition": program.cost_tuition,
             "supplies": program.cost_supplies,
             "total_out_of_pocket": program.total_cost,
+            # False when a component was suppressed, making the total a floor rather than
+            # a total. The UI must say "at least" instead of presenting it as the price.
+            "total_is_complete": program.cost_is_complete,
             "wioa_funded_cost": program.cost_wioa,
         },
         # Every field here may legitimately be null, meaning "not reported or suppressed".
@@ -206,22 +217,42 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     Short keys and only the fields a result card or filter actually needs. Everything else
     is fetched per-program on demand, so the first paint does not cost megabytes on a phone.
     """
-    occupation = (program["occupations"] or [{}])[0]
+    occupations = program["occupations"]
     outcomes = program["outcomes"]
+
+    # A program can feed up to three occupations, and 1,588 of California's 3,266 feed more
+    # than one. Reading only the first understated the programs training for declining work
+    # by more than half (219 against 518), because the shrinking occupation is frequently
+    # not the one listed first. Summarise across all of them.
+    changes = [
+        o["percent_change"] for o in occupations if o.get("percent_change") is not None
+    ]
+    wages = [
+        o["median_annual_wage"] for o in occupations if o.get("median_annual_wage") is not None
+    ]
+    openings = [
+        o["total_job_openings"] for o in occupations if o.get("total_job_openings") is not None
+    ]
+    # The worst outlook among the jobs this trains for: a program is only as safe as its
+    # weakest destination, and that is the fact a prospective student needs first.
+    worst_change = min(changes) if changes else None
     return {
         "i": program["uuid"],
         "n": program["program_name"],
         "p": program["provider_name"],
         "c": program["location"]["city"],
         "$": program["cost"]["total_out_of_pocket"],
+        "$partial": not program["cost"]["total_is_complete"],
         "w": program["length"]["weeks"],
         "s": program["soc_codes"],
-        "o": occupation.get("title"),
-        # Occupation outlook, so "trains for a shrinking job" is filterable without a
-        # second fetch. None stays None: unknown is not the same as flat.
-        "g": occupation.get("percent_change"),
-        "wage": occupation.get("median_annual_wage"),
-        "op": occupation.get("total_job_openings"),
+        # Every occupation this program feeds, not just the first.
+        "o": [o.get("title") for o in occupations if o.get("title")],
+        # Worst projected outlook across those occupations, so "trains for a shrinking job"
+        # is filterable without a second fetch. None stays None: unknown is not flat.
+        "g": worst_change,
+        # Best wage and most openings available down any of its paths.
+        "wage": max(wages) if wages else None,
+        "op": max(openings) if openings else None,
         # Headline outcomes, null-preserving.
         "cr": outcomes["completion_rate"],
         "er": outcomes["employment_rate_q2"],

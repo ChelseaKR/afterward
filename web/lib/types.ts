@@ -76,6 +76,7 @@ export interface Program {
     tuition: number | null;
     supplies: number | null;
     total_out_of_pocket: number | null;
+    total_is_complete: boolean;
     wioa_funded_cost: number | null;
   };
   outcomes: ProgramOutcomes;
@@ -89,9 +90,11 @@ export interface SearchEntry {
   p: string | null;
   c: string | null;
   $: number | null;
+  /** True when a cost component was suppressed, making `$` a floor rather than a total. */
+  $partial: boolean;
   w: number | null;
   s: string[];
-  o: string | null;
+  o: string[];
   g: number | null;
   wage: number | null;
   op: number | null;

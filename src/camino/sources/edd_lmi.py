@@ -28,6 +28,10 @@ REQUEST_TIMEOUT = 120.0
 
 STATEWIDE_AREA = "California"
 
+DETAILED_SOC_LEVEL = 4
+"""EDD's own hierarchy level for a detailed occupation. 1-3 are progressively broader
+roll-ups (all occupations, major group, minor group) and are not jobs anyone trains for."""
+
 
 def _to_float(value: Any) -> float | None:
     if value is None:
@@ -39,6 +43,19 @@ def _to_float(value: Any) -> float | None:
         return float(text)
     except ValueError:
         return None
+
+
+def _to_wage(value: Any) -> float | None:
+    """Parse a wage, treating an exact zero as "not published".
+
+    EDD writes 0 where it has no wage to publish -- typically irregular or hourly-only work
+    such as Actors, Dancers and Legislators, and occasionally a detailed occupation like
+    Chemical Engineers. Nobody in these occupations earns nothing, so a literal $0 on the
+    page would be a lie about a real job. Job openings are left alone: zero openings is a
+    coherent and meaningful figure.
+    """
+    parsed = _to_float(value)
+    return None if parsed == 0 else parsed
 
 
 def _to_text(value: Any) -> str | None:
@@ -75,8 +92,16 @@ class OccupationProjection:
 
     @property
     def is_detailed_occupation(self) -> bool:
-        """Detailed (6-digit) SOC rows, excluding the rolled-up summary levels."""
-        return self.soc_code is not None and not self.soc_code.endswith("0000")
+        """True only for real occupations, not statistical roll-ups.
+
+        EDD publishes its own hierarchy level, so use it. An earlier version guessed from
+        the code shape and rejected only major groups (``XX-0000``); minor groups end
+        ``-1000``, ``-2000`` and so on and slipped through, putting ~100 aggregates such as
+        "Top Executives" into the index as though they were jobs. EDD publishes no wage for
+        an aggregate, so each arrived carrying a median wage of 0 and rendered as "$0 a
+        year" -- a suppressed-versus-zero failure reached by a different route.
+        """
+        return self.soc_level == DETAILED_SOC_LEVEL and self.soc_code is not None
 
 
 def resolve_resource_url(
@@ -124,8 +149,8 @@ def parse_projections(text: str) -> Iterator[OccupationProjection]:
             numeric_change=_to_float(row.get("Numeric Change")),
             percent_change=_to_float(row.get("Percentage Change")),
             total_job_openings=_to_float(row.get("Total Job Openings")),
-            median_hourly_wage=_to_float(row.get("Median Hourly Wage")),
-            median_annual_wage=_to_float(row.get("Median Annual Wage")),
+            median_hourly_wage=_to_wage(row.get("Median Hourly Wage")),
+            median_annual_wage=_to_wage(row.get("Median Annual Wage")),
             entry_level_education=_to_text(row.get("Entry Level Education")),
             work_experience=_to_text(row.get("Work Experience")),
             job_training=_to_text(row.get("Job Training")),

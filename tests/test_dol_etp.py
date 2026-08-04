@@ -82,7 +82,8 @@ class TestProgramParsing:
         )
         assert program.has_outcomes is True
 
-    def test_total_cost_sums_reported_components_only(self) -> None:
+    def test_total_cost_with_a_suppressed_component_is_marked_incomplete(self) -> None:
+        """The sum is a floor, not a total, and callers must be able to tell."""
         program = parse_program(
             {
                 "_source": {
@@ -93,6 +94,20 @@ class TestProgramParsing:
             }
         )
         assert program.total_cost == 5568.0
+        assert program.cost_is_complete is False
+
+    def test_total_cost_with_every_component_reported_is_complete(self) -> None:
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_non_wioa_tuition_cost": 5568,
+                    "field_non_wioa_supplies_cost": 2450,
+                }
+            }
+        )
+        assert program.total_cost == 8018.0
+        assert program.cost_is_complete is True
 
     def test_total_cost_is_none_when_nothing_reported(self) -> None:
         program = parse_program(

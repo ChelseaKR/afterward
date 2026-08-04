@@ -19,9 +19,10 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     p: "Fresno City College",
     c: "Fresno",
     $: 4000,
+    $partial: false,
     w: 30,
     s: ["31-9092"],
-    o: "Medical Assistants",
+    o: ["Medical Assistants"],
     g: 12.5,
     wage: 45000,
     op: 5000,
@@ -42,8 +43,8 @@ describe("score", () => {
 
   it("ranks name matches above occupation, provider, and city matches", () => {
     const byName = score(entry({ n: "Nursing" }), ["nursing"]);
-    const byOccupation = score(entry({ n: "Program", o: "Nursing Assistants" }), ["nursing"]);
-    const byCity = score(entry({ n: "Program", o: "Other", c: "Nursing City" }), ["nursing"]);
+    const byOccupation = score(entry({ n: "Program", o: ["Nursing Assistants"] }), ["nursing"]);
+    const byCity = score(entry({ n: "Program", o: ["Other"], c: "Nursing City" }), ["nursing"]);
     expect(byName).toBeGreaterThan(byOccupation);
     expect(byOccupation).toBeGreaterThan(byCity);
   });
@@ -58,7 +59,7 @@ describe("score", () => {
   });
 
   it("survives entries with null text fields", () => {
-    const sparse = entry({ n: null, p: null, o: null, c: null });
+    const sparse = entry({ n: null, p: null, o: [], c: null });
     expect(score(sparse, ["anything"])).toBe(-1);
     expect(score(sparse, [])).toBe(0);
   });

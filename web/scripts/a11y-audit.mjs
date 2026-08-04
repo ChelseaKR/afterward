@@ -69,6 +69,10 @@ if (SINGLE) {
   };
 
   const targets = [
+    // The site root is the most-linked URL and was previously an error shell with no lang
+    // attribute. It was also the one page this audit did not look at, so CI reported no
+    // violations while shipping a serious one.
+    ["Site root", join(OUT, "index.html")],
     ["Search (English)", join(OUT, "en", "index.html")],
     ["Search (Spanish)", join(OUT, "es", "index.html")],
     ["Program detail (English)", firstDirIn("en", "programs")],

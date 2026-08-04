@@ -109,9 +109,20 @@ class Program:
 
     @property
     def total_cost(self) -> float | None:
-        """Non-WIOA out-of-pocket cost, when any component was reported."""
+        """Non-WIOA out-of-pocket cost, when any component was reported.
+
+        May be a floor rather than a total -- see :attr:`cost_is_complete`. Summing a
+        reported tuition with a suppressed supplies figure quietly treats the unknown part
+        as zero, which is the one thing this codebase is not allowed to do, so callers must
+        check completeness before presenting this as "the cost".
+        """
         parts = [c for c in (self.cost_tuition, self.cost_supplies) if c is not None]
         return sum(parts) if parts else None
+
+    @property
+    def cost_is_complete(self) -> bool:
+        """True when every cost component was reported, so the total really is the total."""
+        return self.cost_tuition is not None and self.cost_supplies is not None
 
 
 def _soc_codes(source: dict[str, Any]) -> tuple[str, ...]:

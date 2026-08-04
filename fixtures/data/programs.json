@@ -31,6 +31,7 @@
     "tuition": 5660.0,
     "supplies": 0.0,
     "total_out_of_pocket": 5660.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -99,6 +100,7 @@
     "tuition": 5684.0,
     "supplies": 1729.15,
     "total_out_of_pocket": 7413.15,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -151,6 +153,7 @@
     "tuition": 5701.0,
     "supplies": 1516.67,
     "total_out_of_pocket": 7217.67,
+    "total_is_complete": true,
     "wioa_funded_cost": 6267.0
    },
    "outcomes": {
@@ -203,6 +206,7 @@
     "tuition": 6249.0,
     "supplies": 2119.4,
     "total_out_of_pocket": 8368.4,
+    "total_is_complete": true,
     "wioa_funded_cost": 4465.5
    },
    "outcomes": {
@@ -256,6 +260,7 @@
     "tuition": 12374.0,
     "supplies": 12725.0,
     "total_out_of_pocket": 25099.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -308,6 +313,7 @@
     "tuition": 7900.0,
     "supplies": 0.0,
     "total_out_of_pocket": 7900.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -360,6 +366,7 @@
     "tuition": 5900.0,
     "supplies": 0.0,
     "total_out_of_pocket": 5900.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -412,6 +419,7 @@
     "tuition": 18150.0,
     "supplies": 0.0,
     "total_out_of_pocket": 18150.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -464,6 +472,7 @@
     "tuition": 10900.0,
     "supplies": 0.0,
     "total_out_of_pocket": 10900.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -517,6 +526,7 @@
     "tuition": 8900.0,
     "supplies": 0.0,
     "total_out_of_pocket": 8900.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -577,6 +587,7 @@
     "tuition": 10900.0,
     "supplies": 0.0,
     "total_out_of_pocket": 10900.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -629,6 +640,7 @@
     "tuition": 2025.0,
     "supplies": 240.0,
     "total_out_of_pocket": 2265.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 4420.0
    },
    "outcomes": {
@@ -682,6 +694,7 @@
     "tuition": 12374.0,
     "supplies": 12725.0,
     "total_out_of_pocket": 25099.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 75297.0
    },
    "outcomes": {
@@ -744,6 +757,7 @@
     "tuition": 1575.0,
     "supplies": 1160.0,
     "total_out_of_pocket": 2735.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -813,6 +827,7 @@
     "tuition": 1311.0,
     "supplies": 1346.0,
     "total_out_of_pocket": 2657.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -874,6 +889,7 @@
     "tuition": 0.0,
     "supplies": 0.0,
     "total_out_of_pocket": 0.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -934,6 +950,7 @@
     "tuition": 4131.0,
     "supplies": 1517.0,
     "total_out_of_pocket": 5648.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -986,6 +1003,7 @@
     "tuition": 3542.0,
     "supplies": 2120.0,
     "total_out_of_pocket": 5662.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1038,6 +1056,7 @@
     "tuition": 3901.0,
     "supplies": 1729.0,
     "total_out_of_pocket": 5630.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1090,6 +1109,7 @@
     "tuition": 1830.0,
     "supplies": 240.0,
     "total_out_of_pocket": 2070.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1143,6 +1163,7 @@
     "tuition": 3750.0,
     "supplies": 640.0,
     "total_out_of_pocket": 4390.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 61590.0
    },
    "outcomes": {
@@ -1203,6 +1224,7 @@
     "tuition": 2025.0,
     "supplies": 240.0,
     "total_out_of_pocket": 2265.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1257,6 +1279,7 @@
     "tuition": 9575.0,
     "supplies": 1930.0,
     "total_out_of_pocket": 11505.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 87005.0
    },
    "outcomes": {
@@ -1325,6 +1348,7 @@
     "tuition": 1890.0,
     "supplies": 500.0,
     "total_out_of_pocket": 2390.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1377,6 +1401,7 @@
     "tuition": 840.0,
     "supplies": 885.0,
     "total_out_of_pocket": 1725.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 3450.0
    },
    "outcomes": {
@@ -1421,6 +1446,7 @@
     "tuition": 140.0,
     "supplies": 469.0,
     "total_out_of_pocket": 609.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1464,6 +1490,7 @@
     "tuition": 4725.0,
     "supplies": 0.0,
     "total_out_of_pocket": 4725.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1508,6 +1535,7 @@
     "tuition": 445.0,
     "supplies": 750.0,
     "total_out_of_pocket": 1195.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 16130.0
    },
    "outcomes": {
@@ -1551,6 +1579,7 @@
     "tuition": 2965.0,
     "supplies": 640.0,
     "total_out_of_pocket": 3605.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 20505.0
    },
    "outcomes": {
@@ -1603,6 +1632,7 @@
     "tuition": 11125.0,
     "supplies": 1060.0,
     "total_out_of_pocket": 12185.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 79635.0
    },
    "outcomes": {
@@ -1655,6 +1685,7 @@
     "tuition": 14475.0,
     "supplies": 2045.0,
     "total_out_of_pocket": 16520.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 7701.5
    },
    "outcomes": {
@@ -1707,6 +1738,7 @@
     "tuition": 18150.0,
     "supplies": 0.0,
     "total_out_of_pocket": 18150.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1759,6 +1791,7 @@
     "tuition": 2995.0,
     "supplies": 290.0,
     "total_out_of_pocket": 3285.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 89850.0
    },
    "outcomes": {
@@ -1811,6 +1844,7 @@
     "tuition": 0.0,
     "supplies": 125.0,
     "total_out_of_pocket": 125.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1864,6 +1898,7 @@
     "tuition": 2995.0,
     "supplies": 250.0,
     "total_out_of_pocket": 3245.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 100818.24
    },
    "outcomes": {
@@ -1916,6 +1951,7 @@
     "tuition": 630.0,
     "supplies": 970.0,
     "total_out_of_pocket": 1600.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -1969,6 +2005,7 @@
     "tuition": 140.0,
     "supplies": 845.0,
     "total_out_of_pocket": 985.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 3940.0
    },
    "outcomes": {
@@ -2031,6 +2068,7 @@
     "tuition": 2065.0,
     "supplies": 1437.0,
     "total_out_of_pocket": 3502.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 4989.0
    },
    "outcomes": {
@@ -2099,6 +2137,7 @@
     "tuition": 1260.0,
     "supplies": 1055.0,
     "total_out_of_pocket": 2315.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2152,6 +2191,7 @@
     "tuition": 1890.0,
     "supplies": 1078.0,
     "total_out_of_pocket": 2968.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 2968.48
    },
    "outcomes": {
@@ -2212,6 +2252,7 @@
     "tuition": 1260.0,
     "supplies": 1055.0,
     "total_out_of_pocket": 2315.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2264,6 +2305,7 @@
     "tuition": 1260.0,
     "supplies": 900.97,
     "total_out_of_pocket": 2160.9700000000003,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2317,6 +2359,7 @@
     "tuition": 1890.0,
     "supplies": 1070.0,
     "total_out_of_pocket": 2960.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2378,6 +2421,7 @@
     "tuition": 2520.0,
     "supplies": 975.0,
     "total_out_of_pocket": 3495.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2440,6 +2484,7 @@
     "tuition": 630.0,
     "supplies": 705.0,
     "total_out_of_pocket": 1335.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2509,6 +2554,7 @@
     "tuition": 948.0,
     "supplies": 1011.5,
     "total_out_of_pocket": 1959.5,
+    "total_is_complete": true,
     "wioa_funded_cost": 23425.3
    },
    "outcomes": {
@@ -2569,6 +2615,7 @@
     "tuition": 1750.0,
     "supplies": 1351.0,
     "total_out_of_pocket": 3101.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 17767.5
    },
    "outcomes": {
@@ -2622,6 +2669,7 @@
     "tuition": 3000.0,
     "supplies": 2315.0,
     "total_out_of_pocket": 5315.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 48890.0
    },
    "outcomes": {
@@ -2684,6 +2732,7 @@
     "tuition": 700.0,
     "supplies": 415.0,
     "total_out_of_pocket": 1115.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2752,6 +2801,7 @@
     "tuition": 1890.0,
     "supplies": 1345.0,
     "total_out_of_pocket": 3235.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2804,6 +2854,7 @@
     "tuition": 1050.0,
     "supplies": 1057.0,
     "total_out_of_pocket": 2107.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 1959.5
    },
    "outcomes": {
@@ -2857,6 +2908,7 @@
     "tuition": 1260.0,
     "supplies": 960.0,
     "total_out_of_pocket": 2220.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2919,6 +2971,7 @@
     "tuition": 735.0,
     "supplies": 755.0,
     "total_out_of_pocket": 1490.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -2988,6 +3041,7 @@
     "tuition": 1260.0,
     "supplies": 705.0,
     "total_out_of_pocket": 1965.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -3048,6 +3102,7 @@
     "tuition": 3244.0,
     "supplies": 2146.1,
     "total_out_of_pocket": 5390.1,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -3100,6 +3155,7 @@
     "tuition": 875.0,
     "supplies": 0.0,
     "total_out_of_pocket": 875.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 1050.0
    },
    "outcomes": {
@@ -3152,6 +3208,7 @@
     "tuition": 375.0,
     "supplies": 0.0,
     "total_out_of_pocket": 375.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -3206,6 +3263,7 @@
     "tuition": 400.0,
     "supplies": 250.0,
     "total_out_of_pocket": 650.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 0.0
    },
    "outcomes": {
@@ -3276,6 +3334,7 @@
     "tuition": 800.0,
     "supplies": 0.0,
     "total_out_of_pocket": 800.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 600.0
    },
    "outcomes": {
@@ -3344,6 +3403,7 @@
     "tuition": 750.0,
     "supplies": 0.0,
     "total_out_of_pocket": 750.0,
+    "total_is_complete": true,
     "wioa_funded_cost": 600.0
    },
    "outcomes": {

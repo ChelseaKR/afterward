@@ -54,8 +54,14 @@ export default async function ProgramPage({
   const t = dict(lang);
   const state = getCoverage().state_benchmark;
   const { outcomes, cost, length, location } = program;
-  const occupation = program.occupations[0];
-  const shrinking = occupation?.percent_change !== undefined && (occupation?.percent_change ?? 0) < 0;
+  // Every occupation this program feeds. Showing only the first named the wrong job on
+  // hundreds of pages and hid the shrinking one whenever it was not listed first.
+  const occupations = program.occupations;
+  const worstChange = occupations
+    .map((o) => o.percent_change)
+    .filter((c): c is number => c !== null)
+    .reduce<number | null>((worst, c) => (worst === null || c < worst ? c : worst), null);
+  const shrinking = worstChange !== null && worstChange < 0;
   const smallSample = isSmallSample(outcomes.total_exited);
 
   return (
@@ -75,7 +81,18 @@ export default async function ProgramPage({
       </p>
 
       <dl className="measure-grid panel">
-        <Measure label={t.cost} value={money(cost.total_out_of_pocket, lang)} lang={lang} />
+        <Measure
+          label={t.cost}
+          value={
+            cost.total_out_of_pocket === null
+              ? null
+              : cost.total_is_complete
+                ? money(cost.total_out_of_pocket, lang)
+                : t.costAtLeast(money(cost.total_out_of_pocket, lang) ?? "")
+          }
+          note={cost.total_is_complete ? undefined : t.costPartial}
+          lang={lang}
+        />
         <Measure
           label={t.length}
           value={length.weeks === null ? null : t.weeks(length.weeks)}
@@ -136,43 +153,56 @@ export default async function ProgramPage({
         </div>
       )}
 
-      {occupation && (
+      {occupations.length > 0 && (
         <>
           <h2>{t.occupation}</h2>
           {shrinking && (
             <p className="callout">
               <strong>
-                {t.shrinking} {signedPercent(occupation.percent_change, lang)}
+                {t.shrinking} {signedPercent(worstChange, lang)}
               </strong>
               <br />
               {t.shrinkingWarning}
             </p>
           )}
-          <dl className="measure-grid panel">
-            <Measure
-              label={t.medianWage}
-              value={money(occupation.median_annual_wage, lang)}
-              note={t.perYear}
-              lang={lang}
-            />
-            <Measure
-              label={t.jobOpenings}
-              value={count(occupation.total_job_openings, lang)}
-              lang={lang}
-            />
-            <Measure
-              label={t.entryEducation}
-              value={translateTerm(occupation.entry_level_education, lang)}
-              lang={lang}
-            />
-          </dl>
-          {occupation.soc_code && (
-            <p>
-              <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>
-                {occupation.title} →
-              </Link>
-            </p>
-          )}
+          {occupations.length > 1 && <p>{t.leadsToSeveral}</p>}
+
+          {occupations.map((occupation) => (
+            <section key={occupation.soc_code} style={{ marginBottom: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
+                {occupation.soc_code ? (
+                  <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>
+                    {occupation.title}
+                  </Link>
+                ) : (
+                  occupation.title
+                )}
+              </h3>
+              <dl className="measure-grid panel">
+                <Measure
+                  label={t.medianWage}
+                  value={money(occupation.median_annual_wage, lang)}
+                  note={t.perYear}
+                  lang={lang}
+                />
+                <Measure
+                  label={t.jobOpenings}
+                  value={count(occupation.total_job_openings, lang)}
+                  lang={lang}
+                />
+                <Measure
+                  label={t.growth}
+                  value={signedPercent(occupation.percent_change, lang)}
+                  lang={lang}
+                />
+                <Measure
+                  label={t.entryEducation}
+                  value={translateTerm(occupation.entry_level_education, lang)}
+                  lang={lang}
+                />
+              </dl>
+            </section>
+          ))}
         </>
       )}
 
