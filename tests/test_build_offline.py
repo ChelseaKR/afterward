@@ -100,3 +100,32 @@ class TestBuildOffline:
         monkeypatch.setattr(httpx.Client, "get", explode)
         monkeypatch.setattr(httpx.Client, "request", explode)
         build_offline(FIXTURE_DIR, output_dir=tmp_path)
+
+
+class TestFixtureIsCurrent:
+    """The fixture is what CI builds the site from, so it must carry every field the site reads.
+
+    A stale fixture does not fail quietly: the export crashes mid-render on a field the
+    pipeline started emitting and the fixture never did. That is exactly how `main` broke
+    once — the program page read `occupation.match.entry_level_education_withheld` against a
+    fixture generated before `match` existed. Regenerate with `make data && make fixture`.
+    """
+
+    def _programs(self) -> list[dict]:
+        return json.loads((FIXTURE_DIR / "programs.json").read_text(encoding="utf-8"))["programs"]
+
+    def test_every_matched_occupation_carries_its_match_provenance(self) -> None:
+        for program in self._programs():
+            for occupation in program["occupations"]:
+                assert "match" in occupation, f"{program['uuid']} predates the match field"
+                assert "entry_level_education_withheld" in occupation["match"]
+
+    def test_every_program_carries_cohort_integrity(self) -> None:
+        for program in self._programs():
+            assert "cohort" in program["outcomes"], f"{program['uuid']} predates cohort checks"
+            assert "attributable" in program["outcomes"]["cohort"]
+
+    def test_every_program_carries_the_region_key(self) -> None:
+        # Present-but-null is "unplaced"; a missing key means the fixture predates the field.
+        for program in self._programs():
+            assert "region" in program, f"{program['uuid']} predates regional matching"

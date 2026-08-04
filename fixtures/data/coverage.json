@@ -2,21 +2,21 @@
  "snapshot_date": "2026-08-04",
  "is_fixture": true,
  "total_programs": 60,
- "programs_with_any_outcome": 49,
- "programs_with_median_earnings": 40,
- "programs_with_employment_rate": 44,
- "programs_with_completion_rate": 49,
+ "programs_with_any_outcome": 47,
+ "programs_with_median_earnings": 38,
+ "programs_with_employment_rate": 42,
+ "programs_with_completion_rate": 47,
  "programs_with_cost": 60,
  "programs_with_soc": 60,
  "programs_matched_to_occupation": 56,
  "distinct_providers": 16,
  "distinct_occupations_matched": 56,
  "occupation_rows_loaded": 56,
- "programs_mapped_to_area": 43,
- "programs_without_area": 17,
- "outcome_coverage_pct": 81.7,
+ "programs_mapped_to_area": 47,
+ "programs_without_area": 13,
+ "outcome_coverage_pct": 78.3,
  "occupation_match_pct": 93.3,
- "area_match_pct": 71.7,
+ "area_match_pct": 78.3,
  "state_benchmark": {
   "state": "CA",
   "completion_rate": 0.71,
@@ -29,15 +29,15 @@
  "peer_medians": {
   "completion_rate": {
    "median": 0.72,
-   "reporting": 49
+   "reporting": 47
   },
   "employment_rate_q2": {
-   "median": 0.685,
-   "reporting": 44
+   "median": 0.68,
+   "reporting": 42
   },
   "median_earnings": {
-   "median": 10319.255000000001,
-   "reporting": 40
+   "median": 10699.5,
+   "reporting": 38
   }
  }
 }

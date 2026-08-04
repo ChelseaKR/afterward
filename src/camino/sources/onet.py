@@ -538,9 +538,7 @@ def fetch_profiles(
         technologies = _index_by_code(
             fetch_table(TECHNOLOGY_TABLE, client=http, cache_dir=cache_dir)
         )
-        titles = _index_by_code(
-            fetch_table(REPORTED_TITLE_TABLE, client=http, cache_dir=cache_dir)
-        )
+        titles = _index_by_code(fetch_table(REPORTED_TITLE_TABLE, client=http, cache_dir=cache_dir))
         zones = parse_job_zones(
             fetch_table(JOB_ZONE_TABLE, client=http, cache_dir=cache_dir),
             fetch_table(JOB_ZONE_REFERENCE_TABLE, client=http, cache_dir=cache_dir),

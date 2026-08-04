@@ -58,14 +58,14 @@ export const COHORT_NOT_OWN: Record<Lang, { badge: string; note: string }> = {
     note:
       "The provider filed these figures against more than the program named — several of " +
       "its programs, or the whole institution. They are shown because they are real, and " +
-      "they are left out of the highlighting because they do not describe this program.",
+      "nothing here ranks or rates them, because they do not describe this program.",
   },
   es: {
     badge: "Los resultados abarcan más que este programa",
     note:
       "El proveedor presentó estas cifras para más que el programa nombrado — varios de sus " +
-      "programas, o toda la institución. Se muestran porque son reales, y quedan fuera de " +
-      "las marcas porque no describen este programa.",
+      "programas, o toda la institución. Se muestran porque son reales, y aquí nada las " +
+      "clasifica ni las califica, porque no describen este programa.",
   },
 };
 

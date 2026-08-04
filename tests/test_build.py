@@ -558,19 +558,42 @@ class TestFetchEnrichment:
     def test_a_warm_cache_is_served_without_a_request(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
+        """...but only an entry that answers the request actually being made.
+
+        The response shape follows the query parameters, so an entry fetched before the
+        client asked for tasks, alternate titles and education is not a smaller version of
+        today's answer, it is that answer with fields missing. Serving it would put "this
+        occupation reports no tasks" on a page when the truth is that nobody asked, so
+        widening the parameter set has to cost a refetch rather than pass silently.
+        """
         import httpx
+
+        from camino.sources.careeronestop import REQUEST_PARAMS, cache_envelope
 
         monkeypatch.setenv(USER_ID_ENV, "user")
         monkeypatch.setenv(TOKEN_ENV, "token")
-        (tmp_path / "29-1141.00.json").write_text(json.dumps(CACHED_RESPONSE), encoding="utf-8")
+        entry = tmp_path / "29-1141.00.json"
 
         def explode(*args: object, **kwargs: object) -> None:
             raise AssertionError("hit the network despite a warm cache")
 
         monkeypatch.setattr(httpx.Client, "get", explode)
+
+        entry.write_text(
+            json.dumps(cache_envelope(CACHED_RESPONSE, onet_code="29-1141.00", state="CA")),
+            encoding="utf-8",
+        )
         found = fetch_enrichment(["29-1141"], cache_dir=tmp_path)
         assert set(found) == {"29-1141"}
         assert found["29-1141"].description == "Assess patient health problems and needs."
+
+        # The same response, recorded as having been fetched without tasks. Reaching the
+        # network is the assertion here: it is what a stale entry must cost.
+        narrow = cache_envelope(CACHED_RESPONSE, onet_code="29-1141.00", state="CA")
+        narrow["request"]["params"] = {**REQUEST_PARAMS, "tasks": "false"}
+        entry.write_text(json.dumps(narrow), encoding="utf-8")
+        with pytest.raises(AssertionError, match="hit the network"):
+            fetch_enrichment(["29-1141"], cache_dir=tmp_path)
 
 
 class TestRegionalProjectionOnPrograms:
