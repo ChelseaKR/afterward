@@ -124,7 +124,7 @@ This is worth flagging as fragile-but-currently-free. Older vintages *in the sam
 the same places differently — `Bakersfield MSA` (2009–2022) versus `Bakersfield-Delano MSA`
 (2023–), `Sacramento--Roseville--Arden-Arcade MSA` with its doubled hyphens, `San
 Diego-Carlsbad MSA` versus `San Diego-Chula Vista-Carlsbad MSA`. The client deliberately does
-no normalisation, prefix matching or edit-distance repair: if a future republication renames
+no normalization, prefix matching or edit-distance repair: if a future republication renames
 an area, the join must fail loudly rather than quietly attribute one region's wages to
 another. The test suite pins the 32 current names verbatim and asserts that a near-miss like
 `Bakersfield MSA` does **not** match.
@@ -157,7 +157,7 @@ client handles it at the point of parse.
 | 2018–2026 | blank | blank |
 
 In the zero-writing vintages the sentinel is *provable*, not inferred, because a suppressed
-percentile is written as `0` while its neighbours are not — producing orderings no
+percentile is written as `0` while its neighbors are not — producing orderings no
 distribution can have. Statewide Chief Executives, 2015:
 
 ```
@@ -402,7 +402,7 @@ file is fetched at build time, never by a reader, and the site ships static.
 
 ### What is deliberately not in the module
 
-- No crosswalk, normalisation or fuzzy matching on area names. The exact join works today; a
+- No crosswalk, normalization or fuzzy matching on area names. The exact join works today; a
   future rename must break loudly.
 - No repair of non-monotonic rows beyond the zero-sentinel rule. `is_monotonic` reports;
   it does not reorder. Two rows in eighteen years fail it, and silently sorting them would

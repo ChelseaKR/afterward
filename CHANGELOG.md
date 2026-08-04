@@ -19,7 +19,7 @@ All notable changes to this project are documented here. The format follows
   state projects will shrink.
 - Coverage reporting as a published artifact rather than a debug log.
 - Accessibility audit over the built pages, failing the build on any axe violation, plus a
-  contrast audit computing real WCAG ratios for every colour pairing in both themes.
+  contrast audit computing real WCAG ratios for every color pairing in both themes.
 - Offline build path and a committed 60-program fixture, so CI does not depend on a
   government endpoint being reachable.
 - Mechanical provenance check enforcing this project's clean-room constraint.

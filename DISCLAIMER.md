@@ -41,7 +41,7 @@ before deciding.
 
 ## Corrections
 
-If a figure here misrepresents your program or organisation, please open an issue. Where the
+If a figure here misrepresents your program or organization, please open an issue. Where the
 error is this project's, it will be fixed. Where the underlying public data is wrong, the
 correction has to go through the body that published it, and the issue thread is a
 reasonable place to record that.

@@ -116,7 +116,7 @@ describe("matchesFilters", () => {
   });
 
   it("maxCost excludes programs with no reported cost", () => {
-    // A cost cap is a budget promise; a program that never said what it costs cannot honour it.
+    // A cost cap is a budget promise; a program that never said what it costs cannot honor it.
     const filters = { ...DEFAULT_FILTERS, maxCost: 5000 };
     expect(matchesFilters(entry({ $: 4000 }), filters)).toBe(true);
     expect(matchesFilters(entry({ $: 9000 }), filters)).toBe(false);
@@ -238,7 +238,7 @@ describe("areaOf", () => {
 
   it("reads a row from an index built before the field as unplaced, never as a member", () => {
     // The alternative — letting a missing key satisfy whichever area is selected — would put
-    // a program under a labour market on no evidence whatsoever.
+    // a program under a labor market on no evidence whatsoever.
     // The field is required on SearchEntry, so a row without it cannot be built normally.
     // That is the point: this simulates JSON from an index emitted before the field existed,
     // which the type system cannot police because it arrives as parsed JSON at runtime.
@@ -337,7 +337,7 @@ describe("unplacedMatches", () => {
     expect(unplacedMatches(programs, filters)).toBe(2);
   });
 
-  it("still honours every non-geographic filter the reader set", () => {
+  it("still honors every non-geographic filter the reader set", () => {
     const filters = { ...DEFAULT_FILTERS, query: "welding", onlyReported: true };
     expect(unplacedMatches(programs, filters)).toBe(1);
   });

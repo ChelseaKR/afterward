@@ -60,7 +60,7 @@ describe("translation completeness", () => {
 });
 
 describe("language routing", () => {
-  it("recognises supported languages only", () => {
+  it("recognizes supported languages only", () => {
     expect(isLang("en")).toBe(true);
     expect(isLang("es")).toBe(true);
     expect(isLang("fr")).toBe(false);

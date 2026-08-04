@@ -65,7 +65,7 @@ function roster(programs: SearchEntry[]): Roster {
 /**
  * Group programs by provider.
  *
- * Providers are keyed by slug, so two spellings that normalise identically ("FRESNO CITY
+ * Providers are keyed by slug, so two spellings that normalize identically ("FRESNO CITY
  * COLLEGE" and "Fresno City College") become one provider rather than two near-duplicates.
  * The longest spelling wins as the display name, since it is the least likely to be
  * truncated.

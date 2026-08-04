@@ -59,7 +59,7 @@ function Unreported({ lang }: { lang: Lang }) {
  * Browse index for every occupation California projects.
  *
  * Not an alphabetical dump. The state's ten-year projection is the one thing this dataset
- * knows that a course catalogue does not, so the page is organised around it: occupations
+ * knows that a course catalog does not, so the page is organized around it: occupations
  * California expects less of come first, then those it expects to hold steady, then those it
  * expects to grow, and within each the ones with the most projected openings lead. An
  * occupation the state left unmeasured gets its own section at the end rather than being

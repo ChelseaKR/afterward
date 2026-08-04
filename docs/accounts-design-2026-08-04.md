@@ -17,7 +17,7 @@ much of it needs an account at all?"** Those turn out to be very different sizes
 Three things, in rough order of how often they will want them:
 
 1. **Keep a shortlist.** I found four programs; I want to look at them again tonight.
-2. **Show someone.** My case manager, my partner, the person at the job centre. This is a
+2. **Show someone.** My case manager, my partner, the person at the job center. This is a
    decision people make with other people.
 3. **Come back to a search.** Medical assisting under $5,000 near Fresno, with outcomes.
 
@@ -52,7 +52,7 @@ additive: every feature works signed out, and signing in only makes a shortlist 
 day the promise changes from "no account" to "no account required" is a real editorial decision
 and should be made deliberately.
 
-If the Phase A data model is a plain serialisable object from the start, Phase B is a sync
+If the Phase A data model is a plain serializable object from the start, Phase B is a sync
 adapter rather than a rewrite. That is the whole reason to sequence it this way.
 
 ## The privacy problem, which is the serious part

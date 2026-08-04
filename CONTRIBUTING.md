@@ -25,7 +25,7 @@ Both run in CI.
 
 **A null measure is never a zero.** The upstream feed uses `-1` for values that were
 withheld or never reported, mostly because the group was too small to report without
-identifying someone. Anything that renders, serialises, sorts, or aggregates a null as if it
+identifying someone. Anything that renders, serializes, sorts, or aggregates a null as if it
 were zero is a bug, however convenient. If you find yourself writing `?? 0` or `or 0` around
 an outcome, stop.
 

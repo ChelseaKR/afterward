@@ -6,7 +6,7 @@ on:
   pull_request:
   # Deploys require a successful CI run on the exact commit being deployed
   # (see .github/workflows/deploy.yml). Dispatch exists so a commit that predates that
-  # rule, or whose run was cancelled, can be made deployable without an empty commit.
+  # rule, or whose run was canceled, can be made deployable without an empty commit.
   workflow_dispatch:
   schedule:
     # Quarterly-ish freshness check on the upstream feeds. Source data updates annually,

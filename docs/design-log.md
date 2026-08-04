@@ -13,7 +13,7 @@ clean-room constraint this log supports.
 - CalJOBS (caljobs.ca.gov) and the EDD Eligible Training Provider List page — to characterise
   the incumbent experience.
 - U.S. DOL TrainingProviderResults.gov — to establish which WIOA outcome measures are public.
-- data.ca.gov CKAN API, EDD organisation — to inventory California's published labor market data.
+- data.ca.gov CKAN API, EDD organization — to inventory California's published labor market data.
 - Governor's office release on the Career Passport pilot (2026-06-17) and the C2C brief — to
   fix this project's scope as *navigation*, distinct from a credential wallet.
 
@@ -49,7 +49,7 @@ ETPL may still list programs absent from the federal file, which is a question f
 withheld or unreported measures; WIOA suppresses small-cohort cells to protect participant
 privacy. Conflating that with a reported zero would misstate a real provider's performance.
 The sentinel is mapped at parse time, the distinction is carried through to the emitted JSON,
-and it is the single most-tested behaviour in the codebase.
+and it is the single most-tested behavior in the codebase.
 
 **D2 — Coverage is a published artifact, not a debug log.** `coverage.json` ships with the
 dataset and the gaps are stated in the README. A tool that concealed its own blind spots
@@ -70,14 +70,14 @@ up the current resource at fetch time.
 
 **D6 — `make provenance-check` runs inside `make verify`.** The clean-room constraint is
 enforced mechanically rather than by memory. An early run caught the guard scanning `.venv`
-and false-positiving on the SPDX licence name "Standard ML of New Jersey", which is why the
+and false-positiving on the SPDX license name "Standard ML of New Jersey", which is why the
 scan now excludes vendored directories.
 
 ### Open questions carried into Phase 1
 
 - Does California's own ETPL list programs the federal file omits? If so, by how many?
 - `occupations.json` is 9.1 MB; it likely needs splitting per-occupation for the site.
-- 584 distinct providers across 3,266 programs — provider-name normalisation is unverified
+- 584 distinct providers across 3,266 programs — provider-name normalization is unverified
   and may be inflating that count.
 - Program length turned out to be near-complete (`weeks` present for 3,254 of 3,266), so a
   duration filter is safe to design around. Resolved on the day it was raised.
@@ -195,7 +195,7 @@ treated as clean.
 
 **Total cost summed a suppressed component as zero** — the invariant this codebase states in
 its own docstrings, violated inside a sum helper, and locked in by a test asserting the wrong
-behaviour. Costs now carry a completeness flag and render as "At least $X".
+behavior. Costs now carry a completeness flag and render as "At least $X".
 
 **The site root was an error shell.** `redirect()` under `output: "export"` emits no redirect
 at all: an empty body with no `lang` attribute. Visitors without JavaScript got a blank page
@@ -245,7 +245,7 @@ a guessed region renders on the page identically to a correct one.
 mismatch: the codes involved are identical across the 2010 and 2018 SOC. It is aggregation
 level, where BLS publishes some occupations only as a broad group or a hybrid code. 61 of 77
 recover with citations; 16 are refused, including two tempting traps — a residual "all other"
-category defined by *excluding* the occupation being mapped, and nearest-neighbour matching
+category defined by *excluding* the occupation being mapped, and nearest-neighbor matching
 by job title, which is not a crosswalk.
 
 **Related occupations** will prefer O*NET's own list over the SOC-sibling heuristic, and the
@@ -275,10 +275,10 @@ minimum.
 
 It earned its place immediately by finding a bug nothing else could see: `--primary-*` is
 only an alias to `--primary-static-*`, which the base stylesheet never defines. No theme was
-imported, so the masthead had **no background colour and links had no colour at all** — every
+imported, so the masthead had **no background color and links had no color at all** — every
 `--primary` token resolved to nothing. A theme import fixes it.
 
-Two lessons, both about gates rather than colour. The first version of this script reported
+Two lessons, both about gates rather than color. The first version of this script reported
 success while skipping 17 of 17 pairings, because an unresolvable token was treated as a
 skip. A gate that passes when it cannot evaluate anything is worse than no gate: it reports
 confidence it has not earned. Unresolved is now a failure. The second version mis-parsed the

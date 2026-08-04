@@ -1,5 +1,5 @@
 /**
- * Colour contrast audit.
+ * Color contrast audit.
  *
  * The accessibility audit runs in jsdom, which has no layout engine and therefore cannot
  * compute contrast. That left the project asserting WCAG conformance without checking the

@@ -103,7 +103,7 @@ Resources:
         CustomHeadersConfig:
           Items:
             # Cache-Control is deliberately NOT set here. An overriding custom header applies
-            # to every response from the one cache behaviour, which silently clobbered the
+            # to every response from the one cache behavior, which silently clobbered the
             # `immutable` value on hashed assets: content-addressed chunks that never change
             # were being revalidated on every visit while the upload's own headers looked
             # correct on the objects. Per-object Cache-Control from S3 now passes through,
@@ -117,7 +117,7 @@ Resources:
         Name: !Sub "${AWS::StackName}-security-headers"
         SecurityHeadersConfig:
           # CloudFront rejects Content-Security-Policy as a custom header — it owns the
-          # recognised security headers and wants them declared here instead.
+          # recognized security headers and wants them declared here instead.
           #
           # Everything is first-party and static: no third-party scripts, no remote fonts,
           # no analytics, no form posts. 'unsafe-inline' covers the framework's hydration
@@ -177,7 +177,7 @@ Resources:
       DistributionConfig:
         Aliases:
           - !Ref DomainName
-        Comment: !Sub "Public NearMiss evidence site at ${DomainName}"
+        Comment: !Sub "California training programs and outcomes at ${DomainName}"
         CustomErrorResponses:
           - ErrorCachingMinTTL: 0
             ErrorCode: 403

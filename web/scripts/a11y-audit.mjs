@@ -8,7 +8,7 @@
  * axe-core binds to whichever globals exist when its module is first evaluated, so each page
  * is audited in its own child process rather than fighting the module cache.
  *
- * jsdom has no layout engine and cannot compute real colour contrast, so contrast findings
+ * jsdom has no layout engine and cannot compute real color contrast, so contrast findings
  * are reported as needing review in a browser rather than counted as passing.
  *
  * Usage: node scripts/a11y-audit.mjs [outDir]
@@ -138,7 +138,7 @@ if (SINGLE) {
 
   if (contrastPending > 0) {
     console.log(
-      "\nnote  colour contrast is not machine-checkable here (jsdom has no layout engine)." +
+      "\nnote  color contrast is not machine-checkable here (jsdom has no layout engine)." +
         "\n      `npm run contrast` checks it separately, resolving the design system's own" +
         "\n      tokens and computing real WCAG ratios for both light and dark.",
     );

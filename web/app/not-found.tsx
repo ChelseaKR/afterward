@@ -10,7 +10,7 @@ import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
  * with no `<html lang>`, no masthead, no navigation, no Spanish, and — the part that actually
  * matters — no non-affiliation notice, on a site whose README and DISCLAIMER both say that
  * notice appears on every page. Someone who followed a broken link from a search result would
- * see a page in California's official design system, wearing California's colours, saying
+ * see a page in California's official design system, wearing California's colors, saying
  * nothing about who runs it. That is the one page on the site where being mistaken for a state
  * website is most likely, because it is the page that arrives with the least context.
  *

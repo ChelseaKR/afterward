@@ -158,7 +158,7 @@ to recover, and the module returns `None`.
 | `39-3099` | Entertainment Attendants and Related Workers, All Other | 1 | Broad group `39-3090` unpublished; the three published siblings are not parents. |
 | `45-4029` | Logging Workers, All Other | 1 | Broad group `45-4020` unpublished; `45-4022` is a sibling. |
 | `47-2011` | Boilermakers | 2 | Sole member of broad group `47-2010`; EDD publishes neither. |
-| `47-2043` | Floor Sanders and Finishers | 1 | Broad group `47-2040` unpublished. EDD publishes the other three flooring codes, which makes a nearest-neighbour guess tempting and wrong. |
+| `47-2043` | Floor Sanders and Finishers | 1 | Broad group `47-2040` unpublished. EDD publishes the other three flooring codes, which makes a nearest-neighbor guess tempting and wrong. |
 | `47-5022` | Excavating and Loading Machine and Dragline Operators, Surface Mining | 1 | Broad group `47-5020` unpublished; `47-5023` Earth Drillers is a sibling. |
 | `49-9081` | Wind Turbine Service Technicians | 1 | Sole member of broad group `49-9080`; EDD publishes neither. |
 | `55-2013` | First-Line Supervisors of All Other Tactical Operations Specialists | 1 | Military occupation. EDD publishes no `55-` occupations at all. |
@@ -170,7 +170,7 @@ detailed occupation defined by *excluding* its named siblings, so `19-3099` is p
 set of social scientists who are **not** political scientists. That mapping would attach a
 wage drawn from a population the trainee is by definition not in.
 
-The second temptation is the **nearest neighbour**: `47-2043` Floor Sanders and Finishers is
+The second temptation is the **nearest neighbor**: `47-2043` Floor Sanders and Finishers is
 refused while the other three codes in its broad group are published. A flooring
 apprenticeship is obviously flooring work — but `47-2041` Carpet Installers is a different
 job with a different wage, and picking it would be a title-similarity judgement dressed up as

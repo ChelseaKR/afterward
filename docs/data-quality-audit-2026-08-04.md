@@ -238,7 +238,7 @@ records. One provider's filing habits are visibly driving several findings at on
 - Geography is clean: all 3,266 records are `state: "CA"`, all coordinates fall inside
   California's bounding box, zero null-island `(0,0)` coordinates, zero malformed ZIP codes,
   zero null cities, and 227 distinct city names with no spelling variants that collapse to
-  the same normalised form.
+  the same normalized form.
 
 ### 5. Referential integrity
 
@@ -359,7 +359,7 @@ Ranked by how badly they would read in someone else's write-up.
    who reads `programs.json`. Belongs in `clean_text()`. **PIPELINE.**
 9. **308 CIP codes have lost a leading zero** — `"1.0505"` where the standard code is
    `"01.0505"`. Not rendered today, but it is in the published data and would break any
-   downstream CIP join. **UPSTREAM** (numeric coercion at source); trivially normalised here.
+   downstream CIP join. **UPSTREAM** (numeric coercion at source); trivially normalized here.
 10. **77 program names render in ALL CAPS in the `<h1>`.** `tidyName()` title-cases provider
     names but is not applied to `program_name`, so headings read `NURSING ASSISTANT
     TRAINING`. Two provider names also appear in both cased and shouting forms
@@ -396,7 +396,7 @@ list. Programs carry up to three.
   (+7.0%).
 
 The 219 figure is not wrong so much as arbitrary — it measures provider SOC-ordering as much
-as it measures labour demand. Given that the README calls this "the single clearest argument
+as it measures labor demand. Given that the README calls this "the single clearest argument
 for this dataset existing", it deserves a defined rule (any matched occupation shrinking? the
 highest-openings one? a weighted view?) rather than an implicit dependence on list order.
 **PIPELINE.**
@@ -418,7 +418,7 @@ highest-openings one? a weighted view?) rather than an implicit dependence on li
    programs.
 5. Validate `coverage.json`'s shape at build time so a missing `state_benchmark` fails
    loudly instead of silently deleting 2,057 comparisons.
-6. Move the `NNNN|` description strip into `clean_text()`, normalise CIP leading zeros, and
+6. Move the `NNNN|` description strip into `clean_text()`, normalize CIP leading zeros, and
    drop `program_url` values that are not URLs.
 
 ---

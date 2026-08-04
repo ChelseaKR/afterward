@@ -55,7 +55,7 @@ describe("slugify", () => {
 });
 
 describe("groupByProvider", () => {
-  it("merges spellings that normalise to the same slug", () => {
+  it("merges spellings that normalize to the same slug", () => {
     const providers = groupByProvider([
       entry({ i: "a", p: "FRESNO CITY COLLEGE" }),
       entry({ i: "b", p: "Fresno City College" }),

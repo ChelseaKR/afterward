@@ -53,7 +53,7 @@
  *      demonstrably still reachable at another URL before this one is removed.
  *
  * A refusal is a warning, never an error. The worst case is a larger upload, and failing a
- * deploy over a size optimisation would be a far more expensive mistake than shipping one
+ * deploy over a size optimization would be a far more expensive mistake than shipping one
  * duplicate file per page.
  *
  * Usage:
@@ -89,7 +89,7 @@ function walk(dir, files = []) {
  * RSC families are separated because they are the whole question: collapsing them into
  * "text files" is how 435 MiB of near-duplicate payload stays invisible.
  */
-function categorise({ path, name }) {
+function categorize({ path, name }) {
   if (name === DUPLICATE) return "RSC __next._full.txt (duplicate of index.txt)";
   if (name === "__next._tree.txt") return "RSC __next._tree.txt (route tree)";
   if (name.startsWith("__next.") && name.endsWith("__PAGE__.txt")) {
@@ -112,7 +112,7 @@ const mib = (bytes) => (bytes / MiB).toFixed(2).padStart(9);
 function report(files, heading) {
   const totals = new Map();
   for (const file of files) {
-    const key = categorise(file);
+    const key = categorize(file);
     const row = totals.get(key) ?? { bytes: 0, count: 0 };
     row.bytes += file.size;
     row.count += 1;

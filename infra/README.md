@@ -138,7 +138,7 @@ chunks are pruned only after the pages that used them are gone.
 
 Cache headers are verified on the S3 objects, not over HTTPS, because
 `SiteResponseHeaders` sets `Cache-Control: public, max-age=0, must-revalidate` as an
-overriding custom header on the only cache behaviour. Every edge response carries that,
+overriding custom header on the only cache behavior. Every edge response carries that,
 including hashed assets — so the object's `immutable` header is real but invisible from
 outside, and the year-long asset caching the split is meant to buy is not currently
 happening at the edge. Removing that custom header would let the per-object values through.

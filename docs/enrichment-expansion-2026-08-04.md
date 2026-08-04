@@ -6,7 +6,7 @@ what was refused, what it measures out at across all 670 California occupations,
 judgement call that the pipeline has been waiting on.
 
 The test for inclusion was narrow and applied to every field: **does knowing this change
-whether a person spends a year and several thousand dollars on a training programme?** A
+whether a person spends a year and several thousand dollars on a training program?** A
 field that is merely true, or merely available, did not qualify.
 
 ## Headline
@@ -15,7 +15,7 @@ field that is merely true, or merely available, did not qualify.
 |---|---|
 | Occupations fetched | 670 (all of them, one throttled request each) |
 | Fields added | tasks, alternate titles, education attainment distribution, typical prior experience, typical on-the-job training |
-| Fields refused | knowledge, ability, interests, detailed work activities, wages, projections, career video, SOC description, green flag, OOH and state-resource links, training programmes |
+| Fields refused | knowledge, ability, interests, detailed work activities, wages, projections, career video, SOC description, green flag, OOH and state-resource links, training programs |
 | Education attainment coverage | **670 / 670 (100%)**, including all 12 aggregates |
 | Occupations where the attainment figures describe a *different* population than the page | **0** |
 | Program rows with a withheld `entry_level_education` now backed by a distribution | **135 / 135** |
@@ -55,8 +55,8 @@ the occupation actually **hold**:
 
 The site currently tells that reader one thing: "Bachelor's degree". A quarter of the people
 doing the job hold an associate's, which is the credential a California community college
-ADN programme awards. The single category is not false — it is BLS's assignment of the
-typical entry requirement — but for a person weighing a two-year public-college programme
+ADN program awards. The single category is not false — it is BLS's assignment of the
+typical entry requirement — but for a person weighing a two-year public-college program
 against a four-year one, the distribution is the number that answers their question and the
 category is the number that discourages them from asking it.
 
@@ -68,7 +68,7 @@ Extracted alongside it, from the same block:
   by **internship or residency**, 44 by more than a year of on-the-job training.
 
 These two were not in the brief and are worth as much as anything that was. They answer
-"will finishing this programme actually get me in?", which is a different question from
+"will finishing this program actually get me in?", which is a different question from
 "what credential does it award". A classroom certificate for an occupation whose typical
 entry is an apprenticeship is a materially different purchase, and nothing on the site says
 so today.
@@ -94,10 +94,10 @@ starts returning 60 the payload will not quietly triple.
 ## What was refused, and why
 
 **`KnowledgeDataList` (33 entries) and `AbilityDataList` (52 entries).** Both were fetched
-during probing and both were rejected. Knowledge has a real argument in its favour: it is
+during probing and both were rejected. Knowledge has a real argument in its favor: it is
 domain-concrete ("Medicine and Dentistry", "Building and Construction") where the skills
 list is abstract ("Critical Thinking", "Operations Monitoring"). It was still refused,
-because it does not change the decision — nobody weighing a nursing programme is surprised
+because it does not change the decision — nobody weighing a nursing program is surprised
 that the job involves medicine — and it would put a second unlabelled 1-to-5 O\*NET rating
 scale on a page that already carries one. Two rated lists side by side, on the same
 unexplained scale, dilute rather than inform.
@@ -121,7 +121,7 @@ taken, and less concrete. Refused.
 **`Wages` and `Projections`.** Refused on the project's existing rule: EDD (D2/D3) publishes
 these for California, and CareerOneStop publishes them nationally. Two medians for the same
 occupation, differing because they cover different geographies, is a contradiction on the
-page. The California figure is the one that describes the reader's labour market.
+page. The California figure is the one that describes the reader's labor market.
 
 **`COSVideoURL`.** Present for 658/658 occupations that return a profile at all, so coverage
 was not the objection. It is an outbound
@@ -148,7 +148,7 @@ maintenance cost, not decisions.
 
 **`TrainingPrograms`.** Returned null throughout, and the project already has a
 California-specific training corpus with published outcome measures (D1). A national
-programme list next to the ETP corpus would be strictly worse data in a more prominent slot.
+program list next to the ETP corpus would be strictly worse data in a more prominent slot.
 
 ## Measured coverage, all 670 occupations
 
@@ -221,7 +221,7 @@ regardless of what is or is not on disk.
 
 The pipeline withholds `entry_level_education` on **135 program rows** because those
 programs match through an aggregate whose single credential category can be flatly wrong for
-the specific programme — `21-1018` reading "Master's degree" onto community-college
+the specific program — `21-1018` reading "Master's degree" onto community-college
 substance-use-counselling certificates. The question put to this task was whether the
 distribution can stand in.
 

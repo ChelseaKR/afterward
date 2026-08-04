@@ -18,7 +18,7 @@ export type Sort = "relevance" | "earnings" | "cost" | "openings";
 export type Outlook = "any" | "growing" | "shrinking";
 
 /**
- * The geography filter, over the labour-market areas California itself publishes.
+ * The geography filter, over the labor-market areas California itself publishes.
  *
  * Three states rather than "an area or nothing", because the dataset has three. A program is
  * placed in an area only when its city is one EDD names in that area's own title, and 1,741
@@ -65,7 +65,7 @@ export const DEFAULT_FILTERS: Filters = {
  * The `undefined` case is an index built before the field existed. It is read as unplaced,
  * never as membership: a row that cannot say where it is must not be attributed to an area,
  * and the alternative — treating a missing key as "matches whatever is selected" — would put
- * a program under a labour market on no evidence at all.
+ * a program under a labor market on no evidence at all.
  */
 export function areaOf(entry: SearchEntry): string | null {
   return entry.a === undefined ? null : entry.a;

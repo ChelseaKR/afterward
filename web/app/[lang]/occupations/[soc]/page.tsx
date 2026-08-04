@@ -42,7 +42,7 @@ function partitionSkills(skills: readonly OccupationSkill[]): {
  * both languages, because it is what the reader will find if they go looking for it.
  *
  * A category this list does not know is shown exactly as published rather than dropped: the
- * page would otherwise silently narrow a federal designation to the parts it recognises.
+ * page would otherwise silently narrow a federal designation to the parts it recognizes.
  */
 function outlookCategories(value: string, t: Copy): string[] {
   return value
