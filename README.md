@@ -3,8 +3,13 @@
 **California training programs, what happened to the people who took them, and where those
 programs actually lead.**
 
-> Status: pre-alpha, and not affiliated with the State of California. It uses the state's
-> open-source design system, so a permanent notice on every page says so.
+### [camino.chelseakr.com](https://camino.chelseakr.com)
+
+> Not affiliated with the State of California. It uses the state's open-source design
+> system, so a permanent notice on every page says so.
+
+3,266 California training programs, joined to the state's own ten-year projection for the
+occupation each one leads to. No account, no tracking, English and Spanish.
 
 ## The problem
 
