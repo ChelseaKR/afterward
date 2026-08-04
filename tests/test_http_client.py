@@ -252,6 +252,7 @@ class TestRefusals:
         # The operational point: this is a CI/datacenter-IP symptom, with a way out.
         assert "CI" in message and "datacenter" in message
         assert "committed data snapshot" in message
+        assert "camino build-offline" in message
 
     def test_404_is_not_retried(self) -> None:
         client, handler = replay(httpx.Response(404))

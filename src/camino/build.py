@@ -192,6 +192,20 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _fresh_dir(path: Path) -> Path:
+    """Empty a shard directory before rewriting it.
+
+    Without this, shards from an earlier build survive alongside the new ones. The site
+    pre-renders a page per shard file, so a small fixture build was still emitting pages for
+    thousands of stale programs -- pages carrying data no longer in the dataset.
+    """
+    if path.exists():
+        for stale in path.glob("*.json"):
+            stale.unlink()
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def emit_site_bundle(
     payloads: list[dict[str, Any]],
     occupations: dict[str, dict[str, Any]],
@@ -217,16 +231,14 @@ def emit_site_bundle(
         encoding="utf-8",
     )
 
-    program_dir = output_dir / "programs"
-    program_dir.mkdir(parents=True, exist_ok=True)
+    program_dir = _fresh_dir(output_dir / "programs")
     for payload in payloads:
         if payload["uuid"]:
             (program_dir / f"{payload['uuid']}.json").write_text(
                 json.dumps(payload, separators=(",", ":")), encoding="utf-8"
             )
 
-    occupation_dir = output_dir / "occupations"
-    occupation_dir.mkdir(parents=True, exist_ok=True)
+    occupation_dir = _fresh_dir(output_dir / "occupations")
     for soc_code, occupation in occupations.items():
         (occupation_dir / f"{soc_code}.json").write_text(
             json.dumps(occupation, separators=(",", ":")), encoding="utf-8"

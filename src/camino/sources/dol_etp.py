@@ -276,8 +276,8 @@ def _forbidden_message(url: str) -> str:
         "load balancer that filters on client IP reputation and on User-Agent. This client "
         f"already sends a descriptive User-Agent ({USER_AGENT!r}) and will not impersonate "
         "a browser to get around the filter.\n"
-        "If this happened in CI, build from a committed data snapshot instead of fetching "
-        "live, and refresh that snapshot from a workstation."
+        "If this happened in CI, build from the committed data snapshot instead "
+        "(`camino build-offline`) and refresh that snapshot from a workstation."
     )
 
 
