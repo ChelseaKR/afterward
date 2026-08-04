@@ -32,7 +32,14 @@ const en = {
   noResultsHint: "Try removing a filter or searching for a broader term.",
 
   filterOutcomes: "Only programs with reported outcomes",
-  filterShrinking: "Hide jobs projected to shrink",
+  filterOutlook: "Job outlook",
+  outlookAny: "Any outlook",
+  outlookGrowing: "Only growing jobs",
+  outlookShrinking: "Only shrinking jobs",
+  statShrinking: (n: number) => `${fmt(n)} train for jobs California expects to shrink`,
+  statReported: (n: number, total: number) =>
+    `${fmt(n)} of ${fmt(total)} report what happened to their students`,
+  showThese: "Show these",
   filterMaxCost: "Maximum out-of-pocket cost",
   filterAnyCost: "Any cost",
   sortBy: "Sort by",
@@ -112,7 +119,15 @@ const es: Dictionary = {
   noResultsHint: "Quite un filtro o busque un término más general.",
 
   filterOutcomes: "Solo programas con resultados reportados",
-  filterShrinking: "Ocultar ocupaciones en declive",
+  filterOutlook: "Perspectiva laboral",
+  outlookAny: "Cualquier perspectiva",
+  outlookGrowing: "Solo ocupaciones en crecimiento",
+  outlookShrinking: "Solo ocupaciones en declive",
+  statShrinking: (n: number) =>
+    `${fmt(n)} preparan para ocupaciones que California espera que se reduzcan`,
+  statReported: (n: number, total: number) =>
+    `${fmt(n)} de ${fmt(total)} reportan qué pasó con sus estudiantes`,
+  showThese: "Ver estos",
   filterMaxCost: "Costo máximo de su bolsillo",
   filterAnyCost: "Cualquier costo",
   sortBy: "Ordenar por",

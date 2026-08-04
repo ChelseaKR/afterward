@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_FILTERS, matchesFilters, runSearch, score, terms } from "./search";
+import {
+  DEFAULT_FILTERS,
+  isShrinking,
+  matchesFilters,
+  runSearch,
+  score,
+  summarise,
+  terms,
+} from "./search";
 import type { SearchEntry } from "./types";
 
 function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
@@ -73,16 +81,25 @@ describe("matchesFilters", () => {
     expect(matchesFilters(entry({ r: false }), filters)).toBe(false);
   });
 
-  it("hideShrinking removes known-negative growth only", () => {
-    const filters = { ...DEFAULT_FILTERS, hideShrinking: true };
-    expect(matchesFilters(entry({ g: -5 }), filters)).toBe(false);
-    expect(matchesFilters(entry({ g: 5 }), filters)).toBe(true);
+  it("outlook 'shrinking' keeps only known declines", () => {
+    const filters = { ...DEFAULT_FILTERS, outlook: "shrinking" as const };
+    expect(matchesFilters(entry({ g: -5 }), filters)).toBe(true);
+    expect(matchesFilters(entry({ g: 5 }), filters)).toBe(false);
   });
 
-  it("hideShrinking keeps programs whose growth is unknown", () => {
-    // Unknown is not shrinking. Dropping these would hide programs for an unstated reason.
-    const filters = { ...DEFAULT_FILTERS, hideShrinking: true };
-    expect(matchesFilters(entry({ g: null }), filters)).toBe(true);
+  it("outlook 'growing' keeps only known growth", () => {
+    const filters = { ...DEFAULT_FILTERS, outlook: "growing" as const };
+    expect(matchesFilters(entry({ g: 5 }), filters)).toBe(true);
+    expect(matchesFilters(entry({ g: -5 }), filters)).toBe(false);
+    expect(matchesFilters(entry({ g: 0 }), filters)).toBe(false);
+  });
+
+  it("excludes unknown growth from both outlook filters", () => {
+    // Unknown is neither growing nor shrinking. Guessing either way would put a claim on
+    // screen the data cannot support.
+    expect(matchesFilters(entry({ g: null }), { ...DEFAULT_FILTERS, outlook: "shrinking" })).toBe(false);
+    expect(matchesFilters(entry({ g: null }), { ...DEFAULT_FILTERS, outlook: "growing" })).toBe(false);
+    expect(matchesFilters(entry({ g: null }), DEFAULT_FILTERS)).toBe(true);
   });
 
   it("maxCost excludes programs with no reported cost", () => {
@@ -136,5 +153,24 @@ describe("runSearch sorting", () => {
     const input = [...all];
     runSearch(input, { ...DEFAULT_FILTERS, sort: "earnings" });
     expect(input.map((e) => e.i)).toEqual(["none", "low", "high"]);
+  });
+});
+
+describe("summarise", () => {
+  it("counts reported and shrinking programs for the context strip", () => {
+    const stats = summarise([
+      entry({ r: true, g: -5 }),
+      entry({ r: false, g: 10 }),
+      entry({ r: true, g: null }),
+    ]);
+    expect(stats).toEqual({ total: 3, reported: 2, shrinking: 1 });
+  });
+});
+
+describe("isShrinking", () => {
+  it("is false for unknown and flat growth", () => {
+    expect(isShrinking(null)).toBe(false);
+    expect(isShrinking(0)).toBe(false);
+    expect(isShrinking(-0.1)).toBe(true);
   });
 });

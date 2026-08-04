@@ -9,10 +9,17 @@ import type { SearchEntry } from "./types";
 
 export type Sort = "relevance" | "earnings" | "cost" | "openings";
 
+/**
+ * Three-way rather than a hide/show toggle. "Only shrinking" is the interesting one: it
+ * surfaces the programs training people for work California expects to have less of, which
+ * is the single clearest argument for this dataset existing.
+ */
+export type Outlook = "any" | "growing" | "shrinking";
+
 export interface Filters {
   query: string;
   onlyReported: boolean;
-  hideShrinking: boolean;
+  outlook: Outlook;
   maxCost: number | null;
   sort: Sort;
 }
@@ -20,10 +27,12 @@ export interface Filters {
 export const DEFAULT_FILTERS: Filters = {
   query: "",
   onlyReported: false,
-  hideShrinking: false,
+  outlook: "any",
   maxCost: null,
   sort: "relevance",
 };
+
+export const isShrinking = (growth: number | null): boolean => growth !== null && growth < 0;
 
 export function terms(query: string): string[] {
   return query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -55,11 +64,23 @@ export function score(entry: SearchEntry, searchTerms: string[]): number {
 
 export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
   if (filters.onlyReported && !entry.r) return false;
-  // Unknown growth is not treated as shrinking. Filtering out what we simply do not know
-  // would quietly hide programs for no stated reason.
-  if (filters.hideShrinking && entry.g !== null && entry.g < 0) return false;
+
+  // Unknown growth is neither growing nor shrinking, so an outlook filter excludes it from
+  // both. Guessing in either direction would put a claim on the screen the data cannot back.
+  if (filters.outlook === "shrinking" && !isShrinking(entry.g)) return false;
+  if (filters.outlook === "growing" && (entry.g === null || entry.g <= 0)) return false;
+
   if (filters.maxCost !== null && (entry.$ === null || entry.$ > filters.maxCost)) return false;
   return true;
+}
+
+/** Headline counts for the context strip above the results. */
+export function summarise(programs: SearchEntry[]) {
+  return {
+    total: programs.length,
+    reported: programs.filter((p) => p.r).length,
+    shrinking: programs.filter((p) => isShrinking(p.g)).length,
+  };
 }
 
 /**

@@ -128,11 +128,27 @@ open-ended and remain in English. A Spanish page is therefore not yet fully Span
 translation of occupation titles is the obvious next step and needs review by a Spanish
 speaker before it ships — an incorrect job title is worse than an English one.
 
+### D11 — The shrinking-jobs finding is now a control, not a footnote
+
+The earlier entry said the 219 programs training for declining occupations should be a
+first-class view. It is: the search page opens with two sentences of context — how many
+programs report anything, and how many train for work California expects less of — with a
+button that filters to the second. The outlook filter is three-way (any / growing /
+shrinking) rather than a hide toggle, because "show me only these" is the interesting
+question and a hide-checkbox cannot ask it.
+
+Unknown growth is excluded from *both* the growing and shrinking filters. Treating unknown
+as either would put a claim on screen the data cannot support.
+
 ### Still open
 
-- Does California's own ETPL list programs the federal file omits? Unresolved. The federal
-  file has 3,266 California programs; CalJOBS is the authoritative state list and was not
-  extracted, because the federal endpoint made scraping unnecessary for everything else.
+- Does California's own ETPL list programs the federal file omits? **Still unresolved, and
+  now known to be expensive.** Checked 2026-08-04: `data.gov` publishes no ETPL dataset, and
+  EDD's ETPL page offers no bulk download — the state list is reachable only through the
+  CalJOBS guest search UI, one query at a time. Answering the question therefore means
+  session-based extraction from CalJOBS, which is a separate piece of work with its own
+  terms-of-use question. The federal file's 3,266 California programs stand as the spine
+  until someone decides that extraction is worth it.
 - Colour contrast is unverified. The audit runs in jsdom, which has no layout engine, so
   contrast is reported as needing review rather than counted as passing. Requires a browser
   before any public launch.

@@ -5,7 +5,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import { dict, type Lang } from "@/lib/i18n";
 import { money, percent, signedPercent, tidyName } from "@/lib/format";
-import { runSearch, type Sort } from "@/lib/search";
+import { isShrinking, runSearch, summarise, type Outlook, type Sort } from "@/lib/search";
 import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 
@@ -16,7 +16,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const t = dict(lang);
   const [query, setQuery] = useState("");
   const [onlyReported, setOnlyReported] = useState(false);
-  const [hideShrinking, setHideShrinking] = useState(false);
+  const [outlook, setOutlook] = useState<Outlook>("any");
   const [maxCost, setMaxCost] = useState<number | null>(null);
   const [sort, setSort] = useState<Sort>("relevance");
   const [limit, setLimit] = useState(PAGE_SIZE);
@@ -24,23 +24,18 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const deferredQuery = useDeferredValue(query);
 
   const results = useMemo(
-    () =>
-      runSearch(programs, {
-        query: deferredQuery,
-        onlyReported,
-        hideShrinking,
-        maxCost,
-        sort,
-      }),
-    [programs, deferredQuery, onlyReported, hideShrinking, maxCost, sort],
+    () => runSearch(programs, { query: deferredQuery, onlyReported, outlook, maxCost, sort }),
+    [programs, deferredQuery, onlyReported, outlook, maxCost, sort],
   );
+
+  const stats = useMemo(() => summarise(programs), [programs]);
 
   const visible = results.slice(0, limit);
 
   function clear() {
     setQuery("");
     setOnlyReported(false);
-    setHideShrinking(false);
+    setOutlook("any");
     setMaxCost(null);
     setSort("relevance");
     setLimit(PAGE_SIZE);
@@ -73,15 +68,20 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             />
             <span>{t.filterOutcomes}</span>
           </label>
-          <label className="checkline">
-            <input
-              type="checkbox"
-              checked={hideShrinking}
-              onChange={(e) => setHideShrinking(e.target.checked)}
-            />
-            <span>{t.filterShrinking}</span>
-          </label>
         </fieldset>
+
+        <div className="field">
+          <label htmlFor="outlook">{t.filterOutlook}</label>
+          <select
+            id="outlook"
+            value={outlook}
+            onChange={(e) => setOutlook(e.target.value as Outlook)}
+          >
+            <option value="any">{t.outlookAny}</option>
+            <option value="growing">{t.outlookGrowing}</option>
+            <option value="shrinking">{t.outlookShrinking}</option>
+          </select>
+        </div>
 
         <div className="field">
           <label htmlFor="cost">{t.filterMaxCost}</label>
@@ -115,6 +115,27 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
       </form>
 
       <section aria-label={t.searchLabel}>
+        {/*
+          The two facts that justify the whole dataset, stated before any result. Both are
+          public today and neither is discoverable beside the other anywhere else.
+        */}
+        <ul className="stat-strip">
+          <li>{t.statReported(stats.reported, stats.total)}</li>
+          <li>
+            {t.statShrinking(stats.shrinking)}{" "}
+            <button
+              type="button"
+              className="linklike"
+              onClick={() => {
+                setOutlook("shrinking");
+                setLimit(PAGE_SIZE);
+              }}
+            >
+              {t.showThese}
+            </button>
+          </li>
+        </ul>
+
         <div className="results-head">
           <p className="results-count" role="status" aria-live="polite">
             {t.resultsCount(results.length, programs.length)}
@@ -155,7 +176,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
 
 function ResultCard({ entry, lang }: { entry: SearchEntry; lang: Lang }) {
   const t = dict(lang);
-  const shrinking = entry.g !== null && entry.g < 0;
+  const shrinking = isShrinking(entry.g);
 
   return (
     <li className={`card${entry.r ? "" : " is-unreported"}${shrinking ? " is-shrinking" : ""}`}>
