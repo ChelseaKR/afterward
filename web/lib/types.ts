@@ -21,6 +21,14 @@ export interface RegionalProjection extends OccupationSummary {
   median_hourly_wage: number | null;
 }
 
+export interface RelatedOccupation {
+  soc_code: string | null;
+  title: string | null;
+  median_annual_wage: number | null;
+  total_job_openings: number | null;
+  percent_change: number | null;
+}
+
 export interface Occupation extends OccupationSummary {
   period: string | null;
   median_hourly_wage: number | null;
@@ -30,6 +38,7 @@ export interface Occupation extends OccupationSummary {
   work_experience: string | null;
   job_training: string | null;
   regions: RegionalProjection[];
+  related: RelatedOccupation[];
 }
 
 export interface ProgramOutcomes {

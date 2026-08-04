@@ -543,6 +543,50 @@
      "work_experience": "5 years or more",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "11-9000",
+     "title": "Other Management Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 672950.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "11-3000",
+     "title": "Operations Specialties Managers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 309140.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "11-1000",
+     "title": "Top Executives",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 303250.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "11-1021",
+     "title": "General and Operations Managers",
+     "median_annual_wage": 126477.0,
+     "total_job_openings": 264410.0,
+     "percent_change": 6.7
+    },
+    {
+     "soc_code": "11-9199",
+     "title": "Managers, All Other",
+     "median_annual_wage": 177489.0,
+     "total_job_openings": 175120.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "11-2000",
+     "title": "Advertising, Marketing, Promotions, Public Relations, and Sales Managers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 154060.0,
+     "percent_change": 5.0
+    }
    ]
   },
   "11-9021": {
@@ -1087,6 +1131,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "11-9000",
+     "title": "Other Management Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 672950.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "11-3000",
+     "title": "Operations Specialties Managers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 309140.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "11-1000",
+     "title": "Top Executives",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 303250.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "11-1021",
+     "title": "General and Operations Managers",
+     "median_annual_wage": 126477.0,
+     "total_job_openings": 264410.0,
+     "percent_change": 6.7
+    },
+    {
+     "soc_code": "11-9199",
+     "title": "Managers, All Other",
+     "median_annual_wage": 177489.0,
+     "total_job_openings": 175120.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "11-2000",
+     "title": "Advertising, Marketing, Promotions, Public Relations, and Sales Managers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 154060.0,
+     "percent_change": 5.0
+    }
    ]
   },
   "11-9111": {
@@ -1596,6 +1684,50 @@
      "entry_level_education": "Bachelor's degree",
      "work_experience": "Less than 5 years",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "11-9000",
+     "title": "Other Management Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 672950.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "11-3000",
+     "title": "Operations Specialties Managers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 309140.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "11-1000",
+     "title": "Top Executives",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 303250.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "11-1021",
+     "title": "General and Operations Managers",
+     "median_annual_wage": 126477.0,
+     "total_job_openings": 264410.0,
+     "percent_change": 6.7
+    },
+    {
+     "soc_code": "11-9199",
+     "title": "Managers, All Other",
+     "median_annual_wage": 177489.0,
+     "total_job_openings": 175120.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "11-2000",
+     "title": "Advertising, Marketing, Promotions, Public Relations, and Sales Managers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 154060.0,
+     "percent_change": 5.0
     }
    ]
   },
@@ -2141,6 +2273,50 @@
      "work_experience": "Less than 5 years",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "13-1000",
+     "title": "Business Operations Specialists",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 895750.0,
+     "percent_change": 8.5
+    },
+    {
+     "soc_code": "13-2000",
+     "title": "Financial Specialists",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 293940.0,
+     "percent_change": 6.4
+    },
+    {
+     "soc_code": "13-2011",
+     "title": "Accountants and Auditors",
+     "median_annual_wage": 98678.0,
+     "total_job_openings": 154340.0,
+     "percent_change": 7.5
+    },
+    {
+     "soc_code": "13-1199",
+     "title": "Business Operations Specialists, All Other",
+     "median_annual_wage": 89039.0,
+     "total_job_openings": 152190.0,
+     "percent_change": 6.8
+    },
+    {
+     "soc_code": "13-1161",
+     "title": "Market Research Analysts and Marketing Specialists",
+     "median_annual_wage": 96289.0,
+     "total_job_openings": 122600.0,
+     "percent_change": 9.4
+    },
+    {
+     "soc_code": "13-1071",
+     "title": "Human Resources Specialists",
+     "median_annual_wage": 84901.0,
+     "total_job_openings": 97470.0,
+     "percent_change": 10.4
+    }
    ]
   },
   "15-1212": {
@@ -2412,6 +2588,50 @@
      "entry_level_education": "Bachelor's degree",
      "work_experience": "Less than 5 years",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
     }
    ]
   },
@@ -2905,6 +3125,50 @@
      "entry_level_education": "Associate's degree",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
     }
    ]
   },
@@ -3416,6 +3680,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    }
    ]
   },
   "15-1254": {
@@ -3721,6 +4029,50 @@
      "entry_level_education": "Bachelor's degree",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
     }
    ]
   },
@@ -4112,6 +4464,50 @@
      "entry_level_education": "Bachelor's degree",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
     }
    ]
   },
@@ -4657,6 +5053,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    }
    ]
   },
   "15-2051": {
@@ -5115,6 +5555,50 @@
      "entry_level_education": "Bachelor's degree",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "15-1200",
+     "title": "Computer Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 467020.0,
+     "percent_change": 12.1
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "15-2000",
+     "title": "Mathematical Science Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 52610.0,
+     "percent_change": 32.3
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists",
+     "median_annual_wage": 81797.0,
+     "total_job_openings": 44720.0,
+     "percent_change": -2.2
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
     }
    ]
   },
@@ -5626,6 +6110,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "17-2000",
+     "title": "Engineers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 159020.0,
+     "percent_change": 7.8
+    },
+    {
+     "soc_code": "17-3000",
+     "title": "Drafters, Engineering Technicians, and Mapping Technicians",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 61060.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "17-2051",
+     "title": "Civil Engineers",
+     "median_annual_wage": 125929.0,
+     "total_job_openings": 38210.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "17-2112",
+     "title": "Industrial Engineers",
+     "median_annual_wage": 128088.0,
+     "total_job_openings": 24010.0,
+     "percent_change": 11.9
+    },
+    {
+     "soc_code": "17-2141",
+     "title": "Mechanical Engineers",
+     "median_annual_wage": 134564.0,
+     "total_job_openings": 20280.0,
+     "percent_change": 11.5
+    },
+    {
+     "soc_code": "17-2199",
+     "title": "Engineers, All Other",
+     "median_annual_wage": 134513.0,
+     "total_job_openings": 19090.0,
+     "percent_change": 6.4
+    }
    ]
   },
   "17-3019": {
@@ -5796,6 +6324,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "17-2000",
+     "title": "Engineers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 159020.0,
+     "percent_change": 7.8
+    },
+    {
+     "soc_code": "17-3000",
+     "title": "Drafters, Engineering Technicians, and Mapping Technicians",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 61060.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "17-2051",
+     "title": "Civil Engineers",
+     "median_annual_wage": 125929.0,
+     "total_job_openings": 38210.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "17-2112",
+     "title": "Industrial Engineers",
+     "median_annual_wage": 128088.0,
+     "total_job_openings": 24010.0,
+     "percent_change": 11.9
+    },
+    {
+     "soc_code": "17-2141",
+     "title": "Mechanical Engineers",
+     "median_annual_wage": 134564.0,
+     "total_job_openings": 20280.0,
+     "percent_change": 11.5
+    },
+    {
+     "soc_code": "17-2199",
+     "title": "Engineers, All Other",
+     "median_annual_wage": 134513.0,
+     "total_job_openings": 19090.0,
+     "percent_change": 6.4
+    }
    ]
   },
   "17-3026": {
@@ -5965,6 +6537,50 @@
      "entry_level_education": "Associate's degree",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "17-2000",
+     "title": "Engineers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 159020.0,
+     "percent_change": 7.8
+    },
+    {
+     "soc_code": "17-3000",
+     "title": "Drafters, Engineering Technicians, and Mapping Technicians",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 61060.0,
+     "percent_change": 1.9
+    },
+    {
+     "soc_code": "17-2051",
+     "title": "Civil Engineers",
+     "median_annual_wage": 125929.0,
+     "total_job_openings": 38210.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "17-2112",
+     "title": "Industrial Engineers",
+     "median_annual_wage": 128088.0,
+     "total_job_openings": 24010.0,
+     "percent_change": 11.9
+    },
+    {
+     "soc_code": "17-2141",
+     "title": "Mechanical Engineers",
+     "median_annual_wage": 134564.0,
+     "total_job_openings": 20280.0,
+     "percent_change": 11.5
+    },
+    {
+     "soc_code": "17-2199",
+     "title": "Engineers, All Other",
+     "median_annual_wage": 134513.0,
+     "total_job_openings": 19090.0,
+     "percent_change": 6.4
     }
    ]
   },
@@ -6510,6 +7126,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "25-3000",
+     "title": "Other Teachers and Instructors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 372490.0,
+     "percent_change": 5.1
+    },
+    {
+     "soc_code": "25-2000",
+     "title": "Preschool, Elementary, Middle, Secondary, and Special Education Teachers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 301940.0,
+     "percent_change": 0.6
+    },
+    {
+     "soc_code": "25-9000",
+     "title": "Other Educational Instruction and Library Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 301410.0,
+     "percent_change": 0.8
+    },
+    {
+     "soc_code": "25-9045",
+     "title": "Teaching Assistants, Except Postsecondary",
+     "median_annual_wage": 47791.0,
+     "total_job_openings": 208890.0,
+     "percent_change": -0.4
+    },
+    {
+     "soc_code": "25-3031",
+     "title": "Substitute Teachers, Short-Term",
+     "median_annual_wage": 61988.0,
+     "total_job_openings": 141370.0,
+     "percent_change": 2.2
+    },
+    {
+     "soc_code": "25-1000",
+     "title": "Postsecondary Teachers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 128790.0,
+     "percent_change": 4.1
+    }
    ]
   },
   "25-2031": {
@@ -7054,6 +7714,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "25-3000",
+     "title": "Other Teachers and Instructors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 372490.0,
+     "percent_change": 5.1
+    },
+    {
+     "soc_code": "25-2000",
+     "title": "Preschool, Elementary, Middle, Secondary, and Special Education Teachers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 301940.0,
+     "percent_change": 0.6
+    },
+    {
+     "soc_code": "25-9000",
+     "title": "Other Educational Instruction and Library Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 301410.0,
+     "percent_change": 0.8
+    },
+    {
+     "soc_code": "25-9045",
+     "title": "Teaching Assistants, Except Postsecondary",
+     "median_annual_wage": 47791.0,
+     "total_job_openings": 208890.0,
+     "percent_change": -0.4
+    },
+    {
+     "soc_code": "25-3031",
+     "title": "Substitute Teachers, Short-Term",
+     "median_annual_wage": 61988.0,
+     "total_job_openings": 141370.0,
+     "percent_change": 2.2
+    },
+    {
+     "soc_code": "25-1000",
+     "title": "Postsecondary Teachers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 128790.0,
+     "percent_change": 4.1
+    }
    ]
   },
   "27-1014": {
@@ -7292,6 +7996,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "27-2000",
+     "title": "Entertainers and Performers, Sports and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 172630.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "27-1000",
+     "title": "Art and Design Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 140080.0,
+     "percent_change": 3.4
+    },
+    {
+     "soc_code": "27-3000",
+     "title": "Media and Communication Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 103570.0,
+     "percent_change": 5.7
+    },
+    {
+     "soc_code": "27-4000",
+     "title": "Media and Communication Equipment Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 58130.0,
+     "percent_change": 6.1
+    },
+    {
+     "soc_code": "27-2022",
+     "title": "Coaches and Scouts",
+     "median_annual_wage": 48994.0,
+     "total_job_openings": 49610.0,
+     "percent_change": 10.7
+    },
+    {
+     "soc_code": "27-2011",
+     "title": "Actors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 39840.0,
+     "percent_change": 4.4
+    }
    ]
   },
   "27-1019": {
@@ -7359,6 +8107,50 @@
      "entry_level_education": "No formal educational credential",
      "work_experience": "None",
      "job_training": "Long-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "27-2000",
+     "title": "Entertainers and Performers, Sports and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 172630.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "27-1000",
+     "title": "Art and Design Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 140080.0,
+     "percent_change": 3.4
+    },
+    {
+     "soc_code": "27-3000",
+     "title": "Media and Communication Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 103570.0,
+     "percent_change": 5.7
+    },
+    {
+     "soc_code": "27-4000",
+     "title": "Media and Communication Equipment Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 58130.0,
+     "percent_change": 6.1
+    },
+    {
+     "soc_code": "27-2022",
+     "title": "Coaches and Scouts",
+     "median_annual_wage": 48994.0,
+     "total_job_openings": 49610.0,
+     "percent_change": 10.7
+    },
+    {
+     "soc_code": "27-2011",
+     "title": "Actors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 39840.0,
+     "percent_change": 4.4
     }
    ]
   },
@@ -7887,6 +8679,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "27-2000",
+     "title": "Entertainers and Performers, Sports and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 172630.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "27-1000",
+     "title": "Art and Design Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 140080.0,
+     "percent_change": 3.4
+    },
+    {
+     "soc_code": "27-3000",
+     "title": "Media and Communication Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 103570.0,
+     "percent_change": 5.7
+    },
+    {
+     "soc_code": "27-4000",
+     "title": "Media and Communication Equipment Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 58130.0,
+     "percent_change": 6.1
+    },
+    {
+     "soc_code": "27-2022",
+     "title": "Coaches and Scouts",
+     "median_annual_wage": 48994.0,
+     "total_job_openings": 49610.0,
+     "percent_change": 10.7
+    },
+    {
+     "soc_code": "27-2011",
+     "title": "Actors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 39840.0,
+     "percent_change": 4.4
+    }
    ]
   },
   "27-2012": {
@@ -8312,6 +9148,50 @@
      "work_experience": "Less than 5 years",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "27-2000",
+     "title": "Entertainers and Performers, Sports and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 172630.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "27-1000",
+     "title": "Art and Design Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 140080.0,
+     "percent_change": 3.4
+    },
+    {
+     "soc_code": "27-3000",
+     "title": "Media and Communication Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 103570.0,
+     "percent_change": 5.7
+    },
+    {
+     "soc_code": "27-4000",
+     "title": "Media and Communication Equipment Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 58130.0,
+     "percent_change": 6.1
+    },
+    {
+     "soc_code": "27-2022",
+     "title": "Coaches and Scouts",
+     "median_annual_wage": 48994.0,
+     "total_job_openings": 49610.0,
+     "percent_change": 10.7
+    },
+    {
+     "soc_code": "27-2011",
+     "title": "Actors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 39840.0,
+     "percent_change": 4.4
+    }
    ]
   },
   "27-4032": {
@@ -8566,6 +9446,50 @@
      "entry_level_education": "Bachelor's degree",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "27-2000",
+     "title": "Entertainers and Performers, Sports and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 172630.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "27-1000",
+     "title": "Art and Design Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 140080.0,
+     "percent_change": 3.4
+    },
+    {
+     "soc_code": "27-3000",
+     "title": "Media and Communication Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 103570.0,
+     "percent_change": 5.7
+    },
+    {
+     "soc_code": "27-4000",
+     "title": "Media and Communication Equipment Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 58130.0,
+     "percent_change": 6.1
+    },
+    {
+     "soc_code": "27-2022",
+     "title": "Coaches and Scouts",
+     "median_annual_wage": 48994.0,
+     "total_job_openings": 49610.0,
+     "percent_change": 10.7
+    },
+    {
+     "soc_code": "27-2011",
+     "title": "Actors",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 39840.0,
+     "percent_change": 4.4
     }
    ]
   },
@@ -9111,6 +10035,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "29-1000",
+     "title": "Health Diagnosing or Treating Practitioners",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 430190.0,
+     "percent_change": 15.7
+    },
+    {
+     "soc_code": "29-2000",
+     "title": "Health Technologists and Technicians",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 299210.0,
+     "percent_change": 14.8
+    },
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
+     "percent_change": 15.0
+    },
+    {
+     "soc_code": "29-2052",
+     "title": "Pharmacy Technicians",
+     "median_annual_wage": 56653.0,
+     "total_job_openings": 41220.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "29-1171",
+     "title": "Nurse Practitioners",
+     "median_annual_wage": 173237.0,
+     "total_job_openings": 26610.0,
+     "percent_change": 52.2
+    },
+    {
+     "soc_code": "29-2010",
+     "title": "Clinical Laboratory Technologists and Technicians",
+     "median_annual_wage": 78138.0,
+     "total_job_openings": 22820.0,
+     "percent_change": 11.9
+    }
    ]
   },
   "29-2052": {
@@ -9654,6 +10622,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "29-1000",
+     "title": "Health Diagnosing or Treating Practitioners",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 430190.0,
+     "percent_change": 15.7
+    },
+    {
+     "soc_code": "29-2000",
+     "title": "Health Technologists and Technicians",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 299210.0,
+     "percent_change": 14.8
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses",
+     "median_annual_wage": 144197.0,
+     "total_job_openings": 228840.0,
+     "percent_change": 13.5
+    },
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
+     "percent_change": 15.0
+    },
+    {
+     "soc_code": "29-1171",
+     "title": "Nurse Practitioners",
+     "median_annual_wage": 173237.0,
+     "total_job_openings": 26610.0,
+     "percent_change": 52.2
+    },
+    {
+     "soc_code": "29-2010",
+     "title": "Clinical Laboratory Technologists and Technicians",
+     "median_annual_wage": 78138.0,
+     "total_job_openings": 22820.0,
+     "percent_change": 11.9
     }
    ]
   },
@@ -10199,6 +11211,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "29-1000",
+     "title": "Health Diagnosing or Treating Practitioners",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 430190.0,
+     "percent_change": 15.7
+    },
+    {
+     "soc_code": "29-2000",
+     "title": "Health Technologists and Technicians",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 299210.0,
+     "percent_change": 14.8
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses",
+     "median_annual_wage": 144197.0,
+     "total_job_openings": 228840.0,
+     "percent_change": 13.5
+    },
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
+     "percent_change": 15.0
+    },
+    {
+     "soc_code": "29-2052",
+     "title": "Pharmacy Technicians",
+     "median_annual_wage": 56653.0,
+     "total_job_openings": 41220.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "29-1171",
+     "title": "Nurse Practitioners",
+     "median_annual_wage": 173237.0,
+     "total_job_openings": 26610.0,
+     "percent_change": 52.2
+    }
    ]
   },
   "31-1131": {
@@ -10726,6 +11782,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "31-1100",
+     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 2311500.0,
+     "percent_change": 37.9
+    },
+    {
+     "soc_code": "31-1120",
+     "title": "Home Health and Personal Care Aides",
+     "median_annual_wage": 35189.0,
+     "total_job_openings": 2125350.0,
+     "percent_change": 41.3
+    },
+    {
+     "soc_code": "31-9000",
+     "title": "Other Healthcare Support Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 417690.0,
+     "percent_change": 16.2
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants",
+     "median_annual_wage": 51379.0,
+     "total_job_openings": 81180.0,
+     "percent_change": 10.0
+    },
+    {
+     "soc_code": "31-9011",
+     "title": "Massage Therapists",
+     "median_annual_wage": 47134.0,
+     "total_job_openings": 38120.0,
+     "percent_change": 20.9
+    }
    ]
   },
   "31-2021": {
@@ -11150,6 +12250,50 @@
      "entry_level_education": "Associate's degree",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "31-1100",
+     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 2311500.0,
+     "percent_change": 37.9
+    },
+    {
+     "soc_code": "31-1120",
+     "title": "Home Health and Personal Care Aides",
+     "median_annual_wage": 35189.0,
+     "total_job_openings": 2125350.0,
+     "percent_change": 41.3
+    },
+    {
+     "soc_code": "31-9000",
+     "title": "Other Healthcare Support Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 417690.0,
+     "percent_change": 16.2
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants",
+     "median_annual_wage": 51379.0,
+     "total_job_openings": 81180.0,
+     "percent_change": 10.0
     }
    ]
   },
@@ -11695,6 +12839,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "31-1100",
+     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 2311500.0,
+     "percent_change": 37.9
+    },
+    {
+     "soc_code": "31-1120",
+     "title": "Home Health and Personal Care Aides",
+     "median_annual_wage": 35189.0,
+     "total_job_openings": 2125350.0,
+     "percent_change": 41.3
+    },
+    {
+     "soc_code": "31-9000",
+     "title": "Other Healthcare Support Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 417690.0,
+     "percent_change": 16.2
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants",
+     "median_annual_wage": 51379.0,
+     "total_job_openings": 81180.0,
+     "percent_change": 10.0
+    },
+    {
+     "soc_code": "31-9011",
+     "title": "Massage Therapists",
+     "median_annual_wage": 47134.0,
+     "total_job_openings": 38120.0,
+     "percent_change": 20.9
+    }
    ]
   },
   "31-9096": {
@@ -12170,6 +13358,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "31-1100",
+     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 2311500.0,
+     "percent_change": 37.9
+    },
+    {
+     "soc_code": "31-1120",
+     "title": "Home Health and Personal Care Aides",
+     "median_annual_wage": 35189.0,
+     "total_job_openings": 2125350.0,
+     "percent_change": 41.3
+    },
+    {
+     "soc_code": "31-9000",
+     "title": "Other Healthcare Support Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 417690.0,
+     "percent_change": 16.2
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants",
+     "median_annual_wage": 51379.0,
+     "total_job_openings": 81180.0,
+     "percent_change": 10.0
     }
    ]
   },
@@ -12664,6 +13896,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "31-1100",
+     "title": "Home Health and Personal Care Aides; and Nursing Assistants, Orderlies, and Psychiatric Aides",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 2311500.0,
+     "percent_change": 37.9
+    },
+    {
+     "soc_code": "31-1120",
+     "title": "Home Health and Personal Care Aides",
+     "median_annual_wage": 35189.0,
+     "total_job_openings": 2125350.0,
+     "percent_change": 41.3
+    },
+    {
+     "soc_code": "31-9000",
+     "title": "Other Healthcare Support Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 417690.0,
+     "percent_change": 16.2
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants",
+     "median_annual_wage": 51379.0,
+     "total_job_openings": 81180.0,
+     "percent_change": 10.0
+    }
    ]
   },
   "33-9021": {
@@ -12935,6 +14211,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "Less than 5 years",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "33-9000",
+     "title": "Other Protective Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 434450.0,
+     "percent_change": 3.5
+    },
+    {
+     "soc_code": "33-9032",
+     "title": "Security Guards",
+     "median_annual_wage": 44335.0,
+     "total_job_openings": 264160.0,
+     "percent_change": 3.3
+    },
+    {
+     "soc_code": "33-3000",
+     "title": "Law Enforcement Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 95720.0,
+     "percent_change": 1.7
+    },
+    {
+     "soc_code": "33-9099",
+     "title": "Protective Service Workers, All Other",
+     "median_annual_wage": 40326.0,
+     "total_job_openings": 70610.0,
+     "percent_change": 1.2
+    },
+    {
+     "soc_code": "33-9092",
+     "title": "Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",
+     "median_annual_wage": 43802.0,
+     "total_job_openings": 65250.0,
+     "percent_change": 7.6
+    },
+    {
+     "soc_code": "33-3051",
+     "title": "Police and Sheriff's Patrol Officers",
+     "median_annual_wage": 121891.0,
+     "total_job_openings": 52390.0,
+     "percent_change": 5.2
     }
    ]
   },
@@ -13480,6 +14800,50 @@
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "33-9000",
+     "title": "Other Protective Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 434450.0,
+     "percent_change": 3.5
+    },
+    {
+     "soc_code": "33-3000",
+     "title": "Law Enforcement Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 95720.0,
+     "percent_change": 1.7
+    },
+    {
+     "soc_code": "33-9099",
+     "title": "Protective Service Workers, All Other",
+     "median_annual_wage": 40326.0,
+     "total_job_openings": 70610.0,
+     "percent_change": 1.2
+    },
+    {
+     "soc_code": "33-9092",
+     "title": "Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",
+     "median_annual_wage": 43802.0,
+     "total_job_openings": 65250.0,
+     "percent_change": 7.6
+    },
+    {
+     "soc_code": "33-3051",
+     "title": "Police and Sheriff's Patrol Officers",
+     "median_annual_wage": 121891.0,
+     "total_job_openings": 52390.0,
+     "percent_change": 5.2
+    },
+    {
+     "soc_code": "33-1000",
+     "title": "Supervisors of Protective Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 32440.0,
+     "percent_change": 4.8
+    }
    ]
   },
   "37-2011": {
@@ -14024,6 +15388,50 @@
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "37-2000",
+     "title": "Building Cleaning and Pest Control Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 603010.0,
+     "percent_change": 4.6
+    },
+    {
+     "soc_code": "37-2012",
+     "title": "Maids and Housekeeping Cleaners",
+     "median_annual_wage": 43741.0,
+     "total_job_openings": 206290.0,
+     "percent_change": 3.7
+    },
+    {
+     "soc_code": "37-3000",
+     "title": "Grounds Maintenance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 206230.0,
+     "percent_change": 5.7
+    },
+    {
+     "soc_code": "37-3011",
+     "title": "Landscaping and Groundskeeping Workers",
+     "median_annual_wage": 46714.0,
+     "total_job_openings": 182080.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "37-1000",
+     "title": "Supervisors of Building and Grounds Cleaning and Maintenance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 62520.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "37-1011",
+     "title": "First-Line Supervisors of Housekeeping and Janitorial Workers",
+     "median_annual_wage": 63027.0,
+     "total_job_openings": 34020.0,
+     "percent_change": 4.4
+    }
    ]
   },
   "39-2011": {
@@ -14380,6 +15788,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "39-9000",
+     "title": "Other Personal Care and Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 375190.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "39-3000",
+     "title": "Entertainment Attendants and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 239440.0,
+     "percent_change": 5.6
+    },
+    {
+     "soc_code": "39-5000",
+     "title": "Personal Appearance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 166140.0,
+     "percent_change": 8.8
+    },
+    {
+     "soc_code": "39-3091",
+     "title": "Amusement and Recreation Attendants",
+     "median_annual_wage": 37937.0,
+     "total_job_openings": 152610.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "39-9011",
+     "title": "Childcare Workers",
+     "median_annual_wage": 41034.0,
+     "total_job_openings": 135490.0,
+     "percent_change": 1.5
+    },
+    {
+     "soc_code": "39-9031",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "median_annual_wage": 59459.0,
+     "total_job_openings": 105200.0,
+     "percent_change": 16.7
     }
    ]
   },
@@ -14925,6 +16377,50 @@
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "39-9000",
+     "title": "Other Personal Care and Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 375190.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "39-3000",
+     "title": "Entertainment Attendants and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 239440.0,
+     "percent_change": 5.6
+    },
+    {
+     "soc_code": "39-5000",
+     "title": "Personal Appearance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 166140.0,
+     "percent_change": 8.8
+    },
+    {
+     "soc_code": "39-3091",
+     "title": "Amusement and Recreation Attendants",
+     "median_annual_wage": 37937.0,
+     "total_job_openings": 152610.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "39-9011",
+     "title": "Childcare Workers",
+     "median_annual_wage": 41034.0,
+     "total_job_openings": 135490.0,
+     "percent_change": 1.5
+    },
+    {
+     "soc_code": "39-9031",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "median_annual_wage": 59459.0,
+     "total_job_openings": 105200.0,
+     "percent_change": 16.7
+    }
    ]
   },
   "39-5011": {
@@ -15298,6 +16794,50 @@
      "entry_level_education": "Postsecondary non-degree award",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "39-9000",
+     "title": "Other Personal Care and Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 375190.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "39-3000",
+     "title": "Entertainment Attendants and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 239440.0,
+     "percent_change": 5.6
+    },
+    {
+     "soc_code": "39-5000",
+     "title": "Personal Appearance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 166140.0,
+     "percent_change": 8.8
+    },
+    {
+     "soc_code": "39-3091",
+     "title": "Amusement and Recreation Attendants",
+     "median_annual_wage": 37937.0,
+     "total_job_openings": 152610.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "39-9011",
+     "title": "Childcare Workers",
+     "median_annual_wage": 41034.0,
+     "total_job_openings": 135490.0,
+     "percent_change": 1.5
+    },
+    {
+     "soc_code": "39-9031",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "median_annual_wage": 59459.0,
+     "total_job_openings": 105200.0,
+     "percent_change": 16.7
     }
    ]
   },
@@ -15792,6 +17332,50 @@
      "work_experience": "None",
      "job_training": "None"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "39-9000",
+     "title": "Other Personal Care and Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 375190.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "39-3000",
+     "title": "Entertainment Attendants and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 239440.0,
+     "percent_change": 5.6
+    },
+    {
+     "soc_code": "39-5000",
+     "title": "Personal Appearance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 166140.0,
+     "percent_change": 8.8
+    },
+    {
+     "soc_code": "39-3091",
+     "title": "Amusement and Recreation Attendants",
+     "median_annual_wage": 37937.0,
+     "total_job_openings": 152610.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "39-9011",
+     "title": "Childcare Workers",
+     "median_annual_wage": 41034.0,
+     "total_job_openings": 135490.0,
+     "percent_change": 1.5
+    },
+    {
+     "soc_code": "39-9031",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "median_annual_wage": 59459.0,
+     "total_job_openings": 105200.0,
+     "percent_change": 16.7
+    }
    ]
   },
   "39-5094": {
@@ -16182,6 +17766,50 @@
      "entry_level_education": "Postsecondary non-degree award",
      "work_experience": "None",
      "job_training": "None"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "39-9000",
+     "title": "Other Personal Care and Service Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 375190.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "39-3000",
+     "title": "Entertainment Attendants and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 239440.0,
+     "percent_change": 5.6
+    },
+    {
+     "soc_code": "39-5000",
+     "title": "Personal Appearance Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 166140.0,
+     "percent_change": 8.8
+    },
+    {
+     "soc_code": "39-3091",
+     "title": "Amusement and Recreation Attendants",
+     "median_annual_wage": 37937.0,
+     "total_job_openings": 152610.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "39-9011",
+     "title": "Childcare Workers",
+     "median_annual_wage": 41034.0,
+     "total_job_openings": 135490.0,
+     "percent_change": 1.5
+    },
+    {
+     "soc_code": "39-9031",
+     "title": "Exercise Trainers and Group Fitness Instructors",
+     "median_annual_wage": 59459.0,
+     "total_job_openings": 105200.0,
+     "percent_change": 16.7
     }
    ]
   },
@@ -16727,6 +18355,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "41-2000",
+     "title": "Retail Sales Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 1271640.0,
+     "percent_change": -2.5
+    },
+    {
+     "soc_code": "41-2011",
+     "title": "Cashiers",
+     "median_annual_wage": 37438.0,
+     "total_job_openings": 606780.0,
+     "percent_change": -5.3
+    },
+    {
+     "soc_code": "41-2031",
+     "title": "Retail Salespersons",
+     "median_annual_wage": 38790.0,
+     "total_job_openings": 549460.0,
+     "percent_change": -1.3
+    },
+    {
+     "soc_code": "41-3000",
+     "title": "Sales Representatives, Services",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 258360.0,
+     "percent_change": 2.4
+    },
+    {
+     "soc_code": "41-3091",
+     "title": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
+     "median_annual_wage": 81587.0,
+     "total_job_openings": 164660.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "41-9000",
+     "title": "Other Sales and Related Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 148700.0,
+     "percent_change": 2.4
+    }
    ]
   },
   "43-3011": {
@@ -17202,6 +18874,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "43-4000",
+     "title": "Information and Record Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 543750.0,
+     "percent_change": -2.0
+    },
+    {
+     "soc_code": "43-9000",
+     "title": "Other Office and Administrative Support Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 426020.0,
+     "percent_change": -6.2
+    },
+    {
+     "soc_code": "43-6000",
+     "title": "Secretaries and Administrative Assistants",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 409280.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "43-3000",
+     "title": "Financial Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 282660.0,
+     "percent_change": -5.0
+    },
+    {
+     "soc_code": "43-5000",
+     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 249440.0,
+     "percent_change": 0.1
     }
    ]
   },
@@ -17747,6 +19463,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "43-4000",
+     "title": "Information and Record Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 543750.0,
+     "percent_change": -2.0
+    },
+    {
+     "soc_code": "43-9000",
+     "title": "Other Office and Administrative Support Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 426020.0,
+     "percent_change": -6.2
+    },
+    {
+     "soc_code": "43-6000",
+     "title": "Secretaries and Administrative Assistants",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 409280.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "43-3000",
+     "title": "Financial Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 282660.0,
+     "percent_change": -5.0
+    },
+    {
+     "soc_code": "43-5000",
+     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 249440.0,
+     "percent_change": 0.1
+    }
    ]
   },
   "43-3031": {
@@ -18290,6 +20050,50 @@
      "entry_level_education": "Some college, no degree",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "43-4000",
+     "title": "Information and Record Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 543750.0,
+     "percent_change": -2.0
+    },
+    {
+     "soc_code": "43-9000",
+     "title": "Other Office and Administrative Support Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 426020.0,
+     "percent_change": -6.2
+    },
+    {
+     "soc_code": "43-6000",
+     "title": "Secretaries and Administrative Assistants",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 409280.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "43-3000",
+     "title": "Financial Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 282660.0,
+     "percent_change": -5.0
+    },
+    {
+     "soc_code": "43-5000",
+     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 249440.0,
+     "percent_change": 0.1
     }
    ]
   },
@@ -18835,6 +20639,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "43-4000",
+     "title": "Information and Record Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 543750.0,
+     "percent_change": -2.0
+    },
+    {
+     "soc_code": "43-9000",
+     "title": "Other Office and Administrative Support Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 426020.0,
+     "percent_change": -6.2
+    },
+    {
+     "soc_code": "43-6000",
+     "title": "Secretaries and Administrative Assistants",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 409280.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "43-3000",
+     "title": "Financial Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 282660.0,
+     "percent_change": -5.0
+    },
+    {
+     "soc_code": "43-5000",
+     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 249440.0,
+     "percent_change": 0.1
+    }
    ]
   },
   "43-6013": {
@@ -19378,6 +21226,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "43-4000",
+     "title": "Information and Record Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 543750.0,
+     "percent_change": -2.0
+    },
+    {
+     "soc_code": "43-9000",
+     "title": "Other Office and Administrative Support Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 426020.0,
+     "percent_change": -6.2
+    },
+    {
+     "soc_code": "43-6000",
+     "title": "Secretaries and Administrative Assistants",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 409280.0,
+     "percent_change": 4.7
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "43-3000",
+     "title": "Financial Clerks",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 282660.0,
+     "percent_change": -5.0
+    },
+    {
+     "soc_code": "43-5000",
+     "title": "Material Recording, Scheduling, Dispatching, and Distributing Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 249440.0,
+     "percent_change": 0.1
     }
    ]
   },
@@ -19923,6 +21815,50 @@
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "47-2000",
+     "title": "Construction Trades Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 577650.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "47-2031",
+     "title": "Carpenters",
+     "median_annual_wage": 77977.0,
+     "total_job_openings": 110410.0,
+     "percent_change": 6.4
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
+    },
+    {
+     "soc_code": "47-1000",
+     "title": "Supervisors of Construction and Extraction Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
+     "median_annual_wage": 100326.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance",
+     "median_annual_wage": 60619.0,
+     "total_job_openings": 48920.0,
+     "percent_change": 5.3
+    }
    ]
   },
   "47-2152": {
@@ -20450,6 +22386,50 @@
      "work_experience": "None",
      "job_training": "Apprenticeship"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "47-2000",
+     "title": "Construction Trades Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 577650.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "47-2061",
+     "title": "Construction Laborers",
+     "median_annual_wage": 61903.0,
+     "total_job_openings": 111420.0,
+     "percent_change": 10.2
+    },
+    {
+     "soc_code": "47-2031",
+     "title": "Carpenters",
+     "median_annual_wage": 77977.0,
+     "total_job_openings": 110410.0,
+     "percent_change": 6.4
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
+    },
+    {
+     "soc_code": "47-1000",
+     "title": "Supervisors of Construction and Extraction Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
+     "median_annual_wage": 100326.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    }
    ]
   },
   "47-2181": {
@@ -20926,6 +22906,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "47-2000",
+     "title": "Construction Trades Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 577650.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "47-2061",
+     "title": "Construction Laborers",
+     "median_annual_wage": 61903.0,
+     "total_job_openings": 111420.0,
+     "percent_change": 10.2
+    },
+    {
+     "soc_code": "47-2031",
+     "title": "Carpenters",
+     "median_annual_wage": 77977.0,
+     "total_job_openings": 110410.0,
+     "percent_change": 6.4
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
+    },
+    {
+     "soc_code": "47-1000",
+     "title": "Supervisors of Construction and Extraction Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
+     "median_annual_wage": 100326.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    }
    ]
   },
   "47-2211": {
@@ -21300,6 +23324,50 @@
      "work_experience": "None",
      "job_training": "Apprenticeship"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "47-2000",
+     "title": "Construction Trades Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 577650.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "47-2061",
+     "title": "Construction Laborers",
+     "median_annual_wage": 61903.0,
+     "total_job_openings": 111420.0,
+     "percent_change": 10.2
+    },
+    {
+     "soc_code": "47-2031",
+     "title": "Carpenters",
+     "median_annual_wage": 77977.0,
+     "total_job_openings": 110410.0,
+     "percent_change": 6.4
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
+    },
+    {
+     "soc_code": "47-1000",
+     "title": "Supervisors of Construction and Extraction Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
+     "median_annual_wage": 100326.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    }
    ]
   },
   "47-2231": {
@@ -21606,6 +23674,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "47-2000",
+     "title": "Construction Trades Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 577650.0,
+     "percent_change": 8.2
+    },
+    {
+     "soc_code": "47-2061",
+     "title": "Construction Laborers",
+     "median_annual_wage": 61903.0,
+     "total_job_openings": 111420.0,
+     "percent_change": 10.2
+    },
+    {
+     "soc_code": "47-2031",
+     "title": "Carpenters",
+     "median_annual_wage": 77977.0,
+     "total_job_openings": 110410.0,
+     "percent_change": 6.4
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
+    },
+    {
+     "soc_code": "47-1000",
+     "title": "Supervisors of Construction and Extraction Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
+     "median_annual_wage": 100326.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
+    }
    ]
   },
   "49-2093": {
@@ -21691,6 +23803,50 @@
      "work_experience": "None",
      "job_training": "Long-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "49-9000",
+     "title": "Other Installation, Maintenance, and Repair Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 304990.0,
+     "percent_change": 7.0
+    },
+    {
+     "soc_code": "49-3000",
+     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 163020.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General",
+     "median_annual_wage": 58612.0,
+     "total_job_openings": 151500.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1
+    },
+    {
+     "soc_code": "49-1000",
+     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-1011",
+     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+     "median_annual_wage": 96308.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    }
    ]
   },
   "49-2096": {
@@ -21741,6 +23897,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "49-9000",
+     "title": "Other Installation, Maintenance, and Repair Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 304990.0,
+     "percent_change": 7.0
+    },
+    {
+     "soc_code": "49-3000",
+     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 163020.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General",
+     "median_annual_wage": 58612.0,
+     "total_job_openings": 151500.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1
+    },
+    {
+     "soc_code": "49-1000",
+     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-1011",
+     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+     "median_annual_wage": 96308.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
     }
    ]
   },
@@ -22286,6 +24486,50 @@
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "49-9000",
+     "title": "Other Installation, Maintenance, and Repair Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 304990.0,
+     "percent_change": 7.0
+    },
+    {
+     "soc_code": "49-3000",
+     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 163020.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General",
+     "median_annual_wage": 58612.0,
+     "total_job_openings": 151500.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "49-1000",
+     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-1011",
+     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+     "median_annual_wage": 96308.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-2000",
+     "title": "Electrical and Electronic Equipment Mechanics, Installers, and Repairers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 42200.0,
+     "percent_change": -0.2
+    }
    ]
   },
   "49-9051": {
@@ -22642,6 +24886,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Long-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "49-9000",
+     "title": "Other Installation, Maintenance, and Repair Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 304990.0,
+     "percent_change": 7.0
+    },
+    {
+     "soc_code": "49-3000",
+     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 163020.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General",
+     "median_annual_wage": 58612.0,
+     "total_job_openings": 151500.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1
+    },
+    {
+     "soc_code": "49-1000",
+     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-1011",
+     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+     "median_annual_wage": 96308.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
     }
    ]
   },
@@ -23187,6 +25475,50 @@
      "work_experience": "None",
      "job_training": "Moderate-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "49-9000",
+     "title": "Other Installation, Maintenance, and Repair Occupations",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 304990.0,
+     "percent_change": 7.0
+    },
+    {
+     "soc_code": "49-3000",
+     "title": "Vehicle and Mobile Equipment Mechanics, Installers, and Repairers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 163020.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General",
+     "median_annual_wage": 58612.0,
+     "total_job_openings": 151500.0,
+     "percent_change": 7.3
+    },
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics",
+     "median_annual_wage": 66817.0,
+     "total_job_openings": 66070.0,
+     "percent_change": 4.1
+    },
+    {
+     "soc_code": "49-1000",
+     "title": "Supervisors of Installation, Maintenance, and Repair Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "49-1011",
+     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+     "median_annual_wage": 96308.0,
+     "total_job_openings": 45620.0,
+     "percent_change": 4.8
+    }
    ]
   },
   "53-3032": {
@@ -23730,6 +26062,50 @@
      "entry_level_education": "Postsecondary non-degree award",
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "53-7000",
+     "title": "Material Moving Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 1382230.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "53-3000",
+     "title": "Motor Vehicle Operators",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 651840.0,
+     "percent_change": 16.0
+    },
+    {
+     "soc_code": "53-7065",
+     "title": "Stockers and Order Fillers",
+     "median_annual_wage": 43808.0,
+     "total_job_openings": 565760.0,
+     "percent_change": 15.5
+    },
+    {
+     "soc_code": "53-7062",
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+     "median_annual_wage": 45689.0,
+     "total_job_openings": 502850.0,
+     "percent_change": 8.6
+    },
+    {
+     "soc_code": "53-3033",
+     "title": "Light Truck Drivers",
+     "median_annual_wage": 47814.0,
+     "total_job_openings": 157370.0,
+     "percent_change": 17.9
+    },
+    {
+     "soc_code": "53-7064",
+     "title": "Packers and Packagers, Hand",
+     "median_annual_wage": 38076.0,
+     "total_job_openings": 104810.0,
+     "percent_change": -3.1
     }
    ]
   },
@@ -24275,6 +26651,50 @@
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
     }
+   ],
+   "related": [
+    {
+     "soc_code": "53-7000",
+     "title": "Material Moving Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 1382230.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "53-3000",
+     "title": "Motor Vehicle Operators",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 651840.0,
+     "percent_change": 16.0
+    },
+    {
+     "soc_code": "53-7065",
+     "title": "Stockers and Order Fillers",
+     "median_annual_wage": 43808.0,
+     "total_job_openings": 565760.0,
+     "percent_change": 15.5
+    },
+    {
+     "soc_code": "53-7062",
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+     "median_annual_wage": 45689.0,
+     "total_job_openings": 502850.0,
+     "percent_change": 8.6
+    },
+    {
+     "soc_code": "53-3032",
+     "title": "Heavy and Tractor-Trailer Truck Drivers",
+     "median_annual_wage": 61548.0,
+     "total_job_openings": 262610.0,
+     "percent_change": 11.4
+    },
+    {
+     "soc_code": "53-7064",
+     "title": "Packers and Packagers, Hand",
+     "median_annual_wage": 38076.0,
+     "total_job_openings": 104810.0,
+     "percent_change": -3.1
+    }
    ]
   },
   "53-3051": {
@@ -24801,6 +27221,50 @@
      "entry_level_education": "High school diploma or equivalent",
      "work_experience": "None",
      "job_training": "Short-term on-the-job training"
+    }
+   ],
+   "related": [
+    {
+     "soc_code": "53-7000",
+     "title": "Material Moving Workers",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 1382230.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "53-3000",
+     "title": "Motor Vehicle Operators",
+     "median_annual_wage": 0.0,
+     "total_job_openings": 651840.0,
+     "percent_change": 16.0
+    },
+    {
+     "soc_code": "53-7065",
+     "title": "Stockers and Order Fillers",
+     "median_annual_wage": 43808.0,
+     "total_job_openings": 565760.0,
+     "percent_change": 15.5
+    },
+    {
+     "soc_code": "53-7062",
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+     "median_annual_wage": 45689.0,
+     "total_job_openings": 502850.0,
+     "percent_change": 8.6
+    },
+    {
+     "soc_code": "53-3032",
+     "title": "Heavy and Tractor-Trailer Truck Drivers",
+     "median_annual_wage": 61548.0,
+     "total_job_openings": 262610.0,
+     "percent_change": 11.4
+    },
+    {
+     "soc_code": "53-3033",
+     "title": "Light Truck Drivers",
+     "median_annual_wage": 47814.0,
+     "total_job_openings": 157370.0,
+     "percent_change": 17.9
     }
    ]
   }

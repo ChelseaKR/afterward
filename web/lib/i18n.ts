@@ -80,6 +80,9 @@ const en = {
     "California projects this job will shrink over the next ten years. Fewer openings may mean a harder search.",
   entryEducation: "Usually needs",
   perYear: "per year",
+  relatedWork: "Related work",
+  relatedWorkNote:
+    "Occupations in the same family as this one, ordered by projected openings. Related by how the job classification groups them, not by a claim that the skills transfer.",
   byRegion: "Pay by region",
   region: "Region",
 
@@ -183,6 +186,9 @@ const es: Dictionary = {
     "California proyecta que esta ocupación se reducirá en los próximos diez años. Menos vacantes puede significar una búsqueda más difícil.",
   entryEducation: "Normalmente requiere",
   perYear: "al año",
+  relatedWork: "Trabajos relacionados",
+  relatedWorkNote:
+    "Ocupaciones de la misma familia que esta, ordenadas por vacantes proyectadas. Se relacionan por cómo las agrupa la clasificación laboral, no porque las habilidades se transfieran.",
   byRegion: "Pago por región",
   region: "Región",
 

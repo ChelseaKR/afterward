@@ -108,6 +108,53 @@ export default async function OccupationPage({
         </>
       )}
 
+      {occupation.related.length > 0 && (
+        <>
+          <h2>{t.relatedWork}</h2>
+          <p className="compare-note">{t.relatedWorkNote}</p>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">{t.occupation}</th>
+                  <th scope="col" style={{ textAlign: "right" }}>
+                    {t.medianWage}
+                  </th>
+                  <th scope="col" style={{ textAlign: "right" }}>
+                    {t.jobOpenings}
+                  </th>
+                  <th scope="col" style={{ textAlign: "right" }}>
+                    {t.growth}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {occupation.related.map((sibling) => (
+                  <tr key={sibling.soc_code}>
+                    <th scope="row" style={{ fontWeight: 400 }}>
+                      {sibling.soc_code ? (
+                        <Link href={`/${lang}/occupations/${sibling.soc_code}/`}>
+                          {sibling.title}
+                        </Link>
+                      ) : (
+                        sibling.title
+                      )}
+                    </th>
+                    <td className="num">{money(sibling.median_annual_wage, lang)}</td>
+                    <td className="num">{count(sibling.total_job_openings, lang)}</td>
+                    <td className="num">
+                      {signedPercent(sibling.percent_change, lang) ?? (
+                        <span className="unreported">{t.notReported}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
       {programs.length > 0 && (
         <>
           <h2>

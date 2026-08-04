@@ -90,7 +90,45 @@ def index_occupations(
 
     for soc_code, occupation in statewide.items():
         occupation["regions"] = regional.get(soc_code, [])
+
+    _attach_related(statewide)
     return statewide
+
+
+RELATED_LIMIT = 6
+
+
+def _attach_related(occupations: dict[str, dict[str, Any]]) -> None:
+    """Attach sibling occupations from the same SOC major group.
+
+    Derived from the SOC hierarchy rather than a skills model: the first two digits of a SOC
+    code are its major group, so "29-1141 Registered Nurses" and "29-2061 Licensed Practical
+    Nurses" are genuinely adjacent by the classification's own definition. That is a weaker
+    claim than skill similarity, and deliberately so -- asserting that two jobs need the same
+    skills would need O*NET data this project does not yet carry.
+
+    Siblings are ranked by projected openings, because the useful question standing on an
+    occupation page is "what nearby work is actually hiring".
+    """
+    by_group: dict[str, list[str]] = {}
+    for soc_code in occupations:
+        by_group.setdefault(soc_code[:2], []).append(soc_code)
+
+    for soc_code, occupation in occupations.items():
+        siblings = [
+            occupations[other] for other in by_group.get(soc_code[:2], []) if other != soc_code
+        ]
+        siblings.sort(key=lambda o: o.get("total_job_openings") or -1, reverse=True)
+        occupation["related"] = [
+            {
+                "soc_code": sibling["soc_code"],
+                "title": sibling["title"],
+                "median_annual_wage": sibling["median_annual_wage"],
+                "total_job_openings": sibling["total_job_openings"],
+                "percent_change": sibling["percent_change"],
+            }
+            for sibling in siblings[:RELATED_LIMIT]
+        ]
 
 
 OCCUPATION_SUMMARY_FIELDS = (

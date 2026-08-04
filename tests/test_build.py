@@ -74,3 +74,33 @@ class TestProjectionHelpers:
         rows = list(parse_projections(PROJECTION_CSV))
         assert rows[1].is_statewide is True
         assert rows[2].is_statewide is False
+
+
+class TestRelatedOccupations:
+    """Siblings come from the SOC hierarchy, which is a weaker claim than skill similarity."""
+
+    CSV = """Area Type,Area Name,Period,SOC Level,Standard Occupational Classification (SOC),Occupational Title,Base Year Employment Estimate,Projected Year Employment Estimate,Numeric Change,Percentage Change,Exits,Transfers,Total Job Openings,Median Hourly Wage,Median Annual Wage,Entry Level Education,Work Experience,Job Training
+State,California,2024-2034,4,29-1141,Registered Nurses,100,110,10,10.0,5,5,900,60.00,124000,Bachelor's degree,None,None
+State,California,2024-2034,4,29-2061,Licensed Practical Nurses,50,55,5,10.0,3,3,300,35.00,72000,Postsecondary non-degree award,None,None
+State,California,2024-2034,4,29-2052,Pharmacy Technicians,40,42,2,5.0,2,2,100,25.00,52000,High school diploma or equivalent,None,None
+State,California,2024-2034,4,15-1252,Software Developers,80,96,16,20.0,4,6,500,68.50,142480,Bachelor's degree,None,None
+"""
+
+    def _occupations(self) -> dict:
+        return index_occupations(list(parse_projections(self.CSV)))
+
+    def test_relates_occupations_sharing_a_major_group(self) -> None:
+        related = self._occupations()["29-1141"]["related"]
+        assert {r["soc_code"] for r in related} == {"29-2061", "29-2052"}
+
+    def test_does_not_relate_across_major_groups(self) -> None:
+        related = self._occupations()["15-1252"]["related"]
+        assert related == []
+
+    def test_ranks_siblings_by_projected_openings(self) -> None:
+        related = self._occupations()["29-2052"]["related"]
+        assert [r["soc_code"] for r in related] == ["29-1141", "29-2061"]
+
+    def test_never_relates_an_occupation_to_itself(self) -> None:
+        for soc_code, occupation in self._occupations().items():
+            assert soc_code not in {r["soc_code"] for r in occupation["related"]}
