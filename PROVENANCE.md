@@ -33,8 +33,27 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D2 | CA EDD — Long-Term Occupational Employment Projections (2024–2034) | `https://data.ca.gov/dataset/long-term-occupational-employment-projections` | 2026-08-04 | California open data, public domain | Occupation growth, job openings, median wages, entry-level education, by region |
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Wage detail (percentiles) where projections lack it |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
-| D5 | O\*NET Database | `https://www.onetcenter.org/database.html` | not used | CC BY 4.0 (attribution required) | Superseded by D6, which serves the same O\*NET content through an API |
+| D5 | O\*NET Web Services (USDOL/ETA) | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered project "Camino"; key is per-user and never committed. | Tasks, technology skills, work activities, job zones, related occupations |
 | D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, O\*NET related occupations, Bright Outlook |
+
+### Notes on D5 — required attribution
+
+The O\*NET Web Services Data License requires that any product using the Services credit and
+link to O\*NET. The site carries this notice, and it must not be removed while any O\*NET-
+derived field is displayed:
+
+> This site incorporates information from O\*NET Web Services by the U.S. Department of Labor,
+> Employment and Training Administration (USDOL/ETA). O\*NET® is a trademark of USDOL/ETA.
+
+This obligation applies to O\*NET data reaching the site **through CareerOneStop as well**
+(D6): the skill ratings, related occupations and descriptions already published are O\*NET
+content served through a DOL front end. The notice therefore predates any direct use of the
+O\*NET API and is owed on the currently-published site.
+
+Base URL is `https://api-v2.onetcenter.org` — not the older `services.onetcenter.org`, which
+answers every request with a 401 regardless of key. Authentication is an `X-API-Key` header.
+Occupation records link their own sub-resources by `href`, so a client should follow those
+rather than construct paths.
 
 ### Notes on D6
 
