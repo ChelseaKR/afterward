@@ -579,6 +579,10 @@ areaNote: (unplaced: number, total: number) =>
   fundingMilesAway: (miles: number) => `about ${miles} miles away`,
   fundingVeteransRep: "Has a veterans' representative",
   fundingClosed: "The directory records this office as temporarily closed",
+  jobsHeading: (n: number): string =>
+    n === 1 ? "The job this trains for" : "The jobs this trains for",
+  jobDetail: "Pay, hiring, and what people studied",
+  fundingHowSummary: "How this gets paid for, and what to ask",
   fundingQuestionsHeading: "What to ask before you commit",
   fundingQuestionsJobCenter: "Questions for the America's Job Center",
   fundingQuestionsProvider: "Questions for the training provider",
@@ -1123,6 +1127,10 @@ areaNote: (unplaced, total) =>
   fundingMilesAway: (miles: number) => `a unas ${miles} millas`,
   fundingVeteransRep: "Tiene representante para personas veteranas",
   fundingClosed: "El directorio registra esta oficina como cerrada temporalmente",
+  jobsHeading: (n: number) =>
+    n === 1 ? "El empleo para el que capacita" : "Los empleos para los que capacita",
+  jobDetail: "Sueldo, contratación y qué estudió la gente",
+  fundingHowSummary: "Cómo se paga esto y qué preguntar",
   fundingQuestionsHeading: "Qué preguntar antes de comprometerse",
   fundingQuestionsJobCenter: "Preguntas para el America's Job Center",
   fundingQuestionsProvider: "Preguntas para la institución de capacitación",

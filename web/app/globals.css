@@ -1292,3 +1292,67 @@ td.num {
   align-self: start;
   min-width: 0;
 }
+
+/*
+  The funding guidance, collapsed.
+
+  Same disclosure pattern as the filters, and for the same reason: the content is worth
+  having and is not what most people came for. The summary is styled as a real control
+  rather than a bare triangle, because it is one.
+*/
+.funding-detail > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+  background: var(--gray-20);
+  border: 1px solid var(--gray-30);
+  border-radius: var(--border-radius-sm);
+  list-style-position: inside;
+}
+.funding-detail > summary:hover {
+  background: var(--gray-30);
+}
+.funding-detail > summary:focus-visible {
+  outline: 2px solid var(--primary-60);
+  outline-offset: 2px;
+}
+
+/* Secondary occupations, collapsed. Same control treatment as the other disclosures. */
+.occ-detail > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.625rem 1rem;
+  margin: 0.5rem 0 1rem;
+  background: var(--gray-20);
+  border: 1px solid var(--gray-30);
+  border-radius: var(--border-radius-sm);
+  list-style-position: inside;
+}
+.occ-detail > summary:hover {
+  background: var(--gray-30);
+}
+.occ-detail > summary:focus-visible {
+  outline: 2px solid var(--primary-60);
+  outline-offset: 2px;
+}
+
+/*
+  A collapsed occupation is a name and a control, and they are one thing.
+
+  With the open block's spacing, the heading and its toggle sat far enough apart to read as
+  two unrelated items with a gap between them, which made a tidier page look less organised
+  than the sprawling one it replaced.
+*/
+.occ-block {
+  margin-bottom: 1.5rem;
+}
+.occ-block:has(> .occ-detail) {
+  margin-bottom: 0.75rem;
+}
+.occ-block:has(> .occ-detail) > h3 {
+  margin-bottom: 0.25rem;
+}
+.occ-detail > summary {
+  margin: 0 0 0.25rem;
+}

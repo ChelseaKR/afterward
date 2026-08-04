@@ -378,14 +378,52 @@ function workProfile(soc: string | null): WorkProfile | null {
 const TASKS_SHOWN = 4;
 const TASKS_WITHOUT_DISCLOSURE = 5;
 
+/**
+ * Renders children bare when `open`, and behind a disclosure otherwise.
+ *
+ * The jobs section ran 4,481 pixels — 54 per cent of the page — because a program training
+ * for three occupations printed three near-identical blocks of pay, hiring and education
+ * tables. The first is the one most readers want; the others are worth having and are not
+ * worth four screens of scrolling past. Native <details>, so it works without JavaScript in
+ * a static export and keeps document order intact.
+ */
+function Collapsible({
+  open,
+  label,
+  children,
+}: {
+  open: boolean;
+  label: string;
+  children: React.ReactNode;
+}) {
+  if (open) return <>{children}</>;
+  return (
+    <details className="occ-detail">
+      <summary>{label}</summary>
+      {children}
+    </details>
+  );
+}
+
 function WorkForOccupation({
   occupation,
   profile,
   lang,
+  first,
+  showHeading = true,
 }: {
   occupation: ProgramOccupation;
   profile: WorkProfile;
   lang: Lang;
+  /* False when this sits inside a section that has already named the occupation. */
+  showHeading?: boolean;
+  /*
+   * Prints the shared source sentence once. A program training for three jobs printed it
+   * three times, word for word — and a caveat a reader has learned to skip has stopped
+   * being a caveat. It stays beside the first task list rather than moving to the top of
+   * the section, because it describes the list it sits above.
+   */
+  first: boolean;
 }) {
   const t = dict(lang);
   const { alternateTitles, tasks, description } = profile;
@@ -395,13 +433,15 @@ function WorkForOccupation({
 
   return (
     <section style={{ marginBottom: "1.75rem" }}>
-      <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
-        {occupation.soc_code ? (
-          <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>{name}</Link>
-        ) : (
-          name
-        )}
-      </h3>
+      {showHeading && (
+        <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
+          {occupation.soc_code ? (
+            <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>{name}</Link>
+          ) : (
+            name
+          )}
+        </h3>
+      )}
 
       {/*
         * Before the tasks, because for a great many people this line is the whole answer. A
@@ -416,7 +456,7 @@ function WorkForOccupation({
 
       {tasks.length > 0 ? (
         <>
-          <p className="compare-note">{t.tasksNote}</p>
+          {first && <p className="compare-note">{t.tasksNote}</p>}
           <ul className="task-list">
             {lead.map((task) => (
               <li key={task.description}>{task.description}</li>
@@ -699,7 +739,7 @@ function entryConsequence(
   return null;
 }
 
-function EntryRequirements({ education, lang }: { education: OccupationEducation; lang: Lang }) {
+function EntryRequirements({ education, lang, first }: { education: OccupationEducation; lang: Lang; first: boolean }) {
   const t = dict(lang);
   const experience = experienceLabel(education.typical_experience, t);
   const training = trainingLabel(education.typical_on_the_job_training, t);
@@ -732,7 +772,7 @@ function EntryRequirements({ education, lang }: { education: OccupationEducation
           {consequence.warn ? <strong>{consequence.text}</strong> : consequence.text}
         </p>
       )}
-      <p className="compare-note">{t.entrySource}</p>
+      {first && <p className="compare-note">{t.entrySource}</p>}
     </>
   );
 }
@@ -752,10 +792,12 @@ function Attainment({
   education,
   occupation,
   lang,
+  first,
 }: {
   education: OccupationEducation;
   occupation: ProgramOccupation;
   lang: Lang;
+  first: boolean;
 }) {
   const t = dict(lang);
   const distribution = education.distribution;
@@ -822,19 +864,28 @@ function Attainment({
           ))}
         </dl>
       </div>
-      <p className="compare-note">
-        {t.attainmentNational} {t.attainmentNotRule}
-        {/*
-          * The scale warning belongs to exactly one case: California's stated category is not
-          * a step on this list, so no share of people can be said to meet it. Saying it where
-          * the category *is* on the list would contradict the sentence above, which has just
-          * subtracted one from the other; saying it where no category is shown at all — the
-          * 135 attachments this project withholds one for — points the reader at a row that
-          * deliberately carries no credential.
-          */}
-        {comparison !== null && comparison.kind === "off-scale" ? ` ${t.attainmentScale}` : ""}
-        {measuredFor === null ? "" : ` ${t.attainmentMeasuredFor(measuredFor)}`}
-      </p>
+      {/*
+        * The two source sentences print once for the section, not once per occupation, so
+        * `first` gates them. What remains is per-occupation and conditional, which means the
+        * paragraph can now come out empty — and an empty caveat is still an element, so it is
+        * not rendered at all rather than left as a zero-height stub.
+        *
+        * The scale warning belongs to exactly one case: California's stated category is not
+        * a step on this list, so no share of people can be said to meet it. Saying it where
+        * the category *is* on the list would contradict the sentence above, which has just
+        * subtracted one from the other; saying it where no category is shown at all — the
+        * 135 attachments this project withholds one for — points the reader at a row that
+        * deliberately carries no credential.
+        */}
+      {(() => {
+        const offScale = comparison !== null && comparison.kind === "off-scale";
+        const parts = [
+          first ? `${t.attainmentNational} ${t.attainmentNotRule}` : "",
+          offScale ? t.attainmentScale : "",
+          measuredFor === null ? "" : t.attainmentMeasuredFor(measuredFor),
+        ].filter((part) => part !== "");
+        return parts.length === 0 ? null : <p className="compare-note">{parts.join(" ")}</p>;
+      })()}
     </>
   );
 }
@@ -1188,6 +1239,8 @@ function FundingBlock({
   const steps = localHelp.guidance.steps.filter((step) => step.on_program_page);
   const lead = steps.find((step) => step.id === LEAD_STEP);
   const rest = steps.filter((step) => step.id !== LEAD_STEP);
+  const centersStep = rest.find((step) => step.id === CENTERS_STEP);
+  const others = rest.filter((step) => step.id !== CENTERS_STEP);
 
   return (
     <section className="funding">
@@ -1214,32 +1267,54 @@ function FundingBlock({
         </>
       )}
 
-      {rest.map((step) => {
-        const copy = stepCopy(step, t);
-        return (
-          <section key={step.id} className="funding-step">
-            <h3>{copy.heading}</h3>
-            <p>{copy.detail}</p>
-            <Citations citations={step.citations} label={t.fundingRuleLabel} />
-            {/* The offices sit under the heading that names them, not in a section of their own. */}
-            {step.id === CENTERS_STEP && (
-              <NearestCenters program={program} localHelp={localHelp} lang={lang} />
-            )}
-          </section>
-        );
-      })}
+      {/*
+        The offices come before the explanation of them.
 
-      <h3>{t.fundingQuestionsHeading}</h3>
-      <Questions
-        questions={localHelp.guidance.questions.filter((q) => q.audience === "job_center")}
-        heading={t.fundingQuestionsJobCenter}
-        lang={lang}
-      />
-      <Questions
-        questions={localHelp.guidance.questions.filter((q) => q.audience === "provider")}
-        heading={t.fundingQuestionsProvider}
-        lang={lang}
-      />
+        This block was 1,071 words and 3,796 pixels — 46 per cent of the words on a program
+        page and a third of its height — and every word of it except the sentence above and
+        the offices below is identical on all 6,532 program pages. Someone who has decided to
+        ask for help needs an address and a phone number; the rules that make the help exist
+        are what they read second, if at all.
+      */}
+      {centersStep !== undefined && (
+        <section className="funding-step">
+          <h3>{stepCopy(centersStep, t).heading}</h3>
+          <p>{stepCopy(centersStep, t).detail}</p>
+          <Citations citations={centersStep.citations} label={t.fundingRuleLabel} />
+          <NearestCenters program={program} localHelp={localHelp} lang={lang} />
+        </section>
+      )}
+
+      {/*
+        Collapsed, but never the sentence that says none of this is an offer — that one stays
+        outside, below, exactly as it always has.
+      */}
+      <details className="funding-detail">
+        <summary>{t.fundingHowSummary}</summary>
+
+        {others.map((step) => {
+          const copy = stepCopy(step, t);
+          return (
+            <section key={step.id} className="funding-step">
+              <h3>{copy.heading}</h3>
+              <p>{copy.detail}</p>
+              <Citations citations={step.citations} label={t.fundingRuleLabel} />
+            </section>
+          );
+        })}
+
+        <h3>{t.fundingQuestionsHeading}</h3>
+        <Questions
+          questions={localHelp.guidance.questions.filter((q) => q.audience === "job_center")}
+          heading={t.fundingQuestionsJobCenter}
+          lang={lang}
+        />
+        <Questions
+          questions={localHelp.guidance.questions.filter((q) => q.audience === "provider")}
+          heading={t.fundingQuestionsProvider}
+          lang={lang}
+        />
+      </details>
 
       {/*
         * Never inside a <details>, never moved to the footer, and never conditional on anything
@@ -1454,49 +1529,23 @@ export default async function ProgramPage({
         * the second question and the outcome measures are the third, and both are still on the
         * page, a screen further down. Nothing was removed to make room.
         */}
-      {explainsWork && (
-        <>
-          <h2>{t.workHeading}</h2>
-          <p className="compare-note">{t.workNote}</p>
-          {profiled.map(({ occupation, profile }) =>
-            profile === null ? null : (
-              <WorkForOccupation
-                key={occupation.soc_code}
-                occupation={occupation}
-                profile={profile}
-                lang={lang}
-              />
-            ),
-          )}
-        </>
+      {/*
+        * The cost and length panel is gone, not moved.
+        *
+        * It printed "$7,500 / 12 weeks" 267 pixels below the summary strip that had just
+        * printed "$7,500 / 12 weeks", under its own heading, as though the second pair were
+        * additional information. What the panel held that the strip does not is the
+        * enrolment count and the partial-cost caveat, and both are kept below.
+        */}
+      {cost.total_out_of_pocket !== null && !cost.total_is_complete && (
+        <p className="compare-note">{t.costPartial}</p>
       )}
 
-      <h2>{t.costHeading}</h2>
+      <h2>{t.outcomes}</h2>
 
       <dl className="measure-grid panel">
-        <Measure
-          label={t.cost}
-          value={
-            cost.total_out_of_pocket === null
-              ? null
-              : cost.total_is_complete
-                ? money(cost.total_out_of_pocket, lang)
-                : t.costAtLeast(money(cost.total_out_of_pocket, lang) ?? "")
-          }
-          note={cost.total_is_complete ? undefined : t.costPartial}
-          lang={lang}
-        />
-        <Measure
-          label={t.length}
-          value={length.weeks === null ? null : t.weeks(length.weeks)}
-          lang={lang}
-        />
         <Measure label={t.peopleServed} value={count(outcomes.total_served, lang)} lang={lang} />
       </dl>
-
-      {format !== null && <p>{format}</p>}
-
-      <h2>{t.outcomes}</h2>
 
       {outcomes.reported ? (
         <>
@@ -1548,7 +1597,18 @@ export default async function ProgramPage({
             * is left here is the two things a reader asks once they know what the work is:
             * what it pays, and what stands between them and being hired.
             */}
-          <h2>{t.payHeading}</h2>
+          {/*
+            * One section per occupation, not two.
+            *
+            * What the work is and what it pays were separate sections, so each occupation
+            * appeared twice about two thousand pixels apart — its task list near the top of
+            * the page and its wages far below, with the program's own cost and outcomes
+            * wedged between them. A reader following one job had to hold it in mind across
+            * the whole page, and a reader comparing two could not. Everything known about an
+            * occupation now sits under that occupation's name, once.
+            */}
+          <h2>{t.jobsHeading(occupations.length)}</h2>
+          <p className="compare-note">{t.workNote}</p>
           {shrinking && (
             <p className="callout">
               <strong>
@@ -1581,7 +1641,7 @@ export default async function ProgramPage({
             </div>
           )}
 
-          {profiled.map(({ occupation, profile }) => {
+          {profiled.map(({ occupation, profile }, occIndex) => {
             // Only claimed when the city was placed: without an area there is no row to
             // read, and nothing here ever substitutes a nearby area's figures for it.
             const local = placed ? occupation.region : null;
@@ -1597,7 +1657,7 @@ export default async function ProgramPage({
                   };
 
             return (
-              <section key={occupation.soc_code} style={{ marginBottom: "1.5rem" }}>
+              <section key={occupation.soc_code} className="occ-block">
                 <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
                   {occupation.soc_code ? (
                     <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>
@@ -1607,6 +1667,16 @@ export default async function ProgramPage({
                     occupation.title
                   )}
                 </h3>
+                <Collapsible open={occIndex === 0} label={t.jobDetail}>
+                {profile !== null && (
+                  <WorkForOccupation
+                    occupation={occupation}
+                    profile={profile}
+                    lang={lang}
+                    first={occIndex === 0}
+                    showHeading={false}
+                  />
+                )}
                 {/*
                   * Before the panel, not after it: by the time someone has read a wage they
                   * have already decided whose wage it is.
@@ -1669,10 +1739,16 @@ export default async function ProgramPage({
                   */}
                 {education !== null && (
                   <>
-                    <EntryRequirements education={education} lang={lang} />
-                    <Attainment education={education} occupation={occupation} lang={lang} />
+                    <EntryRequirements education={education} lang={lang} first={occIndex === 0} />
+                    <Attainment
+                      education={education}
+                      occupation={occupation}
+                      lang={lang}
+                      first={occIndex === 0}
+                    />
                   </>
                 )}
+                </Collapsible>
               </section>
             );
           })}
@@ -1682,6 +1758,7 @@ export default async function ProgramPage({
       {program.description && (
         <>
           <h2>{t.viewProgram}</h2>
+          {format !== null && <p>{format}</p>}
           <p>{program.description.replace(/^\d+\|/, "")}</p>
         </>
       )}
