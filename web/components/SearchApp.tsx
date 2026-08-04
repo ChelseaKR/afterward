@@ -8,6 +8,7 @@ import { money, percent, signedPercent, tidyName } from "@/lib/format";
 import { isShrinking, runSearch, summarise, type Outlook, type Sort } from "@/lib/search";
 import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
+import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
 
 const COST_CAPS = [2000, 5000, 10000, 20000];
 const PAGE_SIZE = 25;
@@ -29,6 +30,27 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   );
 
   const stats = useMemo(() => summarise(programs), [programs]);
+
+  // Comparison selection, kept as ids so it survives filtering: picking two programs and
+  // then narrowing the search should not silently discard the choice.
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [compareOpen, setCompareOpen] = useState(false);
+
+  const compareSelected = useMemo(
+    () =>
+      compareIds
+        .map((id) => programs.find((p) => p.i === id))
+        .filter((p): p is SearchEntry => p !== undefined),
+    [compareIds, programs],
+  );
+
+  function toggleCompare(id: string) {
+    setCompareIds((current) => {
+      if (current.includes(id)) return current.filter((x) => x !== id);
+      if (current.length >= MAX_COMPARE) return current;
+      return [...current, id];
+    });
+  }
 
   const visible = results.slice(0, limit);
 
@@ -151,9 +173,20 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </div>
         ) : (
           <>
+            {compareOpen && compareSelected.length >= 2 && (
+              <CompareTable entries={compareSelected} lang={lang} />
+            )}
+
             <ul className="card-list">
               {visible.map((entry) => (
-                <ResultCard key={entry.i} entry={entry} lang={lang} />
+                <ResultCard
+                  key={entry.i}
+                  entry={entry}
+                  lang={lang}
+                  compared={compareIds.includes(entry.i)}
+                  compareFull={compareIds.length >= MAX_COMPARE}
+                  onToggleCompare={toggleCompare}
+                />
               ))}
             </ul>
             {results.length > visible.length && (
@@ -170,19 +203,55 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </>
         )}
       </section>
+
+      <CompareTray
+        selected={compareSelected}
+        lang={lang}
+        open={compareOpen}
+        onRemove={(id) => setCompareIds((c) => c.filter((x) => x !== id))}
+        onClear={() => {
+          setCompareIds([]);
+          setCompareOpen(false);
+        }}
+        onOpen={() => setCompareOpen((open) => !open)}
+      />
     </div>
   );
 }
 
-function ResultCard({ entry, lang }: { entry: SearchEntry; lang: Lang }) {
+function ResultCard({
+  entry,
+  lang,
+  compared,
+  compareFull,
+  onToggleCompare,
+}: {
+  entry: SearchEntry;
+  lang: Lang;
+  compared: boolean;
+  compareFull: boolean;
+  onToggleCompare: (id: string) => void;
+}) {
   const t = dict(lang);
   const shrinking = isShrinking(entry.g);
+  const atLimit = compareFull && !compared;
 
   return (
     <li className={`card${entry.r ? "" : " is-unreported"}${shrinking ? " is-shrinking" : ""}`}>
-      <h3>
-        <Link href={`/${lang}/programs/${entry.i}/`}>{entry.n ?? "—"}</Link>
-      </h3>
+      <div className="card-head">
+        <h3>
+          <Link href={`/${lang}/programs/${entry.i}/`}>{entry.n ?? "—"}</Link>
+        </h3>
+        <label className="compare-check" title={atLimit ? t.compareFull : undefined}>
+          <input
+            type="checkbox"
+            checked={compared}
+            disabled={atLimit}
+            onChange={() => onToggleCompare(entry.i)}
+          />
+          <span>{t.compareAdd}</span>
+        </label>
+      </div>
       <p className="card-provider">
         {tidyName(entry.p)}
         {entry.c ? ` · ${entry.c}` : ""}

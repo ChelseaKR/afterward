@@ -81,6 +81,18 @@ const en = {
   byRegion: "Pay by region",
   region: "Region",
 
+  compareTitle: "Side by side",
+  compareMeasure: "Measure",
+  compareAdd: "Compare",
+  compareCount: (n: number, max: number) => `${n} of ${max} selected to compare`,
+  compareOpen: "Compare these",
+  compareHide: "Hide comparison",
+  compareClear: "Clear all",
+  compareRemove: (name: string) => `Remove ${name} from comparison`,
+  compareFull: "Comparison is full. Remove one to add another.",
+  compareNote:
+    "A highlighted cell is the strongest reported figure in that row. Rows where fewer than two programs reported anything are not marked, because being the only one to file a number is not the same as being the best.",
+
   vsState: "California average",
   vsStateAbove: "Above the California average",
   vsStateBelow: "Below the California average",
@@ -169,6 +181,18 @@ const es: Dictionary = {
   perYear: "al año",
   byRegion: "Pago por región",
   region: "Región",
+
+  compareTitle: "Lado a lado",
+  compareMeasure: "Medida",
+  compareAdd: "Comparar",
+  compareCount: (n: number, max: number) => `${n} de ${max} seleccionados para comparar`,
+  compareOpen: "Comparar estos",
+  compareHide: "Ocultar comparación",
+  compareClear: "Borrar todo",
+  compareRemove: (name: string) => `Quitar ${name} de la comparación`,
+  compareFull: "La comparación está llena. Quite uno para agregar otro.",
+  compareNote:
+    "La celda resaltada es la cifra reportada más fuerte de esa fila. Las filas donde menos de dos programas reportaron algo no se marcan, porque ser el único que reportó un número no es lo mismo que ser el mejor.",
 
   vsState: "Promedio de California",
   vsStateAbove: "Por encima del promedio de California",

@@ -214,6 +214,169 @@ body {
   padding: 1.125rem 1.25rem;
 }
 
+.card-head {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.compare-check {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex: none;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.compare-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.compare-check:has(input:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- Comparison ---------- */
+
+.compare-tray {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: var(--gray-120);
+  color: var(--gray-20);
+  padding-block: 0.75rem;
+  box-shadow: 0 -2px 12px rgb(0 0 0 / 25%);
+}
+
+.compare-tray-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.compare-tray-count {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.compare-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 20rem;
+}
+
+.compare-chips li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 16rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  background: rgb(255 255 255 / 12%);
+  font-size: 0.8125rem;
+}
+
+.compare-chips span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compare-chips button {
+  background: none;
+  border: 0;
+  color: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0 0.15rem;
+  cursor: pointer;
+}
+
+.compare-tray-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.compare-tray .linklike {
+  color: var(--gray-20);
+}
+
+.compare-open {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: var(--border-radius-sm);
+  background: var(--gray-10);
+  color: var(--gray-120);
+  cursor: pointer;
+}
+
+.compare-open:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.compare-panel {
+  background: var(--gray-10);
+  border: 1px solid var(--gray-40);
+  border-radius: var(--border-radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.compare-panel h2 {
+  margin-top: 0;
+}
+
+.compare-note {
+  font-size: 0.875rem;
+  color: var(--gray-90);
+  max-width: var(--measure);
+}
+
+.compare-table th[scope="col"] a {
+  display: block;
+  font-size: 0.9375rem;
+}
+
+.compare-table th[scope="col"] small {
+  display: block;
+  font-weight: 400;
+  color: var(--gray-90);
+  margin-top: 0.15rem;
+}
+
+.compare-table th[scope="row"] {
+  font-weight: 400;
+  color: var(--gray-90);
+  white-space: nowrap;
+}
+
+.compare-table td {
+  font-variant-numeric: tabular-nums;
+  min-width: 8rem;
+}
+
+/* The strongest reported figure in a row. Weight and a rule rather than colour alone. */
+.compare-table td.is-best {
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--primary-60);
+}
+
 .card h3 {
   margin: 0 0 0.25rem;
   font-size: 1.125rem;
