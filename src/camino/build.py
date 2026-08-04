@@ -325,6 +325,23 @@ def _attach_enrichment(
         occupation["related_onet"] = _published_related(occupations, soc_code, found)
         occupation["bright_outlook"] = found.bright_outlook if found is not None else None
 
+        # Tasks say what the work actually is; alternate titles are what the job is called
+        # in the wild, which is how someone typing "RN" should reach Registered Nurses. The
+        # education profile is a measurement of what people in the occupation hold, which is
+        # a different kind of claim from the single category EDD assigns.
+        occupation["tasks"] = (
+            [
+                {"description": task.description, "importance": task.importance}
+                for task in found.tasks
+            ]
+            if found is not None
+            else []
+        )
+        occupation["alternate_titles"] = list(found.alternate_titles) if found is not None else []
+        occupation["education"] = (
+            found.education.as_dict() if found is not None and found.education is not None else None
+        )
+
 
 def _published_related(
     occupations: Mapping[str, dict[str, Any]],

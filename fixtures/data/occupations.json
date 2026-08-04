@@ -598,6 +598,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Manage backup, security and user help systems.",
+     "importance": 4.19
+    },
+    {
+     "description": "Direct daily operations of department, analyzing workflow, establishing priorities, developing standards and setting deadlines.",
+     "importance": 4.11
+    },
+    {
+     "description": "Direct daily operations of department, analyzing workflow, establishing priorities, developing standards and setting deadlines.",
+     "importance": 4.11
+    },
+    {
+     "description": "Direct daily operations of department, analyzing workflow, establishing priorities, developing standards and setting deadlines.",
+     "importance": 4.11
+    },
+    {
+     "description": "Meet with department heads, managers, supervisors, vendors, and others, to solicit cooperation and resolve problems.",
+     "importance": 4.1
+    },
+    {
+     "description": "Meet with department heads, managers, supervisors, vendors, and others, to solicit cooperation and resolve problems.",
+     "importance": 4.1
+    },
+    {
+     "description": "Meet with department heads, managers, supervisors, vendors, and others, to solicit cooperation and resolve problems.",
+     "importance": 4.1
+    },
+    {
+     "description": "Review project plans to plan and coordinate project activity.",
+     "importance": 4.08
+    }
+   ],
+   "alternate_titles": [
+    "Application Development Director",
+    "Computing Services Director",
+    "Data Processing Manager",
+    "Information Systems Director (IS Director)",
+    "Information Systems Manager (IS Manager)",
+    "Information Systems Supervisor (IS Supervisor)",
+    "Information Technology Director (IT Director)",
+    "Information Technology Manager (IT Manager)",
+    "MIS Director (Management Information Systems Director)",
+    "Technical Services Manager"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 4.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 13.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 8.2
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 46.1
+     },
+     {
+      "level": "Master's degree",
+      "percent": 24.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 2.8
+     }
+    ],
+    "typical_experience": "5 years or more work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "11-3021",
+    "reported_for_title": "Computer and Information Systems Managers"
+   },
    "related": [
     {
      "soc_code": "15-1252",
@@ -1245,6 +1327,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Inspect or review projects to monitor compliance with building and safety codes or other regulations.",
+     "importance": 4.53
+    },
+    {
+     "description": "Develop or implement quality control programs.",
+     "importance": 4.42
+    },
+    {
+     "description": "Develop or implement quality control programs.",
+     "importance": 4.42
+    },
+    {
+     "description": "Plan, schedule, or coordinate construction project activities to meet deadlines.",
+     "importance": 4.4
+    },
+    {
+     "description": "Plan, schedule, or coordinate construction project activities to meet deadlines.",
+     "importance": 4.4
+    },
+    {
+     "description": "Prepare and submit budget estimates, progress reports, or cost tracking reports.",
+     "importance": 4.4
+    },
+    {
+     "description": "Direct and supervise construction or related workers.",
+     "importance": 4.35
+    },
+    {
+     "description": "Determine labor requirements for dispatching workers to construction sites.",
+     "importance": 4.25
+    }
+   ],
+   "alternate_titles": [
+    "Concrete Foreman",
+    "Construction Area Manager",
+    "Construction Foreman",
+    "Construction Management Supervisor",
+    "Construction Manager",
+    "Construction Services Manager",
+    "Construction Superintendent",
+    "General Superintendent",
+    "Job Superintendent",
+    "Site Manager"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 7.7
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 26.9
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 22.6
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 8.8
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 26.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 6.3
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "11-9021",
+    "reported_for_title": "Construction Managers"
+   },
    "related": [
     {
      "soc_code": "17-2051",
@@ -1862,6 +2026,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Direct, supervise and evaluate work activities of medical, nursing, technical, clerical, service, maintenance, and other personnel.",
+     "importance": 4.43
+    },
+    {
+     "description": "Direct, supervise and evaluate work activities of medical, nursing, technical, clerical, service, maintenance, and other personnel.",
+     "importance": 4.43
+    },
+    {
+     "description": "Develop and maintain computerized record management systems to store and process data, such as personnel activities and information, and to produce reports.",
+     "importance": 4.31
+    },
+    {
+     "description": "Develop and maintain computerized record management systems to store and process data, such as personnel activities and information, and to produce reports.",
+     "importance": 4.31
+    },
+    {
+     "description": "Plan, implement, and administer programs and services in a health care or medical facility, including personnel administration, training, and coordination of medical, nursing and physical plant staff.",
+     "importance": 4.21
+    },
+    {
+     "description": "Plan, implement, and administer programs and services in a health care or medical facility, including personnel administration, training, and coordination of medical, nursing and physical plant staff.",
+     "importance": 4.21
+    },
+    {
+     "description": "Plan, implement, and administer programs and services in a health care or medical facility, including personnel administration, training, and coordination of medical, nursing and physical plant staff.",
+     "importance": 4.21
+    },
+    {
+     "description": "Maintain awareness of advances in medicine, computerized diagnostic and treatment equipment, data processing technology, government regulations, health insurance changes, and financing options.",
+     "importance": 4.16
+    }
+   ],
+   "alternate_titles": [
+    "Cancer Center Director",
+    "Clinical Director",
+    "Health Information Management Director (HIM Director)",
+    "Health Information Manager (HIM Manager)",
+    "Healthcare System Director",
+    "Medical Records Director",
+    "Medical Records Manager",
+    "Mental Health Program Manager",
+    "Nurse Manager",
+    "Nursing Director"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 8.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 14.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 11.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 33.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 24.7
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 7.1
+     }
+    ],
+    "typical_experience": "Less than 5 years work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "11-9111",
+    "reported_for_title": "Medical and Health Services Managers"
+   },
    "related": [
     {
      "soc_code": "15-1211",
@@ -2505,6 +2751,87 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Confer with personnel concerned to ensure successful functioning of newly implemented systems or procedures.",
+     "importance": 4.48
+    },
+    {
+     "description": "Gather and organize information on problems or procedures.",
+     "importance": 4.48
+    },
+    {
+     "description": "Analyze data gathered and develop solutions or alternative methods of proceeding.",
+     "importance": 4.45
+    },
+    {
+     "description": "Document findings of study and prepare recommendations for implementation of new systems, procedures, or organizational changes.",
+     "importance": 4.24
+    },
+    {
+     "description": "Document findings of study and prepare recommendations for implementation of new systems, procedures, or organizational changes.",
+     "importance": 4.24
+    },
+    {
+     "description": "Plan study of work problems and procedures, such as organizational change, communications, information flow, integrated production methods, inventory control, or cost analysis.",
+     "importance": 4.1
+    },
+    {
+     "description": "Plan study of work problems and procedures, such as organizational change, communications, information flow, integrated production methods, inventory control, or cost analysis.",
+     "importance": 4.1
+    },
+    {
+     "description": "Interview personnel and conduct on-site observation to ascertain unit functions, work performed, and methods, equipment, and personnel used.",
+     "importance": 4.1
+    }
+   ],
+   "alternate_titles": [
+    "Administrative Analyst",
+    "Business Analyst",
+    "Business Consultant",
+    "Employment Programs Analyst",
+    "Management Analyst",
+    "Management Consultant",
+    "Organizational Development Consultant",
+    "Performance Management Analyst",
+    "Program Management Analyst"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.7
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 4.9
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 10.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 4.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 42.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 30.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 6.3
+     }
+    ],
+    "typical_experience": "Less than 5 years work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "13-1111",
+    "reported_for_title": "Management Analysts"
+   },
    "related": [
     {
      "soc_code": "13-1082",
@@ -2872,6 +3199,86 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Develop plans to safeguard computer files against accidental or unauthorized modification, destruction, or disclosure and to meet emergency data processing needs.",
+     "importance": 4.4
+    },
+    {
+     "description": "Monitor current reports of computer viruses to determine when to update virus protection systems.",
+     "importance": 4.23
+    },
+    {
+     "description": "Encrypt data transmissions and erect firewalls to conceal confidential information as it is being transmitted and to keep out tainted digital transfers.",
+     "importance": 4.18
+    },
+    {
+     "description": "Perform risk assessments and execute tests of data processing system to ensure functioning of data processing activities and security measures.",
+     "importance": 4.12
+    },
+    {
+     "description": "Modify computer security files to incorporate new software, correct errors, or change individual access status.",
+     "importance": 4.1
+    },
+    {
+     "description": "Review violations of computer security procedures and discuss procedures with violators to ensure violations are not repeated.",
+     "importance": 4.04
+    },
+    {
+     "description": "Confer with users to discuss issues such as computer data access needs, security violations, and programming changes.",
+     "importance": 3.94
+    },
+    {
+     "description": "Document computer security and emergency measures policies, procedures, and tests.",
+     "importance": 3.94
+    }
+   ],
+   "alternate_titles": [
+    "Information Security Officer",
+    "Information Security Specialist",
+    "Information Systems Security Analyst",
+    "Information Systems Security Officer (ISSO)",
+    "Information Technology Security Analyst (IT Security Analyst)",
+    "Network Security Analyst",
+    "Security Analyst",
+    "Systems Analyst"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.7
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 4.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 14.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.4
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 42.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 25.1
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 3.1
+     }
+    ],
+    "typical_experience": "Less than 5 years work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "15-1212",
+    "reported_for_title": "Information Security Analysts"
+   },
    "related": [
     {
      "soc_code": "15-1299",
@@ -3461,6 +3868,86 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Back up network data.",
+     "importance": 4.44
+    },
+    {
+     "description": "Configure security settings or access permissions for groups or individuals.",
+     "importance": 4.37
+    },
+    {
+     "description": "Analyze and report computer network security breaches or attempted breaches.",
+     "importance": 4.26
+    },
+    {
+     "description": "Identify the causes of networking problems, using diagnostic testing software and equipment.",
+     "importance": 4.18
+    },
+    {
+     "description": "Document network support activities.",
+     "importance": 4.09
+    },
+    {
+     "description": "Configure wide area network (WAN) or local area network (LAN) routers or related equipment.",
+     "importance": 4.04
+    },
+    {
+     "description": "Install network software, including security or firewall software.",
+     "importance": 4.02
+    },
+    {
+     "description": "Provide telephone support related to networking or connectivity issues.",
+     "importance": 3.96
+    }
+   ],
+   "alternate_titles": [
+    "Computer Network Specialist",
+    "IT Consultant (Information Technology Consultant)",
+    "Network Specialist",
+    "Network Support Specialist",
+    "Network Technical Analyst",
+    "Network Technician",
+    "Personal Computer Network Analyst",
+    "Systems Specialist"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 10.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 23.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 14.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 36.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 11.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.3
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "15-1231",
+    "reported_for_title": "Computer Network Support Specialists"
+   },
    "related": [
     {
      "soc_code": "15-1244",
@@ -4078,6 +4565,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Monitor functioning of equipment to ensure system operates in conformance with specifications.",
+     "importance": 4.12
+    },
+    {
+     "description": "Analyze user needs and software requirements to determine feasibility of design within time and cost constraints.",
+     "importance": 4.08
+    },
+    {
+     "description": "Develop or direct software system testing or validation procedures, programming, or documentation.",
+     "importance": 3.9
+    },
+    {
+     "description": "Develop or direct software system testing or validation procedures, programming, or documentation.",
+     "importance": 3.9
+    },
+    {
+     "description": "Confer with systems analysts, engineers, programmers and others to design systems and to obtain information on project limitations and capabilities, performance requirements and interfaces.",
+     "importance": 3.75
+    },
+    {
+     "description": "Coordinate installation of software system.",
+     "importance": 3.75
+    },
+    {
+     "description": "Modify existing software to correct errors, adapt it to new hardware, or upgrade interfaces and improve performance.",
+     "importance": 3.74
+    },
+    {
+     "description": "Prepare reports or correspondence concerning project specifications, activities, or status.",
+     "importance": 3.68
+    }
+   ],
+   "alternate_titles": [
+    "Application Developer",
+    "Application Integration Engineer",
+    "DevOps Engineer (Development Operations Engineer)",
+    "Developer",
+    "Infrastructure Engineer",
+    "Software Architect",
+    "Software Developer",
+    "Software Development Engineer",
+    "Software Engineer",
+    "Systems Engineer"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.5
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 2.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 7.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 3.9
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 51.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 30.1
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 3.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "15-1252",
+    "reported_for_title": "Software Developers"
+   },
    "related": [
     {
      "soc_code": "15-1299",
@@ -4487,6 +5056,83 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Write supporting code for Web applications or Web sites.",
+     "importance": 4.58
+    },
+    {
+     "description": "Write supporting code for Web applications or Web sites.",
+     "importance": 4.58
+    },
+    {
+     "description": "Design, build, or maintain Web sites, using authoring or scripting languages, content creation tools, management tools, and digital media.",
+     "importance": 4.42
+    },
+    {
+     "description": "Design, build, or maintain Web sites, using authoring or scripting languages, content creation tools, management tools, and digital media.",
+     "importance": 4.42
+    },
+    {
+     "description": "Back up files from Web sites to local directories for instant recovery in case of problems.",
+     "importance": 4.35
+    },
+    {
+     "description": "Select programming languages, design tools, or applications.",
+     "importance": 4.17
+    },
+    {
+     "description": "Evaluate code to ensure that it is valid, is properly structured, meets industry standards, and is compatible with browsers, devices, or operating systems.",
+     "importance": 4.09
+    },
+    {
+     "description": "Develop databases that support Web applications and Web sites.",
+     "importance": 4.05
+    }
+   ],
+   "alternate_titles": [
+    "Technology Applications Engineer",
+    "Web Architect",
+    "Web Design Specialist",
+    "Web Developer",
+    "Webmaster"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.7
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 4.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 15.5
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.2
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 53.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 15.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "15-1254",
+    "reported_for_title": "Web Developers"
+   },
    "related": [
     {
      "soc_code": "15-1255",
@@ -4956,6 +5602,50 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [],
+   "alternate_titles": [
+    "Technology Applications Engineer",
+    "Web Architect",
+    "Web Design Specialist",
+    "Web Designer",
+    "Webmaster"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 6.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 11.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.4
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 54.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 16.4
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "15-1255",
+    "reported_for_title": "Web and Digital Interface Designers"
+   },
    "related": [
     {
      "soc_code": "15-1254",
@@ -5549,6 +6239,44 @@
    "skills": [],
    "related_onet": [],
    "bright_outlook": "Rapid Growth",
+   "tasks": [],
+   "alternate_titles": [],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 9.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 19.9
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 14.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 39.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 15.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "15-1299",
+    "reported_for_title": "Computer Occupations, All Other"
+   },
    "related": [
     {
      "soc_code": "15-1252",
@@ -6057,6 +6785,44 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [],
+   "alternate_titles": [],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.4
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 2.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 6.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 4.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 40.0
+     },
+     {
+      "level": "Master's degree",
+      "percent": 35.4
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 11.2
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "15-2051",
+    "reported_for_title": "Data Scientists"
+   },
    "related": [
     {
      "soc_code": "15-2041",
@@ -6656,6 +7422,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Produce drawings, using computer-assisted drafting systems (CAD) or drafting machines, or by hand, using compasses, dividers, protractors, triangles, and other drafting devices.",
+     "importance": 4.86
+    },
+    {
+     "description": "Draft plans and detailed drawings for structures, installations, and construction projects, such as highways, sewage disposal systems, and dikes, working from sketches or notes.",
+     "importance": 4.6
+    },
+    {
+     "description": "Coordinate structural, electrical, and mechanical designs and determine a method of presentation to graphically represent building plans.",
+     "importance": 4.38
+    },
+    {
+     "description": "Analyze building codes, by-laws, space and site requirements, and other technical documents and reports to determine their effect on architectural designs.",
+     "importance": 4.28
+    },
+    {
+     "description": "Draw maps, diagrams, and profiles, using cross-sections and surveys, to represent elevations, topographical contours, subsurface formations, and structures.",
+     "importance": 4.19
+    },
+    {
+     "description": "Lay out and plan interior room arrangements for commercial buildings, using computer-assisted drafting (CAD) equipment and software.",
+     "importance": 4.14
+    },
+    {
+     "description": "Supervise and train other technologists, technicians, and drafters.",
+     "importance": 4.1
+    },
+    {
+     "description": "Determine the order of work and method of presentation, such as orthographic or isometric drawing.",
+     "importance": 4.06
+    }
+   ],
+   "alternate_titles": [
+    "Architectural Designer",
+    "Architectural Drafter",
+    "Architectural Draftsman",
+    "Civil Drafter",
+    "Computer-Aided Design Designer (CAD Designer)",
+    "Computer-Aided Drafting Designer (CAD Designer)",
+    "Computer-Aided Drafting and Design Drafter (CADD Drafter)",
+    "Drafting Technician",
+    "Draftsman",
+    "Draftsperson"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 9.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 28.5
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 32.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 22.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 5.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.7
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "17-3011",
+    "reported_for_title": "Architectural and Civil Drafters"
+   },
    "related": [
     {
      "soc_code": "17-3013",
@@ -6875,6 +7723,44 @@
    "skills": [],
    "related_onet": [],
    "bright_outlook": null,
+   "tasks": [],
+   "alternate_titles": [],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 12.1
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 26.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 34.8
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 20.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "17-3019",
+    "reported_for_title": "Drafters, All Other"
+   },
    "related": [
     {
      "soc_code": "17-2051",
@@ -7144,6 +8030,84 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Compile and evaluate statistical data to determine and maintain quality and reliability of products.",
+     "importance": 3.66
+    },
+    {
+     "description": "Test selected products at specified stages in the production process for performance characteristics or adherence to specifications.",
+     "importance": 3.66
+    },
+    {
+     "description": "Study time, motion, methods, or speed involved in maintenance, production, or other operations to establish standard production rate or improve efficiency.",
+     "importance": 3.52
+    },
+    {
+     "description": "Read worker logs, product processing sheets, or specification sheets to verify that records adhere to quality assurance specifications.",
+     "importance": 3.44
+    },
+    {
+     "description": "Verify that equipment is being operated and maintained according to quality assurance standards by observing worker performance.",
+     "importance": 3.4
+    },
+    {
+     "description": "Evaluate industrial operations for compliance with permits or regulations related to the generation, storage, treatment, transportation, or disposal of hazardous materials or waste.",
+     "importance": 3.3
+    },
+    {
+     "description": "Aid in planning work assignments in accordance with worker performance, machine capacity, production schedules, or anticipated delays.",
+     "importance": 3.18
+    }
+   ],
+   "alternate_titles": [
+    "Business Process Analyst",
+    "Engineering Technician",
+    "Industrial Engineering Analyst",
+    "Industrial Engineering Technician",
+    "Manufacturing Coordinator",
+    "Manufacturing Technology Analyst",
+    "Quality Control Engineering Technician (QC Engineering Technician)",
+    "Quality Management Coordinator",
+    "Quality Technician",
+    "Service Technician"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.9
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 24.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 28.1
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 19.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 19.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "17-3026",
+    "reported_for_title": "Industrial Engineering Technologists and Technicians"
+   },
    "related": [
     {
      "soc_code": "17-2112",
@@ -7783,6 +8747,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Instruct students individually and in groups, using teaching methods such as lectures, discussions, and demonstrations.",
+     "importance": 4.95
+    },
+    {
+     "description": "Establish and enforce rules for behavior and procedures for maintaining order among the students.",
+     "importance": 4.79
+    },
+    {
+     "description": "Guide and counsel students with adjustment or academic problems or with special academic interests.",
+     "importance": 4.75
+    },
+    {
+     "description": "Adapt teaching methods and instructional materials to meet students' varying needs and interests.",
+     "importance": 4.67
+    },
+    {
+     "description": "Plan and conduct activities for a balanced program of instruction, demonstration, and work time that provides students with opportunities to observe, question, and investigate.",
+     "importance": 4.63
+    },
+    {
+     "description": "Prepare materials and classrooms for class activities.",
+     "importance": 4.6
+    },
+    {
+     "description": "Read books to entire classes or small groups.",
+     "importance": 4.52
+    },
+    {
+     "description": "Confer with parents or guardians, teachers, counselors, and administrators to resolve students' behavioral and academic problems.",
+     "importance": 4.52
+    }
+   ],
+   "alternate_titles": [
+    "Art Teacher",
+    "Classroom Teacher",
+    "Elementary Classroom Teacher",
+    "Elementary School Teacher",
+    "Elementary Teacher",
+    "Math Teacher (Mathematics Teacher)",
+    "Music Teacher",
+    "Primary Teacher",
+    "Reading Teacher",
+    "Teacher"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.0
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 0.0
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 2.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 2.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 43.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 47.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 4.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "25-2021",
+    "reported_for_title": "Elementary School Teachers, Except Special Education"
+   },
    "related": [
     {
      "soc_code": "25-2022",
@@ -8419,6 +9465,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Prepare students for later grades by encouraging them to explore learning opportunities and to persevere with challenging tasks.",
+     "importance": 4.34
+    },
+    {
+     "description": "Establish and enforce rules for behavior and procedures for maintaining order among students.",
+     "importance": 4.32
+    },
+    {
+     "description": "Instruct through lectures, discussions, and demonstrations in one or more subjects, such as English, mathematics, or social studies.",
+     "importance": 4.32
+    },
+    {
+     "description": "Prepare materials and classrooms for class activities.",
+     "importance": 4.3
+    },
+    {
+     "description": "Adapt teaching methods and instructional materials to meet students' varying needs and interests.",
+     "importance": 4.24
+    },
+    {
+     "description": "Prepare, administer, and grade tests and assignments to evaluate students' progress.",
+     "importance": 4.06
+    },
+    {
+     "description": "Prepare, administer, and grade tests and assignments to evaluate students' progress.",
+     "importance": 4.06
+    },
+    {
+     "description": "Prepare, administer, and grade tests and assignments to evaluate students' progress.",
+     "importance": 4.06
+    }
+   ],
+   "alternate_titles": [
+    "Art Teacher",
+    "English Teacher",
+    "Math Teacher (Mathematics Teacher)",
+    "Music Teacher",
+    "PE Teacher (Physical Education Teacher)",
+    "Science Teacher",
+    "Secondary Teacher",
+    "Social Studies Teacher",
+    "Spanish Teacher",
+    "Teacher"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.0
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 0.0
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 2.0
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 1.4
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 38.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 52.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 6.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "25-2031",
+    "reported_for_title": "Secondary School Teachers, Except Special and Career/Technical Education"
+   },
    "related": [
     {
      "soc_code": "25-2022",
@@ -8756,6 +9884,86 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Design complex graphics and animation, using independent judgment, creativity, and computer equipment.",
+     "importance": 4.46
+    },
+    {
+     "description": "Create basic designs, drawings, and illustrations for product labels, cartons, direct mail, or television.",
+     "importance": 4.3
+    },
+    {
+     "description": "Participate in design and production of multimedia campaigns, handling budgeting and scheduling, and assisting with such responsibilities as production coordination, background design, and progress tracking.",
+     "importance": 4.28
+    },
+    {
+     "description": "Implement and maintain configuration control systems.",
+     "importance": 4.0
+    },
+    {
+     "description": "Implement and maintain configuration control systems.",
+     "importance": 4.0
+    },
+    {
+     "description": "Script, plan, and create animated narrative sequences under tight deadlines, using computer software and hand drawing techniques.",
+     "importance": 3.93
+    },
+    {
+     "description": "Script, plan, and create animated narrative sequences under tight deadlines, using computer software and hand drawing techniques.",
+     "importance": 3.93
+    },
+    {
+     "description": "Script, plan, and create animated narrative sequences under tight deadlines, using computer software and hand drawing techniques.",
+     "importance": 3.93
+    }
+   ],
+   "alternate_titles": [
+    "3D Animator (Three-Dimensional Animator)",
+    "3D Artist (Three-Dimensional Artist)",
+    "Animator",
+    "Artist",
+    "Digital Artist",
+    "Graphic Artist",
+    "Motion Graphics Artist",
+    "Multimedia Producer"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 14.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 17.0
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 41.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 12.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.8
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "27-1014",
+    "reported_for_title": "Special Effects Artists and Animators"
+   },
    "related": [
     {
      "soc_code": "27-1024",
@@ -8873,6 +10081,44 @@
    "skills": [],
    "related_onet": [],
    "bright_outlook": null,
+   "tasks": [],
+   "alternate_titles": [],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 14.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 17.0
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 41.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 12.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.8
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "More than 1 year on-the-job training",
+    "reported_for_soc": "27-1019",
+    "reported_for_title": "Artists and Related Workers, All Other"
+   },
    "related": [
     {
      "soc_code": "27-2022",
@@ -9482,6 +10728,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Key information into computer equipment to create layouts for client or supervisor.",
+     "importance": 4.7
+    },
+    {
+     "description": "Review final layouts and suggest improvements, as needed.",
+     "importance": 4.65
+    },
+    {
+     "description": "Review final layouts and suggest improvements, as needed.",
+     "importance": 4.65
+    },
+    {
+     "description": "Determine size and arrangement of illustrative material and copy, and select style and size of type.",
+     "importance": 4.6
+    },
+    {
+     "description": "Develop graphics and layouts for product illustrations, company logos, and Web sites.",
+     "importance": 4.56
+    },
+    {
+     "description": "Create designs, concepts, and sample layouts, based on knowledge of layout principles and esthetic design concepts.",
+     "importance": 4.5
+    },
+    {
+     "description": "Use computer software to generate new images.",
+     "importance": 4.47
+    },
+    {
+     "description": "Prepare digital files for printing.",
+     "importance": 4.45
+    }
+   ],
+   "alternate_titles": [
+    "Artist",
+    "Brand Designer",
+    "Designer",
+    "Graphic Artist",
+    "Graphic Design Coordinator",
+    "Graphic Designer",
+    "Online Producer",
+    "Production Artist",
+    "Publications Designer",
+    "Technical Illustrator"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 5.0
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 12.5
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 11.5
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 59.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 8.7
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.2
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "27-1024",
+    "reported_for_title": "Graphic Designers"
+   },
    "related": [
     {
      "soc_code": "27-1014",
@@ -9993,6 +11321,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Plan details such as framing, composition, camera movement, sound, and actor movement for each shot or scene.",
+     "importance": 4.4
+    },
+    {
+     "description": "Communicate to actors the approach, characterization, and movement needed for each scene in such a way that rehearsals and takes are minimized.",
+     "importance": 4.39
+    },
+    {
+     "description": "Direct live broadcasts, films and recordings, or non-broadcast programming for public entertainment or education.",
+     "importance": 4.3
+    },
+    {
+     "description": "Research production topics using the internet, video archives, and other informational sources.",
+     "importance": 4.27
+    },
+    {
+     "description": "Study and research scripts to determine how they should be directed.",
+     "importance": 4.2
+    },
+    {
+     "description": "Review film, recordings, or rehearsals to ensure conformance to production and broadcast standards.",
+     "importance": 4.2
+    },
+    {
+     "description": "Supervise and coordinate the work of camera, lighting, design, and sound crew members.",
+     "importance": 4.15
+    },
+    {
+     "description": "Confer with technical directors, managers, crew members, and writers to discuss details of production, such as photography, script, music, sets, and costumes.",
+     "importance": 4.1
+    }
+   ],
+   "alternate_titles": [
+    "Artistic Director",
+    "Director",
+    "Executive Producer",
+    "Multimedia Producer",
+    "News Producer",
+    "Producer",
+    "Production Director",
+    "Radio Producer",
+    "Television News Producer (TV News Producer)",
+    "Television Producer (TV Producer)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.8
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 5.3
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 12.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 5.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 57.5
+     },
+     {
+      "level": "Master's degree",
+      "percent": 15.3
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 3.4
+     }
+    ],
+    "typical_experience": "Less than 5 years work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "27-2012",
+    "reported_for_title": "Producers and Directors"
+   },
    "related": [
     {
      "soc_code": "27-4032",
@@ -10347,6 +11757,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Organize and string together raw footage into a continuous whole according to scripts or the instructions of directors and producers.",
+     "importance": 4.66
+    },
+    {
+     "description": "Edit films and videotapes to insert music, dialogue, and sound effects, to arrange films into sequences, and to correct errors, using editing equipment.",
+     "importance": 4.6
+    },
+    {
+     "description": "Select and combine the most effective shots of each scene to form a logical and smoothly running story.",
+     "importance": 4.58
+    },
+    {
+     "description": "Select and combine the most effective shots of each scene to form a logical and smoothly running story.",
+     "importance": 4.58
+    },
+    {
+     "description": "Review footage sequence by sequence to become familiar with it before assembling it into a final product.",
+     "importance": 4.55
+    },
+    {
+     "description": "Set up and operate computer editing systems, electronic titling systems, video switching equipment, and digital video effects units to produce a final product.",
+     "importance": 4.53
+    },
+    {
+     "description": "Set up and operate computer editing systems, electronic titling systems, video switching equipment, and digital video effects units to produce a final product.",
+     "importance": 4.53
+    },
+    {
+     "description": "Trim film segments to specified lengths and reassemble segments in sequences that present stories with maximum effect.",
+     "importance": 4.39
+    }
+   ],
+   "alternate_titles": [
+    "Editor",
+    "Film Editor",
+    "News Editor",
+    "News Video Editor",
+    "News Videotape Editor",
+    "Non-Linear Editor",
+    "Online Editor",
+    "Tape Editor",
+    "Television News Video Editor",
+    "Video Editor"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.0
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 8.3
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 17.6
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 8.4
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 55.5
+     },
+     {
+      "level": "Master's degree",
+      "percent": 8.1
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.1
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "27-4032",
+    "reported_for_title": "Film and Video Editors"
+   },
    "related": [
     {
      "soc_code": "27-3041",
@@ -10986,6 +12478,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Record patients' medical information and vital signs.",
+     "importance": 4.74
+    },
+    {
+     "description": "Administer medications to patients and monitor patients for reactions or side effects.",
+     "importance": 4.7
+    },
+    {
+     "description": "Administer medications to patients and monitor patients for reactions or side effects.",
+     "importance": 4.7
+    },
+    {
+     "description": "Maintain accurate, detailed reports and records.",
+     "importance": 4.69
+    },
+    {
+     "description": "Monitor, record, and report symptoms or changes in patients' conditions.",
+     "importance": 4.61
+    },
+    {
+     "description": "Monitor, record, and report symptoms or changes in patients' conditions.",
+     "importance": 4.61
+    },
+    {
+     "description": "Monitor, record, and report symptoms or changes in patients' conditions.",
+     "importance": 4.61
+    },
+    {
+     "description": "Provide health care, first aid, immunizations, or assistance in convalescence or rehabilitation in locations such as schools, hospitals, or industry.",
+     "importance": 4.56
+    }
+   ],
+   "alternate_titles": [
+    "Certified Operating Room Nurse (CNOR)",
+    "Charge Nurse",
+    "Emergency Department RN (Emergency Department Registered Nurse)",
+    "Oncology RN (Oncology Registered Nurse)",
+    "Operating Room Registered Nurse (OR RN)",
+    "Psychiatric RN (Psychiatric Registered Nurse)",
+    "Relief Charge Nurse",
+    "School Nurse",
+    "Staff Nurse",
+    "Staff RN (Staff Registered Nurse)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 0.5
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 1.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 3.9
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 25.6
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 54.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 11.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 2.7
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "29-1141",
+    "reported_for_title": "Registered Nurses"
+   },
    "related": [
     {
      "soc_code": "29-1171",
@@ -11626,6 +13200,84 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Receive written prescription or refill requests and verify that information is complete and accurate.",
+     "importance": 4.86
+    },
+    {
+     "description": "Receive written prescription or refill requests and verify that information is complete and accurate.",
+     "importance": 4.86
+    },
+    {
+     "description": "Enter prescription information into computer databases.",
+     "importance": 4.75
+    },
+    {
+     "description": "Enter prescription information into computer databases.",
+     "importance": 4.75
+    },
+    {
+     "description": "Establish or maintain patient profiles, including lists of medications taken by individual patients.",
+     "importance": 4.71
+    },
+    {
+     "description": "Compute charges for medication or equipment dispensed to hospital patients and enter data in computer.",
+     "importance": 4.71
+    },
+    {
+     "description": "Compute charges for medication or equipment dispensed to hospital patients and enter data in computer.",
+     "importance": 4.71
+    },
+    {
+     "description": "Maintain proper storage and security conditions for drugs.",
+     "importance": 4.66
+    }
+   ],
+   "alternate_titles": [
+    "Accredited Pharmacy Technician",
+    "Certified Pharmacy Technician (CPhT)",
+    "Chemotherapy Pharmacy Technician (Chemo Pharmacy Technician)",
+    "Compounding Technician",
+    "OR Pharmacy Tech (Operating Room Pharmacy Tech)",
+    "RPhT (Registered Pharmacy Technician)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 25.4
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 34.1
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 17.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 17.0
+     },
+     {
+      "level": "Master's degree",
+      "percent": 2.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.2
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "29-2052",
+    "reported_for_title": "Pharmacy Technicians"
+   },
    "related": [
     {
      "soc_code": "31-9095",
@@ -12252,6 +13904,53 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [],
+   "alternate_titles": [
+    "Coder",
+    "Health Information Clerk",
+    "Health Information Specialist",
+    "Health Information Technician (Health Information Tech)",
+    "Medical Records Clerk",
+    "Medical Records Coordinator",
+    "Medical Records Technician (Medical Records Tech)",
+    "Registered Health Information Technician (RHIT)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.4
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 19.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 30.6
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 25.6
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 17.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.3
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.6
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "29-2072",
+    "reported_for_title": "Medical Records Specialists"
+   },
    "related": [
     {
      "soc_code": "31-9094",
@@ -12878,6 +14577,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Turn or reposition bedridden patients.",
+     "importance": 4.76
+    },
+    {
+     "description": "Answer patient call signals, signal lights, bells, or intercom systems to determine patients' needs.",
+     "importance": 4.69
+    },
+    {
+     "description": "Answer patient call signals, signal lights, bells, or intercom systems to determine patients' needs.",
+     "importance": 4.69
+    },
+    {
+     "description": "Feed patients or assist patients to eat or drink.",
+     "importance": 4.64
+    },
+    {
+     "description": "Position or hold patients in position for surgical preparation.",
+     "importance": 4.6
+    },
+    {
+     "description": "Position or hold patients in position for surgical preparation.",
+     "importance": 4.6
+    },
+    {
+     "description": "Measure and record food and liquid intake or urinary and fecal output, reporting changes to medical or nursing staff.",
+     "importance": 4.58
+    },
+    {
+     "description": "Provide physical support to assist patients to perform daily living activities, such as getting out of bed, bathing, dressing, using the toilet, standing, walking, or exercising.",
+     "importance": 4.52
+    }
+   ],
+   "alternate_titles": [
+    "Certified Medication Aide (CMA)",
+    "Certified Nurse Aide (CNA)",
+    "Certified Nurses Aide (CNA)",
+    "Certified Nursing Assistant (CNA)",
+    "Licensed Nursing Assistant (LNA)",
+    "Nurses' Aide",
+    "Nursing Aide",
+    "Nursing Assistant",
+    "Patient Care Assistant (PCA)",
+    "State Tested Nursing Assistant (STNA)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 10.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 36.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 31.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 11.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 8.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.6
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.6
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "31-1131",
+    "reported_for_title": "Nursing Assistants"
+   },
    "related": [
     {
      "soc_code": "29-2061",
@@ -13406,6 +15187,87 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Instruct, motivate, safeguard, and assist patients as they practice exercises or functional activities.",
+     "importance": 4.89
+    },
+    {
+     "description": "Document patient information, such as notes on their progress.",
+     "importance": 4.89
+    },
+    {
+     "description": "Document patient information, such as notes on their progress.",
+     "importance": 4.89
+    },
+    {
+     "description": "Instruct, motivate, safeguard, and assist patients as they practice exercises or functional activities.",
+     "importance": 4.89
+    },
+    {
+     "description": "Observe patients during treatments to compile and evaluate data on their responses and progress and provide results to physical therapist in person or through progress notes.",
+     "importance": 4.85
+    },
+    {
+     "description": "Observe patients during treatments to compile and evaluate data on their responses and progress and provide results to physical therapist in person or through progress notes.",
+     "importance": 4.85
+    },
+    {
+     "description": "Observe patients during treatments to compile and evaluate data on their responses and progress and provide results to physical therapist in person or through progress notes.",
+     "importance": 4.85
+    },
+    {
+     "description": "Instruct patients in proper body mechanics and in ways to improve functional mobility, such as aquatic exercise.",
+     "importance": 4.67
+    }
+   ],
+   "alternate_titles": [
+    "Certified Physical Therapist Assistant (CPTA)",
+    "Home Care Physical Therapy Assistant",
+    "Home Health Physical Therapist Assistant",
+    "Licensed Physical Therapist Assistant (LPTA)",
+    "Licensed Physical Therapy Assistant",
+    "Outpatient Physical Therapist Assistant",
+    "Per Diem Physical Therapist Assistant (Per Diem PTA)",
+    "Physical Therapist Assistant (PTA)",
+    "Physical Therapy Assistant (PTA)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 2.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 11.1
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 46.5
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 32.1
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.1
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 2.3
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "31-2021",
+    "reported_for_title": "Physical Therapist Assistants"
+   },
    "related": [
     {
      "soc_code": "31-2022",
@@ -14053,6 +15915,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Interview patients to obtain medical information and measure their vital signs, weight, and height.",
+     "importance": 4.76
+    },
+    {
+     "description": "Interview patients to obtain medical information and measure their vital signs, weight, and height.",
+     "importance": 4.76
+    },
+    {
+     "description": "Clean and sterilize instruments and dispose of contaminated supplies.",
+     "importance": 4.76
+    },
+    {
+     "description": "Clean and sterilize instruments and dispose of contaminated supplies.",
+     "importance": 4.76
+    },
+    {
+     "description": "Record patients' medical history, vital statistics, or information such as test results in medical records.",
+     "importance": 4.73
+    },
+    {
+     "description": "Explain treatment procedures, medications, diets, or physicians' instructions to patients.",
+     "importance": 4.73
+    },
+    {
+     "description": "Prepare treatment rooms for patient examinations, keeping the rooms neat and clean.",
+     "importance": 4.68
+    },
+    {
+     "description": "Prepare treatment rooms for patient examinations, keeping the rooms neat and clean.",
+     "importance": 4.68
+    }
+   ],
+   "alternate_titles": [
+    "Certified Medical Assistant (CMA)",
+    "Chiropractor Assistant",
+    "Clinical Medical Assistant",
+    "Doctor's Assistant",
+    "Health Assistant",
+    "Ophthalmic Assistant",
+    "Ophthalmological Assistant",
+    "Optometric Assistant",
+    "Outpatient Surgery Assistant",
+    "Registered Medical Assistant (RMA)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.9
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 20.2
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 38.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 24.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 11.7
+     },
+     {
+      "level": "Master's degree",
+      "percent": 2.6
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.2
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "31-9092",
+    "reported_for_title": "Medical Assistants"
+   },
    "related": [
     {
      "soc_code": "29-2061",
@@ -14632,6 +16576,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Hold or restrain animals during veterinary procedures.",
+     "importance": 4.77
+    },
+    {
+     "description": "Monitor animals recovering from surgery and notify veterinarians of any unusual changes or symptoms.",
+     "importance": 4.72
+    },
+    {
+     "description": "Administer anesthetics during surgery and monitor the effects on animals.",
+     "importance": 4.71
+    },
+    {
+     "description": "Administer anesthetics during surgery and monitor the effects on animals.",
+     "importance": 4.71
+    },
+    {
+     "description": "Fill medication prescriptions.",
+     "importance": 4.65
+    },
+    {
+     "description": "Clean and maintain kennels, animal holding areas, examination or operating rooms, or animal loading or unloading facilities to control the spread of disease.",
+     "importance": 4.61
+    },
+    {
+     "description": "Examine animals to detect behavioral changes or clinical symptoms that could indicate illness or injury.",
+     "importance": 4.54
+    },
+    {
+     "description": "Perform routine laboratory tests or diagnostic tests, such as taking or developing x-rays.",
+     "importance": 4.52
+    }
+   ],
+   "alternate_titles": [
+    "Animal Care Provider",
+    "Animal Caregiver",
+    "Avian Keeper",
+    "Certified Veterinary Assistant",
+    "Emergency Veterinary Assistant",
+    "Inpatient Technician Assistant",
+    "Kennel Vet Assistant (Kennel Veterinary Assistant)",
+    "Research Animal Attendant",
+    "Small Animal Caretaker",
+    "Veterinarian Assistant (Vet Assistant)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 18.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 25.9
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 14.5
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 33.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 2.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.1
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "31-9096",
+    "reported_for_title": "Veterinary Assistants and Laboratory Animal Caretakers"
+   },
    "related": [
     {
      "soc_code": "29-2056",
@@ -15212,6 +17238,84 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Dispose of contaminated sharps, in accordance with applicable laws, standards, and policies.",
+     "importance": 5.0
+    },
+    {
+     "description": "Organize or clean blood-drawing trays, ensuring that all instruments are sterile and all needles, syringes, or related items are of first-time use.",
+     "importance": 4.86
+    },
+    {
+     "description": "Organize or clean blood-drawing trays, ensuring that all instruments are sterile and all needles, syringes, or related items are of first-time use.",
+     "importance": 4.86
+    },
+    {
+     "description": "Match laboratory requisition forms to specimen tubes.",
+     "importance": 4.81
+    },
+    {
+     "description": "Match laboratory requisition forms to specimen tubes.",
+     "importance": 4.81
+    },
+    {
+     "description": "Draw blood from veins by vacuum tube, syringe, or butterfly venipuncture methods.",
+     "importance": 4.81
+    },
+    {
+     "description": "Dispose of blood or other biohazard fluids or tissue, in accordance with applicable laws, standards, or policies.",
+     "importance": 4.71
+    },
+    {
+     "description": "Conduct standards tests, such as blood alcohol, blood culture, oral glucose tolerance, glucose screening, blood smears, or peak and trough drug levels tests.",
+     "importance": 4.71
+    }
+   ],
+   "alternate_titles": [
+    "Lab Liaison Technician",
+    "Mobile Examiner",
+    "Patient Service Technician (PST)",
+    "Phlebotomist",
+    "Phlebotomy Technician",
+    "Registered Phlebotomist"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 29.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 40.0
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 18.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 8.0
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.4
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "31-9097",
+    "reported_for_title": "Phlebotomists"
+   },
    "related": [
     {
      "soc_code": "29-2031",
@@ -15562,6 +17666,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Write reports or case summaries to document investigations.",
+     "importance": 4.8
+    },
+    {
+     "description": "Conduct private investigations on a paid basis.",
+     "importance": 4.52
+    },
+    {
+     "description": "Search computer databases, credit reports, public records, tax or legal filings, or other resources to locate persons or to compile information for investigations.",
+     "importance": 4.43
+    },
+    {
+     "description": "Search computer databases, credit reports, public records, tax or legal filings, or other resources to locate persons or to compile information for investigations.",
+     "importance": 4.43
+    },
+    {
+     "description": "Expose fraudulent insurance claims or stolen funds.",
+     "importance": 4.36
+    },
+    {
+     "description": "Conduct personal background investigations, such as pre-employment checks, to obtain information about an individual's character, financial status, or personal history.",
+     "importance": 4.36
+    },
+    {
+     "description": "Obtain and analyze information on suspects, crimes, or disturbances to solve cases, to identify criminal activity, or to gather information for court cases.",
+     "importance": 4.33
+    },
+    {
+     "description": "Testify at hearings or court trials to present evidence.",
+     "importance": 4.32
+    }
+   ],
+   "alternate_titles": [
+    "Asset Protection Detective",
+    "Field Investigator",
+    "Investigator",
+    "Loss Prevention Agent",
+    "Loss Prevention Associate",
+    "Loss Prevention Detective",
+    "Loss Prevention Investigator",
+    "Loss Prevention Officer",
+    "Private Investigator",
+    "Special Investigator"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 11.9
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 20.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 11.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 37.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 14.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 3.1
+     }
+    ],
+    "typical_experience": "Less than 5 years work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "33-9021",
+    "reported_for_title": "Private Detectives and Investigators"
+   },
    "related": [
     {
      "soc_code": "33-3021",
@@ -16209,6 +18395,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Lock doors and gates of entrances and exits to secure buildings.",
+     "importance": 4.92
+    },
+    {
+     "description": "Patrol industrial or commercial premises to prevent and detect signs of intrusion and ensure security of doors, windows, and gates.",
+     "importance": 4.77
+    },
+    {
+     "description": "Respond to medical emergencies by administering basic first aid or by obtaining assistance from paramedics.",
+     "importance": 4.75
+    },
+    {
+     "description": "Answer alarms and investigate disturbances.",
+     "importance": 4.73
+    },
+    {
+     "description": "Answer alarms and investigate disturbances.",
+     "importance": 4.73
+    },
+    {
+     "description": "Circulate among visitors, patrons, or employees to preserve order and protect property.",
+     "importance": 4.71
+    },
+    {
+     "description": "Monitor and authorize entrance and departure of employees, visitors, and other persons to guard against theft and maintain security of premises.",
+     "importance": 4.66
+    },
+    {
+     "description": "Monitor and authorize entrance and departure of employees, visitors, and other persons to guard against theft and maintain security of premises.",
+     "importance": 4.66
+    }
+   ],
+   "alternate_titles": [
+    "Armed Security Officer",
+    "Campus Security Officer (CSO)",
+    "Custom Protection Officer (CPO)",
+    "Customer Service Security Officer",
+    "Hotel Security Officer",
+    "Loss Prevention Officer",
+    "Safety and Security Officer",
+    "Security Agent",
+    "Security Guard",
+    "Security Officer"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 6.6
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 36.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 27.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 11.6
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 13.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 2.9
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.6
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "33-9032",
+    "reported_for_title": "Security Guards"
+   },
    "related": [
     {
      "soc_code": "33-1091",
@@ -16839,6 +19107,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Service, clean, or supply restrooms.",
+     "importance": 4.24
+    },
+    {
+     "description": "Gather and empty trash.",
+     "importance": 4.23
+    },
+    {
+     "description": "Clean building floors by sweeping, mopping, scrubbing, or vacuuming.",
+     "importance": 4.21
+    },
+    {
+     "description": "Notify managers concerning the need for major repairs or additions to building operating systems.",
+     "importance": 4.2
+    },
+    {
+     "description": "Monitor building security and safety by performing tasks such as locking doors after operating hours or checking electrical appliance use to ensure that hazards are not created.",
+     "importance": 4.2
+    },
+    {
+     "description": "Follow procedures for the use of chemical cleaners and power equipment to prevent damage to floors and fixtures.",
+     "importance": 4.15
+    },
+    {
+     "description": "Mix water and detergents or acids in containers to prepare cleaning solutions, according to specifications.",
+     "importance": 3.99
+    },
+    {
+     "description": "Clean windows, glass partitions, or mirrors, using soapy water or other cleaners, sponges, or squeegees.",
+     "importance": 3.8
+    }
+   ],
+   "alternate_titles": [
+    "Building Custodian",
+    "Building Services Technician (Building Services Tech)",
+    "Building Services Worker",
+    "Cleaner",
+    "Custodial Worker",
+    "Custodian",
+    "Facilities Worker",
+    "Heavy Duty Custodian",
+    "Janitor",
+    "School Custodian"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 23.4
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 44.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 18.0
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 6.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 5.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.3
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "37-2011",
+    "reported_for_title": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners"
+   },
    "related": [
     {
      "soc_code": "37-2012",
@@ -17299,6 +19649,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Train horses or other equines for riding, harness, show, racing, or other work, using knowledge of breed characteristics, training methods, performance standards, and the peculiarities of each animal.",
+     "importance": 4.49
+    },
+    {
+     "description": "Cue or signal animals during performances.",
+     "importance": 4.48
+    },
+    {
+     "description": "Talk to or interact with animals to familiarize them to human voices or contact.",
+     "importance": 4.48
+    },
+    {
+     "description": "Conduct training programs to develop or maintain desired animal behaviors for competition, entertainment, obedience, security, riding, or related purposes.",
+     "importance": 4.44
+    },
+    {
+     "description": "Use oral, spur, rein, or hand commands to condition horses to carry riders or to pull horse-drawn equipment.",
+     "importance": 4.43
+    },
+    {
+     "description": "Retrain horses to break bad habits, such as kicking, bolting, or resisting bridling or grooming.",
+     "importance": 4.39
+    },
+    {
+     "description": "Feed or exercise animals or provide other general care, such as cleaning or maintaining holding or performance areas.",
+     "importance": 4.37
+    },
+    {
+     "description": "Feed or exercise animals or provide other general care, such as cleaning or maintaining holding or performance areas.",
+     "importance": 4.37
+    }
+   ],
+   "alternate_titles": [
+    "Agility Instructor",
+    "Dog Obedience Instructor",
+    "Dog Trainer",
+    "Guide Dog Instructor",
+    "Guide Dog Mobility Instructor (GDMI)",
+    "Guide Dog Trainer",
+    "Horse Trainer",
+    "Racehorse Trainer",
+    "Service Dog Trainer",
+    "Trainer"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 6.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 25.1
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 24.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.8
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 26.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 7.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.8
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "39-2011",
+    "reported_for_title": "Animal Trainers"
+   },
    "related": [
     {
      "soc_code": "39-2021",
@@ -17942,6 +20374,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Feed and water animals according to schedules and feeding instructions.",
+     "importance": 4.84
+    },
+    {
+     "description": "Provide treatment to sick or injured animals, or contact veterinarians to secure treatment.",
+     "importance": 4.66
+    },
+    {
+     "description": "Examine and observe animals to detect signs of illness, disease, or injury.",
+     "importance": 4.59
+    },
+    {
+     "description": "Mix food, liquid formulas, medications, or food supplements according to instructions, prescriptions, and knowledge of animal species.",
+     "importance": 4.5
+    },
+    {
+     "description": "Do facility laundry and clean, organize, maintain, and disinfect animal quarters, such as pens and stables, and equipment, such as saddles and bridles.",
+     "importance": 4.48
+    },
+    {
+     "description": "Do facility laundry and clean, organize, maintain, and disinfect animal quarters, such as pens and stables, and equipment, such as saddles and bridles.",
+     "importance": 4.48
+    },
+    {
+     "description": "Do facility laundry and clean, organize, maintain, and disinfect animal quarters, such as pens and stables, and equipment, such as saddles and bridles.",
+     "importance": 4.48
+    },
+    {
+     "description": "Exercise animals to maintain their physical and mental health.",
+     "importance": 4.4
+    }
+   ],
+   "alternate_titles": [
+    "Animal Care Giver (ACG)",
+    "Aquarist",
+    "Dog Bather",
+    "Dog Groomer",
+    "Groomer",
+    "Kennel Attendant",
+    "Kennel Technician (Kennel Tech)",
+    "Pet Groomer",
+    "Pet Stylist",
+    "Zookeeper"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 7.2
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 31.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 25.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.9
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 21.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 3.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "39-2021",
+    "reported_for_title": "Animal Caretakers"
+   },
    "related": [
     {
      "soc_code": "31-9096",
@@ -18415,6 +20929,82 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Clean and sterilize scissors, combs, clippers, and other instruments.",
+     "importance": 4.93
+    },
+    {
+     "description": "Cut and trim hair according to clients' instructions or current hairstyles, using clippers, combs, hand-held blow driers, and scissors.",
+     "importance": 4.92
+    },
+    {
+     "description": "Drape and pin protective cloths around customers' shoulders.",
+     "importance": 4.92
+    },
+    {
+     "description": "Question patrons regarding desired services and haircut styles.",
+     "importance": 4.8
+    },
+    {
+     "description": "Clean work stations and sweep floors.",
+     "importance": 4.73
+    },
+    {
+     "description": "Apply lather and shave beards or neck and temple hair contours, using razors.",
+     "importance": 4.38
+    },
+    {
+     "description": "Record services provided on cashiers' tickets or receive payment from customers.",
+     "importance": 4.21
+    },
+    {
+     "description": "Shape and trim beards and moustaches, using scissors.",
+     "importance": 4.19
+    }
+   ],
+   "alternate_titles": [
+    "Barber",
+    "Barber Shop Operator",
+    "Barber Stylist",
+    "Stylist"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 10.9
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 44.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 27.6
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.9
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 5.5
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "39-5011",
+    "reported_for_title": "Barbers"
+   },
    "related": [
     {
      "soc_code": "39-5012",
@@ -19007,6 +21597,85 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Keep work stations clean and sanitize tools, such as scissors and combs.",
+     "importance": 4.62
+    },
+    {
+     "description": "Keep work stations clean and sanitize tools, such as scissors and combs.",
+     "importance": 4.62
+    },
+    {
+     "description": "Bleach, dye, or tint hair, using applicator or brush.",
+     "importance": 4.58
+    },
+    {
+     "description": "Cut, trim and shape hair or hairpieces, based on customers' instructions, hair type, and facial features, using clippers, scissors, trimmers and razors.",
+     "importance": 4.49
+    },
+    {
+     "description": "Cut, trim and shape hair or hairpieces, based on customers' instructions, hair type, and facial features, using clippers, scissors, trimmers and razors.",
+     "importance": 4.49
+    },
+    {
+     "description": "Schedule client appointments.",
+     "importance": 4.47
+    },
+    {
+     "description": "Update and maintain customer information records, such as beauty services provided.",
+     "importance": 4.45
+    },
+    {
+     "description": "Demonstrate and sell hair care products and cosmetics.",
+     "importance": 4.43
+    }
+   ],
+   "alternate_titles": [
+    "Beautician",
+    "Cosmetologist",
+    "Hair Dresser",
+    "Hair Stylist",
+    "Hairdresser",
+    "Hairstylist",
+    "Stylist"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 6.2
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 43.3
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 30.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 12.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 6.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "39-5012",
+    "reported_for_title": "Hairdressers, Hairstylists, and Cosmetologists"
+   },
    "related": [
     {
      "soc_code": "39-5011",
@@ -19497,6 +22166,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Sterilize equipment and clean work areas.",
+     "importance": 5.0
+    },
+    {
+     "description": "Sterilize equipment and clean work areas.",
+     "importance": 5.0
+    },
+    {
+     "description": "Cleanse clients' skin with water, creams, or lotions.",
+     "importance": 4.92
+    },
+    {
+     "description": "Demonstrate how to clean and care for skin properly and recommend skin-care regimens.",
+     "importance": 4.88
+    },
+    {
+     "description": "Demonstrate how to clean and care for skin properly and recommend skin-care regimens.",
+     "importance": 4.88
+    },
+    {
+     "description": "Demonstrate how to clean and care for skin properly and recommend skin-care regimens.",
+     "importance": 4.88
+    },
+    {
+     "description": "Determine which products or colors will improve clients' skin quality and appearance.",
+     "importance": 4.78
+    },
+    {
+     "description": "Keep records of client needs and preferences and the services provided.",
+     "importance": 4.73
+    }
+   ],
+   "alternate_titles": [
+    "Aesthetician",
+    "Clinical Esthetician",
+    "Electrologist",
+    "Esthetician",
+    "Facialist",
+    "Medical Esthetician",
+    "Skin Therapist",
+    "Skincare Specialist",
+    "Skincare Therapist",
+    "Spa Technician (Spa Tech)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 25.9
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 36.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 15.8
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 15.0
+     },
+     {
+      "level": "Master's degree",
+      "percent": 3.1
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.2
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "No on-the-job training",
+    "reported_for_soc": "39-5094",
+    "reported_for_title": "Skincare Specialists"
+   },
    "related": [
     {
      "soc_code": "39-5012",
@@ -20136,6 +22887,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Negotiate with retail merchants to improve product exposure, such as shelf positioning and advertising.",
+     "importance": 4.41
+    },
+    {
+     "description": "Check stock levels and reorder merchandise as necessary.",
+     "importance": 4.4
+    },
+    {
+     "description": "Check stock levels and reorder merchandise as necessary.",
+     "importance": 4.4
+    },
+    {
+     "description": "Plan, assemble, and stock product displays in retail stores, or make recommendations to retailers regarding product displays, promotional programs, and advertising.",
+     "importance": 4.38
+    },
+    {
+     "description": "Plan, assemble, and stock product displays in retail stores, or make recommendations to retailers regarding product displays, promotional programs, and advertising.",
+     "importance": 4.38
+    },
+    {
+     "description": "Plan, assemble, and stock product displays in retail stores, or make recommendations to retailers regarding product displays, promotional programs, and advertising.",
+     "importance": 4.38
+    },
+    {
+     "description": "Answer customers' questions about products, prices, availability, product uses, and credit terms.",
+     "importance": 4.37
+    },
+    {
+     "description": "Recommend products to customers, based on customers' needs and interests.",
+     "importance": 4.29
+    }
+   ],
+   "alternate_titles": [
+    "Account Representative",
+    "Customer Account Technician",
+    "Inside Salesperson",
+    "Outside Sales Representative",
+    "Route Sales Representative",
+    "Sales Consultant",
+    "Sales Professional",
+    "Sales Representative (Sales Rep)",
+    "Salesman",
+    "Salesperson"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.2
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 18.4
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 20.4
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 8.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 40.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 7.9
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 1.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "41-4012",
+    "reported_for_title": "Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products"
+   },
    "related": [
     {
      "soc_code": "41-4011",
@@ -20704,6 +23537,87 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Record information about financial status of customers and status of collection efforts.",
+     "importance": 4.65
+    },
+    {
+     "description": "Locate and monitor overdue accounts, using computers and a variety of automated systems.",
+     "importance": 4.52
+    },
+    {
+     "description": "Locate and notify customers of delinquent accounts by mail, telephone, or personal visits to solicit payment.",
+     "importance": 4.52
+    },
+    {
+     "description": "Arrange for debt repayment or establish repayment schedules, based on customers' financial situations.",
+     "importance": 4.45
+    },
+    {
+     "description": "Advise customers of necessary actions and strategies for debt repayment.",
+     "importance": 4.44
+    },
+    {
+     "description": "Answer customer questions regarding problems with their accounts.",
+     "importance": 4.29
+    },
+    {
+     "description": "Persuade customers to pay amounts due on credit accounts, damage claims, or nonpayable checks, or to return merchandise.",
+     "importance": 4.28
+    },
+    {
+     "description": "Confer with customers by telephone or in person to determine reasons for overdue payments and to review the terms of sales, service, or credit contracts.",
+     "importance": 4.26
+    }
+   ],
+   "alternate_titles": [
+    "Account Representative",
+    "Accounts Receivable Specialist (AR Specialist)",
+    "Collection Agent",
+    "Collection Specialist",
+    "Collector",
+    "Debt Collector",
+    "Patient Access Specialist",
+    "Patient Account Representative",
+    "Telephone Collector"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.9
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 28.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 34.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 12.8
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 17.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 3.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.7
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "43-3011",
+    "reported_for_title": "Bill and Account Collectors"
+   },
    "related": [
     {
      "soc_code": "13-2081",
@@ -21351,6 +24265,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Verify accuracy of billing data and revise any errors.",
+     "importance": 4.86
+    },
+    {
+     "description": "Resolve discrepancies in accounting records.",
+     "importance": 4.63
+    },
+    {
+     "description": "Prepare itemized statements, bills, or invoices and record amounts due for items purchased or services rendered.",
+     "importance": 4.62
+    },
+    {
+     "description": "Prepare itemized statements, bills, or invoices and record amounts due for items purchased or services rendered.",
+     "importance": 4.62
+    },
+    {
+     "description": "Operate typing, adding, calculating, or billing machines.",
+     "importance": 4.48
+    },
+    {
+     "description": "Review documents, such as purchase orders, sales tickets, charge slips, or hospital records, to compute fees or charges due.",
+     "importance": 4.46
+    },
+    {
+     "description": "Post stop-payment notices to prevent payment of protested checks.",
+     "importance": 4.42
+    },
+    {
+     "description": "Keep records of invoices and support documents.",
+     "importance": 4.4
+    }
+   ],
+   "alternate_titles": [
+    "Account Services Representative (Accounts Services Rep)",
+    "Biller",
+    "Billing Clerk",
+    "Billing Coordinator",
+    "Item Processing Clerk (IP Clerk)",
+    "Medical Biller",
+    "Pre-Audit Clerk",
+    "Statement Clerk",
+    "Statement Distribution Clerk",
+    "Statement Services Representative (Statement Services Rep)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.7
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 27.9
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 31.0
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 16.2
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 17.1
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.3
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.8
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "43-3021",
+    "reported_for_title": "Billing and Posting Clerks"
+   },
    "related": [
     {
      "soc_code": "43-3031",
@@ -21998,6 +24994,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Operate computers programmed with accounting software to record, store, and analyze information.",
+     "importance": 4.76
+    },
+    {
+     "description": "Prepare and process payroll information.",
+     "importance": 4.71
+    },
+    {
+     "description": "Check figures, postings, and documents for correct entry, mathematical accuracy, and proper codes.",
+     "importance": 4.68
+    },
+    {
+     "description": "Prepare bank deposits by compiling data from cashiers, verifying and balancing receipts, and sending cash, checks, or other forms of payment to banks.",
+     "importance": 4.61
+    },
+    {
+     "description": "Prepare bank deposits by compiling data from cashiers, verifying and balancing receipts, and sending cash, checks, or other forms of payment to banks.",
+     "importance": 4.61
+    },
+    {
+     "description": "Prepare bank deposits by compiling data from cashiers, verifying and balancing receipts, and sending cash, checks, or other forms of payment to banks.",
+     "importance": 4.61
+    },
+    {
+     "description": "Comply with federal, state, and company policies, procedures, and regulations.",
+     "importance": 4.57
+    },
+    {
+     "description": "Operate 10-key calculators, typewriters, and copy machines to perform calculations and produce documents.",
+     "importance": 4.47
+    }
+   ],
+   "alternate_titles": [
+    "Account Clerk",
+    "Accounting Assistant",
+    "Accounting Associate",
+    "Accounting Clerk",
+    "Accounting Specialist",
+    "Accounting Technician",
+    "Accounts Payable Clerk",
+    "Accounts Payable Specialist",
+    "Accounts Payables Clerk",
+    "Accounts Receivable Clerk"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.7
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 25.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 34.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 15.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 16.5
+     },
+     {
+      "level": "Master's degree",
+      "percent": 3.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.5
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "43-3031",
+    "reported_for_title": "Bookkeeping, Accounting, and Auditing Clerks"
+   },
    "related": [
     {
      "soc_code": "43-3021",
@@ -22632,6 +25710,87 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Verify attendance, hours worked, and pay adjustments, and post information onto designated records.",
+     "importance": 4.74
+    },
+    {
+     "description": "Process and issue employee paychecks and statements of earnings and deductions.",
+     "importance": 4.72
+    },
+    {
+     "description": "Compute wages and deductions, and enter data into computers.",
+     "importance": 4.69
+    },
+    {
+     "description": "Compute wages and deductions, and enter data into computers.",
+     "importance": 4.69
+    },
+    {
+     "description": "Prepare and file payroll tax returns.",
+     "importance": 4.69
+    },
+    {
+     "description": "Prepare and file payroll tax returns.",
+     "importance": 4.69
+    },
+    {
+     "description": "Process paperwork for new employees and enter employee information into the payroll system.",
+     "importance": 4.66
+    },
+    {
+     "description": "Process paperwork for new employees and enter employee information into the payroll system.",
+     "importance": 4.66
+    }
+   ],
+   "alternate_titles": [
+    "Payroll Assistant",
+    "Payroll Clerk",
+    "Payroll Coordinator",
+    "Payroll Representative",
+    "Payroll Specialist",
+    "Payroll Technician",
+    "Personnel Assistant",
+    "Personnel Technician",
+    "Timekeeper"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 20.3
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 32.6
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 14.2
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 25.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.7
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.5
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "43-3051",
+    "reported_for_title": "Payroll and Timekeeping Clerks"
+   },
    "related": [
     {
      "soc_code": "43-4161",
@@ -23283,6 +26442,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Answer telephones and direct calls to appropriate staff.",
+     "importance": 4.64
+    },
+    {
+     "description": "Transcribe recorded messages or practitioners' diagnoses or recommendations into patients' medical records.",
+     "importance": 4.6
+    },
+    {
+     "description": "Transcribe recorded messages or practitioners' diagnoses or recommendations into patients' medical records.",
+     "importance": 4.6
+    },
+    {
+     "description": "Compile and record medical charts, reports, or correspondence, using typewriter or personal computer.",
+     "importance": 4.55
+    },
+    {
+     "description": "Compile and record medical charts, reports, or correspondence, using typewriter or personal computer.",
+     "importance": 4.55
+    },
+    {
+     "description": "Schedule and confirm patient diagnostic appointments, surgeries, or medical consultations.",
+     "importance": 4.51
+    },
+    {
+     "description": "Complete insurance or other claim forms.",
+     "importance": 4.5
+    },
+    {
+     "description": "Greet visitors, ascertain purpose of visit, and direct them to appropriate staff.",
+     "importance": 4.48
+    }
+   ],
+   "alternate_titles": [
+    "Clinic Office Assistant",
+    "Front Desk Receptionist",
+    "Medical Office Specialist",
+    "Medical Receptionist",
+    "Medical Secretary",
+    "Physician Office Specialist",
+    "Secretary",
+    "Unit Clerk",
+    "Unit Support Representative",
+    "Ward Clerk"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 1.9
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 23.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 33.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 16.9
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 18.5
+     },
+     {
+      "level": "Master's degree",
+      "percent": 4.9
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.9
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "43-6013",
+    "reported_for_title": "Medical Secretaries and Administrative Assistants"
+   },
    "related": [
     {
      "soc_code": "29-2072",
@@ -23930,6 +27171,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Tend pumps, compressors, or generators to provide power for tools, machinery, or equipment or to heat or move materials, such as asphalt.",
+     "importance": 4.34
+    },
+    {
+     "description": "Lubricate, clean, or repair machinery, equipment, or tools.",
+     "importance": 4.22
+    },
+    {
+     "description": "Lubricate, clean, or repair machinery, equipment, or tools.",
+     "importance": 4.22
+    },
+    {
+     "description": "Signal equipment operators to facilitate alignment, movement, or adjustment of machinery, equipment, or materials.",
+     "importance": 4.21
+    },
+    {
+     "description": "Position, join, align, or seal structural components, such as concrete wall sections or pipes.",
+     "importance": 4.03
+    },
+    {
+     "description": "Position, join, align, or seal structural components, such as concrete wall sections or pipes.",
+     "importance": 4.03
+    },
+    {
+     "description": "Perform site activities required of green certified construction practices, such as implementing waste management procedures, identifying materials for reuse, or installing erosion or sedimentation control mechanisms.",
+     "importance": 4.01
+    },
+    {
+     "description": "Control traffic passing near, in, or around work zones.",
+     "importance": 3.95
+    }
+   ],
+   "alternate_titles": [
+    "Bituminous Asphalt Technician",
+    "Construction Laborer",
+    "Construction Worker",
+    "Drop Crew Laborer",
+    "Equipment Operator (EO)",
+    "Form Setter",
+    "Post Framer",
+    "Scaffolding Operator",
+    "Site Work Laborer",
+    "Toolman"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 34.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 39.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 14.1
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 4.9
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 5.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "47-2061",
+    "reported_for_title": "Construction Laborers"
+   },
    "related": [
     {
      "soc_code": "47-2071",
@@ -24560,6 +27883,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Shut off steam, water, or other gases or liquids from pipe sections, using valve keys or wrenches.",
+     "importance": 4.19
+    },
+    {
+     "description": "Install underground storm, sanitary, or water piping systems, extending piping as needed to connect fixtures and plumbing.",
+     "importance": 4.18
+    },
+    {
+     "description": "Assemble pipe sections, tubing, or fittings, using couplings, clamps, screws, bolts, cement, plastic solvent, caulking, or soldering, brazing, or welding equipment.",
+     "importance": 4.16
+    },
+    {
+     "description": "Assemble pipe sections, tubing, or fittings, using couplings, clamps, screws, bolts, cement, plastic solvent, caulking, or soldering, brazing, or welding equipment.",
+     "importance": 4.16
+    },
+    {
+     "description": "Locate and mark the position of pipe installations, connections, passage holes, or fixtures in structures, using measuring instruments such as rulers or levels.",
+     "importance": 4.14
+    },
+    {
+     "description": "Locate and mark the position of pipe installations, connections, passage holes, or fixtures in structures, using measuring instruments such as rulers or levels.",
+     "importance": 4.14
+    },
+    {
+     "description": "Cut, thread, or hammer pipes to specifications, using tools such as saws, cutting torches, pipe threaders, or pipe benders.",
+     "importance": 4.12
+    },
+    {
+     "description": "Cut, thread, or hammer pipes to specifications, using tools such as saws, cutting torches, pipe threaders, or pipe benders.",
+     "importance": 4.12
+    }
+   ],
+   "alternate_titles": [
+    "Drain Technician",
+    "Fire Sprinkler Service Technician",
+    "Pipe Welder",
+    "Pipefitter",
+    "Plumber",
+    "Plumbing Installer",
+    "Residential Plumber",
+    "Service Plumber",
+    "Sprinkler Fitter",
+    "Steamfitter"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 13.8
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 47.0
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 24.1
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 8.6
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 5.2
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.0
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.3
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Apprenticeship",
+    "reported_for_soc": "47-2152",
+    "reported_for_title": "Plumbers, Pipefitters, and Steamfitters"
+   },
    "related": [
     {
      "soc_code": "47-3015",
@@ -25143,6 +28548,87 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Inspect problem roofs to determine the best repair procedures.",
+     "importance": 4.59
+    },
+    {
+     "description": "Remove snow, water, or debris from roofs prior to applying roofing materials.",
+     "importance": 4.24
+    },
+    {
+     "description": "Set up scaffolding to provide safe access to roofs.",
+     "importance": 4.18
+    },
+    {
+     "description": "Estimate materials and labor required to complete roofing jobs.",
+     "importance": 4.17
+    },
+    {
+     "description": "Estimate materials and labor required to complete roofing jobs.",
+     "importance": 4.17
+    },
+    {
+     "description": "Cement or nail flashing strips of metal or shingle over joints to make them watertight.",
+     "importance": 4.11
+    },
+    {
+     "description": "Cement or nail flashing strips of metal or shingle over joints to make them watertight.",
+     "importance": 4.11
+    },
+    {
+     "description": "Install partially overlapping layers of material over roof insulation surfaces, using chalk lines, gauges on shingling hatchets, or lines on shingles.",
+     "importance": 4.1
+    }
+   ],
+   "alternate_titles": [
+    "Commercial Roofer",
+    "Industrial Roofer",
+    "Metal Roofing Mechanic",
+    "Residential Roofer",
+    "Roof Mechanic",
+    "Roof Service Technician",
+    "Roofer",
+    "Roofing Technician",
+    "Sheet Metal Roofer"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 41.4
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 38.4
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 11.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 3.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 4.2
+     },
+     {
+      "level": "Master's degree",
+      "percent": 0.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.1
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "47-2181",
+    "reported_for_title": "Roofers"
+   },
    "related": [
     {
      "soc_code": "47-3016",
@@ -25603,6 +29089,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Inspect individual parts, assemblies, or installations, using measuring instruments, such as calipers, scales, or micrometers.",
+     "importance": 4.4
+    },
+    {
+     "description": "Maintain equipment, making repairs or modifications when necessary.",
+     "importance": 4.3
+    },
+    {
+     "description": "Fabricate ducts for high efficiency heating, ventilating, and air conditioning (HVAC) systems to maximize efficiency of systems.",
+     "importance": 4.21
+    },
+    {
+     "description": "Fasten seams or joints together with welds, bolts, cement, rivets, solder, caulks, metal drive clips, or bonds to assemble components into products or to repair sheet metal items.",
+     "importance": 4.17
+    },
+    {
+     "description": "Transport prefabricated parts to construction sites for assembly and installation.",
+     "importance": 4.17
+    },
+    {
+     "description": "Fasten seams or joints together with welds, bolts, cement, rivets, solder, caulks, metal drive clips, or bonds to assemble components into products or to repair sheet metal items.",
+     "importance": 4.17
+    },
+    {
+     "description": "Install assemblies, such as flashing, pipes, tubes, heating and air conditioning ducts, furnace casings, rain gutters, or downspouts in supportive frameworks.",
+     "importance": 4.15
+    },
+    {
+     "description": "Install assemblies, such as flashing, pipes, tubes, heating and air conditioning ducts, furnace casings, rain gutters, or downspouts in supportive frameworks.",
+     "importance": 4.15
+    }
+   ],
+   "alternate_titles": [
+    "Commercial Sheet Metal Service Installer",
+    "Field Installer",
+    "HVAC Sheet Metal Installer (Heating, Ventilation, and Air Conditioning Sheet Metal Installer)",
+    "HVAC Sheet Metal Specialist (Heating, Ventilation, and Air Conditioning Sheet Metal Specialist)",
+    "Sheet Metal Fabricator",
+    "Sheet Metal Installer",
+    "Sheet Metal Journeyman",
+    "Sheet Metal Layout Mechanic",
+    "Sheet Metal Mechanic",
+    "Sheet Metal Worker"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 13.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 50.1
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 22.5
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.2
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 4.4
+     },
+     {
+      "level": "Master's degree",
+      "percent": 0.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.1
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Apprenticeship",
+    "reported_for_soc": "47-2211",
+    "reported_for_title": "Sheet Metal Workers"
+   },
    "related": [
     {
      "soc_code": "51-2041",
@@ -26012,6 +29580,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Install photovoltaic (PV) systems in accordance with codes and standards, using drawings, schematics, and instructions.",
+     "importance": 4.63
+    },
+    {
+     "description": "Check electrical installation for proper wiring, polarity, grounding, or integrity of terminations.",
+     "importance": 4.57
+    },
+    {
+     "description": "Identify electrical, environmental, and safety hazards associated with photovoltaic (PV) installations.",
+     "importance": 4.54
+    },
+    {
+     "description": "Identify installation locations with proper orientation, area, solar access, or structural integrity for photovoltaic (PV) arrays.",
+     "importance": 4.46
+    },
+    {
+     "description": "Assemble solar modules, panels, or support structures, as specified.",
+     "importance": 4.45
+    },
+    {
+     "description": "Apply weather sealing to array, building, or support mechanisms.",
+     "importance": 4.44
+    },
+    {
+     "description": "Install module array interconnect wiring, implementing measures to disable arrays during installation.",
+     "importance": 4.44
+    },
+    {
+     "description": "Install required labels on solar system components and hardware.",
+     "importance": 4.37
+    }
+   ],
+   "alternate_titles": [
+    "Journeyman Electrician PV Installer (Journeyman Electrician Photovoltaic Installer)",
+    "PV Installation Tech (Photovoltaic Installation Technician)",
+    "PV Installer (Photovoltaic Installer)",
+    "Solar Designer",
+    "Solar Electric Installer",
+    "Solar Installer",
+    "Solar PV Installer (Solar Photovoltaic Installer)",
+    "Solar PV Integrator (Solar Photovoltaic Integrator)",
+    "Solar Panel Installation Technician (Solar Panel Installation Tech)",
+    "Solar Technician (Solar Tech)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 16.4
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 34.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 26.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 10.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 10.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.1
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "47-2231",
+    "reported_for_title": "Solar Photovoltaic Installers"
+   },
    "related": [
     {
      "soc_code": "47-2152",
@@ -26200,6 +29850,84 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Inspect and test electrical systems and equipment to locate and diagnose malfunctions, using visual inspections, testing devices, and computer software.",
+     "importance": 4.03
+    },
+    {
+     "description": "Inspect and test electrical systems and equipment to locate and diagnose malfunctions, using visual inspections, testing devices, and computer software.",
+     "importance": 4.03
+    },
+    {
+     "description": "Reassemble and test equipment after repairs.",
+     "importance": 3.91
+    },
+    {
+     "description": "Reassemble and test equipment after repairs.",
+     "importance": 3.91
+    },
+    {
+     "description": "Confer with customers to determine the nature of malfunctions.",
+     "importance": 3.87
+    },
+    {
+     "description": "Adjust, repair, or replace defective wiring and relays in ignition, lighting, air-conditioning, and safety control systems, using electrician's tools.",
+     "importance": 3.78
+    },
+    {
+     "description": "Adjust, repair, or replace defective wiring and relays in ignition, lighting, air-conditioning, and safety control systems, using electrician's tools.",
+     "importance": 3.78
+    },
+    {
+     "description": "Install electrical equipment such as air-conditioning, heating, or ignition systems and components such as generator brushes and commutators, using hand tools.",
+     "importance": 3.77
+    }
+   ],
+   "alternate_titles": [
+    "Critical Systems Technician",
+    "Electronic Bench Technician",
+    "Electronics Mechanic",
+    "Locomotive Electrician",
+    "Power Technician (Power Tech)",
+    "Ship Yard Electrical Person"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 29.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 32.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 22.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 12.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 0.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "More than 1 year on-the-job training",
+    "reported_for_soc": "49-2093",
+    "reported_for_title": "Electrical and Electronics Installers and Repairers, Transportation Equipment"
+   },
    "related": [
     {
      "soc_code": "49-2094",
@@ -26354,6 +30082,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Install equipment and accessories, such as stereos, navigation equipment, communication equipment, and security systems.",
+     "importance": 4.46
+    },
+    {
+     "description": "Inspect and test electrical or electronic systems to locate and diagnose malfunctions, using visual inspections and testing instruments, such as oscilloscopes and voltmeters.",
+     "importance": 4.45
+    },
+    {
+     "description": "Inspect and test electrical or electronic systems to locate and diagnose malfunctions, using visual inspections and testing instruments, such as oscilloscopes and voltmeters.",
+     "importance": 4.45
+    },
+    {
+     "description": "Cut openings and drill holes for fixtures and equipment, using electric drills and routers.",
+     "importance": 4.41
+    },
+    {
+     "description": "Splice wires with knives or cutting pliers, and solder connections to fixtures and equipment.",
+     "importance": 4.32
+    },
+    {
+     "description": "Splice wires with knives or cutting pliers, and solder connections to fixtures and equipment.",
+     "importance": 4.32
+    },
+    {
+     "description": "Diagnose or repair problems with electronic equipment, such as sound, navigation, communication, and security equipment, in motor vehicles.",
+     "importance": 4.3
+    },
+    {
+     "description": "Run new speaker and electrical cables.",
+     "importance": 4.29
+    }
+   ],
+   "alternate_titles": [
+    "Automotive Technician",
+    "Car Audio Installer",
+    "Car Electronics Installer",
+    "Car Stereo Installer",
+    "Electronic Equipment Installer",
+    "Electronic Technician",
+    "Installation Technician",
+    "Installer",
+    "Mobile Electronics Installation Specialist",
+    "Mobile Electronics Installer"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 2.3
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 29.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 32.2
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 22.1
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 12.8
+     },
+     {
+      "level": "Master's degree",
+      "percent": 0.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "49-2096",
+    "reported_for_title": "Electronic Equipment Installers and Repairers, Motor Vehicles"
+   },
    "related": [
     {
      "soc_code": "49-2093",
@@ -26980,6 +30790,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Inspect vehicles for damage and record findings so that necessary repairs can be made.",
+     "importance": 4.64
+    },
+    {
+     "description": "Inspect vehicles for damage and record findings so that necessary repairs can be made.",
+     "importance": 4.64
+    },
+    {
+     "description": "Test drive vehicles and test components and systems, using equipment such as infrared engine analyzers, compression gauges, and computerized diagnostic devices.",
+     "importance": 4.44
+    },
+    {
+     "description": "Test and adjust repaired systems to meet manufacturers' performance specifications.",
+     "importance": 4.38
+    },
+    {
+     "description": "Test and adjust repaired systems to meet manufacturers' performance specifications.",
+     "importance": 4.38
+    },
+    {
+     "description": "Repair, reline, replace, and adjust brakes.",
+     "importance": 4.36
+    },
+    {
+     "description": "Repair, reline, replace, and adjust brakes.",
+     "importance": 4.36
+    },
+    {
+     "description": "Repair, reline, replace, and adjust brakes.",
+     "importance": 4.36
+    }
+   ],
+   "alternate_titles": [
+    "Automotive Drivability Technician (Auto Drivability Tech)",
+    "Automotive Mechanic (Auto Mechanic)",
+    "Automotive Service Technician (Auto Service Tech)",
+    "Automotive Technician (Auto Tech)",
+    "Diagnostic Technician (Diagnostic Tech)",
+    "Heavy Line Technician (Heavy Line Tech)",
+    "Lube Tech (Lubrication Technician)",
+    "Mechanic",
+    "Quick Service Technician (Quick Service Tech)",
+    "Service Technician (Service Tech)"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 16.0
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 42.6
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 23.3
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 13.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 3.9
+     },
+     {
+      "level": "Master's degree",
+      "percent": 0.5
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.3
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "49-3023",
+    "reported_for_title": "Automotive Service Technicians and Mechanics"
+   },
    "related": [
     {
      "soc_code": "49-3031",
@@ -27436,6 +31328,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth",
+   "tasks": [
+    {
+     "description": "Adhere to safety practices and procedures, such as checking equipment regularly and erecting barriers around work areas.",
+     "importance": 4.77
+    },
+    {
+     "description": "Drive vehicles equipped with tools and materials to job sites.",
+     "importance": 4.75
+    },
+    {
+     "description": "Open switches or attach grounding devices to remove electrical hazards from disturbed or fallen lines or to facilitate repairs.",
+     "importance": 4.7
+    },
+    {
+     "description": "Climb poles or use truck-mounted buckets to access equipment.",
+     "importance": 4.55
+    },
+    {
+     "description": "Install, maintain, and repair electrical distribution and transmission systems, including conduits, cables, wires, and related equipment, such as transformers, circuit breakers, and switches.",
+     "importance": 4.51
+    },
+    {
+     "description": "Install, maintain, and repair electrical distribution and transmission systems, including conduits, cables, wires, and related equipment, such as transformers, circuit breakers, and switches.",
+     "importance": 4.51
+    },
+    {
+     "description": "Inspect and test power lines and auxiliary equipment to locate and identify problems, using reading and testing instruments.",
+     "importance": 4.5
+    },
+    {
+     "description": "Inspect and test power lines and auxiliary equipment to locate and identify problems, using reading and testing instruments.",
+     "importance": 4.5
+    }
+   ],
+   "alternate_titles": [
+    "Class Gloving Electrical Lineman",
+    "Class Rubber Gloving Lineman",
+    "Electrical Lineman",
+    "Electrical Lineworker",
+    "Lineworker",
+    "Power Lineman",
+    "Power Lineman Technician",
+    "Service Man",
+    "Third Step Lineman",
+    "Troubleman"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 3.8
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 40.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 31.7
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 15.7
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 7.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 0.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.0
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "More than 1 year on-the-job training",
+    "reported_for_soc": "49-9051",
+    "reported_for_title": "Electrical Power-Line Installers and Repairers"
+   },
    "related": [
     {
      "soc_code": "49-9052",
@@ -28012,6 +31986,44 @@
    "skills": [],
    "related_onet": [],
    "bright_outlook": null,
+   "tasks": [],
+   "alternate_titles": [],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 14.1
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 39.7
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 24.7
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 9.8
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 9.3
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.8
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.6
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "1 to 12 months on-the-job training",
+    "reported_for_soc": "49-9099",
+    "reported_for_title": "Installation, Maintenance, and Repair Workers, All Other"
+   },
    "related": [
     {
      "soc_code": "49-9071",
@@ -28638,6 +32650,88 @@
     }
    ],
    "bright_outlook": "Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Follow appropriate safety procedures for transporting dangerous goods.",
+     "importance": 4.66
+    },
+    {
+     "description": "Secure cargo for transport, using ropes, blocks, chain, binders, or covers.",
+     "importance": 4.66
+    },
+    {
+     "description": "Check all load-related documentation for completeness and accuracy.",
+     "importance": 4.63
+    },
+    {
+     "description": "Inspect loads to ensure that cargo is secure.",
+     "importance": 4.62
+    },
+    {
+     "description": "Check vehicles to ensure that mechanical, safety, and emergency equipment is in good working order.",
+     "importance": 4.61
+    },
+    {
+     "description": "Crank trailer landing gear up or down to safely secure vehicles.",
+     "importance": 4.6
+    },
+    {
+     "description": "Obtain receipts or signatures for delivered goods and collect payment for services when required.",
+     "importance": 4.6
+    },
+    {
+     "description": "Maintain logs of working hours or of vehicle service or repair status, following applicable state and federal regulations.",
+     "importance": 4.57
+    }
+   ],
+   "alternate_titles": [
+    "CDL Driver (Commercial Driver's License Driver)",
+    "Driver",
+    "Line Haul Driver",
+    "Log Truck Driver",
+    "Over the Road Driver (OTR Driver)",
+    "Production Truck Driver",
+    "Road Driver",
+    "Semi Truck Driver",
+    "Tractor Trailer Driver",
+    "Truck Driver"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 15.2
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 46.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 22.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 7.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 6.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "53-3032",
+    "reported_for_title": "Heavy and Tractor-Trailer Truck Drivers"
+   },
    "related": [
     {
      "soc_code": "53-7051",
@@ -29272,6 +33366,88 @@
     }
    ],
    "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "tasks": [
+    {
+     "description": "Obey traffic laws and follow established traffic and transportation procedures.",
+     "importance": 4.83
+    },
+    {
+     "description": "Report any mechanical problems encountered with vehicles.",
+     "importance": 4.79
+    },
+    {
+     "description": "Verify the contents of inventory loads against shipping papers.",
+     "importance": 4.76
+    },
+    {
+     "description": "Inspect and maintain vehicle supplies and equipment, such as gas, oil, water, tires, lights, or brakes, to ensure that vehicles are in proper working condition.",
+     "importance": 4.72
+    },
+    {
+     "description": "Inspect and maintain vehicle supplies and equipment, such as gas, oil, water, tires, lights, or brakes, to ensure that vehicles are in proper working condition.",
+     "importance": 4.72
+    },
+    {
+     "description": "Read maps and follow written or verbal geographic directions.",
+     "importance": 4.7
+    },
+    {
+     "description": "Read maps and follow written or verbal geographic directions.",
+     "importance": 4.7
+    },
+    {
+     "description": "Turn in receipts and money received from deliveries.",
+     "importance": 4.67
+    }
+   ],
+   "alternate_titles": [
+    "Bulk Delivery Driver",
+    "Delivery Driver",
+    "Driver",
+    "Light Truck Driver",
+    "Package Car Driver",
+    "Package Delivery Driver",
+    "Route Driver",
+    "Service Provider",
+    "Truck Driver",
+    "Warehouse Driver"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 15.2
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 46.8
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 22.8
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 7.0
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 6.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 1.2
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.4
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "53-3033",
+    "reported_for_title": "Light Truck Drivers"
+   },
    "related": [
     {
      "soc_code": "53-3032",
@@ -29885,6 +34061,88 @@
     }
    ],
    "bright_outlook": null,
+   "tasks": [
+    {
+     "description": "Comply with traffic regulations to operate vehicles in a safe and courteous manner.",
+     "importance": 5.0
+    },
+    {
+     "description": "Check the condition of a vehicle's tires, brakes, windshield wipers, lights, oil, fuel, water, and safety equipment to ensure that everything is in working order.",
+     "importance": 4.93
+    },
+    {
+     "description": "Follow safety rules as students board and exit buses or cross streets near bus stops.",
+     "importance": 4.93
+    },
+    {
+     "description": "Report any bus malfunctions or needed repairs.",
+     "importance": 4.81
+    },
+    {
+     "description": "Pick up and drop off students at regularly scheduled neighborhood locations, following strict time schedules.",
+     "importance": 4.78
+    },
+    {
+     "description": "Escort small children across roads and highways.",
+     "importance": 4.77
+    },
+    {
+     "description": "Drive gasoline, diesel, or electrically powered multi-passenger vehicles to transport students between neighborhoods, schools, and school activities.",
+     "importance": 4.73
+    },
+    {
+     "description": "Maintain order among students during trips to ensure safety.",
+     "importance": 4.54
+    }
+   ],
+   "alternate_titles": [
+    "Bus Drive Coordinator",
+    "Bus Driver",
+    "CDL Bus Driver (Commercial Driver's License Bus Driver)",
+    "Public School Bus Driver",
+    "SPED Bus Driver (Special Education Bus Driver)",
+    "SPED School Bus Driver (Special Education School Bus Driver)",
+    "School Bus Driver",
+    "School Van Driver",
+    "Shuttle Bus Driver",
+    "Student Driver"
+   ],
+   "education": {
+    "distribution": [
+     {
+      "level": "Less than high school diploma",
+      "percent": 7.9
+     },
+     {
+      "level": "High school diploma or equivalent",
+      "percent": 42.5
+     },
+     {
+      "level": "Some college, no degree",
+      "percent": 26.7
+     },
+     {
+      "level": "Associate's degree",
+      "percent": 10.3
+     },
+     {
+      "level": "Bachelor's degree",
+      "percent": 9.6
+     },
+     {
+      "level": "Master's degree",
+      "percent": 2.4
+     },
+     {
+      "level": "Doctoral or professional degree",
+      "percent": 0.6
+     }
+    ],
+    "typical_experience": "No work experience",
+    "typical_on_the_job_training": "Less than 1 month on-the-job training",
+    "reported_for_soc": "53-3051",
+    "reported_for_title": "Bus Drivers, School"
+   },
    "related": [
     {
      "soc_code": "33-9094",

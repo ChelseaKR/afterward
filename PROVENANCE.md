@@ -34,7 +34,7 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Wage detail (percentiles) where projections lack it |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
 | D5 | O\*NET Web Services (USDOL/ETA) | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered project "Camino"; key is per-user and never committed. | Tasks, technology skills, work activities, job zones, related occupations |
-| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, O\*NET related occupations, Bright Outlook |
+| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, education attainment distribution, typical experience and on-the-job training, O\*NET related occupations, Bright Outlook |
 
 ### Notes on D5 — required attribution
 
