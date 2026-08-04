@@ -78,6 +78,11 @@ if (SINGLE) {
     ["Program detail (English)", firstDirIn("en", "programs")],
     ["Program detail (Spanish)", firstDirIn("es", "programs")],
     ["Occupation detail (English)", firstDirIn("en", "occupations")],
+    ["Occupation detail (Spanish)", firstDirIn("es", "occupations")],
+    // Provider detail is a distinct template with its own table, and it is the page every
+    // provider named in this data is most likely to look at. It had no coverage at all.
+    ["Provider detail (English)", firstDirIn("en", "providers")],
+    ["Provider detail (Spanish)", firstDirIn("es", "providers")],
     // The browse indexes are the two longest pages on the site — several hundred table rows
     // each — and the ones most dependent on real table semantics to be usable at all.
     ["Occupation index (English)", join(OUT, "en", "occupations", "index.html")],

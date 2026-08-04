@@ -51,6 +51,20 @@ def credentials() -> tuple[str, str] | None:
     return (user_id, token) if user_id and token else None
 
 
+def build_client(token: str) -> httpx.Client:
+    """A client carrying the API credential, for callers fetching more than one occupation.
+
+    The whole occupation set is one call each, so a build shares a single client rather than
+    standing up a connection per occupation. The token reaches the header and nothing else:
+    it is never logged, echoed, or written to the cache.
+    """
+    return httpx.Client(
+        timeout=REQUEST_TIMEOUT,
+        follow_redirects=True,
+        headers={"User-Agent": USER_AGENT, "Authorization": f"Bearer {token}"},
+    )
+
+
 def onet_code(soc_code: str) -> str:
     """Map a 6-digit SOC to the base O*NET code the API expects.
 
@@ -165,11 +179,7 @@ def fetch_occupation(
         return parse_occupation(soc_code, cached)
 
     owns_client = client is None
-    http = client or httpx.Client(
-        timeout=REQUEST_TIMEOUT,
-        follow_redirects=True,
-        headers={"User-Agent": USER_AGENT, "Authorization": f"Bearer {token}"},
-    )
+    http = client or build_client(token)
     try:
         response = get_with_retry(
             http,

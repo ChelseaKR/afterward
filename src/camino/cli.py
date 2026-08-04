@@ -47,6 +47,20 @@ def build_command(
     )
     typer.echo(f"  distinct occupations      {report.distinct_occupations_matched:>6}")
 
+    # Occupation enrichment (CareerOneStop). All zeros is a legitimate build: with no
+    # credentials configured the dataset is complete, and simply carries no descriptions.
+    enrichment = report.enrichment
+    typer.echo(f"\nOccupations                 {enrichment.occupations:>6}")
+    typer.echo(f"  with a description        {enrichment.with_description:>6}")
+    typer.echo(f"  with skills               {enrichment.with_skills:>6}")
+    typer.echo(f"  with bright outlook       {enrichment.with_bright_outlook:>6}")
+    typer.echo("  related occupations from")
+    typer.echo(f"    O*NET                   {enrichment.related_from_onet:>6}")
+    typer.echo(f"    SOC siblings            {enrichment.related_from_soc_siblings:>6}")
+    typer.echo(f"    neither                 {enrichment.without_related:>6}")
+    if not enrichment.enriched:
+        typer.echo("  (no CareerOneStop credentials configured; enrichment skipped)")
+
 
 @app.command("build-offline")
 def build_offline_command(

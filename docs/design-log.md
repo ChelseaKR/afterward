@@ -123,7 +123,7 @@ Translating the interface while leaving the data in English produces pages that 
 job training (7) are closed lists, so they are translated, with unknown values falling
 through to the source text so gaps stay visible.
 
-**Known limitation:** occupation titles (764) and program descriptions (thousands) are
+**Known limitation:** occupation titles (670, after the aggregate fix below) and program descriptions are
 open-ended and remain in English. A Spanish page is therefore not yet fully Spanish. Machine
 translation of occupation titles is the obvious next step and needs review by a Spanish
 speaker before it ships — an incorrect job title is worse than an English one.
@@ -140,7 +140,7 @@ question and a hide-checkbox cannot ask it.
 Unknown growth is excluded from *both* the growing and shrinking filters. Treating unknown
 as either would put a claim on screen the data cannot support.
 
-### D12 — CI builds from a committed fixture, because DOL refuses CI
+### D12a — CI builds from a committed fixture, because DOL refuses CI
 
 The web CI job failed on its first real run: `cxsearch.dol.gov` returns **403 Forbidden** to
 GitHub Actions runners. The same query succeeds from a laptop, so this is datacenter-IP or
@@ -207,7 +207,7 @@ run. Gates catch what they were built to catch. Two of these were found by readi
 rather than the code, and the null-versus-zero rule turned out to have been broken in three
 places nobody had thought to look.
 
-### D12 — Compare like with like, or do not compare
+### D12b — Compare like with like, or do not compare
 
 The statewide benchmark added earlier turned out to be the wrong yardstick. DOL publishes
 27% employed at two quarters; the median reporting California program publishes 69%. The two

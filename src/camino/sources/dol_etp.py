@@ -85,6 +85,57 @@ def clean_rate(value: Any, *, field: str = "") -> float | None:
     return parsed
 
 
+IMPLAUSIBLE_QUARTERLY_EARNINGS = 3000.0
+"""Below this, a "quarterly earnings" figure is almost certainly a different unit.
+
+Someone employed for a quarter at California's minimum wage earns several thousand dollars.
+Fourteen California programs report a median between $16 and $99 -- an hourly rate filed in a
+quarterly field -- and 34 more fall under $3,000. Rendered literally, the lowest reads
+"Earnings in one quarter after: $16 ... Worse than typical" beside the name of a real
+business, which is a defamatory claim produced by a unit error.
+"""
+
+
+def clean_earnings(value: Any, *, context: str = "") -> float | None:
+    """Parse quarterly earnings, refusing figures too small to be a quarter's pay.
+
+    Same reasoning as :func:`clean_rate`: decide what a number means where it enters, not
+    where it is displayed. A value this small is not quarterly earnings, so it is treated as
+    not reported rather than published as a verdict about a named provider.
+    """
+    parsed = clean_measure(value)
+    if parsed is None:
+        return None
+    if 0 < parsed < IMPLAUSIBLE_QUARTERLY_EARNINGS:
+        print(
+            f"warning: {context or 'median earnings'} = {parsed!r} is too small to be a "
+            "quarter's earnings; treating as not reported.",
+            file=sys.stderr,
+        )
+        return None
+    return parsed
+
+
+def reconcile_rate(
+    rate: float | None, numerator: float | None, denominator: float | None
+) -> float | None:
+    """Drop a rate of exactly zero that the record's own counts contradict.
+
+    DOL publishes rates to two decimal places, so 0.00 means "below 0.5%", not "nobody". Six
+    California programs pair a 0.00 employment rate with a non-zero count of people employed:
+    one reports 86 people working against 15,335 exits, a real 0.56% that rounds to zero.
+
+    Rendered literally that becomes "Working 6 months later: 0%" and "Worse than typical" on a
+    page naming a public community college. The rate is a rounding artefact, and the honest
+    move is to say it was not usefully reported rather than to publish a zero the record
+    itself refutes. A genuine zero -- rate 0.00 with nobody employed -- is preserved, because
+    that is a real and important finding.
+    """
+    if rate != 0 or numerator is None or denominator in (None, 0):
+        return rate
+    return None if numerator > 0 else rate
+
+
 SAFE_URL_SCHEMES = ("http://", "https://")
 _BARE_DOMAIN = re.compile(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9-]+)+(/.*)?$", re.I)
 
@@ -234,9 +285,13 @@ def parse_program(hit: dict[str, Any]) -> Program:
             source.get("field_c_completed_percent"), field="completion rate"
         ),
         total_credential=clean_measure(source.get("field_c_total_credential")),
-        median_earnings=clean_measure(source.get("field_c_median_earnings")),
-        q2_employment_percent=clean_rate(
-            source.get("field_c_q2_employment_percent"), field="Q2 employment rate"
+        median_earnings=clean_earnings(
+            source.get("field_c_median_earnings"), context="program median earnings"
+        ),
+        q2_employment_percent=reconcile_rate(
+            clean_rate(source.get("field_c_q2_employment_percent"), field="Q2 employment rate"),
+            clean_measure(source.get("field_total_employed_q2")),
+            clean_measure(source.get("field_c_total_exited")),
         ),
         employed_q2=clean_measure(source.get("field_total_employed_q2")),
         employed_q4=clean_measure(source.get("field_total_employed_q4")),
@@ -286,7 +341,9 @@ def parse_state_benchmark(state: str, source: dict[str, Any]) -> StateBenchmark:
         q2_employment_rate=clean_rate(
             source.get("field_c_q2_employment_percent"), field="state Q2 employment rate"
         ),
-        median_earnings=clean_measure(source.get("field_c_median_earnings")),
+        median_earnings=clean_earnings(
+            source.get("field_c_median_earnings"), context="program median earnings"
+        ),
         credential_rate=clean_rate(
             source.get("field_c_cred_attainment_percent"), field="state credential rate"
         ),

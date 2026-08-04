@@ -9,15 +9,41 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
 from typing import Any
 
-from camino.sources import dol_etp, edd_lmi
+from camino.sources import careeronestop, dol_etp, edd_lmi
 
 DEFAULT_STATE = "CA"
+
+COS_CACHE_DIR = Path("data/raw/cos-cache")
+"""Where CareerOneStop responses are kept so a rebuild does not re-ask for unchanged data."""
+
+
+@dataclass(frozen=True)
+class EnrichmentCoverage:
+    """How far CareerOneStop enrichment reached, and where each related list came from.
+
+    Published rather than assumed, because the enrichment is optional: a build with no
+    credentials emits this block full of zeros instead of omitting it, so a reader can tell
+    an unenriched dataset from an enriched one rather than guessing why the pages carry no
+    descriptions.
+    """
+
+    occupations: int
+    enriched: int
+    with_description: int
+    with_skills: int
+    with_bright_outlook: int
+    # Which answer each occupation's related list is. Carried as two counts plus the
+    # leftover rather than one number and a subtraction, because "we had to fall back to the
+    # classification here" is a finding about the data and not an arithmetic remainder.
+    related_from_onet: int
+    related_from_soc_siblings: int
+    without_related: int
 
 
 @dataclass
@@ -46,6 +72,9 @@ class CoverageReport:
     programs_mapped_to_area: int
     programs_without_area: int
     programs_with_regional_projection: int
+    # Occupation-side coverage from CareerOneStop (D6). Zeroed, not absent, when the build
+    # ran without credentials.
+    enrichment: EnrichmentCoverage
 
     @property
     def outcome_coverage_pct(self) -> float:
@@ -103,14 +132,66 @@ def _median(values: list[float]) -> float | None:
     return (values[middle - 1] + values[middle]) / 2
 
 
+def detailed_soc_codes(projections: Iterable[edd_lmi.OccupationProjection]) -> list[str]:
+    """The SOC codes this build will publish an occupation record for.
+
+    The same rows :func:`index_occupations` keeps, in the order EDD published them. Exposed
+    so enrichment can be fetched for exactly the occupations that will exist, and no others:
+    asking a public API about occupations we are going to discard would be rude.
+    """
+    codes: dict[str, None] = {}
+    for row in projections:
+        if row.soc_code and row.is_detailed_occupation and row.is_statewide:
+            codes[row.soc_code] = None
+    return list(codes)
+
+
+def fetch_enrichment(
+    soc_codes: Iterable[str],
+    *,
+    state: str = DEFAULT_STATE,
+    cache_dir: Path | None = COS_CACHE_DIR,
+) -> dict[str, careeronestop.OccupationEnrichment]:
+    """Look up CareerOneStop enrichment for each occupation, keyed by SOC.
+
+    Returns an empty mapping when no credentials are configured. That is the CI case and it
+    is not an error: the build then emits exactly what it emitted before this source was
+    wired in, with the enrichment fields present and empty. Occupations the API has no entry
+    for are simply absent from the result for the same reason -- a missing description is a
+    gap in a page, never a failed build.
+
+    Responses are cached on disk, so a rebuild with a warm cache asks the network only about
+    occupations it has not seen before.
+    """
+    creds = careeronestop.credentials()
+    if creds is None:
+        return {}
+    _, token = creds
+
+    found: dict[str, careeronestop.OccupationEnrichment] = {}
+    with careeronestop.build_client(token) as http:
+        for soc_code in soc_codes:
+            enrichment = careeronestop.fetch_occupation(
+                soc_code, state=state, client=http, cache_dir=cache_dir
+            )
+            if enrichment is not None:
+                found[soc_code] = enrichment
+    return found
+
+
 def index_occupations(
     projections: list[edd_lmi.OccupationProjection],
+    *,
+    enrichment: Mapping[str, careeronestop.OccupationEnrichment] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Index statewide detailed-SOC projections by SOC code.
 
     Regional rows are retained under ``regions`` so a program can later be shown wages for
     the area it is actually in, but the statewide row is the default because a program's
     graduates do not necessarily work in the county where they trained.
+
+    ``enrichment`` is optional. Passing none is a supported build, not a degraded one: every
+    occupation still carries every enrichment key, empty.
     """
     statewide: dict[str, dict[str, Any]] = {}
     regional: dict[str, list[dict[str, Any]]] = {}
@@ -143,52 +224,160 @@ def index_occupations(
     for soc_code, occupation in statewide.items():
         occupation["regions"] = regional.get(soc_code, [])
 
+    _attach_enrichment(statewide, enrichment or {})
     _attach_related(statewide)
     return statewide
 
 
+def _attach_enrichment(
+    occupations: dict[str, dict[str, Any]],
+    enrichment: Mapping[str, careeronestop.OccupationEnrichment],
+) -> None:
+    """Attach CareerOneStop's description, skills, Bright Outlook and related list.
+
+    The keys are always written, so nobody downstream has to tell "this build had no
+    credentials" from "this record predates the field". An occupation the API has no entry
+    for carries a null description and empty lists: absence, not a blank claim.
+
+    ``related_onet`` keeps only occupations EDD also projects. O*NET relates work to work
+    without regard to what California publishes, and an occupation with no projection has no
+    page to open, no wage to show and no opening count to compare -- it would render as a
+    dead link. Filtering here rather than at the point of use means nothing downstream can
+    reintroduce one.
+
+    A skill importance the API did not rate stays null. Zero is a rating, and asserting one
+    this project was never given would be an invention.
+    """
+    for soc_code, occupation in occupations.items():
+        found = enrichment.get(soc_code)
+        occupation["description"] = found.description if found is not None else None
+        occupation["skills"] = (
+            [{"name": skill.name, "importance": skill.importance} for skill in found.skills]
+            if found is not None
+            else []
+        )
+        occupation["related_onet"] = _published_related(occupations, soc_code, found)
+        occupation["bright_outlook"] = found.bright_outlook if found is not None else None
+
+
+def _published_related(
+    occupations: Mapping[str, dict[str, Any]],
+    soc_code: str,
+    found: careeronestop.OccupationEnrichment | None,
+) -> list[dict[str, Any]]:
+    """O*NET's related occupations, less the ones this dataset cannot open a page for.
+
+    O*NET's order is kept: it is a relevance ranking by the source that made the claim, and
+    re-sorting it would quietly restate someone else's judgement as ours. Two O*NET
+    specialisations can collapse onto the same six-digit SOC, so the first mention wins.
+    """
+    if found is None:
+        return []
+    titles: dict[str, str] = {}
+    for related_soc, title in found.related:
+        if related_soc != soc_code and related_soc in occupations:
+            titles.setdefault(related_soc, title)
+    return [{"soc_code": code, "title": title} for code, title in titles.items()]
+
+
 RELATED_LIMIT = 6
+
+RELATED_SOURCE_ONET = "onet"
+"""O*NET's own related-occupation list: work judged similar to this work."""
+
+RELATED_SOURCE_SOC_SIBLINGS = "soc_major_group"
+"""Occupations sharing this one's SOC major group: adjacent by classification, not by task."""
 
 
 def _attach_related(occupations: dict[str, dict[str, Any]]) -> None:
-    """Attach sibling occupations from the same SOC major group.
+    """Attach a related-occupation list, and record which of the two answers it is.
 
-    Derived from the SOC hierarchy rather than a skills model: the first two digits of a SOC
-    code are its major group, so "29-1141 Registered Nurses" and "29-2061 Licensed Practical
-    Nurses" are genuinely adjacent by the classification's own definition. That is a weaker
-    claim than skill similarity, and deliberately so -- asserting that two jobs need the same
-    skills would need O*NET data this project does not yet carry.
-
-    Siblings are ranked by projected openings, because the useful question standing on an
+    O*NET's list is preferred wherever it survives, because it reflects an assessment of the
+    work itself -- what a person doing this job could plausibly do instead. The SOC fallback
+    is a weaker claim: the first two digits of a SOC code are its major group, so "29-1141
+    Registered Nurses" and "29-2061 Licensed Practical Nurses" are adjacent by the
+    classification's own definition, which is a statement about filing, not about tasks.
+    Siblings are ranked by projected openings, since the useful question standing on an
     occupation page is "what nearby work is actually hiring".
+
+    The two are never merged. A list padded from the second source would leave the page
+    unable to say what any given row means, so an occupation gets one source or the other
+    and ``related_source`` names it -- ``null`` when there was no list to be had from either.
     """
     by_group: dict[str, list[str]] = {}
     for soc_code in occupations:
         by_group.setdefault(soc_code[:2], []).append(soc_code)
 
     for soc_code, occupation in occupations.items():
-        siblings = [
-            occupations[other] for other in by_group.get(soc_code[:2], []) if other != soc_code
-        ]
-        # `or -1` would fold a reported zero openings into the same bucket as unreported.
-        # Nothing has zero openings today, but this is the exact confusion the project
-        # exists to avoid, and it has no business sitting inside a sort key.
-        siblings.sort(
-            key=lambda o: (
-                o["total_job_openings"] if o.get("total_job_openings") is not None else -1
-            ),
-            reverse=True,
-        )
-        occupation["related"] = [
-            {
-                "soc_code": sibling["soc_code"],
-                "title": sibling["title"],
-                "median_annual_wage": sibling["median_annual_wage"],
-                "total_job_openings": sibling["total_job_openings"],
-                "percent_change": sibling["percent_change"],
-            }
-            for sibling in siblings[:RELATED_LIMIT]
-        ]
+        from_onet = [occupations[entry["soc_code"]] for entry in occupation["related_onet"]]
+        if from_onet:
+            chosen = from_onet
+            source = RELATED_SOURCE_ONET
+        else:
+            chosen = _soc_siblings(occupations, by_group, soc_code)
+            source = RELATED_SOURCE_SOC_SIBLINGS
+        occupation["related"] = [_related_row(other) for other in chosen[:RELATED_LIMIT]]
+        occupation["related_source"] = source if occupation["related"] else None
+
+
+def _soc_siblings(
+    occupations: Mapping[str, dict[str, Any]],
+    by_group: Mapping[str, list[str]],
+    soc_code: str,
+) -> list[dict[str, Any]]:
+    siblings = [occupations[other] for other in by_group.get(soc_code[:2], []) if other != soc_code]
+    # `or -1` would fold a reported zero openings into the same bucket as unreported.
+    # Nothing has zero openings today, but this is the exact confusion the project
+    # exists to avoid, and it has no business sitting inside a sort key.
+    siblings.sort(
+        key=lambda o: o["total_job_openings"] if o.get("total_job_openings") is not None else -1,
+        reverse=True,
+    )
+    return siblings
+
+
+def _related_row(occupation: Mapping[str, Any]) -> dict[str, Any]:
+    """One related occupation, described by this dataset's own figures for it.
+
+    The title is EDD's rather than O*NET's even when O*NET supplied the relationship, so the
+    link text matches the heading of the page it opens.
+    """
+    return {
+        "soc_code": occupation["soc_code"],
+        "title": occupation["title"],
+        "median_annual_wage": occupation["median_annual_wage"],
+        "total_job_openings": occupation["total_job_openings"],
+        "percent_change": occupation["percent_change"],
+    }
+
+
+def enrichment_coverage(occupations: Mapping[str, dict[str, Any]]) -> EnrichmentCoverage:
+    """Count what the enrichment reached, from the emitted records rather than the fetch.
+
+    Counting the records is the honest version: it measures what a reader will actually
+    find on the pages, not how many API responses came back.
+    """
+    records = list(occupations.values())
+    sources = Counter(record["related_source"] for record in records)
+    return EnrichmentCoverage(
+        occupations=len(records),
+        enriched=sum(1 for record in records if _is_enriched(record)),
+        with_description=sum(1 for record in records if record["description"] is not None),
+        with_skills=sum(1 for record in records if record["skills"]),
+        with_bright_outlook=sum(1 for record in records if record["bright_outlook"] is not None),
+        related_from_onet=sources[RELATED_SOURCE_ONET],
+        related_from_soc_siblings=sources[RELATED_SOURCE_SOC_SIBLINGS],
+        without_related=sources[None],
+    )
+
+
+def _is_enriched(record: Mapping[str, Any]) -> bool:
+    return (
+        record["description"] is not None
+        or bool(record["skills"])
+        or bool(record["related_onet"])
+        or record["bright_outlook"] is not None
+    )
 
 
 OCCUPATION_SUMMARY_FIELDS = (
@@ -538,7 +727,12 @@ def build(
     programs = list(dol_etp.fetch_programs(state))
     benchmark = dol_etp.fetch_state_benchmark(state)
     projections = edd_lmi.fetch_projections()
-    occupations = index_occupations(projections)
+    # Enrichment first, so the occupation index is built once with it rather than rewritten.
+    # Empty when no credentials are configured, which is a complete build, not a failed one.
+    enrichment = fetch_enrichment(
+        detailed_soc_codes(projections), state=state, cache_dir=COS_CACHE_DIR
+    )
+    occupations = index_occupations(projections, enrichment=enrichment)
     areas = edd_lmi.area_definitions(projections)
     city_areas = edd_lmi.principal_city_areas(areas)
 
@@ -566,6 +760,7 @@ def build(
         programs_with_regional_projection=sum(
             1 for p in payloads if any(o["region"] is not None for o in p["occupations"])
         ),
+        enrichment=enrichment_coverage(occupations),
     )
 
     (output_dir / "programs.json").write_text(

@@ -2,15 +2,25 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 from camino.build import (
+    RELATED_SOURCE_ONET,
+    RELATED_SOURCE_SOC_SIBLINGS,
+    EnrichmentCoverage,
     area_coverage,
+    detailed_soc_codes,
+    enrichment_coverage,
+    fetch_enrichment,
     index_occupations,
     peer_medians,
     program_payload,
     unmapped_cities,
 )
+from camino.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
 from camino.sources.dol_etp import parse_program
 from camino.sources.edd_lmi import area_definitions, parse_projections, principal_city_areas
 
@@ -112,6 +122,234 @@ State,California,2024-2034,4,15-1252,Software Developers,80,96,16,20.0,4,6,500,6
     def test_never_relates_an_occupation_to_itself(self) -> None:
         for soc_code, occupation in self._occupations().items():
             assert soc_code not in {r["soc_code"] for r in occupation["related"]}
+
+    def test_says_the_list_came_from_the_classification(self) -> None:
+        # Without O*NET this is a claim about filing, not about the work, and the record has
+        # to say so rather than let the page imply the stronger one.
+        assert self._occupations()["29-1141"]["related_source"] == RELATED_SOURCE_SOC_SIBLINGS
+
+    def test_an_occupation_with_no_answer_names_no_source(self) -> None:
+        occupation = self._occupations()["15-1252"]
+        assert occupation["related"] == []
+        assert occupation["related_source"] is None
+
+
+ENRICHED_RN = OccupationEnrichment(
+    soc_code="29-1141",
+    onet_code="29-1141.00",
+    description="Assess patient health problems and needs.",
+    skills=(
+        Skill(name="Critical Thinking", importance=4.0),
+        Skill(name="Unrated", importance=None),
+    ),
+    # 29-2052 is projected by EDD in the fixture below; 31-9091 is not.
+    related=(("29-2052", "Pharmacy Techs"), ("31-9091", "Dental Assistants")),
+    bright_outlook="Rapid Growth; Numerous Job Openings",
+)
+
+
+class TestEnrichmentFields:
+    """CareerOneStop fields reach the record without inventing anything."""
+
+    def _occupations(self, enrichment: dict | None = None) -> dict:
+        rows = list(parse_projections(TestRelatedOccupations.CSV))
+        return index_occupations(rows, enrichment=enrichment)
+
+    def test_attaches_the_description_and_bright_outlook(self) -> None:
+        occupation = self._occupations({"29-1141": ENRICHED_RN})["29-1141"]
+        assert occupation["description"] == "Assess patient health problems and needs."
+        assert occupation["bright_outlook"] == "Rapid Growth; Numerous Job Openings"
+
+    def test_an_unrated_skill_importance_stays_null(self) -> None:
+        skills = self._occupations({"29-1141": ENRICHED_RN})["29-1141"]["skills"]
+        assert skills == [
+            {"name": "Critical Thinking", "importance": 4.0},
+            {"name": "Unrated", "importance": None},
+        ]
+
+    def test_drops_related_occupations_edd_does_not_publish(self) -> None:
+        # 31-9091 has no California projection, so it has no page, no wage and no openings.
+        related_onet = self._occupations({"29-1141": ENRICHED_RN})["29-1141"]["related_onet"]
+        assert related_onet == [{"soc_code": "29-2052", "title": "Pharmacy Techs"}]
+
+    def test_an_unenriched_occupation_carries_empty_fields_not_missing_ones(self) -> None:
+        occupation = self._occupations({"29-1141": ENRICHED_RN})["29-2061"]
+        assert occupation["description"] is None
+        assert occupation["bright_outlook"] is None
+        assert occupation["skills"] == []
+        assert occupation["related_onet"] == []
+
+    def test_a_build_with_no_enrichment_still_writes_every_key(self) -> None:
+        occupation = self._occupations()["29-1141"]
+        assert occupation["description"] is None
+        assert occupation["skills"] == []
+        assert occupation["related_onet"] == []
+        assert occupation["bright_outlook"] is None
+
+
+class TestRelatedSource:
+    """One source per occupation, named in the record. Never a blend of the two."""
+
+    def _occupations(self, enrichment: dict) -> dict:
+        rows = list(parse_projections(TestRelatedOccupations.CSV))
+        return index_occupations(rows, enrichment=enrichment)
+
+    def test_prefers_onet_over_the_soc_siblings(self) -> None:
+        occupation = self._occupations({"29-1141": ENRICHED_RN})["29-1141"]
+        assert occupation["related_source"] == RELATED_SOURCE_ONET
+        assert [r["soc_code"] for r in occupation["related"]] == ["29-2052"]
+
+    def test_does_not_pad_an_onet_list_with_siblings(self) -> None:
+        # 29-2061 is a sibling with three times the openings of the one O*NET named. Adding
+        # it would leave the page unable to say what either row means.
+        occupation = self._occupations({"29-1141": ENRICHED_RN})["29-1141"]
+        assert "29-2061" not in {r["soc_code"] for r in occupation["related"]}
+
+    def test_falls_back_to_siblings_for_an_unenriched_occupation(self) -> None:
+        occupation = self._occupations({"29-1141": ENRICHED_RN})["29-2052"]
+        assert occupation["related_source"] == RELATED_SOURCE_SOC_SIBLINGS
+        assert [r["soc_code"] for r in occupation["related"]] == ["29-1141", "29-2061"]
+
+    def test_falls_back_when_nothing_onet_named_is_published_here(self) -> None:
+        stranded = OccupationEnrichment(
+            soc_code="29-1141",
+            onet_code="29-1141.00",
+            description="Assess patient health problems and needs.",
+            skills=(),
+            related=(("31-9091", "Dental Assistants"),),
+            bright_outlook=None,
+        )
+        occupation = self._occupations({"29-1141": stranded})["29-1141"]
+        assert occupation["related_onet"] == []
+        assert occupation["related_source"] == RELATED_SOURCE_SOC_SIBLINGS
+        assert {r["soc_code"] for r in occupation["related"]} == {"29-2061", "29-2052"}
+
+    def test_onet_can_relate_across_major_groups_where_the_hierarchy_cannot(self) -> None:
+        # The point of preferring O*NET: 15-1252 has no SOC siblings here at all, and the
+        # classification therefore has nothing to say about work that resembles it.
+        crossing = OccupationEnrichment(
+            soc_code="15-1252",
+            onet_code="15-1252.00",
+            description=None,
+            skills=(),
+            related=(("29-1141", "Registered Nurses"),),
+            bright_outlook=None,
+        )
+        occupation = self._occupations({"15-1252": crossing})["15-1252"]
+        assert occupation["related_source"] == RELATED_SOURCE_ONET
+        assert [r["soc_code"] for r in occupation["related"]] == ["29-1141"]
+
+    def test_related_rows_carry_this_datasets_own_figures_and_title(self) -> None:
+        # The link text has to match the heading of the page it opens, so EDD's title wins
+        # over O*NET's wording for the same occupation.
+        row = self._occupations({"29-1141": ENRICHED_RN})["29-1141"]["related"][0]
+        assert row == {
+            "soc_code": "29-2052",
+            "title": "Pharmacy Technicians",
+            "median_annual_wage": 52000.0,
+            "total_job_openings": 100.0,
+            "percent_change": 5.0,
+        }
+
+    def test_never_relates_an_occupation_to_itself(self) -> None:
+        looping = OccupationEnrichment(
+            soc_code="29-1141",
+            onet_code="29-1141.00",
+            description=None,
+            skills=(),
+            # A specialisation collapses onto the occupation it specialises.
+            related=(("29-1141", "Registered Nurses"), ("29-2061", "Licensed Practical Nurses")),
+            bright_outlook=None,
+        )
+        occupation = self._occupations({"29-1141": looping})["29-1141"]
+        assert [r["soc_code"] for r in occupation["related"]] == ["29-2061"]
+
+
+class TestEnrichmentCoverage:
+    """The counts published in coverage.json come from the records, not from the fetch."""
+
+    def _report(self, enrichment: dict) -> EnrichmentCoverage:
+        rows = list(parse_projections(TestRelatedOccupations.CSV))
+        return enrichment_coverage(index_occupations(rows, enrichment=enrichment))
+
+    def test_counts_descriptions_and_related_sources(self) -> None:
+        report = self._report({"29-1141": ENRICHED_RN})
+        assert report.occupations == 4
+        assert report.enriched == 1
+        assert report.with_description == 1
+        assert report.with_skills == 1
+        assert report.with_bright_outlook == 1
+        assert report.related_from_onet == 1
+        # 29-2061 and 29-2052 still have each other and the RN row.
+        assert report.related_from_soc_siblings == 2
+        # 15-1252 is alone in its major group and O*NET named nothing for it.
+        assert report.without_related == 1
+
+    def test_a_build_without_credentials_reports_zeros_not_an_absence(self) -> None:
+        report = self._report({})
+        assert report.enriched == 0
+        assert report.with_description == 0
+        assert report.related_from_onet == 0
+        assert report.related_from_soc_siblings == 3
+        assert report.without_related == 1
+
+
+class TestDetailedSocCodes:
+    def test_lists_only_the_occupations_that_will_be_published(self) -> None:
+        rows = list(parse_projections(TestRegionalProjectionOnPrograms.CSV))
+        # Statewide detailed rows only: the Fresno rows repeat SOCs already listed, and a
+        # rollup like 00-0000 is not an occupation anyone can train for.
+        assert detailed_soc_codes(rows) == ["15-1252", "29-1141", "15-1211"]
+
+    def test_excludes_summary_rows(self) -> None:
+        assert "00-0000" not in detailed_soc_codes(parse_projections(PROJECTION_CSV))
+
+
+CACHED_RESPONSE = {
+    "OccupationDetail": [
+        {
+            "OnetCode": "29-1141.00",
+            "OnetDescription": "Assess patient health problems and needs.",
+            "SkillsDataList": [{"ElementName": "Critical Thinking", "DataValue": "4"}],
+            "RelatedOnetTitles": {"29-2061.00": "Licensed Practical Nurses"},
+        }
+    ]
+}
+
+
+class TestFetchEnrichment:
+    """CI has no credentials, and a warm cache must not touch the network."""
+
+    def test_without_credentials_returns_nothing_and_asks_nobody(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv(USER_ID_ENV, raising=False)
+        monkeypatch.delenv(TOKEN_ENV, raising=False)
+
+        import httpx
+
+        def explode(*args: object, **kwargs: object) -> None:
+            raise AssertionError("attempted a request without credentials")
+
+        monkeypatch.setattr(httpx.Client, "get", explode)
+        assert fetch_enrichment(["29-1141", "15-1252"]) == {}
+
+    def test_a_warm_cache_is_served_without_a_request(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import httpx
+
+        monkeypatch.setenv(USER_ID_ENV, "user")
+        monkeypatch.setenv(TOKEN_ENV, "token")
+        (tmp_path / "29-1141.00.json").write_text(json.dumps(CACHED_RESPONSE), encoding="utf-8")
+
+        def explode(*args: object, **kwargs: object) -> None:
+            raise AssertionError("hit the network despite a warm cache")
+
+        monkeypatch.setattr(httpx.Client, "get", explode)
+        found = fetch_enrichment(["29-1141"], cache_dir=tmp_path)
+        assert set(found) == {"29-1141"}
+        assert found["29-1141"].description == "Assess patient health problems and needs."
 
 
 class TestRegionalProjectionOnPrograms:

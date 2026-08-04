@@ -544,50 +544,105 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Plan, direct, or coordinate activities in such fields as electronic data processing, information systems, systems analysis, and computer programming.",
+   "skills": [
     {
-     "soc_code": "11-1021",
-     "title": "General and Operations Managers",
-     "median_annual_wage": 126477.0,
-     "total_job_openings": 264410.0,
-     "percent_change": 6.7
+     "name": "Critical Thinking",
+     "importance": 4.12
     },
     {
-     "soc_code": "11-9199",
-     "title": "Managers, All Other",
-     "median_annual_wage": 177489.0,
-     "total_job_openings": 175120.0,
+     "name": "Reading Comprehension",
+     "importance": 4.0
+    },
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.88
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.88
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.88
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers"
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts"
+    },
+    {
+     "soc_code": "13-1082",
+     "title": "Project Management Specialists"
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Systems Engineers/Architects"
+    },
+    {
+     "soc_code": "15-1243",
+     "title": "Database Architects"
+    },
+    {
+     "soc_code": "15-1242",
+     "title": "Database Administrators"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
      "percent_change": 9.7
     },
     {
-     "soc_code": "11-9111",
-     "title": "Medical and Health Services Managers",
-     "median_annual_wage": 143854.0,
-     "total_job_openings": 90810.0,
-     "percent_change": 34.9
+     "soc_code": "13-1082",
+     "title": "Project Management Specialists",
+     "median_annual_wage": 122938.0,
+     "total_job_openings": 89550.0,
+     "percent_change": 6.8
     },
     {
-     "soc_code": "11-9013",
-     "title": "Farmers, Ranchers, and Other Agricultural Managers",
-     "median_annual_wage": 110971.0,
-     "total_job_openings": 89600.0,
-     "percent_change": -2.5
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
     },
     {
-     "soc_code": "11-2022",
-     "title": "Sales Managers",
-     "median_annual_wage": 137173.0,
-     "total_job_openings": 88500.0,
-     "percent_change": 2.9
+     "soc_code": "15-1243",
+     "title": "Database Architects",
+     "median_annual_wage": 174923.0,
+     "total_job_openings": 3880.0,
+     "percent_change": 9.5
     },
     {
-     "soc_code": "11-3031",
-     "title": "Financial Managers",
-     "median_annual_wage": 183803.0,
-     "total_job_openings": 84770.0,
-     "percent_change": 16.3
+     "soc_code": "15-1242",
+     "title": "Database Administrators",
+     "median_annual_wage": 116225.0,
+     "total_job_openings": 3800.0,
+     "percent_change": 1.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "11-9021": {
    "soc_code": "11-9021",
@@ -1132,50 +1187,109 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "Plan, direct, or coordinate, usually through subordinate supervisory personnel, activities concerned with the construction and maintenance of structures, facilities, and systems. Participate in the conceptual development of a construction project and oversee its organization, scheduling, budgeting, and implementation. Includes managers in specialized construction fields, such as carpentry or plumbing.",
+   "skills": [
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 4.12
+    },
+    {
+     "name": "Management of Personnel Resources",
+     "importance": 4.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 4.0
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 4.0
+    },
+    {
+     "name": "Time Management",
+     "importance": 4.0
+    },
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "17-2051",
+     "title": "Civil Engineers"
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers"
+    },
+    {
+     "soc_code": "17-3022",
+     "title": "Civil Engineering Technologists and Technicians"
+    },
+    {
+     "soc_code": "47-4011",
+     "title": "Construction and Building Inspectors"
+    },
+    {
+     "soc_code": "17-1011",
+     "title": "Architects, Except Landscape and Naval"
+    },
+    {
+     "soc_code": "13-1082",
+     "title": "Project Management Specialists"
+    },
+    {
+     "soc_code": "17-2112",
+     "title": "Industrial Engineers"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "11-1021",
-     "title": "General and Operations Managers",
-     "median_annual_wage": 126477.0,
-     "total_job_openings": 264410.0,
-     "percent_change": 6.7
+     "soc_code": "17-2051",
+     "title": "Civil Engineers",
+     "median_annual_wage": 125929.0,
+     "total_job_openings": 38210.0,
+     "percent_change": 8.2
     },
     {
-     "soc_code": "11-9199",
-     "title": "Managers, All Other",
-     "median_annual_wage": 177489.0,
-     "total_job_openings": 175120.0,
-     "percent_change": 9.7
+     "soc_code": "47-1011",
+     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
+     "median_annual_wage": 100326.0,
+     "total_job_openings": 68670.0,
+     "percent_change": 8.0
     },
     {
-     "soc_code": "11-9111",
-     "title": "Medical and Health Services Managers",
-     "median_annual_wage": 143854.0,
-     "total_job_openings": 90810.0,
-     "percent_change": 34.9
+     "soc_code": "17-3022",
+     "title": "Civil Engineering Technologists and Technicians",
+     "median_annual_wage": 85827.0,
+     "total_job_openings": 6450.0,
+     "percent_change": 4.1
     },
     {
-     "soc_code": "11-9013",
-     "title": "Farmers, Ranchers, and Other Agricultural Managers",
-     "median_annual_wage": 110971.0,
-     "total_job_openings": 89600.0,
-     "percent_change": -2.5
+     "soc_code": "47-4011",
+     "title": "Construction and Building Inspectors",
+     "median_annual_wage": 104034.0,
+     "total_job_openings": 14650.0,
+     "percent_change": 2.1
     },
     {
-     "soc_code": "11-2022",
-     "title": "Sales Managers",
-     "median_annual_wage": 137173.0,
-     "total_job_openings": 88500.0,
-     "percent_change": 2.9
+     "soc_code": "17-1011",
+     "title": "Architects, Except Landscape and Naval",
+     "median_annual_wage": 111578.0,
+     "total_job_openings": 9910.0,
+     "percent_change": 7.5
     },
     {
-     "soc_code": "11-3031",
-     "title": "Financial Managers",
-     "median_annual_wage": 183803.0,
-     "total_job_openings": 84770.0,
-     "percent_change": 16.3
+     "soc_code": "13-1082",
+     "title": "Project Management Specialists",
+     "median_annual_wage": 122938.0,
+     "total_job_openings": 89550.0,
+     "percent_change": 6.8
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "11-9111": {
    "soc_code": "11-9111",
@@ -1686,50 +1800,113 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Plan, direct, or coordinate medical and health services in hospitals, clinics, managed care organizations, public health agencies, or similar organizations.",
+   "skills": [
     {
-     "soc_code": "11-1021",
-     "title": "General and Operations Managers",
-     "median_annual_wage": 126477.0,
-     "total_job_openings": 264410.0,
-     "percent_change": 6.7
+     "name": "Speaking",
+     "importance": 4.12
     },
     {
-     "soc_code": "11-9199",
-     "title": "Managers, All Other",
-     "median_annual_wage": 177489.0,
-     "total_job_openings": 175120.0,
+     "name": "Critical Thinking",
+     "importance": 4.12
+    },
+    {
+     "name": "Writing",
+     "importance": 4.0
+    },
+    {
+     "name": "Management of Personnel Resources",
+     "importance": 4.0
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 4.0
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 4.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "15-1211",
+     "title": "Health Informatics Specialists"
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Clinical Nurse Specialists"
+    },
+    {
+     "soc_code": "21-1091",
+     "title": "Health Education Specialists"
+    },
+    {
+     "soc_code": "29-1214",
+     "title": "Emergency Medicine Physicians"
+    },
+    {
+     "soc_code": "11-9151",
+     "title": "Social and Community Service Managers"
+    },
+    {
+     "soc_code": "25-1071",
+     "title": "Health Specialties Teachers, Postsecondary"
+    },
+    {
+     "soc_code": "29-9021",
+     "title": "Health Information Technologists and Medical Registrars"
+    },
+    {
+     "soc_code": "29-1229",
+     "title": "Preventive Medicine Physicians"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
      "percent_change": 9.7
     },
     {
-     "soc_code": "11-9013",
-     "title": "Farmers, Ranchers, and Other Agricultural Managers",
-     "median_annual_wage": 110971.0,
-     "total_job_openings": 89600.0,
-     "percent_change": -2.5
+     "soc_code": "29-1141",
+     "title": "Registered Nurses",
+     "median_annual_wage": 144197.0,
+     "total_job_openings": 228840.0,
+     "percent_change": 13.5
     },
     {
-     "soc_code": "11-2022",
-     "title": "Sales Managers",
-     "median_annual_wage": 137173.0,
-     "total_job_openings": 88500.0,
-     "percent_change": 2.9
+     "soc_code": "21-1091",
+     "title": "Health Education Specialists",
+     "median_annual_wage": 65391.0,
+     "total_job_openings": 16320.0,
+     "percent_change": 10.2
     },
     {
-     "soc_code": "11-3031",
-     "title": "Financial Managers",
-     "median_annual_wage": 183803.0,
-     "total_job_openings": 84770.0,
-     "percent_change": 16.3
+     "soc_code": "29-1214",
+     "title": "Emergency Medicine Physicians",
+     "median_annual_wage": null,
+     "total_job_openings": 1730.0,
+     "percent_change": 10.9
     },
     {
-     "soc_code": "11-3021",
-     "title": "Computer and Information Systems Managers",
-     "median_annual_wage": 221952.0,
-     "total_job_openings": 82270.0,
-     "percent_change": 16.5
+     "soc_code": "11-9151",
+     "title": "Social and Community Service Managers",
+     "median_annual_wage": 84606.0,
+     "total_job_openings": 35490.0,
+     "percent_change": 19.3
+    },
+    {
+     "soc_code": "25-1071",
+     "title": "Health Specialties Teachers, Postsecondary",
+     "median_annual_wage": 169732.0,
+     "total_job_openings": 20800.0,
+     "percent_change": 19.2
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "13-1111": {
    "soc_code": "13-1111",
@@ -2274,35 +2451,61 @@
      "job_training": "None"
     }
    ],
+   "description": "Conduct organizational studies and evaluations, design systems and procedures, conduct work simplification and measurement studies, and prepare operations and procedures manuals to assist management in operating more efficiently and effectively. Includes program analysts and management consultants.",
+   "skills": [
+    {
+     "name": "Critical Thinking",
+     "importance": 4.12
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 4.12
+    },
+    {
+     "name": "Active Listening",
+     "importance": 4.12
+    },
+    {
+     "name": "Writing",
+     "importance": 4.0
+    },
+    {
+     "name": "Speaking",
+     "importance": 4.0
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 4.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "13-1082",
+     "title": "Project Management Specialists"
+    },
+    {
+     "soc_code": "15-2051",
+     "title": "Business Intelligence Analysts"
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Information Technology Project Managers"
+    },
+    {
+     "soc_code": "11-3131",
+     "title": "Training and Development Managers"
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts"
+    },
+    {
+     "soc_code": "15-2031",
+     "title": "Operations Research Analysts"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
    "related": [
-    {
-     "soc_code": "13-2011",
-     "title": "Accountants and Auditors",
-     "median_annual_wage": 98678.0,
-     "total_job_openings": 154340.0,
-     "percent_change": 7.5
-    },
-    {
-     "soc_code": "13-1199",
-     "title": "Business Operations Specialists, All Other",
-     "median_annual_wage": 89039.0,
-     "total_job_openings": 152190.0,
-     "percent_change": 6.8
-    },
-    {
-     "soc_code": "13-1161",
-     "title": "Market Research Analysts and Marketing Specialists",
-     "median_annual_wage": 96289.0,
-     "total_job_openings": 122600.0,
-     "percent_change": 9.4
-    },
-    {
-     "soc_code": "13-1071",
-     "title": "Human Resources Specialists",
-     "median_annual_wage": 84901.0,
-     "total_job_openings": 97470.0,
-     "percent_change": 10.4
-    },
     {
      "soc_code": "13-1082",
      "title": "Project Management Specialists",
@@ -2311,13 +2514,42 @@
      "percent_change": 6.8
     },
     {
-     "soc_code": "13-1020",
-     "title": "Buyers and Purchasing Agents",
-     "median_annual_wage": 84108.0,
-     "total_job_openings": 52140.0,
-     "percent_change": 6.6
+     "soc_code": "15-2051",
+     "title": "Data Scientists",
+     "median_annual_wage": 145554.0,
+     "total_job_openings": 40180.0,
+     "percent_change": 37.1
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Occupations, All Other",
+     "median_annual_wage": 138203.0,
+     "total_job_openings": 59320.0,
+     "percent_change": 11.1
+    },
+    {
+     "soc_code": "11-3131",
+     "title": "Training and Development Managers",
+     "median_annual_wage": 158882.0,
+     "total_job_openings": 5810.0,
+     "percent_change": 9.0
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts",
+     "median_annual_wage": 131295.0,
+     "total_job_openings": 41500.0,
+     "percent_change": 9.7
+    },
+    {
+     "soc_code": "15-2031",
+     "title": "Operations Research Analysts",
+     "median_annual_wage": 104958.0,
+     "total_job_openings": 9630.0,
+     "percent_change": 22.5
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "15-1212": {
    "soc_code": "15-1212",
@@ -2590,27 +2822,63 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Plan, implement, upgrade, or monitor security measures for the protection of computer networks and information. Assess system vulnerabilities for security risks and propose and implement risk mitigation strategies. May ensure appropriate security controls are in place that will safeguard digital files and vital electronic infrastructure. May respond to computer security breaches and viruses.",
+   "skills": [
     {
-     "soc_code": "15-1252",
-     "title": "Software Developers",
-     "median_annual_wage": 179292.0,
-     "total_job_openings": 207260.0,
-     "percent_change": 18.4
+     "name": "Reading Comprehension",
+     "importance": 4.0
     },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.88
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.75
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.75
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.62
+    },
+    {
+     "name": "Writing",
+     "importance": 3.5
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "15-1299",
+     "title": "Information Security Engineers"
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts"
+    },
+    {
+     "soc_code": "15-1244",
+     "title": "Network and Computer Systems Administrators"
+    },
+    {
+     "soc_code": "15-1231",
+     "title": "Computer Network Support Specialists"
+    },
+    {
+     "soc_code": "15-1242",
+     "title": "Database Administrators"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
     {
      "soc_code": "15-1299",
      "title": "Computer Occupations, All Other",
      "median_annual_wage": 138203.0,
      "total_job_openings": 59320.0,
      "percent_change": 11.1
-    },
-    {
-     "soc_code": "15-1232",
-     "title": "Computer User Support Specialists",
-     "median_annual_wage": 81797.0,
-     "total_job_openings": 44720.0,
-     "percent_change": -2.2
     },
     {
      "soc_code": "15-1211",
@@ -2620,20 +2888,28 @@
      "percent_change": 9.7
     },
     {
-     "soc_code": "15-2051",
-     "title": "Data Scientists",
-     "median_annual_wage": 145554.0,
-     "total_job_openings": 40180.0,
-     "percent_change": 37.1
+     "soc_code": "15-1244",
+     "title": "Network and Computer Systems Administrators",
+     "median_annual_wage": 109420.0,
+     "total_job_openings": 11510.0,
+     "percent_change": -4.5
     },
     {
-     "soc_code": "15-1255",
-     "title": "Web and Digital Interface Designers",
-     "median_annual_wage": 139920.0,
-     "total_job_openings": 23940.0,
-     "percent_change": 13.9
+     "soc_code": "15-1231",
+     "title": "Computer Network Support Specialists",
+     "median_annual_wage": 81407.0,
+     "total_job_openings": 9510.0,
+     "percent_change": 5.8
+    },
+    {
+     "soc_code": "15-1242",
+     "title": "Database Administrators",
+     "median_annual_wage": 116225.0,
+     "total_job_openings": 3800.0,
+     "percent_change": 1.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "15-1231": {
    "soc_code": "15-1231",
@@ -3127,13 +3403,78 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Analyze, test, troubleshoot, and evaluate existing network systems, such as local area networks (LAN), wide area networks (WAN), cloud networks, servers, and other data communications networks. Perform network maintenance to ensure networks operate correctly with minimal interruption.",
+   "skills": [
+    {
+     "name": "Critical Thinking",
+     "importance": 3.75
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.5
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.38
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.38
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.25
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "15-1244",
+     "title": "Network and Computer Systems Administrators"
+    },
+    {
+     "soc_code": "15-1241",
+     "title": "Computer Network Architects"
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Information Security Engineers"
+    },
+    {
+     "soc_code": "15-1232",
+     "title": "Computer User Support Specialists"
+    },
     {
      "soc_code": "15-1252",
-     "title": "Software Developers",
-     "median_annual_wage": 179292.0,
-     "total_job_openings": 207260.0,
-     "percent_change": 18.4
+     "title": "Software Developers"
+    },
+    {
+     "soc_code": "15-1212",
+     "title": "Information Security Analysts"
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts"
+    }
+   ],
+   "bright_outlook": null,
+   "related": [
+    {
+     "soc_code": "15-1244",
+     "title": "Network and Computer Systems Administrators",
+     "median_annual_wage": 109420.0,
+     "total_job_openings": 11510.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "15-1241",
+     "title": "Computer Network Architects",
+     "median_annual_wage": 163317.0,
+     "total_job_openings": 9510.0,
+     "percent_change": 11.8
     },
     {
      "soc_code": "15-1299",
@@ -3150,27 +3491,21 @@
      "percent_change": -2.2
     },
     {
-     "soc_code": "15-1211",
-     "title": "Computer Systems Analysts",
-     "median_annual_wage": 131295.0,
-     "total_job_openings": 41500.0,
-     "percent_change": 9.7
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
     },
     {
-     "soc_code": "15-2051",
-     "title": "Data Scientists",
-     "median_annual_wage": 145554.0,
-     "total_job_openings": 40180.0,
-     "percent_change": 37.1
-    },
-    {
-     "soc_code": "15-1255",
-     "title": "Web and Digital Interface Designers",
-     "median_annual_wage": 139920.0,
-     "total_job_openings": 23940.0,
-     "percent_change": 13.9
+     "soc_code": "15-1212",
+     "title": "Information Security Analysts",
+     "median_annual_wage": 142449.0,
+     "total_job_openings": 13930.0,
+     "percent_change": 29.1
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "15-1252": {
    "soc_code": "15-1252",
@@ -3681,6 +4016,68 @@
      "job_training": "None"
     }
    ],
+   "description": "Research, design, and develop computer and network software or specialized utility programs. Analyze user needs and develop software solutions, applying principles and techniques of computer science, engineering, and mathematical analysis. Update software or enhance existing software capabilities. May work with computer hardware engineers to integrate hardware and software systems, and develop specifications and performance requirements. May maintain databases within an application area, working individually or coordinating database development as part of a team.",
+   "skills": [
+    {
+     "name": "Programming",
+     "importance": 4.0
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.88
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.62
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.5
+    },
+    {
+     "name": "Systems Analysis",
+     "importance": 3.5
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.5
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "15-1299",
+     "title": "Computer Systems Engineers/Architects"
+    },
+    {
+     "soc_code": "15-1251",
+     "title": "Computer Programmers"
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Computer Systems Analysts"
+    },
+    {
+     "soc_code": "17-2061",
+     "title": "Computer Hardware Engineers"
+    },
+    {
+     "soc_code": "15-1253",
+     "title": "Software Quality Assurance Analysts and Testers"
+    },
+    {
+     "soc_code": "15-1243",
+     "title": "Database Architects"
+    },
+    {
+     "soc_code": "15-1242",
+     "title": "Database Administrators"
+    },
+    {
+     "soc_code": "15-1241",
+     "title": "Computer Network Architects"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
    "related": [
     {
      "soc_code": "15-1299",
@@ -3690,11 +4087,11 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-1232",
-     "title": "Computer User Support Specialists",
-     "median_annual_wage": 81797.0,
-     "total_job_openings": 44720.0,
-     "percent_change": -2.2
+     "soc_code": "15-1251",
+     "title": "Computer Programmers",
+     "median_annual_wage": 120028.0,
+     "total_job_openings": 6210.0,
+     "percent_change": -3.8
     },
     {
      "soc_code": "15-1211",
@@ -3704,18 +4101,11 @@
      "percent_change": 9.7
     },
     {
-     "soc_code": "15-2051",
-     "title": "Data Scientists",
-     "median_annual_wage": 145554.0,
-     "total_job_openings": 40180.0,
-     "percent_change": 37.1
-    },
-    {
-     "soc_code": "15-1255",
-     "title": "Web and Digital Interface Designers",
-     "median_annual_wage": 139920.0,
-     "total_job_openings": 23940.0,
-     "percent_change": 13.9
+     "soc_code": "17-2061",
+     "title": "Computer Hardware Engineers",
+     "median_annual_wage": 190364.0,
+     "total_job_openings": 12740.0,
+     "percent_change": 7.8
     },
     {
      "soc_code": "15-1253",
@@ -3723,8 +4113,16 @@
      "median_annual_wage": 132344.0,
      "total_job_openings": 19160.0,
      "percent_change": 9.3
+    },
+    {
+     "soc_code": "15-1243",
+     "title": "Database Architects",
+     "median_annual_wage": 174923.0,
+     "total_job_openings": 3880.0,
+     "percent_change": 9.5
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "15-1254": {
    "soc_code": "15-1254",
@@ -4031,7 +4429,72 @@
      "job_training": "None"
     }
    ],
+   "description": "Develop and implement websites, web applications, application databases, and interactive web interfaces. Evaluate code to ensure that it is properly structured, meets industry standards, and is compatible with browsers and devices. Optimize website performance, scalability, and server-side code and processes. May develop website infrastructure and integrate websites with other computer applications.",
+   "skills": [
+    {
+     "name": "Programming",
+     "importance": 4.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.75
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.62
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.62
+    },
+    {
+     "name": "Operations Analysis",
+     "importance": 3.62
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.5
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers"
+    },
+    {
+     "soc_code": "15-1252",
+     "title": "Software Developers"
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Web Administrators"
+    },
+    {
+     "soc_code": "15-1251",
+     "title": "Computer Programmers"
+    },
+    {
+     "soc_code": "15-1242",
+     "title": "Database Administrators"
+    },
+    {
+     "soc_code": "13-1161",
+     "title": "Search Marketing Strategists"
+    },
+    {
+     "soc_code": "15-1243",
+     "title": "Database Architects"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
+    },
     {
      "soc_code": "15-1252",
      "title": "Software Developers",
@@ -4047,34 +4510,28 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-1232",
-     "title": "Computer User Support Specialists",
-     "median_annual_wage": 81797.0,
-     "total_job_openings": 44720.0,
-     "percent_change": -2.2
+     "soc_code": "15-1251",
+     "title": "Computer Programmers",
+     "median_annual_wage": 120028.0,
+     "total_job_openings": 6210.0,
+     "percent_change": -3.8
     },
     {
-     "soc_code": "15-1211",
-     "title": "Computer Systems Analysts",
-     "median_annual_wage": 131295.0,
-     "total_job_openings": 41500.0,
-     "percent_change": 9.7
+     "soc_code": "15-1242",
+     "title": "Database Administrators",
+     "median_annual_wage": 116225.0,
+     "total_job_openings": 3800.0,
+     "percent_change": 1.4
     },
     {
-     "soc_code": "15-2051",
-     "title": "Data Scientists",
-     "median_annual_wage": 145554.0,
-     "total_job_openings": 40180.0,
-     "percent_change": 37.1
-    },
-    {
-     "soc_code": "15-1255",
-     "title": "Web and Digital Interface Designers",
-     "median_annual_wage": 139920.0,
-     "total_job_openings": 23940.0,
-     "percent_change": 13.9
+     "soc_code": "13-1161",
+     "title": "Market Research Analysts and Marketing Specialists",
+     "median_annual_wage": 96289.0,
+     "total_job_openings": 122600.0,
+     "percent_change": 9.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "15-1255": {
    "soc_code": "15-1255",
@@ -4466,13 +4923,46 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Design digital user interfaces or websites. Develop and test layouts, interfaces, functionality, and navigation menus to ensure compatibility and usability across browsers or devices. May use web framework applications as well as client-side code and processes. May evaluate web design following web and accessibility standards, and may analyze web use metrics and optimize websites for marketability and search engine ranking. May design and test interfaces that facilitate the human-computer interaction and maximize the usability of digital devices, websites, and software with a focus on aesthetics and design. May create graphics used in websites and manage website content and links.",
+   "skills": [],
+   "related_onet": [
+    {
+     "soc_code": "15-1254",
+     "title": "Web Developers"
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Web Administrators"
+    },
     {
      "soc_code": "15-1252",
-     "title": "Software Developers",
-     "median_annual_wage": 179292.0,
-     "total_job_openings": 207260.0,
-     "percent_change": 18.4
+     "title": "Software Developers"
+    },
+    {
+     "soc_code": "15-1251",
+     "title": "Computer Programmers"
+    },
+    {
+     "soc_code": "15-1242",
+     "title": "Database Administrators"
+    },
+    {
+     "soc_code": "15-1243",
+     "title": "Database Architects"
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
+    {
+     "soc_code": "15-1254",
+     "title": "Web Developers",
+     "median_annual_wage": 122917.0,
+     "total_job_openings": 5070.0,
+     "percent_change": 9.0
     },
     {
      "soc_code": "15-1299",
@@ -4482,34 +4972,35 @@
      "percent_change": 11.1
     },
     {
-     "soc_code": "15-1232",
-     "title": "Computer User Support Specialists",
-     "median_annual_wage": 81797.0,
-     "total_job_openings": 44720.0,
-     "percent_change": -2.2
+     "soc_code": "15-1252",
+     "title": "Software Developers",
+     "median_annual_wage": 179292.0,
+     "total_job_openings": 207260.0,
+     "percent_change": 18.4
     },
     {
-     "soc_code": "15-1211",
-     "title": "Computer Systems Analysts",
-     "median_annual_wage": 131295.0,
-     "total_job_openings": 41500.0,
-     "percent_change": 9.7
+     "soc_code": "15-1251",
+     "title": "Computer Programmers",
+     "median_annual_wage": 120028.0,
+     "total_job_openings": 6210.0,
+     "percent_change": -3.8
     },
     {
-     "soc_code": "15-2051",
-     "title": "Data Scientists",
-     "median_annual_wage": 145554.0,
-     "total_job_openings": 40180.0,
-     "percent_change": 37.1
+     "soc_code": "15-1242",
+     "title": "Database Administrators",
+     "median_annual_wage": 116225.0,
+     "total_job_openings": 3800.0,
+     "percent_change": 1.4
     },
     {
-     "soc_code": "15-1253",
-     "title": "Software Quality Assurance Analysts and Testers",
-     "median_annual_wage": 132344.0,
-     "total_job_openings": 19160.0,
-     "percent_change": 9.3
+     "soc_code": "15-1243",
+     "title": "Database Architects",
+     "median_annual_wage": 174923.0,
+     "total_job_openings": 3880.0,
+     "percent_change": 9.5
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "15-1299": {
    "soc_code": "15-1299",
@@ -5054,6 +5545,10 @@
      "job_training": "None"
     }
    ],
+   "description": "All computer occupations not listed separately.",
+   "skills": [],
+   "related_onet": [],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
      "soc_code": "15-1252",
@@ -5097,7 +5592,8 @@
      "total_job_openings": 19160.0,
      "percent_change": 9.3
     }
-   ]
+   ],
+   "related_source": "soc_major_group"
   },
   "15-2051": {
    "soc_code": "15-2051",
@@ -5540,50 +6036,58 @@
      "job_training": "None"
     }
    ],
+   "description": "Develop and implement a set of techniques or analytics applications to transform raw data into meaningful information using data-oriented programming languages and visualization software. Apply data mining, data modeling, natural language processing, and machine learning to extract and analyze information from large structured and unstructured datasets. Visualize, interpret, and report data findings. May create dynamic data reports.",
+   "skills": [],
+   "related_onet": [
+    {
+     "soc_code": "15-2041",
+     "title": "Statisticians"
+    },
+    {
+     "soc_code": "13-2099",
+     "title": "Financial Quantitative Analysts"
+    },
+    {
+     "soc_code": "15-2031",
+     "title": "Operations Research Analysts"
+    },
+    {
+     "soc_code": "19-1029",
+     "title": "Bioinformatics Scientists"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "15-1252",
-     "title": "Software Developers",
-     "median_annual_wage": 179292.0,
-     "total_job_openings": 207260.0,
-     "percent_change": 18.4
+     "soc_code": "15-2041",
+     "title": "Statisticians",
+     "median_annual_wage": 139766.0,
+     "total_job_openings": 1860.0,
+     "percent_change": 15.4
     },
     {
-     "soc_code": "15-1299",
-     "title": "Computer Occupations, All Other",
-     "median_annual_wage": 138203.0,
-     "total_job_openings": 59320.0,
-     "percent_change": 11.1
+     "soc_code": "13-2099",
+     "title": "Financial Specialists, All Other",
+     "median_annual_wage": 82166.0,
+     "total_job_openings": 11860.0,
+     "percent_change": 6.7
     },
     {
-     "soc_code": "15-1232",
-     "title": "Computer User Support Specialists",
-     "median_annual_wage": 81797.0,
-     "total_job_openings": 44720.0,
-     "percent_change": -2.2
+     "soc_code": "15-2031",
+     "title": "Operations Research Analysts",
+     "median_annual_wage": 104958.0,
+     "total_job_openings": 9630.0,
+     "percent_change": 22.5
     },
     {
-     "soc_code": "15-1211",
-     "title": "Computer Systems Analysts",
-     "median_annual_wage": 131295.0,
-     "total_job_openings": 41500.0,
+     "soc_code": "19-1029",
+     "title": "Biological Scientists, All Other",
+     "median_annual_wage": 116708.0,
+     "total_job_openings": 10850.0,
      "percent_change": 9.7
-    },
-    {
-     "soc_code": "15-1255",
-     "title": "Web and Digital Interface Designers",
-     "median_annual_wage": 139920.0,
-     "total_job_openings": 23940.0,
-     "percent_change": 13.9
-    },
-    {
-     "soc_code": "15-1253",
-     "title": "Software Quality Assurance Analysts and Testers",
-     "median_annual_wage": 132344.0,
-     "total_job_openings": 19160.0,
-     "percent_change": 9.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "17-3011": {
    "soc_code": "17-3011",
@@ -6094,7 +6598,93 @@
      "job_training": "None"
     }
    ],
+   "description": "Prepare detailed drawings of architectural and structural features of buildings or drawings and topographical relief maps used in civil engineering projects, such as highways, bridges, and public works. Use knowledge of building materials, engineering practices, and mathematics to complete drawings.",
+   "skills": [
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.62
+    },
+    {
+     "name": "Systems Analysis",
+     "importance": 3.5
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.5
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.38
+    },
+    {
+     "name": "Writing",
+     "importance": 3.38
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.38
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "17-3013",
+     "title": "Mechanical Drafters"
+    },
+    {
+     "soc_code": "17-3012",
+     "title": "Electrical and Electronics Drafters"
+    },
+    {
+     "soc_code": "17-3022",
+     "title": "Civil Engineering Technologists and Technicians"
+    },
+    {
+     "soc_code": "17-3027",
+     "title": "Mechanical Engineering Technologists and Technicians"
+    },
+    {
+     "soc_code": "17-2051",
+     "title": "Civil Engineers"
+    },
+    {
+     "soc_code": "11-9041",
+     "title": "Architectural and Engineering Managers"
+    },
+    {
+     "soc_code": "17-1011",
+     "title": "Architects, Except Landscape and Naval"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
+    {
+     "soc_code": "17-3013",
+     "title": "Mechanical Drafters",
+     "median_annual_wage": 84820.0,
+     "total_job_openings": 3040.0,
+     "percent_change": -5.1
+    },
+    {
+     "soc_code": "17-3012",
+     "title": "Electrical and Electronics Drafters",
+     "median_annual_wage": 80502.0,
+     "total_job_openings": 2120.0,
+     "percent_change": -10.0
+    },
+    {
+     "soc_code": "17-3022",
+     "title": "Civil Engineering Technologists and Technicians",
+     "median_annual_wage": 85827.0,
+     "total_job_openings": 6450.0,
+     "percent_change": 4.1
+    },
+    {
+     "soc_code": "17-3027",
+     "title": "Mechanical Engineering Technologists and Technicians",
+     "median_annual_wage": 89836.0,
+     "total_job_openings": 3330.0,
+     "percent_change": 5.4
+    },
     {
      "soc_code": "17-2051",
      "title": "Civil Engineers",
@@ -6103,41 +6693,14 @@
      "percent_change": 8.2
     },
     {
-     "soc_code": "17-2112",
-     "title": "Industrial Engineers",
-     "median_annual_wage": 128088.0,
-     "total_job_openings": 24010.0,
-     "percent_change": 11.9
-    },
-    {
-     "soc_code": "17-2141",
-     "title": "Mechanical Engineers",
-     "median_annual_wage": 134564.0,
-     "total_job_openings": 20280.0,
-     "percent_change": 11.5
-    },
-    {
-     "soc_code": "17-2199",
-     "title": "Engineers, All Other",
-     "median_annual_wage": 134513.0,
-     "total_job_openings": 19090.0,
-     "percent_change": 6.4
-    },
-    {
-     "soc_code": "17-2071",
-     "title": "Electrical Engineers",
-     "median_annual_wage": 148072.0,
-     "total_job_openings": 15160.0,
-     "percent_change": 7.3
-    },
-    {
-     "soc_code": "17-2061",
-     "title": "Computer Hardware Engineers",
-     "median_annual_wage": 190364.0,
-     "total_job_openings": 12740.0,
-     "percent_change": 7.8
+     "soc_code": "11-9041",
+     "title": "Architectural and Engineering Managers",
+     "median_annual_wage": 213808.0,
+     "total_job_openings": 20870.0,
+     "percent_change": 5.0
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "17-3019": {
    "soc_code": "17-3019",
@@ -6308,6 +6871,10 @@
      "job_training": "None"
     }
    ],
+   "description": "All drafters not listed separately.",
+   "skills": [],
+   "related_onet": [],
+   "bright_outlook": null,
    "related": [
     {
      "soc_code": "17-2051",
@@ -6351,7 +6918,8 @@
      "total_job_openings": 12740.0,
      "percent_change": 7.8
     }
-   ]
+   ],
+   "related_source": "soc_major_group"
   },
   "17-3026": {
    "soc_code": "17-3026",
@@ -6522,14 +7090,61 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Apply engineering theory and principles to problems of industrial layout or manufacturing production, usually under the direction of engineering staff. May perform time and motion studies on worker operations in a variety of industries for purposes such as establishing standard production rates or improving efficiency.",
+   "skills": [
     {
-     "soc_code": "17-2051",
-     "title": "Civil Engineers",
-     "median_annual_wage": 125929.0,
-     "total_job_openings": 38210.0,
-     "percent_change": 8.2
+     "name": "Reading Comprehension",
+     "importance": 4.0
     },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.88
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.88
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.75
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.38
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "17-2112",
+     "title": "Industrial Engineers"
+    },
+    {
+     "soc_code": "17-3027",
+     "title": "Mechanical Engineering Technologists and Technicians"
+    },
+    {
+     "soc_code": "17-3028",
+     "title": "Calibration Technologists and Technicians"
+    },
+    {
+     "soc_code": "17-3023",
+     "title": "Electrical and Electronic Engineering Technologists and Technicians"
+    },
+    {
+     "soc_code": "17-3021",
+     "title": "Aerospace Engineering and Operations Technologists and Technicians"
+    },
+    {
+     "soc_code": "17-3024",
+     "title": "Robotics Technicians"
+    }
+   ],
+   "bright_outlook": null,
+   "related": [
     {
      "soc_code": "17-2112",
      "title": "Industrial Engineers",
@@ -6538,34 +7153,42 @@
      "percent_change": 11.9
     },
     {
-     "soc_code": "17-2141",
-     "title": "Mechanical Engineers",
-     "median_annual_wage": 134564.0,
-     "total_job_openings": 20280.0,
-     "percent_change": 11.5
+     "soc_code": "17-3027",
+     "title": "Mechanical Engineering Technologists and Technicians",
+     "median_annual_wage": 89836.0,
+     "total_job_openings": 3330.0,
+     "percent_change": 5.4
     },
     {
-     "soc_code": "17-2199",
-     "title": "Engineers, All Other",
-     "median_annual_wage": 134513.0,
-     "total_job_openings": 19090.0,
-     "percent_change": 6.4
+     "soc_code": "17-3028",
+     "title": "Calibration Technologists and Technicians",
+     "median_annual_wage": 81222.0,
+     "total_job_openings": 1070.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "17-2071",
-     "title": "Electrical Engineers",
-     "median_annual_wage": 148072.0,
-     "total_job_openings": 15160.0,
-     "percent_change": 7.3
+     "soc_code": "17-3023",
+     "title": "Electrical and Electronics Engineering Technologists and Technicians",
+     "median_annual_wage": 88500.0,
+     "total_job_openings": 11520.0,
+     "percent_change": -2.9
     },
     {
-     "soc_code": "17-2061",
-     "title": "Computer Hardware Engineers",
-     "median_annual_wage": 190364.0,
-     "total_job_openings": 12740.0,
-     "percent_change": 7.8
+     "soc_code": "17-3021",
+     "title": "Aerospace Engineering and Operations Technologists and Technicians",
+     "median_annual_wage": 101771.0,
+     "total_job_openings": 1580.0,
+     "percent_change": 12.5
+    },
+    {
+     "soc_code": "17-3024",
+     "title": "Electro-Mechanical and Mechatronics Technologists and Technicians",
+     "median_annual_wage": 83833.0,
+     "total_job_openings": 1700.0,
+     "percent_change": 5.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "25-2021": {
    "soc_code": "25-2021",
@@ -7110,27 +7733,77 @@
      "job_training": "None"
     }
    ],
+   "description": "Teach academic and social skills to students at the elementary school level.",
+   "skills": [
+    {
+     "name": "Learning Strategies",
+     "importance": 4.25
+    },
+    {
+     "name": "Instructing",
+     "importance": 4.25
+    },
+    {
+     "name": "Speaking",
+     "importance": 4.12
+    },
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 4.0
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 4.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "25-2022",
+     "title": "Middle School Teachers, Except Special and Career/Technical Education"
+    },
+    {
+     "soc_code": "25-2031",
+     "title": "Secondary School Teachers, Except Special and Career/Technical Education"
+    },
+    {
+     "soc_code": "25-2012",
+     "title": "Kindergarten Teachers, Except Special Education"
+    },
+    {
+     "soc_code": "25-3041",
+     "title": "Tutors"
+    },
+    {
+     "soc_code": "25-3011",
+     "title": "Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
    "related": [
     {
-     "soc_code": "25-9045",
-     "title": "Teaching Assistants, Except Postsecondary",
-     "median_annual_wage": 47791.0,
-     "total_job_openings": 208890.0,
-     "percent_change": -0.4
+     "soc_code": "25-2022",
+     "title": "Middle School Teachers, Except Special and Career/Technical Education",
+     "median_annual_wage": 101720.0,
+     "total_job_openings": 23240.0,
+     "percent_change": -1.7
     },
     {
-     "soc_code": "25-3031",
-     "title": "Substitute Teachers, Short-Term",
-     "median_annual_wage": 61988.0,
-     "total_job_openings": 141370.0,
-     "percent_change": 2.2
+     "soc_code": "25-2031",
+     "title": "Secondary School Teachers, Except Special and Career/Technical Education",
+     "median_annual_wage": 104208.0,
+     "total_job_openings": 57820.0,
+     "percent_change": -1.5
     },
     {
-     "soc_code": "25-3021",
-     "title": "Self-Enrichment Teachers",
-     "median_annual_wage": 50958.0,
-     "total_job_openings": 97020.0,
-     "percent_change": 10.2
+     "soc_code": "25-2012",
+     "title": "Kindergarten Teachers, Except Special Education",
+     "median_annual_wage": 84861.0,
+     "total_job_openings": 7710.0,
+     "percent_change": -2.8
     },
     {
      "soc_code": "25-3041",
@@ -7140,20 +7813,14 @@
      "percent_change": 6.8
     },
     {
-     "soc_code": "25-2011",
-     "title": "Preschool Teachers, Except Special Education",
-     "median_annual_wage": 48727.0,
-     "total_job_openings": 80570.0,
-     "percent_change": 13.1
-    },
-    {
-     "soc_code": "25-2031",
-     "title": "Secondary School Teachers, Except Special and Career/Technical Education",
-     "median_annual_wage": 104208.0,
-     "total_job_openings": 57820.0,
-     "percent_change": -1.5
+     "soc_code": "25-3011",
+     "title": "Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",
+     "median_annual_wage": 104886.0,
+     "total_job_openings": 1700.0,
+     "percent_change": -11.8
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "25-2031": {
    "soc_code": "25-2031",
@@ -7698,27 +8365,67 @@
      "job_training": "None"
     }
    ],
+   "description": "Teach one or more subjects to students at the secondary school level.",
+   "skills": [
+    {
+     "name": "Instructing",
+     "importance": 4.12
+    },
+    {
+     "name": "Learning Strategies",
+     "importance": 4.0
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 4.0
+    },
+    {
+     "name": "Speaking",
+     "importance": 4.0
+    },
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.88
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "25-2022",
+     "title": "Middle School Teachers, Except Special and Career/Technical Education"
+    },
+    {
+     "soc_code": "25-2021",
+     "title": "Elementary School Teachers, Except Special Education"
+    },
+    {
+     "soc_code": "25-3041",
+     "title": "Tutors"
+    },
+    {
+     "soc_code": "25-3011",
+     "title": "Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors"
+    },
+    {
+     "soc_code": "25-2058",
+     "title": "Special Education Teachers, Secondary School"
+    },
+    {
+     "soc_code": "25-2057",
+     "title": "Special Education Teachers, Middle School"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
     {
-     "soc_code": "25-9045",
-     "title": "Teaching Assistants, Except Postsecondary",
-     "median_annual_wage": 47791.0,
-     "total_job_openings": 208890.0,
-     "percent_change": -0.4
-    },
-    {
-     "soc_code": "25-3031",
-     "title": "Substitute Teachers, Short-Term",
-     "median_annual_wage": 61988.0,
-     "total_job_openings": 141370.0,
-     "percent_change": 2.2
-    },
-    {
-     "soc_code": "25-3021",
-     "title": "Self-Enrichment Teachers",
-     "median_annual_wage": 50958.0,
-     "total_job_openings": 97020.0,
-     "percent_change": 10.2
+     "soc_code": "25-2022",
+     "title": "Middle School Teachers, Except Special and Career/Technical Education",
+     "median_annual_wage": 101720.0,
+     "total_job_openings": 23240.0,
+     "percent_change": -1.7
     },
     {
      "soc_code": "25-2021",
@@ -7735,13 +8442,28 @@
      "percent_change": 6.8
     },
     {
-     "soc_code": "25-2011",
-     "title": "Preschool Teachers, Except Special Education",
-     "median_annual_wage": 48727.0,
-     "total_job_openings": 80570.0,
-     "percent_change": 13.1
+     "soc_code": "25-3011",
+     "title": "Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",
+     "median_annual_wage": 104886.0,
+     "total_job_openings": 1700.0,
+     "percent_change": -11.8
+    },
+    {
+     "soc_code": "25-2058",
+     "title": "Special Education Teachers, Secondary School",
+     "median_annual_wage": 103889.0,
+     "total_job_openings": 7850.0,
+     "percent_change": -1.7
+    },
+    {
+     "soc_code": "25-2057",
+     "title": "Special Education Teachers, Middle School",
+     "median_annual_wage": 104372.0,
+     "total_job_openings": 3120.0,
+     "percent_change": -2.1
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "27-1014": {
    "soc_code": "27-1014",
@@ -7980,34 +8702,67 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Create special effects or animations using film, video, computers, or other electronic tools and media for use in products, such as computer games, movies, music videos, and commercials.",
+   "skills": [
     {
-     "soc_code": "27-2022",
-     "title": "Coaches and Scouts",
-     "median_annual_wage": 48994.0,
-     "total_job_openings": 49610.0,
-     "percent_change": 10.7
+     "name": "Active Listening",
+     "importance": 3.88
     },
     {
-     "soc_code": "27-2011",
-     "title": "Actors",
-     "median_annual_wage": null,
-     "total_job_openings": 39840.0,
-     "percent_change": 4.4
+     "name": "Critical Thinking",
+     "importance": 3.75
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.75
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.25
+    },
+    {
+     "name": "Writing",
+     "importance": 3.12
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers"
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors"
+    },
+    {
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors"
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Video Game Designers"
     },
     {
      "soc_code": "27-2012",
-     "title": "Producers and Directors",
-     "median_annual_wage": 133423.0,
-     "total_job_openings": 31850.0,
-     "percent_change": 12.2
+     "title": "Producers and Directors"
     },
     {
-     "soc_code": "27-3031",
-     "title": "Public Relations Specialists",
-     "median_annual_wage": 87410.0,
-     "total_job_openings": 31480.0,
-     "percent_change": 8.2
+     "soc_code": "27-4021",
+     "title": "Photographers"
+    }
+   ],
+   "bright_outlook": null,
+   "related": [
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers",
+     "median_annual_wage": 77233.0,
+     "total_job_openings": 24970.0,
+     "percent_change": 1.2
     },
     {
      "soc_code": "27-1011",
@@ -8017,13 +8772,35 @@
      "percent_change": 5.5
     },
     {
-     "soc_code": "27-1024",
-     "title": "Graphic Designers",
-     "median_annual_wage": 77233.0,
-     "total_job_openings": 24970.0,
-     "percent_change": 1.2
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors",
+     "median_annual_wage": 90967.0,
+     "total_job_openings": 10010.0,
+     "percent_change": 7.9
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
+    },
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors",
+     "median_annual_wage": 133423.0,
+     "total_job_openings": 31850.0,
+     "percent_change": 12.2
+    },
+    {
+     "soc_code": "27-4021",
+     "title": "Photographers",
+     "median_annual_wage": 49179.0,
+     "total_job_openings": 21270.0,
+     "percent_change": 6.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "27-1019": {
    "soc_code": "27-1019",
@@ -8092,6 +8869,10 @@
      "job_training": "Long-term on-the-job training"
     }
    ],
+   "description": "All artists and related workers not listed separately.",
+   "skills": [],
+   "related_onet": [],
+   "bright_outlook": null,
    "related": [
     {
      "soc_code": "27-2022",
@@ -8135,7 +8916,8 @@
      "total_job_openings": 24970.0,
      "percent_change": 1.2
     }
-   ]
+   ],
+   "related_source": "soc_major_group"
   },
   "27-1024": {
    "soc_code": "27-1024",
@@ -8646,34 +9428,67 @@
      "job_training": "None"
     }
    ],
+   "description": "Design or create graphics to meet specific commercial or promotional needs, such as packaging, displays, or logos. May use a variety of mediums to achieve artistic or decorative effects.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 3.75
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.38
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.25
+    },
+    {
+     "name": "Writing",
+     "importance": 3.25
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.25
+    },
+    {
+     "name": "Coordination",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "27-1014",
+     "title": "Special Effects Artists and Animators"
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors"
+    },
+    {
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers"
+    },
+    {
+     "soc_code": "27-1013",
+     "title": "Fine Artists, Including Painters, Sculptors, and Illustrators"
+    },
+    {
+     "soc_code": "27-1027",
+     "title": "Set and Exhibit Designers"
+    },
+    {
+     "soc_code": "27-1021",
+     "title": "Commercial and Industrial Designers"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
     {
-     "soc_code": "27-2022",
-     "title": "Coaches and Scouts",
-     "median_annual_wage": 48994.0,
-     "total_job_openings": 49610.0,
-     "percent_change": 10.7
-    },
-    {
-     "soc_code": "27-2011",
-     "title": "Actors",
-     "median_annual_wage": null,
-     "total_job_openings": 39840.0,
-     "percent_change": 4.4
-    },
-    {
-     "soc_code": "27-2012",
-     "title": "Producers and Directors",
-     "median_annual_wage": 133423.0,
-     "total_job_openings": 31850.0,
-     "percent_change": 12.2
-    },
-    {
-     "soc_code": "27-3031",
-     "title": "Public Relations Specialists",
-     "median_annual_wage": 87410.0,
-     "total_job_openings": 31480.0,
-     "percent_change": 8.2
+     "soc_code": "27-1014",
+     "title": "Special Effects Artists and Animators",
+     "median_annual_wage": 134194.0,
+     "total_job_openings": 17760.0,
+     "percent_change": 7.0
     },
     {
      "soc_code": "27-1011",
@@ -8683,13 +9498,35 @@
      "percent_change": 5.5
     },
     {
-     "soc_code": "27-3043",
-     "title": "Writers and Authors",
-     "median_annual_wage": 88901.0,
-     "total_job_openings": 23670.0,
-     "percent_change": 7.0
+     "soc_code": "15-1255",
+     "title": "Web and Digital Interface Designers",
+     "median_annual_wage": 139920.0,
+     "total_job_openings": 23940.0,
+     "percent_change": 13.9
+    },
+    {
+     "soc_code": "27-1013",
+     "title": "Fine Artists, Including Painters, Sculptors, and Illustrators",
+     "median_annual_wage": 59870.0,
+     "total_job_openings": 6030.0,
+     "percent_change": 6.3
+    },
+    {
+     "soc_code": "27-1027",
+     "title": "Set and Exhibit Designers",
+     "median_annual_wage": 107970.0,
+     "total_job_openings": 5810.0,
+     "percent_change": 4.2
+    },
+    {
+     "soc_code": "27-1021",
+     "title": "Commercial and Industrial Designers",
+     "median_annual_wage": 103591.0,
+     "total_job_openings": 4320.0,
+     "percent_change": 1.9
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "27-2012": {
    "soc_code": "27-2012",
@@ -9098,27 +9935,71 @@
      "job_training": "None"
     }
    ],
+   "description": "Produce or direct stage, television, radio, video, or film productions for entertainment, information, or instruction. Responsible for creative decisions, such as interpretation of script, choice of actors or guests, set design, sound, special effects, and choreography.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 4.38
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 4.0
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 4.0
+    },
+    {
+     "name": "Monitoring",
+     "importance": 4.0
+    },
+    {
+     "name": "Speaking",
+     "importance": 4.0
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.88
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors"
+    },
+    {
+     "soc_code": "27-1011",
+     "title": "Art Directors"
+    },
+    {
+     "soc_code": "27-3011",
+     "title": "Broadcast Announcers and Radio Disc Jockeys"
+    },
+    {
+     "soc_code": "27-2041",
+     "title": "Music Directors and Composers"
+    },
+    {
+     "soc_code": "27-3043",
+     "title": "Writers and Authors"
+    },
+    {
+     "soc_code": "27-3041",
+     "title": "Editors"
+    },
+    {
+     "soc_code": "27-3023",
+     "title": "News Analysts, Reporters, and Journalists"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "27-2022",
-     "title": "Coaches and Scouts",
-     "median_annual_wage": 48994.0,
-     "total_job_openings": 49610.0,
-     "percent_change": 10.7
-    },
-    {
-     "soc_code": "27-2011",
-     "title": "Actors",
-     "median_annual_wage": null,
-     "total_job_openings": 39840.0,
-     "percent_change": 4.4
-    },
-    {
-     "soc_code": "27-3031",
-     "title": "Public Relations Specialists",
-     "median_annual_wage": 87410.0,
-     "total_job_openings": 31480.0,
-     "percent_change": 8.2
+     "soc_code": "27-4032",
+     "title": "Film and Video Editors",
+     "median_annual_wage": 90967.0,
+     "total_job_openings": 10010.0,
+     "percent_change": 7.9
     },
     {
      "soc_code": "27-1011",
@@ -9128,11 +10009,18 @@
      "percent_change": 5.5
     },
     {
-     "soc_code": "27-1024",
-     "title": "Graphic Designers",
-     "median_annual_wage": 77233.0,
-     "total_job_openings": 24970.0,
-     "percent_change": 1.2
+     "soc_code": "27-3011",
+     "title": "Broadcast Announcers and Radio Disc Jockeys",
+     "median_annual_wage": null,
+     "total_job_openings": 1760.0,
+     "percent_change": 0.0
+    },
+    {
+     "soc_code": "27-2041",
+     "title": "Music Directors and Composers",
+     "median_annual_wage": 95696.0,
+     "total_job_openings": 4320.0,
+     "percent_change": 4.5
     },
     {
      "soc_code": "27-3043",
@@ -9140,8 +10028,16 @@
      "median_annual_wage": 88901.0,
      "total_job_openings": 23670.0,
      "percent_change": 7.0
+    },
+    {
+     "soc_code": "27-3041",
+     "title": "Editors",
+     "median_annual_wage": 100774.0,
+     "total_job_openings": 15620.0,
+     "percent_change": 2.8
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "27-4032": {
    "soc_code": "27-4032",
@@ -9397,20 +10293,67 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Edit moving images on film, video, or other media. May work with a producer or director to organize images for final production. May edit or synchronize soundtracks with images.",
+   "skills": [
     {
-     "soc_code": "27-2022",
-     "title": "Coaches and Scouts",
-     "median_annual_wage": 48994.0,
-     "total_job_openings": 49610.0,
-     "percent_change": 10.7
+     "name": "Active Listening",
+     "importance": 3.75
     },
     {
-     "soc_code": "27-2011",
-     "title": "Actors",
-     "median_annual_wage": null,
-     "total_job_openings": 39840.0,
-     "percent_change": 4.4
+     "name": "Critical Thinking",
+     "importance": 3.5
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.38
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.25
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.25
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "27-3041",
+     "title": "Editors"
+    },
+    {
+     "soc_code": "27-2012",
+     "title": "Producers and Directors"
+    },
+    {
+     "soc_code": "27-1014",
+     "title": "Special Effects Artists and Animators"
+    },
+    {
+     "soc_code": "27-4011",
+     "title": "Audio and Video Technicians"
+    },
+    {
+     "soc_code": "27-4014",
+     "title": "Sound Engineering Technicians"
+    },
+    {
+     "soc_code": "27-1024",
+     "title": "Graphic Designers"
+    }
+   ],
+   "bright_outlook": null,
+   "related": [
+    {
+     "soc_code": "27-3041",
+     "title": "Editors",
+     "median_annual_wage": 100774.0,
+     "total_job_openings": 15620.0,
+     "percent_change": 2.8
     },
     {
      "soc_code": "27-2012",
@@ -9420,18 +10363,25 @@
      "percent_change": 12.2
     },
     {
-     "soc_code": "27-3031",
-     "title": "Public Relations Specialists",
-     "median_annual_wage": 87410.0,
-     "total_job_openings": 31480.0,
-     "percent_change": 8.2
+     "soc_code": "27-1014",
+     "title": "Special Effects Artists and Animators",
+     "median_annual_wage": 134194.0,
+     "total_job_openings": 17760.0,
+     "percent_change": 7.0
     },
     {
-     "soc_code": "27-1011",
-     "title": "Art Directors",
-     "median_annual_wage": 141637.0,
-     "total_job_openings": 30370.0,
-     "percent_change": 5.5
+     "soc_code": "27-4011",
+     "title": "Audio and Video Technicians",
+     "median_annual_wage": 66429.0,
+     "total_job_openings": 9360.0,
+     "percent_change": 6.3
+    },
+    {
+     "soc_code": "27-4014",
+     "title": "Sound Engineering Technicians",
+     "median_annual_wage": 80338.0,
+     "total_job_openings": 3530.0,
+     "percent_change": 2.2
     },
     {
      "soc_code": "27-1024",
@@ -9440,7 +10390,8 @@
      "total_job_openings": 24970.0,
      "percent_change": 1.2
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "29-1141": {
    "soc_code": "29-1141",
@@ -9985,21 +10936,57 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Assess patient health problems and needs, develop and implement nursing care plans, and maintain medical records. Administer nursing care to ill, injured, convalescent, or disabled patients. May advise patients on health maintenance and disease prevention or provide case management. Licensing or registration required.",
+   "skills": [
+    {
+     "name": "Social Perceptiveness",
+     "importance": 4.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 4.0
+    },
+    {
+     "name": "Speaking",
+     "importance": 4.0
+    },
+    {
+     "name": "Coordination",
+     "importance": 4.0
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 4.0
+    },
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "29-1171",
+     "title": "Nurse Practitioners"
+    },
     {
      "soc_code": "29-2061",
-     "title": "Licensed Practical and Licensed Vocational Nurses",
-     "median_annual_wage": 81982.0,
-     "total_job_openings": 81600.0,
-     "percent_change": 15.0
+     "title": "Licensed Practical and Licensed Vocational Nurses"
     },
     {
-     "soc_code": "29-2052",
-     "title": "Pharmacy Technicians",
-     "median_annual_wage": 56653.0,
-     "total_job_openings": 41220.0,
-     "percent_change": 8.2
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants"
     },
+    {
+     "soc_code": "29-1071",
+     "title": "Physician Assistants"
+    },
+    {
+     "soc_code": "29-1151",
+     "title": "Nurse Anesthetists"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "related": [
     {
      "soc_code": "29-1171",
      "title": "Nurse Practitioners",
@@ -10008,27 +10995,35 @@
      "percent_change": 52.2
     },
     {
-     "soc_code": "29-2010",
-     "title": "Clinical Laboratory Technologists and Technicians",
-     "median_annual_wage": 78138.0,
-     "total_job_openings": 22820.0,
-     "percent_change": 11.9
-    },
-    {
-     "soc_code": "29-2099",
-     "title": "Health Technologists and Technicians, All Other",
-     "median_annual_wage": 62080.0,
-     "total_job_openings": 22750.0,
-     "percent_change": 14.3
-    },
-    {
-     "soc_code": "29-2042",
-     "title": "Emergency Medical Technicians",
-     "median_annual_wage": 47678.0,
-     "total_job_openings": 19450.0,
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
      "percent_change": 15.0
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3
+    },
+    {
+     "soc_code": "29-1071",
+     "title": "Physician Assistants",
+     "median_annual_wage": 170287.0,
+     "total_job_openings": 11040.0,
+     "percent_change": 26.7
+    },
+    {
+     "soc_code": "29-1151",
+     "title": "Nurse Anesthetists",
+     "median_annual_wage": 300595.0,
+     "total_job_openings": 1590.0,
+     "percent_change": 27.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "29-2052": {
    "soc_code": "29-2052",
@@ -10573,13 +11568,78 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "Prepare medications under the direction of a pharmacist. May measure, mix, count out, label, and record amounts and dosages of medications according to prescription orders.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.75
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.75
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.25
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "31-9095",
+     "title": "Pharmacy Aides"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants"
+    },
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses"
+    },
+    {
+     "soc_code": "31-9097",
+     "title": "Phlebotomists"
+    },
+    {
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians"
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants"
+    },
+    {
+     "soc_code": "29-2055",
+     "title": "Surgical Technologists"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "29-1141",
-     "title": "Registered Nurses",
-     "median_annual_wage": 144197.0,
-     "total_job_openings": 228840.0,
-     "percent_change": 13.5
+     "soc_code": "31-9095",
+     "title": "Pharmacy Aides",
+     "median_annual_wage": 43269.0,
+     "total_job_openings": 12610.0,
+     "percent_change": 1.2
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
     },
     {
      "soc_code": "29-2061",
@@ -10589,34 +11649,28 @@
      "percent_change": 15.0
     },
     {
-     "soc_code": "29-1171",
-     "title": "Nurse Practitioners",
-     "median_annual_wage": 173237.0,
-     "total_job_openings": 26610.0,
-     "percent_change": 52.2
+     "soc_code": "31-9097",
+     "title": "Phlebotomists",
+     "median_annual_wage": 57459.0,
+     "total_job_openings": 19970.0,
+     "percent_change": 14.7
     },
     {
-     "soc_code": "29-2010",
-     "title": "Clinical Laboratory Technologists and Technicians",
-     "median_annual_wage": 78138.0,
-     "total_job_openings": 22820.0,
-     "percent_change": 11.9
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians",
+     "median_annual_wage": 62327.0,
+     "total_job_openings": 13220.0,
+     "percent_change": 14.8
     },
     {
-     "soc_code": "29-2099",
-     "title": "Health Technologists and Technicians, All Other",
-     "median_annual_wage": 62080.0,
-     "total_job_openings": 22750.0,
-     "percent_change": 14.3
-    },
-    {
-     "soc_code": "29-2042",
-     "title": "Emergency Medical Technicians",
-     "median_annual_wage": 47678.0,
-     "total_job_openings": 19450.0,
-     "percent_change": 15.0
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants",
+     "median_annual_wage": 48836.0,
+     "total_job_openings": 172680.0,
+     "percent_change": 10.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "29-2072": {
    "soc_code": "29-2072",
@@ -11161,41 +12215,78 @@
      "job_training": "None"
     }
    ],
+   "description": "Compile, process, and maintain medical records of hospital and clinic patients in a manner consistent with medical, administrative, ethical, legal, and regulatory requirements of the healthcare system. Classify medical and healthcare concepts, including diagnosis, procedures, medical services, and equipment, into the healthcare industry's numerical coding system. Includes medical coders.",
+   "skills": [],
+   "related_onet": [
+    {
+     "soc_code": "31-9094",
+     "title": "Medical Transcriptionists"
+    },
+    {
+     "soc_code": "29-9021",
+     "title": "Health Information Technologists and Medical Registrars"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants"
+    },
+    {
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants"
+    },
+    {
+     "soc_code": "43-4071",
+     "title": "File Clerks"
+    },
+    {
+     "soc_code": "29-2099",
+     "title": "Patient Representatives"
+    },
+    {
+     "soc_code": "15-1299",
+     "title": "Document Management Specialists"
+    },
+    {
+     "soc_code": "15-1211",
+     "title": "Health Informatics Specialists"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "29-1141",
-     "title": "Registered Nurses",
-     "median_annual_wage": 144197.0,
-     "total_job_openings": 228840.0,
-     "percent_change": 13.5
+     "soc_code": "31-9094",
+     "title": "Medical Transcriptionists",
+     "median_annual_wage": 46191.0,
+     "total_job_openings": 10290.0,
+     "percent_change": -1.7
     },
     {
-     "soc_code": "29-2061",
-     "title": "Licensed Practical and Licensed Vocational Nurses",
-     "median_annual_wage": 81982.0,
-     "total_job_openings": 81600.0,
-     "percent_change": 15.0
+     "soc_code": "29-9021",
+     "title": "Health Information Technologists and Medical Registrars",
+     "median_annual_wage": 93290.0,
+     "total_job_openings": 2650.0,
+     "percent_change": 18.8
     },
     {
-     "soc_code": "29-2052",
-     "title": "Pharmacy Technicians",
-     "median_annual_wage": 56653.0,
-     "total_job_openings": 41220.0,
-     "percent_change": 8.2
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
     },
     {
-     "soc_code": "29-1171",
-     "title": "Nurse Practitioners",
-     "median_annual_wage": 173237.0,
-     "total_job_openings": 26610.0,
-     "percent_change": 52.2
+     "soc_code": "43-6013",
+     "title": "Medical Secretaries and Administrative Assistants",
+     "median_annual_wage": 55779.0,
+     "total_job_openings": 128130.0,
+     "percent_change": 12.6
     },
     {
-     "soc_code": "29-2010",
-     "title": "Clinical Laboratory Technologists and Technicians",
-     "median_annual_wage": 78138.0,
-     "total_job_openings": 22820.0,
-     "percent_change": 11.9
+     "soc_code": "43-4071",
+     "title": "File Clerks",
+     "median_annual_wage": 50200.0,
+     "total_job_openings": 8840.0,
+     "percent_change": -13.3
     },
     {
      "soc_code": "29-2099",
@@ -11204,7 +12295,8 @@
      "total_job_openings": 22750.0,
      "percent_change": 14.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "31-1131": {
    "soc_code": "31-1131",
@@ -11732,13 +12824,95 @@
      "job_training": "None"
     }
    ],
+   "description": "Provide or assist with basic care or support under the direction of onsite licensed nursing staff. Perform duties such as monitoring of health status, feeding, bathing, dressing, grooming, toileting, or ambulation of patients in a health or nursing facility. May include medication administration and other health-related tasks. Includes nursing care attendants, nursing aides, and nursing attendants.",
+   "skills": [
+    {
+     "name": "Service Orientation",
+     "importance": 4.0
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.62
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.62
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.25
+    },
+    {
+     "name": "Coordination",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses"
+    },
+    {
+     "soc_code": "29-2043",
+     "title": "Paramedics"
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses"
+    },
+    {
+     "soc_code": "31-1133",
+     "title": "Psychiatric Aides"
+    },
+    {
+     "soc_code": "29-2042",
+     "title": "Emergency Medical Technicians"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
    "related": [
     {
-     "soc_code": "31-1120",
-     "title": "Home Health and Personal Care Aides",
-     "median_annual_wage": 35189.0,
-     "total_job_openings": 2125350.0,
-     "percent_change": 41.3
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
+     "percent_change": 15.0
+    },
+    {
+     "soc_code": "29-2043",
+     "title": "Paramedics",
+     "median_annual_wage": 76678.0,
+     "total_job_openings": 3120.0,
+     "percent_change": 15.7
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses",
+     "median_annual_wage": 144197.0,
+     "total_job_openings": 228840.0,
+     "percent_change": 13.5
+    },
+    {
+     "soc_code": "31-1133",
+     "title": "Psychiatric Aides",
+     "median_annual_wage": 48703.0,
+     "total_job_openings": 5580.0,
+     "percent_change": 5.3
+    },
+    {
+     "soc_code": "29-2042",
+     "title": "Emergency Medical Technicians",
+     "median_annual_wage": 47678.0,
+     "total_job_openings": 19450.0,
+     "percent_change": 15.0
     },
     {
      "soc_code": "31-9092",
@@ -11746,36 +12920,9 @@
      "median_annual_wage": 50918.0,
      "total_job_openings": 175850.0,
      "percent_change": 22.7
-    },
-    {
-     "soc_code": "31-9091",
-     "title": "Dental Assistants",
-     "median_annual_wage": 51379.0,
-     "total_job_openings": 81180.0,
-     "percent_change": 10.0
-    },
-    {
-     "soc_code": "31-9011",
-     "title": "Massage Therapists",
-     "median_annual_wage": 47134.0,
-     "total_job_openings": 38120.0,
-     "percent_change": 20.9
-    },
-    {
-     "soc_code": "31-9096",
-     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
-     "median_annual_wage": 47432.0,
-     "total_job_openings": 33120.0,
-     "percent_change": 15.2
-    },
-    {
-     "soc_code": "31-9099",
-     "title": "Healthcare Support Workers, All Other",
-     "median_annual_wage": 50374.0,
-     "total_job_openings": 32750.0,
-     "percent_change": 7.1
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "31-2021": {
    "soc_code": "31-2021",
@@ -12201,50 +13348,109 @@
      "job_training": "None"
     }
    ],
+   "description": "Assist physical therapists in providing physical therapy treatments and procedures. May, in accordance with state laws, assist in the development of treatment plans, carry out routine functions, document the progress of treatment, and modify specific treatments in accordance with patient status and within the scope of treatment plans established by a physical therapist. Generally requires formal training.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 4.0
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.75
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.75
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.75
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.25
+    },
+    {
+     "name": "Writing",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "31-2022",
+     "title": "Physical Therapist Aides"
+    },
+    {
+     "soc_code": "31-2011",
+     "title": "Occupational Therapy Assistants"
+    },
+    {
+     "soc_code": "29-2053",
+     "title": "Psychiatric Technicians"
+    },
+    {
+     "soc_code": "29-1126",
+     "title": "Respiratory Therapists"
+    },
+    {
+     "soc_code": "29-1125",
+     "title": "Recreational Therapists"
+    },
+    {
+     "soc_code": "29-1124",
+     "title": "Radiation Therapists"
+    },
+    {
+     "soc_code": "31-1133",
+     "title": "Psychiatric Aides"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "31-1120",
-     "title": "Home Health and Personal Care Aides",
-     "median_annual_wage": 35189.0,
-     "total_job_openings": 2125350.0,
-     "percent_change": 41.3
+     "soc_code": "31-2022",
+     "title": "Physical Therapist Aides",
+     "median_annual_wage": 39301.0,
+     "total_job_openings": 12050.0,
+     "percent_change": 20.3
     },
     {
-     "soc_code": "31-9092",
-     "title": "Medical Assistants",
-     "median_annual_wage": 50918.0,
-     "total_job_openings": 175850.0,
-     "percent_change": 22.7
+     "soc_code": "31-2011",
+     "title": "Occupational Therapy Assistants",
+     "median_annual_wage": 83841.0,
+     "total_job_openings": 6200.0,
+     "percent_change": 32.4
     },
     {
-     "soc_code": "31-1131",
-     "title": "Nursing Assistants",
-     "median_annual_wage": 48836.0,
-     "total_job_openings": 172680.0,
-     "percent_change": 10.3
+     "soc_code": "29-2053",
+     "title": "Psychiatric Technicians",
+     "median_annual_wage": 50516.0,
+     "total_job_openings": 16680.0,
+     "percent_change": 27.5
     },
     {
-     "soc_code": "31-9091",
-     "title": "Dental Assistants",
-     "median_annual_wage": 51379.0,
-     "total_job_openings": 81180.0,
-     "percent_change": 10.0
+     "soc_code": "29-1126",
+     "title": "Respiratory Therapists",
+     "median_annual_wage": 107754.0,
+     "total_job_openings": 14350.0,
+     "percent_change": 22.2
     },
     {
-     "soc_code": "31-9011",
-     "title": "Massage Therapists",
-     "median_annual_wage": 47134.0,
-     "total_job_openings": 38120.0,
-     "percent_change": 20.9
+     "soc_code": "29-1125",
+     "title": "Recreational Therapists",
+     "median_annual_wage": 100918.0,
+     "total_job_openings": 1870.0,
+     "percent_change": 15.8
     },
     {
-     "soc_code": "31-9096",
-     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
-     "median_annual_wage": 47432.0,
-     "total_job_openings": 33120.0,
-     "percent_change": 15.2
+     "soc_code": "29-1124",
+     "title": "Radiation Therapists",
+     "median_annual_wage": 171109.0,
+     "total_job_openings": 1000.0,
+     "percent_change": 11.8
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "31-9092": {
    "soc_code": "31-9092",
@@ -12789,20 +13995,99 @@
      "job_training": "None"
     }
    ],
-   "related": [
+   "description": "Perform administrative and certain clinical duties under the direction of a physician. Administrative duties may include scheduling appointments, maintaining medical records, billing, and coding information for insurance purposes. Clinical duties may include taking and recording vital signs and medical histories, preparing patients for examination, drawing blood, and administering medications as directed by physician.",
+   "skills": [
     {
-     "soc_code": "31-1120",
-     "title": "Home Health and Personal Care Aides",
-     "median_annual_wage": 35189.0,
-     "total_job_openings": 2125350.0,
-     "percent_change": 41.3
+     "name": "Social Perceptiveness",
+     "importance": 4.0
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.88
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.88
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.75
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.62
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.5
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses"
+    },
+    {
+     "soc_code": "29-2057",
+     "title": "Ophthalmic Medical Technicians"
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses"
+    },
+    {
+     "soc_code": "29-2031",
+     "title": "Cardiovascular Technologists and Technicians"
+    },
+    {
+     "soc_code": "31-2022",
+     "title": "Physical Therapist Aides"
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants"
     },
     {
      "soc_code": "31-1131",
-     "title": "Nursing Assistants",
-     "median_annual_wage": 48836.0,
-     "total_job_openings": 172680.0,
-     "percent_change": 10.3
+     "title": "Nursing Assistants"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
+   "related": [
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
+     "percent_change": 15.0
+    },
+    {
+     "soc_code": "29-2057",
+     "title": "Ophthalmic Medical Technicians",
+     "median_annual_wage": 56015.0,
+     "total_job_openings": 4340.0,
+     "percent_change": 33.3
+    },
+    {
+     "soc_code": "29-1141",
+     "title": "Registered Nurses",
+     "median_annual_wage": 144197.0,
+     "total_job_openings": 228840.0,
+     "percent_change": 13.5
+    },
+    {
+     "soc_code": "29-2031",
+     "title": "Cardiovascular Technologists and Technicians",
+     "median_annual_wage": 80358.0,
+     "total_job_openings": 4280.0,
+     "percent_change": 15.5
+    },
+    {
+     "soc_code": "31-2022",
+     "title": "Physical Therapist Aides",
+     "median_annual_wage": 39301.0,
+     "total_job_openings": 12050.0,
+     "percent_change": 20.3
     },
     {
      "soc_code": "31-9091",
@@ -12810,29 +14095,9 @@
      "median_annual_wage": 51379.0,
      "total_job_openings": 81180.0,
      "percent_change": 10.0
-    },
-    {
-     "soc_code": "31-9011",
-     "title": "Massage Therapists",
-     "median_annual_wage": 47134.0,
-     "total_job_openings": 38120.0,
-     "percent_change": 20.9
-    },
-    {
-     "soc_code": "31-9096",
-     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
-     "median_annual_wage": 47432.0,
-     "total_job_openings": 33120.0,
-     "percent_change": 15.2
-    },
-    {
-     "soc_code": "31-9099",
-     "title": "Healthcare Support Workers, All Other",
-     "median_annual_wage": 50374.0,
-     "total_job_openings": 32750.0,
-     "percent_change": 7.1
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "31-9096": {
    "soc_code": "31-9096",
@@ -13309,13 +14574,78 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Feed, water, and examine pets and other nonfarm animals for signs of illness, disease, or injury in laboratories and animal hospitals and clinics. Clean and disinfect cages and work areas, and sterilize laboratory and surgical equipment. May provide routine postoperative care, administer medication orally or topically, or prepare samples for laboratory examination under the supervision of veterinary or laboratory animal technologists or technicians, veterinarians, or scientists.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 3.5
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.25
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.12
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Writing",
+     "importance": 3.12
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians"
+    },
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants"
+    },
+    {
+     "soc_code": "29-2043",
+     "title": "Paramedics"
+    },
+    {
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses"
+    },
+    {
+     "soc_code": "31-9097",
+     "title": "Phlebotomists"
+    },
+    {
+     "soc_code": "31-1131",
+     "title": "Nursing Assistants"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "31-1120",
-     "title": "Home Health and Personal Care Aides",
-     "median_annual_wage": 35189.0,
-     "total_job_openings": 2125350.0,
-     "percent_change": 41.3
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians",
+     "median_annual_wage": 62327.0,
+     "total_job_openings": 13220.0,
+     "percent_change": 14.8
+    },
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3
     },
     {
      "soc_code": "31-9092",
@@ -13325,34 +14655,28 @@
      "percent_change": 22.7
     },
     {
-     "soc_code": "31-1131",
-     "title": "Nursing Assistants",
-     "median_annual_wage": 48836.0,
-     "total_job_openings": 172680.0,
-     "percent_change": 10.3
+     "soc_code": "29-2043",
+     "title": "Paramedics",
+     "median_annual_wage": 76678.0,
+     "total_job_openings": 3120.0,
+     "percent_change": 15.7
     },
     {
-     "soc_code": "31-9091",
-     "title": "Dental Assistants",
-     "median_annual_wage": 51379.0,
-     "total_job_openings": 81180.0,
-     "percent_change": 10.0
+     "soc_code": "29-2061",
+     "title": "Licensed Practical and Licensed Vocational Nurses",
+     "median_annual_wage": 81982.0,
+     "total_job_openings": 81600.0,
+     "percent_change": 15.0
     },
     {
-     "soc_code": "31-9011",
-     "title": "Massage Therapists",
-     "median_annual_wage": 47134.0,
-     "total_job_openings": 38120.0,
-     "percent_change": 20.9
-    },
-    {
-     "soc_code": "31-9099",
-     "title": "Healthcare Support Workers, All Other",
-     "median_annual_wage": 50374.0,
-     "total_job_openings": 32750.0,
-     "percent_change": 7.1
+     "soc_code": "31-9097",
+     "title": "Phlebotomists",
+     "median_annual_wage": 57459.0,
+     "total_job_openings": 19970.0,
+     "percent_change": 14.7
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "31-9097": {
    "soc_code": "31-9097",
@@ -13846,13 +15170,55 @@
      "job_training": "None"
     }
    ],
+   "description": "Draw blood for tests, transfusions, donations, or research. May explain the procedure to patients and assist in the recovery of patients with adverse reactions.",
+   "skills": [
+    {
+     "name": "Service Orientation",
+     "importance": 3.62
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.5
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.38
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.38
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.25
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "29-2031",
+     "title": "Cardiovascular Technologists and Technicians"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants"
+    },
+    {
+     "soc_code": "29-2043",
+     "title": "Paramedics"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "31-1120",
-     "title": "Home Health and Personal Care Aides",
-     "median_annual_wage": 35189.0,
-     "total_job_openings": 2125350.0,
-     "percent_change": 41.3
+     "soc_code": "29-2031",
+     "title": "Cardiovascular Technologists and Technicians",
+     "median_annual_wage": 80358.0,
+     "total_job_openings": 4280.0,
+     "percent_change": 15.5
     },
     {
      "soc_code": "31-9092",
@@ -13862,34 +15228,14 @@
      "percent_change": 22.7
     },
     {
-     "soc_code": "31-1131",
-     "title": "Nursing Assistants",
-     "median_annual_wage": 48836.0,
-     "total_job_openings": 172680.0,
-     "percent_change": 10.3
-    },
-    {
-     "soc_code": "31-9091",
-     "title": "Dental Assistants",
-     "median_annual_wage": 51379.0,
-     "total_job_openings": 81180.0,
-     "percent_change": 10.0
-    },
-    {
-     "soc_code": "31-9011",
-     "title": "Massage Therapists",
-     "median_annual_wage": 47134.0,
-     "total_job_openings": 38120.0,
-     "percent_change": 20.9
-    },
-    {
-     "soc_code": "31-9096",
-     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
-     "median_annual_wage": 47432.0,
-     "total_job_openings": 33120.0,
-     "percent_change": 15.2
+     "soc_code": "29-2043",
+     "title": "Paramedics",
+     "median_annual_wage": 76678.0,
+     "total_job_openings": 3120.0,
+     "percent_change": 15.7
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "33-9021": {
    "soc_code": "33-9021",
@@ -14162,13 +15508,74 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "Gather, analyze, compile, and report information regarding individuals or organizations to clients, or detect occurrences of unlawful acts or infractions of rules in private establishment.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 4.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 4.0
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.88
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.88
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.75
+    },
+    {
+     "name": "Writing",
+     "importance": 3.62
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "33-3021",
+     "title": "Detectives and Criminal Investigators"
+    },
+    {
+     "soc_code": "13-2099",
+     "title": "Fraud Examiners, Investigators and Analysts"
+    },
+    {
+     "soc_code": "33-9099",
+     "title": "Retail Loss Prevention Specialists"
+    },
+    {
+     "soc_code": "33-3051",
+     "title": "Police and Sheriff's Patrol Officers"
+    },
+    {
+     "soc_code": "13-1031",
+     "title": "Claims Adjusters, Examiners, and Investigators"
+    },
+    {
+     "soc_code": "33-1012",
+     "title": "First-Line Supervisors of Police and Detectives"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "33-9032",
-     "title": "Security Guards",
-     "median_annual_wage": 44335.0,
-     "total_job_openings": 264160.0,
-     "percent_change": 3.3
+     "soc_code": "33-3021",
+     "title": "Detectives and Criminal Investigators",
+     "median_annual_wage": 128002.0,
+     "total_job_openings": 9580.0,
+     "percent_change": 4.5
+    },
+    {
+     "soc_code": "13-2099",
+     "title": "Financial Specialists, All Other",
+     "median_annual_wage": 82166.0,
+     "total_job_openings": 11860.0,
+     "percent_change": 6.7
     },
     {
      "soc_code": "33-9099",
@@ -14178,13 +15585,6 @@
      "percent_change": 1.2
     },
     {
-     "soc_code": "33-9092",
-     "title": "Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",
-     "median_annual_wage": 43802.0,
-     "total_job_openings": 65250.0,
-     "percent_change": 7.6
-    },
-    {
      "soc_code": "33-3051",
      "title": "Police and Sheriff's Patrol Officers",
      "median_annual_wage": 121891.0,
@@ -14192,20 +15592,21 @@
      "percent_change": 5.2
     },
     {
-     "soc_code": "33-3012",
-     "title": "Correctional Officers and Jailers",
-     "median_annual_wage": 98811.0,
-     "total_job_openings": 31850.0,
-     "percent_change": -5.1
+     "soc_code": "13-1031",
+     "title": "Claims Adjusters, Examiners, and Investigators",
+     "median_annual_wage": 93330.0,
+     "total_job_openings": 14440.0,
+     "percent_change": -7.7
     },
     {
-     "soc_code": "33-2011",
-     "title": "Firefighters",
-     "median_annual_wage": 87276.0,
-     "total_job_openings": 25610.0,
-     "percent_change": 5.0
+     "soc_code": "33-1012",
+     "title": "First-Line Supervisors of Police and Detectives",
+     "median_annual_wage": 168113.0,
+     "total_job_openings": 9390.0,
+     "percent_change": 5.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "33-9032": {
    "soc_code": "33-9032",
@@ -14750,20 +16151,78 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Guard, patrol, or monitor premises to prevent theft, violence, or infractions of rules. May operate x-ray and metal detector equipment.",
+   "skills": [
     {
-     "soc_code": "33-9099",
-     "title": "Protective Service Workers, All Other",
-     "median_annual_wage": 40326.0,
-     "total_job_openings": 70610.0,
-     "percent_change": 1.2
+     "name": "Active Listening",
+     "importance": 3.75
     },
     {
-     "soc_code": "33-9092",
-     "title": "Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",
-     "median_annual_wage": 43802.0,
-     "total_job_openings": 65250.0,
-     "percent_change": 7.6
+     "name": "Monitoring",
+     "importance": 3.38
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.25
+    },
+    {
+     "name": "Coordination",
+     "importance": 3.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "33-1091",
+     "title": "First-Line Supervisors of Security Workers"
+    },
+    {
+     "soc_code": "33-9093",
+     "title": "Transportation Security Screeners"
+    },
+    {
+     "soc_code": "33-3051",
+     "title": "Police and Sheriff's Patrol Officers"
+    },
+    {
+     "soc_code": "33-3041",
+     "title": "Parking Enforcement Workers"
+    },
+    {
+     "soc_code": "43-5031",
+     "title": "Public Safety Telecommunicators"
+    },
+    {
+     "soc_code": "33-9099",
+     "title": "Retail Loss Prevention Specialists"
+    },
+    {
+     "soc_code": "33-3012",
+     "title": "Correctional Officers and Jailers"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
+   "related": [
+    {
+     "soc_code": "33-1091",
+     "title": "First-line Supervisors of Security Workers",
+     "median_annual_wage": 55327.0,
+     "total_job_openings": 11110.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "33-9093",
+     "title": "Transportation Security Screeners",
+     "median_annual_wage": 75475.0,
+     "total_job_openings": 6440.0,
+     "percent_change": 3.4
     },
     {
      "soc_code": "33-3051",
@@ -14773,27 +16232,28 @@
      "percent_change": 5.2
     },
     {
-     "soc_code": "33-3012",
-     "title": "Correctional Officers and Jailers",
-     "median_annual_wage": 98811.0,
-     "total_job_openings": 31850.0,
-     "percent_change": -5.1
+     "soc_code": "33-3041",
+     "title": "Parking Enforcement Workers",
+     "median_annual_wage": 63858.0,
+     "total_job_openings": 1610.0,
+     "percent_change": 5.9
     },
     {
-     "soc_code": "33-2011",
-     "title": "Firefighters",
-     "median_annual_wage": 87276.0,
-     "total_job_openings": 25610.0,
-     "percent_change": 5.0
+     "soc_code": "43-5031",
+     "title": "Public Safety Telecommunicators",
+     "median_annual_wage": 82016.0,
+     "total_job_openings": 8940.0,
+     "percent_change": 5.9
     },
     {
-     "soc_code": "33-9091",
-     "title": "Crossing Guards and Flaggers",
-     "median_annual_wage": 51892.0,
-     "total_job_openings": 18950.0,
-     "percent_change": 4.2
+     "soc_code": "33-9099",
+     "title": "Protective Service Workers, All Other",
+     "median_annual_wage": 40326.0,
+     "total_job_openings": 70610.0,
+     "percent_change": 1.2
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "37-2011": {
    "soc_code": "37-2011",
@@ -15321,6 +16781,64 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Keep buildings in clean and orderly condition. Perform heavy cleaning duties, such as cleaning floors, shampooing rugs, washing walls and glass, and removing rubbish. Duties may include tending furnace and boiler, performing routine maintenance activities, notifying management of need for repairs, and cleaning snow or debris from sidewalk.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 3.0
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.0
+    },
+    {
+     "name": "Time Management",
+     "importance": 2.75
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 2.75
+    },
+    {
+     "name": "Coordination",
+     "importance": 2.75
+    },
+    {
+     "name": "Monitoring",
+     "importance": 2.75
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "37-2012",
+     "title": "Maids and Housekeeping Cleaners"
+    },
+    {
+     "soc_code": "53-7061",
+     "title": "Cleaners of Vehicles and Equipment"
+    },
+    {
+     "soc_code": "51-6011",
+     "title": "Laundry and Dry-Cleaning Workers"
+    },
+    {
+     "soc_code": "35-9021",
+     "title": "Dishwashers"
+    },
+    {
+     "soc_code": "47-4071",
+     "title": "Septic Tank Servicers and Sewer Pipe Cleaners"
+    },
+    {
+     "soc_code": "53-7062",
+     "title": "Recycling and Reclamation Workers"
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
    "related": [
     {
      "soc_code": "37-2012",
@@ -15330,41 +16848,42 @@
      "percent_change": 3.7
     },
     {
-     "soc_code": "37-3011",
-     "title": "Landscaping and Groundskeeping Workers",
-     "median_annual_wage": 46714.0,
-     "total_job_openings": 182080.0,
-     "percent_change": 5.8
+     "soc_code": "53-7061",
+     "title": "Cleaners of Vehicles and Equipment",
+     "median_annual_wage": 38750.0,
+     "total_job_openings": 69180.0,
+     "percent_change": 4.8
     },
     {
-     "soc_code": "37-1011",
-     "title": "First-Line Supervisors of Housekeeping and Janitorial Workers",
-     "median_annual_wage": 63027.0,
-     "total_job_openings": 34020.0,
-     "percent_change": 4.4
+     "soc_code": "51-6011",
+     "title": "Laundry and Dry-Cleaning Workers",
+     "median_annual_wage": 38652.0,
+     "total_job_openings": 36380.0,
+     "percent_change": 8.5
     },
     {
-     "soc_code": "37-1012",
-     "title": "First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",
-     "median_annual_wage": 64873.0,
-     "total_job_openings": 28520.0,
-     "percent_change": 4.9
+     "soc_code": "35-9021",
+     "title": "Dishwashers",
+     "median_annual_wage": 38829.0,
+     "total_job_openings": 124120.0,
+     "percent_change": 3.6
     },
     {
-     "soc_code": "37-3013",
-     "title": "Tree Trimmers and Pruners",
-     "median_annual_wage": 64134.0,
-     "total_job_openings": 14990.0,
-     "percent_change": 5.0
+     "soc_code": "47-4071",
+     "title": "Septic Tank Servicers and Sewer Pipe Cleaners",
+     "median_annual_wage": 56716.0,
+     "total_job_openings": 3350.0,
+     "percent_change": 15.6
     },
     {
-     "soc_code": "37-3019",
-     "title": "Grounds Maintenance Workers, All Other",
-     "median_annual_wage": 50108.0,
-     "total_job_openings": 5300.0,
-     "percent_change": 5.3
+     "soc_code": "53-7062",
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+     "median_annual_wage": 45689.0,
+     "total_job_openings": 502850.0,
+     "percent_change": 8.6
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "39-2011": {
    "soc_code": "39-2011",
@@ -15722,20 +17241,85 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Train animals for riding, harness, security, performance, or obedience, or for assisting persons with disabilities. Accustom animals to human voice and contact, and condition animals to respond to commands. Train animals according to prescribed standards for show or competition. May train animals to carry pack loads or work as part of pack team.",
+   "skills": [
     {
-     "soc_code": "39-3091",
-     "title": "Amusement and Recreation Attendants",
-     "median_annual_wage": 37937.0,
-     "total_job_openings": 152610.0,
-     "percent_change": 5.8
+     "name": "Instructing",
+     "importance": 3.75
     },
     {
-     "soc_code": "39-9011",
-     "title": "Childcare Workers",
-     "median_annual_wage": 41034.0,
-     "total_job_openings": 135490.0,
-     "percent_change": 1.5
+     "name": "Learning Strategies",
+     "importance": 3.5
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.5
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.38
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.25
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers"
+    },
+    {
+     "soc_code": "33-9011",
+     "title": "Animal Control Workers"
+    },
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers"
+    },
+    {
+     "soc_code": "39-9031",
+     "title": "Exercise Trainers and Group Fitness Instructors"
+    },
+    {
+     "soc_code": "45-2093",
+     "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals"
+    },
+    {
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians"
+    },
+    {
+     "soc_code": "27-2023",
+     "title": "Umpires, Referees, and Other Sports Officials"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
+    {
+     "soc_code": "39-2021",
+     "title": "Animal Caretakers",
+     "median_annual_wage": 39680.0,
+     "total_job_openings": 68000.0,
+     "percent_change": 12.3
+    },
+    {
+     "soc_code": "33-9011",
+     "title": "Animal Control Workers",
+     "median_annual_wage": 64216.0,
+     "total_job_openings": 1350.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2
     },
     {
      "soc_code": "39-9031",
@@ -15745,27 +17329,21 @@
      "percent_change": 16.7
     },
     {
-     "soc_code": "39-9032",
-     "title": "Recreation Workers",
-     "median_annual_wage": 40788.0,
-     "total_job_openings": 104970.0,
-     "percent_change": 9.1
+     "soc_code": "45-2093",
+     "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+     "median_annual_wage": 39687.0,
+     "total_job_openings": 26520.0,
+     "percent_change": 0.6
     },
     {
-     "soc_code": "39-5012",
-     "title": "Hairdressers, Hairstylists, and Cosmetologists",
-     "median_annual_wage": 39639.0,
-     "total_job_openings": 68190.0,
-     "percent_change": 7.3
-    },
-    {
-     "soc_code": "39-2021",
-     "title": "Animal Caretakers",
-     "median_annual_wage": 39680.0,
-     "total_job_openings": 68000.0,
-     "percent_change": 12.3
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians",
+     "median_annual_wage": 62327.0,
+     "total_job_openings": 13220.0,
+     "percent_change": 14.8
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "39-2021": {
    "soc_code": "39-2021",
@@ -16310,13 +17888,95 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Feed, water, groom, bathe, exercise, or otherwise provide care to promote and maintain the well-being of pets and other animals that are not raised for consumption, such as dogs, cats, race horses, ornamental fish or birds, zoo animals, and mice. Work in settings such as kennels, animal shelters, zoos, circuses, and aquariums. May keep records of feedings, treatments, and animals received or discharged. May clean, disinfect, and repair cages, pens, or fish tanks.",
+   "skills": [
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.0
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.0
+    },
+    {
+     "name": "Coordination",
+     "importance": 3.0
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.0
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers"
+    },
+    {
+     "soc_code": "39-2011",
+     "title": "Animal Trainers"
+    },
+    {
+     "soc_code": "33-9011",
+     "title": "Animal Control Workers"
+    },
+    {
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians"
+    },
+    {
+     "soc_code": "45-2093",
+     "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals"
+    },
+    {
+     "soc_code": "39-9011",
+     "title": "Childcare Workers"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "39-3091",
-     "title": "Amusement and Recreation Attendants",
-     "median_annual_wage": 37937.0,
-     "total_job_openings": 152610.0,
-     "percent_change": 5.8
+     "soc_code": "31-9096",
+     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
+     "median_annual_wage": 47432.0,
+     "total_job_openings": 33120.0,
+     "percent_change": 15.2
+    },
+    {
+     "soc_code": "39-2011",
+     "title": "Animal Trainers",
+     "median_annual_wage": 50303.0,
+     "total_job_openings": 7160.0,
+     "percent_change": 8.7
+    },
+    {
+     "soc_code": "33-9011",
+     "title": "Animal Control Workers",
+     "median_annual_wage": 64216.0,
+     "total_job_openings": 1350.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "29-2056",
+     "title": "Veterinary Technologists and Technicians",
+     "median_annual_wage": 62327.0,
+     "total_job_openings": 13220.0,
+     "percent_change": 14.8
+    },
+    {
+     "soc_code": "45-2093",
+     "title": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+     "median_annual_wage": 39687.0,
+     "total_job_openings": 26520.0,
+     "percent_change": 0.6
     },
     {
      "soc_code": "39-9011",
@@ -16324,36 +17984,9 @@
      "median_annual_wage": 41034.0,
      "total_job_openings": 135490.0,
      "percent_change": 1.5
-    },
-    {
-     "soc_code": "39-9031",
-     "title": "Exercise Trainers and Group Fitness Instructors",
-     "median_annual_wage": 59459.0,
-     "total_job_openings": 105200.0,
-     "percent_change": 16.7
-    },
-    {
-     "soc_code": "39-9032",
-     "title": "Recreation Workers",
-     "median_annual_wage": 40788.0,
-     "total_job_openings": 104970.0,
-     "percent_change": 9.1
-    },
-    {
-     "soc_code": "39-5012",
-     "title": "Hairdressers, Hairstylists, and Cosmetologists",
-     "median_annual_wage": 39639.0,
-     "total_job_openings": 68190.0,
-     "percent_change": 7.3
-    },
-    {
-     "soc_code": "39-5092",
-     "title": "Manicurists and Pedicurists",
-     "median_annual_wage": 37558.0,
-     "total_job_openings": 65240.0,
-     "percent_change": 10.0
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "39-5011": {
    "soc_code": "39-5011",
@@ -16728,35 +18361,61 @@
      "job_training": "None"
     }
    ],
+   "description": "Provide barbering services, such as cutting, trimming, shampooing, and styling hair; trimming beards; or giving shaves.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 3.38
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.12
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.0
+    },
+    {
+     "name": "Monitoring",
+     "importance": 2.88
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists"
+    },
+    {
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists"
+    },
+    {
+     "soc_code": "39-5094",
+     "title": "Skincare Specialists"
+    },
+    {
+     "soc_code": "39-5091",
+     "title": "Makeup Artists, Theatrical and Performance"
+    },
+    {
+     "soc_code": "51-6052",
+     "title": "Tailors, Dressmakers, and Custom Sewers"
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
-    {
-     "soc_code": "39-3091",
-     "title": "Amusement and Recreation Attendants",
-     "median_annual_wage": 37937.0,
-     "total_job_openings": 152610.0,
-     "percent_change": 5.8
-    },
-    {
-     "soc_code": "39-9011",
-     "title": "Childcare Workers",
-     "median_annual_wage": 41034.0,
-     "total_job_openings": 135490.0,
-     "percent_change": 1.5
-    },
-    {
-     "soc_code": "39-9031",
-     "title": "Exercise Trainers and Group Fitness Instructors",
-     "median_annual_wage": 59459.0,
-     "total_job_openings": 105200.0,
-     "percent_change": 16.7
-    },
-    {
-     "soc_code": "39-9032",
-     "title": "Recreation Workers",
-     "median_annual_wage": 40788.0,
-     "total_job_openings": 104970.0,
-     "percent_change": 9.1
-    },
     {
      "soc_code": "39-5012",
      "title": "Hairdressers, Hairstylists, and Cosmetologists",
@@ -16765,13 +18424,42 @@
      "percent_change": 7.3
     },
     {
-     "soc_code": "39-2021",
-     "title": "Animal Caretakers",
-     "median_annual_wage": 39680.0,
-     "total_job_openings": 68000.0,
-     "percent_change": 12.3
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists",
+     "median_annual_wage": 37558.0,
+     "total_job_openings": 65240.0,
+     "percent_change": 10.0
+    },
+    {
+     "soc_code": "39-5094",
+     "title": "Skincare Specialists",
+     "median_annual_wage": 39752.0,
+     "total_job_openings": 23330.0,
+     "percent_change": 9.9
+    },
+    {
+     "soc_code": "39-5091",
+     "title": "Makeup Artists, Theatrical and Performance",
+     "median_annual_wage": 144438.0,
+     "total_job_openings": 2590.0,
+     "percent_change": 12.5
+    },
+    {
+     "soc_code": "51-6052",
+     "title": "Tailors, Dressmakers, and Custom Sewers",
+     "median_annual_wage": 45372.0,
+     "total_job_openings": 6190.0,
+     "percent_change": -9.6
+    },
+    {
+     "soc_code": "47-2141",
+     "title": "Painters, Construction and Maintenance",
+     "median_annual_wage": 60619.0,
+     "total_job_openings": 48920.0,
+     "percent_change": 5.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "39-5012": {
    "soc_code": "39-5012",
@@ -17265,41 +18953,81 @@
      "job_training": "None"
     }
    ],
+   "description": "Provide beauty services, such as cutting, coloring, and styling hair, and massaging and treating scalp. May shampoo hair, apply makeup, dress wigs, remove hair, and provide nail and skincare services.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 3.88
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.75
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.62
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.38
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.25
+    },
+    {
+     "name": "Active Learning",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "39-5011",
+     "title": "Barbers"
+    },
+    {
+     "soc_code": "39-5094",
+     "title": "Skincare Specialists"
+    },
+    {
+     "soc_code": "39-5091",
+     "title": "Makeup Artists, Theatrical and Performance"
+    },
+    {
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists"
+    },
+    {
+     "soc_code": "51-6052",
+     "title": "Tailors, Dressmakers, and Custom Sewers"
+    },
+    {
+     "soc_code": "41-2031",
+     "title": "Retail Salespersons"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
    "related": [
     {
-     "soc_code": "39-3091",
-     "title": "Amusement and Recreation Attendants",
-     "median_annual_wage": 37937.0,
-     "total_job_openings": 152610.0,
-     "percent_change": 5.8
+     "soc_code": "39-5011",
+     "title": "Barbers",
+     "median_annual_wage": 39352.0,
+     "total_job_openings": 6380.0,
+     "percent_change": 7.1
     },
     {
-     "soc_code": "39-9011",
-     "title": "Childcare Workers",
-     "median_annual_wage": 41034.0,
-     "total_job_openings": 135490.0,
-     "percent_change": 1.5
+     "soc_code": "39-5094",
+     "title": "Skincare Specialists",
+     "median_annual_wage": 39752.0,
+     "total_job_openings": 23330.0,
+     "percent_change": 9.9
     },
     {
-     "soc_code": "39-9031",
-     "title": "Exercise Trainers and Group Fitness Instructors",
-     "median_annual_wage": 59459.0,
-     "total_job_openings": 105200.0,
-     "percent_change": 16.7
-    },
-    {
-     "soc_code": "39-9032",
-     "title": "Recreation Workers",
-     "median_annual_wage": 40788.0,
-     "total_job_openings": 104970.0,
-     "percent_change": 9.1
-    },
-    {
-     "soc_code": "39-2021",
-     "title": "Animal Caretakers",
-     "median_annual_wage": 39680.0,
-     "total_job_openings": 68000.0,
-     "percent_change": 12.3
+     "soc_code": "39-5091",
+     "title": "Makeup Artists, Theatrical and Performance",
+     "median_annual_wage": 144438.0,
+     "total_job_openings": 2590.0,
+     "percent_change": 12.5
     },
     {
      "soc_code": "39-5092",
@@ -17307,8 +19035,23 @@
      "median_annual_wage": 37558.0,
      "total_job_openings": 65240.0,
      "percent_change": 10.0
+    },
+    {
+     "soc_code": "51-6052",
+     "title": "Tailors, Dressmakers, and Custom Sewers",
+     "median_annual_wage": 45372.0,
+     "total_job_openings": 6190.0,
+     "percent_change": -9.6
+    },
+    {
+     "soc_code": "41-2031",
+     "title": "Retail Salespersons",
+     "median_annual_wage": 38790.0,
+     "total_job_openings": 549460.0,
+     "percent_change": -1.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "39-5094": {
    "soc_code": "39-5094",
@@ -17700,35 +19443,61 @@
      "job_training": "None"
     }
    ],
+   "description": "Provide skincare treatments to face and body to enhance an individual's appearance. Includes electrologists and laser hair removal specialists.",
+   "skills": [
+    {
+     "name": "Speaking",
+     "importance": 3.75
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.62
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.5
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.25
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "39-5012",
+     "title": "Hairdressers, Hairstylists, and Cosmetologists"
+    },
+    {
+     "soc_code": "31-9011",
+     "title": "Massage Therapists"
+    },
+    {
+     "soc_code": "29-2055",
+     "title": "Surgical Technologists"
+    },
+    {
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists"
+    },
+    {
+     "soc_code": "39-5011",
+     "title": "Barbers"
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
-    {
-     "soc_code": "39-3091",
-     "title": "Amusement and Recreation Attendants",
-     "median_annual_wage": 37937.0,
-     "total_job_openings": 152610.0,
-     "percent_change": 5.8
-    },
-    {
-     "soc_code": "39-9011",
-     "title": "Childcare Workers",
-     "median_annual_wage": 41034.0,
-     "total_job_openings": 135490.0,
-     "percent_change": 1.5
-    },
-    {
-     "soc_code": "39-9031",
-     "title": "Exercise Trainers and Group Fitness Instructors",
-     "median_annual_wage": 59459.0,
-     "total_job_openings": 105200.0,
-     "percent_change": 16.7
-    },
-    {
-     "soc_code": "39-9032",
-     "title": "Recreation Workers",
-     "median_annual_wage": 40788.0,
-     "total_job_openings": 104970.0,
-     "percent_change": 9.1
-    },
     {
      "soc_code": "39-5012",
      "title": "Hairdressers, Hairstylists, and Cosmetologists",
@@ -17737,13 +19506,42 @@
      "percent_change": 7.3
     },
     {
-     "soc_code": "39-2021",
-     "title": "Animal Caretakers",
-     "median_annual_wage": 39680.0,
-     "total_job_openings": 68000.0,
-     "percent_change": 12.3
+     "soc_code": "31-9011",
+     "title": "Massage Therapists",
+     "median_annual_wage": 47134.0,
+     "total_job_openings": 38120.0,
+     "percent_change": 20.9
+    },
+    {
+     "soc_code": "29-2055",
+     "title": "Surgical Technologists",
+     "median_annual_wage": 83586.0,
+     "total_job_openings": 8420.0,
+     "percent_change": 11.6
+    },
+    {
+     "soc_code": "39-5092",
+     "title": "Manicurists and Pedicurists",
+     "median_annual_wage": 37558.0,
+     "total_job_openings": 65240.0,
+     "percent_change": 10.0
+    },
+    {
+     "soc_code": "39-5011",
+     "title": "Barbers",
+     "median_annual_wage": 39352.0,
+     "total_job_openings": 6380.0,
+     "percent_change": 7.1
+    },
+    {
+     "soc_code": "31-9091",
+     "title": "Dental Assistants",
+     "median_annual_wage": 51379.0,
+     "total_job_openings": 81180.0,
+     "percent_change": 10.0
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "41-4012": {
    "soc_code": "41-4012",
@@ -18288,20 +20086,63 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Sell goods for wholesalers or manufacturers to businesses or groups of individuals. Work requires substantial knowledge of items sold.",
+   "skills": [
     {
-     "soc_code": "41-2011",
-     "title": "Cashiers",
-     "median_annual_wage": 37438.0,
-     "total_job_openings": 606780.0,
-     "percent_change": -5.3
+     "name": "Speaking",
+     "importance": 4.0
     },
     {
-     "soc_code": "41-2031",
-     "title": "Retail Salespersons",
-     "median_annual_wage": 38790.0,
-     "total_job_openings": 549460.0,
-     "percent_change": -1.3
+     "name": "Active Listening",
+     "importance": 4.0
+    },
+    {
+     "name": "Negotiation",
+     "importance": 3.75
+    },
+    {
+     "name": "Persuasion",
+     "importance": 3.75
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.75
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.5
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "41-4011",
+     "title": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products"
+    },
+    {
+     "soc_code": "41-3091",
+     "title": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel"
+    },
+    {
+     "soc_code": "41-3011",
+     "title": "Advertising Sales Agents"
+    },
+    {
+     "soc_code": "11-2022",
+     "title": "Sales Managers"
+    },
+    {
+     "soc_code": "41-9031",
+     "title": "Sales Engineers"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
+   "related": [
+    {
+     "soc_code": "41-4011",
+     "title": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",
+     "median_annual_wage": 125352.0,
+     "total_job_openings": 24440.0,
+     "percent_change": -1.7
     },
     {
      "soc_code": "41-3091",
@@ -18311,27 +20152,28 @@
      "percent_change": 4.7
     },
     {
-     "soc_code": "41-1011",
-     "title": "First-Line Supervisors of Retail Sales Workers",
-     "median_annual_wage": 55370.0,
-     "total_job_openings": 126230.0,
-     "percent_change": -3.4
+     "soc_code": "41-3011",
+     "title": "Advertising Sales Agents",
+     "median_annual_wage": 81092.0,
+     "total_job_openings": 9540.0,
+     "percent_change": -4.9
     },
     {
-     "soc_code": "41-2021",
-     "title": "Counter and Rental Clerks",
-     "median_annual_wage": 45420.0,
-     "total_job_openings": 77120.0,
-     "percent_change": 3.2
+     "soc_code": "11-2022",
+     "title": "Sales Managers",
+     "median_annual_wage": 137173.0,
+     "total_job_openings": 88500.0,
+     "percent_change": 2.9
     },
     {
-     "soc_code": "41-9099",
-     "title": "Sales and Related Workers, All Other",
-     "median_annual_wage": 53291.0,
-     "total_job_openings": 43060.0,
-     "percent_change": 0.3
+     "soc_code": "41-9031",
+     "title": "Sales Engineers",
+     "median_annual_wage": 140428.0,
+     "total_job_openings": 5260.0,
+     "percent_change": 1.6
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "43-3011": {
    "soc_code": "43-3011",
@@ -18808,13 +20650,67 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "Locate and notify customers of delinquent accounts by mail, telephone, or personal visit to solicit payment. Duties include receiving payment and posting amount to customer's account, preparing statements to credit department if customer fails to respond, initiating repossession proceedings or service disconnection, and keeping records of collection and status of accounts.",
+   "skills": [
+    {
+     "name": "Speaking",
+     "importance": 3.88
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.88
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.38
+    },
+    {
+     "name": "Persuasion",
+     "importance": 3.38
+    },
+    {
+     "name": "Writing",
+     "importance": 3.25
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "13-2081",
+     "title": "Tax Examiners and Collectors, and Revenue Agents"
+    },
+    {
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives"
+    },
+    {
+     "soc_code": "43-3071",
+     "title": "Tellers"
+    },
+    {
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks"
+    },
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks"
+    },
+    {
+     "soc_code": "43-9041",
+     "title": "Insurance Claims and Policy Processing Clerks"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
     {
-     "soc_code": "43-9061",
-     "title": "Office Clerks, General",
-     "median_annual_wage": 49607.0,
-     "total_job_openings": 356700.0,
-     "percent_change": -4.5
+     "soc_code": "13-2081",
+     "title": "Tax Examiners and Collectors, and Revenue Agents",
+     "median_annual_wage": 75353.0,
+     "total_job_openings": 7640.0,
+     "percent_change": 4.3
     },
     {
      "soc_code": "43-4051",
@@ -18824,11 +20720,18 @@
      "percent_change": -5.6
     },
     {
-     "soc_code": "43-6014",
-     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
-     "median_annual_wage": 56711.0,
-     "total_job_openings": 182240.0,
-     "percent_change": 1.4
+     "soc_code": "43-3071",
+     "title": "Tellers",
+     "median_annual_wage": 48010.0,
+     "total_job_openings": 19760.0,
+     "percent_change": -18.1
+    },
+    {
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks",
+     "median_annual_wage": 57591.0,
+     "total_job_openings": 44130.0,
+     "percent_change": 4.8
     },
     {
      "soc_code": "43-3031",
@@ -18838,20 +20741,14 @@
      "percent_change": -4.1
     },
     {
-     "soc_code": "43-1011",
-     "title": "First-Line Supervisors of Office and Administrative Support Workers",
-     "median_annual_wage": 79426.0,
-     "total_job_openings": 146890.0,
-     "percent_change": 1.9
-    },
-    {
-     "soc_code": "43-6013",
-     "title": "Medical Secretaries and Administrative Assistants",
-     "median_annual_wage": 55779.0,
-     "total_job_openings": 128130.0,
-     "percent_change": 12.6
+     "soc_code": "43-9041",
+     "title": "Insurance Claims and Policy Processing Clerks",
+     "median_annual_wage": 58144.0,
+     "total_job_openings": 18100.0,
+     "percent_change": -6.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "43-3021": {
    "soc_code": "43-3021",
@@ -19396,13 +21293,71 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Compile, compute, and record billing, accounting, statistical, and other numerical data for billing purposes. Prepare billing invoices for services rendered or for delivery or shipment of goods.",
+   "skills": [
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.62
+    },
+    {
+     "name": "Mathematics",
+     "importance": 3.25
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    },
+    {
+     "name": "Time Management",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks"
+    },
+    {
+     "soc_code": "43-4051",
+     "title": "Customer Service Representatives"
+    },
+    {
+     "soc_code": "43-9041",
+     "title": "Insurance Claims and Policy Processing Clerks"
+    },
     {
      "soc_code": "43-9061",
-     "title": "Office Clerks, General",
-     "median_annual_wage": 49607.0,
-     "total_job_openings": 356700.0,
-     "percent_change": -4.5
+     "title": "Office Clerks, General"
+    },
+    {
+     "soc_code": "43-4011",
+     "title": "Brokerage Clerks"
+    },
+    {
+     "soc_code": "43-3011",
+     "title": "Bill and Account Collectors"
+    },
+    {
+     "soc_code": "43-3051",
+     "title": "Payroll and Timekeeping Clerks"
+    }
+   ],
+   "bright_outlook": null,
+   "related": [
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks",
+     "median_annual_wage": 60632.0,
+     "total_job_openings": 178570.0,
+     "percent_change": -4.1
     },
     {
      "soc_code": "43-4051",
@@ -19412,34 +21367,35 @@
      "percent_change": -5.6
     },
     {
-     "soc_code": "43-6014",
-     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
-     "median_annual_wage": 56711.0,
-     "total_job_openings": 182240.0,
-     "percent_change": 1.4
+     "soc_code": "43-9041",
+     "title": "Insurance Claims and Policy Processing Clerks",
+     "median_annual_wage": 58144.0,
+     "total_job_openings": 18100.0,
+     "percent_change": -6.3
     },
     {
-     "soc_code": "43-3031",
-     "title": "Bookkeeping, Accounting, and Auditing Clerks",
-     "median_annual_wage": 60632.0,
-     "total_job_openings": 178570.0,
-     "percent_change": -4.1
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
     },
     {
-     "soc_code": "43-1011",
-     "title": "First-Line Supervisors of Office and Administrative Support Workers",
-     "median_annual_wage": 79426.0,
-     "total_job_openings": 146890.0,
-     "percent_change": 1.9
+     "soc_code": "43-4011",
+     "title": "Brokerage Clerks",
+     "median_annual_wage": 79805.0,
+     "total_job_openings": 4850.0,
+     "percent_change": -8.5
     },
     {
-     "soc_code": "43-6013",
-     "title": "Medical Secretaries and Administrative Assistants",
-     "median_annual_wage": 55779.0,
-     "total_job_openings": 128130.0,
-     "percent_change": 12.6
+     "soc_code": "43-3011",
+     "title": "Bill and Account Collectors",
+     "median_annual_wage": 59301.0,
+     "total_job_openings": 11890.0,
+     "percent_change": -9.2
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "43-3031": {
    "soc_code": "43-3031",
@@ -19984,7 +21940,86 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "Compute, classify, and record numerical data to keep financial records complete. Perform any combination of routine calculating, posting, and verifying duties to obtain primary financial data for use in maintaining accounting records. May also check the accuracy of figures, calculations, and postings pertaining to business transactions recorded by other workers.",
+   "skills": [
+    {
+     "name": "Mathematics",
+     "importance": 3.38
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.25
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.25
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.25
+    },
+    {
+     "name": "Writing",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks"
+    },
+    {
+     "soc_code": "43-3051",
+     "title": "Payroll and Timekeeping Clerks"
+    },
+    {
+     "soc_code": "43-4011",
+     "title": "Brokerage Clerks"
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General"
+    },
+    {
+     "soc_code": "43-3071",
+     "title": "Tellers"
+    },
+    {
+     "soc_code": "43-4131",
+     "title": "Loan Interviewers and Clerks"
+    },
+    {
+     "soc_code": "43-4071",
+     "title": "File Clerks"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
    "related": [
+    {
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks",
+     "median_annual_wage": 57591.0,
+     "total_job_openings": 44130.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "43-3051",
+     "title": "Payroll and Timekeeping Clerks",
+     "median_annual_wage": 66886.0,
+     "total_job_openings": 17950.0,
+     "percent_change": -13.8
+    },
+    {
+     "soc_code": "43-4011",
+     "title": "Brokerage Clerks",
+     "median_annual_wage": 79805.0,
+     "total_job_openings": 4850.0,
+     "percent_change": -8.5
+    },
     {
      "soc_code": "43-9061",
      "title": "Office Clerks, General",
@@ -19993,41 +22028,21 @@
      "percent_change": -4.5
     },
     {
-     "soc_code": "43-4051",
-     "title": "Customer Service Representatives",
-     "median_annual_wage": 50733.0,
-     "total_job_openings": 219040.0,
-     "percent_change": -5.6
+     "soc_code": "43-3071",
+     "title": "Tellers",
+     "median_annual_wage": 48010.0,
+     "total_job_openings": 19760.0,
+     "percent_change": -18.1
     },
     {
-     "soc_code": "43-6014",
-     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
-     "median_annual_wage": 56711.0,
-     "total_job_openings": 182240.0,
-     "percent_change": 1.4
-    },
-    {
-     "soc_code": "43-1011",
-     "title": "First-Line Supervisors of Office and Administrative Support Workers",
-     "median_annual_wage": 79426.0,
-     "total_job_openings": 146890.0,
-     "percent_change": 1.9
-    },
-    {
-     "soc_code": "43-6013",
-     "title": "Medical Secretaries and Administrative Assistants",
-     "median_annual_wage": 55779.0,
-     "total_job_openings": 128130.0,
-     "percent_change": 12.6
-    },
-    {
-     "soc_code": "43-4171",
-     "title": "Receptionists and Information Clerks",
-     "median_annual_wage": 45143.0,
-     "total_job_openings": 112320.0,
-     "percent_change": 5.3
+     "soc_code": "43-4131",
+     "title": "Loan Interviewers and Clerks",
+     "median_annual_wage": 58656.0,
+     "total_job_openings": 10410.0,
+     "percent_change": -6.0
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "43-3051": {
    "soc_code": "43-3051",
@@ -20555,27 +22570,75 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Compile and record employee time and payroll data. May compute employees' time worked, production, and commission. May compute and post wages and deductions, or prepare paychecks.",
+   "skills": [
     {
-     "soc_code": "43-9061",
-     "title": "Office Clerks, General",
-     "median_annual_wage": 49607.0,
-     "total_job_openings": 356700.0,
-     "percent_change": -4.5
+     "name": "Reading Comprehension",
+     "importance": 3.88
     },
     {
-     "soc_code": "43-4051",
-     "title": "Customer Service Representatives",
-     "median_annual_wage": 50733.0,
-     "total_job_openings": 219040.0,
-     "percent_change": -5.6
+     "name": "Active Listening",
+     "importance": 3.75
+    },
+    {
+     "name": "Mathematics",
+     "importance": 3.25
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    },
+    {
+     "name": "Writing",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "43-4161",
+     "title": "Human Resources Assistants, Except Payroll and Timekeeping"
+    },
+    {
+     "soc_code": "43-3031",
+     "title": "Bookkeeping, Accounting, and Auditing Clerks"
+    },
+    {
+     "soc_code": "43-1011",
+     "title": "First-Line Supervisors of Office and Administrative Support Workers"
+    },
+    {
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks"
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General"
+    },
+    {
+     "soc_code": "43-4061",
+     "title": "Eligibility Interviewers, Government Programs"
+    },
+    {
+     "soc_code": "11-3012",
+     "title": "Administrative Services Managers"
     },
     {
      "soc_code": "43-6014",
-     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
-     "median_annual_wage": 56711.0,
-     "total_job_openings": 182240.0,
-     "percent_change": 1.4
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+    }
+   ],
+   "bright_outlook": null,
+   "related": [
+    {
+     "soc_code": "43-4161",
+     "title": "Human Resources Assistants, Except Payroll and Timekeeping",
+     "median_annual_wage": 58953.0,
+     "total_job_openings": 11530.0,
+     "percent_change": -3.5
     },
     {
      "soc_code": "43-3031",
@@ -20592,13 +22655,28 @@
      "percent_change": 1.9
     },
     {
-     "soc_code": "43-6013",
-     "title": "Medical Secretaries and Administrative Assistants",
-     "median_annual_wage": 55779.0,
-     "total_job_openings": 128130.0,
-     "percent_change": 12.6
+     "soc_code": "43-3021",
+     "title": "Billing and Posting Clerks",
+     "median_annual_wage": 57591.0,
+     "total_job_openings": 44130.0,
+     "percent_change": 4.8
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
+    },
+    {
+     "soc_code": "43-4061",
+     "title": "Eligibility Interviewers, Government Programs",
+     "median_annual_wage": 65023.0,
+     "total_job_openings": 28150.0,
+     "percent_change": 5.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "43-6013": {
    "soc_code": "43-6013",
@@ -21143,20 +23221,82 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Perform secretarial duties using specific knowledge of medical terminology and hospital, clinic, or laboratory procedures. Duties may include scheduling appointments, billing patients, and compiling and recording medical charts, reports, and correspondence.",
+   "skills": [
     {
-     "soc_code": "43-9061",
-     "title": "Office Clerks, General",
-     "median_annual_wage": 49607.0,
-     "total_job_openings": 356700.0,
-     "percent_change": -4.5
+     "name": "Speaking",
+     "importance": 4.0
     },
     {
-     "soc_code": "43-4051",
-     "title": "Customer Service Representatives",
-     "median_annual_wage": 50733.0,
-     "total_job_openings": 219040.0,
-     "percent_change": -5.6
+     "name": "Active Listening",
+     "importance": 3.88
+    },
+    {
+     "name": "Service Orientation",
+     "importance": 3.62
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.5
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "29-2072",
+     "title": "Medical Records Specialists"
+    },
+    {
+     "soc_code": "43-4171",
+     "title": "Receptionists and Information Clerks"
+    },
+    {
+     "soc_code": "43-6014",
+     "title": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive"
+    },
+    {
+     "soc_code": "31-9092",
+     "title": "Medical Assistants"
+    },
+    {
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General"
+    },
+    {
+     "soc_code": "29-2099",
+     "title": "Patient Representatives"
+    },
+    {
+     "soc_code": "43-6011",
+     "title": "Executive Secretaries and Executive Administrative Assistants"
+    },
+    {
+     "soc_code": "31-9094",
+     "title": "Medical Transcriptionists"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
+   "related": [
+    {
+     "soc_code": "29-2072",
+     "title": "Medical Records Specialists",
+     "median_annual_wage": 63540.0,
+     "total_job_openings": 15610.0,
+     "percent_change": 15.0
+    },
+    {
+     "soc_code": "43-4171",
+     "title": "Receptionists and Information Clerks",
+     "median_annual_wage": 45143.0,
+     "total_job_openings": 112320.0,
+     "percent_change": 5.3
     },
     {
      "soc_code": "43-6014",
@@ -21166,27 +23306,28 @@
      "percent_change": 1.4
     },
     {
-     "soc_code": "43-3031",
-     "title": "Bookkeeping, Accounting, and Auditing Clerks",
-     "median_annual_wage": 60632.0,
-     "total_job_openings": 178570.0,
-     "percent_change": -4.1
+     "soc_code": "31-9092",
+     "title": "Medical Assistants",
+     "median_annual_wage": 50918.0,
+     "total_job_openings": 175850.0,
+     "percent_change": 22.7
     },
     {
-     "soc_code": "43-1011",
-     "title": "First-Line Supervisors of Office and Administrative Support Workers",
-     "median_annual_wage": 79426.0,
-     "total_job_openings": 146890.0,
-     "percent_change": 1.9
+     "soc_code": "43-9061",
+     "title": "Office Clerks, General",
+     "median_annual_wage": 49607.0,
+     "total_job_openings": 356700.0,
+     "percent_change": -4.5
     },
     {
-     "soc_code": "43-4171",
-     "title": "Receptionists and Information Clerks",
-     "median_annual_wage": 45143.0,
-     "total_job_openings": 112320.0,
-     "percent_change": 5.3
+     "soc_code": "29-2099",
+     "title": "Health Technologists and Technicians, All Other",
+     "median_annual_wage": 62080.0,
+     "total_job_openings": 22750.0,
+     "percent_change": 14.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "47-2061": {
    "soc_code": "47-2061",
@@ -21731,50 +23872,109 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Perform tasks involving physical labor at construction sites. May operate hand and power tools of all types: air hammers, earth tampers, cement mixers, small mechanical hoists, surveying and measuring equipment, and a variety of other equipment and instruments. May clean and prepare sites, dig trenches, set braces to support the sides of excavations, erect scaffolding, and clean up rubble, debris, and other waste materials. May assist other craft workers.",
+   "skills": [
+    {
+     "name": "Speaking",
+     "importance": 3.25
+    },
+    {
+     "name": "Coordination",
+     "importance": 3.12
+    },
+    {
+     "name": "Operation and Control",
+     "importance": 3.12
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.12
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.0
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 2.75
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "47-2071",
+     "title": "Paving, Surfacing, and Tamping Equipment Operators"
+    },
+    {
+     "soc_code": "47-2051",
+     "title": "Cement Masons and Concrete Finishers"
+    },
+    {
+     "soc_code": "47-2151",
+     "title": "Pipelayers"
+    },
+    {
+     "soc_code": "49-9043",
+     "title": "Maintenance Workers, Machinery"
+    },
+    {
+     "soc_code": "47-2021",
+     "title": "Brickmasons and Blockmasons"
+    },
+    {
+     "soc_code": "47-2221",
+     "title": "Structural Iron and Steel Workers"
+    },
+    {
+     "soc_code": "47-3011",
+     "title": "Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
    "related": [
     {
-     "soc_code": "47-2031",
-     "title": "Carpenters",
-     "median_annual_wage": 77977.0,
-     "total_job_openings": 110410.0,
-     "percent_change": 6.4
+     "soc_code": "47-2071",
+     "title": "Paving, Surfacing, and Tamping Equipment Operators",
+     "median_annual_wage": 85382.0,
+     "total_job_openings": 1280.0,
+     "percent_change": 7.1
     },
     {
-     "soc_code": "47-2111",
-     "title": "Electricians",
-     "median_annual_wage": 78223.0,
-     "total_job_openings": 86460.0,
-     "percent_change": 14.9
+     "soc_code": "47-2051",
+     "title": "Cement Masons and Concrete Finishers",
+     "median_annual_wage": 64399.0,
+     "total_job_openings": 20640.0,
+     "percent_change": 3.1
     },
     {
-     "soc_code": "47-1011",
-     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
-     "median_annual_wage": 100326.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
+     "soc_code": "47-2151",
+     "title": "Pipelayers",
+     "median_annual_wage": 78244.0,
+     "total_job_openings": 1070.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "47-2141",
-     "title": "Painters, Construction and Maintenance",
-     "median_annual_wage": 60619.0,
-     "total_job_openings": 48920.0,
-     "percent_change": 5.3
+     "soc_code": "49-9043",
+     "title": "Maintenance Workers, Machinery",
+     "median_annual_wage": 69758.0,
+     "total_job_openings": 3750.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "47-2152",
-     "title": "Plumbers, Pipefitters, and Steamfitters",
-     "median_annual_wage": 74803.0,
-     "total_job_openings": 48620.0,
-     "percent_change": 8.6
+     "soc_code": "47-2021",
+     "title": "Brickmasons and Blockmasons",
+     "median_annual_wage": 70921.0,
+     "total_job_openings": 4180.0,
+     "percent_change": 5.7
     },
     {
-     "soc_code": "47-2073",
-     "title": "Operating Engineers and Other Construction Equipment Operators",
-     "median_annual_wage": 89521.0,
-     "total_job_openings": 33360.0,
-     "percent_change": 7.0
+     "soc_code": "47-2221",
+     "title": "Structural Iron and Steel Workers",
+     "median_annual_wage": 78439.0,
+     "total_job_openings": 6220.0,
+     "percent_change": 5.5
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "47-2152": {
    "soc_code": "47-2152",
@@ -22302,50 +24502,109 @@
      "job_training": "Apprenticeship"
     }
    ],
+   "description": "Assemble, install, alter, and repair pipelines or pipe systems that carry water, steam, air, or other liquids or gases. May install heating and cooling equipment and mechanical control systems. Includes sprinkler fitters.",
+   "skills": [
+    {
+     "name": "Critical Thinking",
+     "importance": 3.5
+    },
+    {
+     "name": "Repairing",
+     "importance": 3.25
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.25
+    },
+    {
+     "name": "Troubleshooting",
+     "importance": 3.25
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "47-3015",
+     "title": "Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters"
+    },
+    {
+     "soc_code": "47-2151",
+     "title": "Pipelayers"
+    },
+    {
+     "soc_code": "47-4071",
+     "title": "Septic Tank Servicers and Sewer Pipe Cleaners"
+    },
+    {
+     "soc_code": "49-9012",
+     "title": "Control and Valve Installers and Repairers, Except Mechanical Door"
+    },
+    {
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General"
+    },
+    {
+     "soc_code": "51-8021",
+     "title": "Stationary Engineers and Boiler Operators"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "47-2061",
-     "title": "Construction Laborers",
-     "median_annual_wage": 61903.0,
-     "total_job_openings": 111420.0,
-     "percent_change": 10.2
+     "soc_code": "47-3015",
+     "title": "Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 48407.0,
+     "total_job_openings": 2950.0,
+     "percent_change": 7.7
     },
     {
-     "soc_code": "47-2031",
-     "title": "Carpenters",
-     "median_annual_wage": 77977.0,
-     "total_job_openings": 110410.0,
-     "percent_change": 6.4
+     "soc_code": "47-2151",
+     "title": "Pipelayers",
+     "median_annual_wage": 78244.0,
+     "total_job_openings": 1070.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "47-2111",
-     "title": "Electricians",
-     "median_annual_wage": 78223.0,
-     "total_job_openings": 86460.0,
-     "percent_change": 14.9
+     "soc_code": "47-4071",
+     "title": "Septic Tank Servicers and Sewer Pipe Cleaners",
+     "median_annual_wage": 56716.0,
+     "total_job_openings": 3350.0,
+     "percent_change": 15.6
     },
     {
-     "soc_code": "47-1011",
-     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
-     "median_annual_wage": 100326.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
-     "soc_code": "47-2141",
-     "title": "Painters, Construction and Maintenance",
-     "median_annual_wage": 60619.0,
-     "total_job_openings": 48920.0,
-     "percent_change": 5.3
-    },
-    {
-     "soc_code": "47-2073",
-     "title": "Operating Engineers and Other Construction Equipment Operators",
-     "median_annual_wage": 89521.0,
-     "total_job_openings": 33360.0,
+     "soc_code": "49-9012",
+     "title": "Control and Valve Installers and Repairers, Except Mechanical Door",
+     "median_annual_wage": 103095.0,
+     "total_job_openings": 3850.0,
      "percent_change": 7.0
+    },
+    {
+     "soc_code": "49-9021",
+     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+     "median_annual_wage": 74612.0,
+     "total_job_openings": 37750.0,
+     "percent_change": 12.8
+    },
+    {
+     "soc_code": "49-9071",
+     "title": "Maintenance and Repair Workers, General",
+     "median_annual_wage": 58612.0,
+     "total_job_openings": 151500.0,
+     "percent_change": 7.3
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "47-2181": {
    "soc_code": "47-2181",
@@ -22822,50 +25081,113 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Cover roofs of structures with shingles, slate, asphalt, aluminum, wood, or related materials. May spray roofs, sidings, and walls with material to bind, seal, insulate, or soundproof sections of structures.",
+   "skills": [
     {
-     "soc_code": "47-2061",
-     "title": "Construction Laborers",
-     "median_annual_wage": 61903.0,
-     "total_job_openings": 111420.0,
-     "percent_change": 10.2
+     "name": "Coordination",
+     "importance": 3.62
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.0
+    },
+    {
+     "name": "Operation and Control",
+     "importance": 3.0
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "47-3016",
+     "title": "Helpers--Roofers"
+    },
+    {
+     "soc_code": "47-2131",
+     "title": "Insulation Workers, Floor, Ceiling, and Wall"
+    },
+    {
+     "soc_code": "47-2081",
+     "title": "Drywall and Ceiling Tile Installers"
+    },
+    {
+     "soc_code": "47-2161",
+     "title": "Plasterers and Stucco Masons"
+    },
+    {
+     "soc_code": "47-2132",
+     "title": "Insulation Workers, Mechanical"
+    },
+    {
+     "soc_code": "47-2042",
+     "title": "Floor Layers, Except Carpet, Wood, and Hard Tiles"
     },
     {
      "soc_code": "47-2031",
-     "title": "Carpenters",
-     "median_annual_wage": 77977.0,
-     "total_job_openings": 110410.0,
-     "percent_change": 6.4
+     "title": "Carpenters"
     },
     {
-     "soc_code": "47-2111",
-     "title": "Electricians",
-     "median_annual_wage": 78223.0,
-     "total_job_openings": 86460.0,
-     "percent_change": 14.9
-    },
-    {
-     "soc_code": "47-1011",
-     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
-     "median_annual_wage": 100326.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
-     "soc_code": "47-2141",
-     "title": "Painters, Construction and Maintenance",
-     "median_annual_wage": 60619.0,
-     "total_job_openings": 48920.0,
-     "percent_change": 5.3
-    },
-    {
-     "soc_code": "47-2152",
-     "title": "Plumbers, Pipefitters, and Steamfitters",
-     "median_annual_wage": 74803.0,
-     "total_job_openings": 48620.0,
-     "percent_change": 8.6
+     "soc_code": "47-3011",
+     "title": "Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters"
     }
-   ]
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
+    {
+     "soc_code": "47-3016",
+     "title": "Helpers--Roofers",
+     "median_annual_wage": 56973.0,
+     "total_job_openings": 1420.0,
+     "percent_change": 8.3
+    },
+    {
+     "soc_code": "47-2131",
+     "title": "Insulation Workers, Floor, Ceiling, and Wall",
+     "median_annual_wage": 50163.0,
+     "total_job_openings": 2690.0,
+     "percent_change": 3.1
+    },
+    {
+     "soc_code": "47-2081",
+     "title": "Drywall and Ceiling Tile Installers",
+     "median_annual_wage": 67665.0,
+     "total_job_openings": 25830.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "47-2161",
+     "title": "Plasterers and Stucco Masons",
+     "median_annual_wage": 61564.0,
+     "total_job_openings": 6320.0,
+     "percent_change": 5.1
+    },
+    {
+     "soc_code": "47-2132",
+     "title": "Insulation Workers, Mechanical",
+     "median_annual_wage": 122932.0,
+     "total_job_openings": 1220.0,
+     "percent_change": 7.1
+    },
+    {
+     "soc_code": "47-2042",
+     "title": "Floor Layers, Except Carpet, Wood, and Hard Tiles",
+     "median_annual_wage": 62868.0,
+     "total_job_openings": 4590.0,
+     "percent_change": 8.5
+    }
+   ],
+   "related_source": "onet"
   },
   "47-2211": {
    "soc_code": "47-2211",
@@ -23223,50 +25545,109 @@
      "job_training": "Apprenticeship"
     }
    ],
-   "related": [
+   "description": "Fabricate, assemble, install, and repair sheet metal products and equipment, such as ducts, control boxes, drainpipes, and furnace casings. Work may involve any of the following: setting up and operating fabricating machines to cut, bend, and straighten sheet metal; shaping metal over anvils, blocks, or forms using hammer; operating soldering and welding equipment to join sheet metal parts; or inspecting, assembling, and smoothing seams and joints of burred surfaces. Includes sheet metal duct installers who install prefabricated sheet metal ducts used for heating, air conditioning, or other purposes.",
+   "skills": [
     {
-     "soc_code": "47-2061",
-     "title": "Construction Laborers",
-     "median_annual_wage": 61903.0,
-     "total_job_openings": 111420.0,
-     "percent_change": 10.2
+     "name": "Coordination",
+     "importance": 3.12
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.12
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.12
+    },
+    {
+     "name": "Time Management",
+     "importance": 3.0
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "51-2041",
+     "title": "Structural Metal Fabricators and Fitters"
+    },
+    {
+     "soc_code": "51-2011",
+     "title": "Aircraft Structure, Surfaces, Rigging, and Systems Assemblers"
+    },
+    {
+     "soc_code": "47-2221",
+     "title": "Structural Iron and Steel Workers"
+    },
+    {
+     "soc_code": "47-2081",
+     "title": "Drywall and Ceiling Tile Installers"
+    },
+    {
+     "soc_code": "47-2131",
+     "title": "Insulation Workers, Floor, Ceiling, and Wall"
+    },
+    {
+     "soc_code": "47-2132",
+     "title": "Insulation Workers, Mechanical"
     },
     {
      "soc_code": "47-2031",
-     "title": "Carpenters",
-     "median_annual_wage": 77977.0,
-     "total_job_openings": 110410.0,
-     "percent_change": 6.4
-    },
-    {
-     "soc_code": "47-2111",
-     "title": "Electricians",
-     "median_annual_wage": 78223.0,
-     "total_job_openings": 86460.0,
-     "percent_change": 14.9
-    },
-    {
-     "soc_code": "47-1011",
-     "title": "First-Line Supervisors of Construction Trades and Extraction Workers",
-     "median_annual_wage": 100326.0,
-     "total_job_openings": 68670.0,
-     "percent_change": 8.0
-    },
-    {
-     "soc_code": "47-2141",
-     "title": "Painters, Construction and Maintenance",
-     "median_annual_wage": 60619.0,
-     "total_job_openings": 48920.0,
-     "percent_change": 5.3
-    },
-    {
-     "soc_code": "47-2152",
-     "title": "Plumbers, Pipefitters, and Steamfitters",
-     "median_annual_wage": 74803.0,
-     "total_job_openings": 48620.0,
-     "percent_change": 8.6
+     "title": "Carpenters"
     }
-   ]
+   ],
+   "bright_outlook": null,
+   "related": [
+    {
+     "soc_code": "51-2041",
+     "title": "Structural Metal Fabricators and Fitters",
+     "median_annual_wage": 58904.0,
+     "total_job_openings": 2460.0,
+     "percent_change": -20.0
+    },
+    {
+     "soc_code": "51-2011",
+     "title": "Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",
+     "median_annual_wage": 65092.0,
+     "total_job_openings": 2580.0,
+     "percent_change": -13.3
+    },
+    {
+     "soc_code": "47-2221",
+     "title": "Structural Iron and Steel Workers",
+     "median_annual_wage": 78439.0,
+     "total_job_openings": 6220.0,
+     "percent_change": 5.5
+    },
+    {
+     "soc_code": "47-2081",
+     "title": "Drywall and Ceiling Tile Installers",
+     "median_annual_wage": 67665.0,
+     "total_job_openings": 25830.0,
+     "percent_change": 5.0
+    },
+    {
+     "soc_code": "47-2131",
+     "title": "Insulation Workers, Floor, Ceiling, and Wall",
+     "median_annual_wage": 50163.0,
+     "total_job_openings": 2690.0,
+     "percent_change": 3.1
+    },
+    {
+     "soc_code": "47-2132",
+     "title": "Insulation Workers, Mechanical",
+     "median_annual_wage": 122932.0,
+     "total_job_openings": 1220.0,
+     "percent_change": 7.1
+    }
+   ],
+   "related_source": "onet"
   },
   "47-2231": {
    "soc_code": "47-2231",
@@ -23573,27 +25954,71 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Assemble, install, or maintain solar photovoltaic (PV) systems on roofs or other structures in compliance with site assessment and schematics. May include measuring, cutting, assembling, and bolting structural framing and solar modules. May perform minor electrical work such as current checks.",
+   "skills": [
     {
-     "soc_code": "47-2061",
-     "title": "Construction Laborers",
-     "median_annual_wage": 61903.0,
-     "total_job_openings": 111420.0,
-     "percent_change": 10.2
+     "name": "Installation",
+     "importance": 3.38
     },
     {
-     "soc_code": "47-2031",
-     "title": "Carpenters",
-     "median_annual_wage": 77977.0,
-     "total_job_openings": 110410.0,
-     "percent_change": 6.4
+     "name": "Critical Thinking",
+     "importance": 3.25
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.12
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Quality Control Analysis",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "47-2152",
+     "title": "Solar Thermal Installers and Technicians"
+    },
+    {
+     "soc_code": "47-1011",
+     "title": "Solar Energy Installation Managers"
+    },
+    {
+     "soc_code": "49-9099",
+     "title": "Geothermal Technicians"
+    },
+    {
+     "soc_code": "27-4015",
+     "title": "Lighting Technicians"
+    },
+    {
+     "soc_code": "51-8013",
+     "title": "Hydroelectric Plant Technicians"
     },
     {
      "soc_code": "47-2111",
-     "title": "Electricians",
-     "median_annual_wage": 78223.0,
-     "total_job_openings": 86460.0,
-     "percent_change": 14.9
+     "title": "Electricians"
+    },
+    {
+     "soc_code": "49-2094",
+     "title": "Electrical and Electronics Repairers, Commercial and Industrial Equipment"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
+   "related": [
+    {
+     "soc_code": "47-2152",
+     "title": "Plumbers, Pipefitters, and Steamfitters",
+     "median_annual_wage": 74803.0,
+     "total_job_openings": 48620.0,
+     "percent_change": 8.6
     },
     {
      "soc_code": "47-1011",
@@ -23603,20 +26028,35 @@
      "percent_change": 8.0
     },
     {
-     "soc_code": "47-2141",
-     "title": "Painters, Construction and Maintenance",
-     "median_annual_wage": 60619.0,
-     "total_job_openings": 48920.0,
-     "percent_change": 5.3
+     "soc_code": "49-9099",
+     "title": "Installation, Maintenance, and Repair Workers, All Other",
+     "median_annual_wage": 52679.0,
+     "total_job_openings": 27340.0,
+     "percent_change": 2.1
     },
     {
-     "soc_code": "47-2152",
-     "title": "Plumbers, Pipefitters, and Steamfitters",
-     "median_annual_wage": 74803.0,
-     "total_job_openings": 48620.0,
-     "percent_change": 8.6
+     "soc_code": "27-4015",
+     "title": "Lighting Technicians",
+     "median_annual_wage": 96703.0,
+     "total_job_openings": 2490.0,
+     "percent_change": 0.0
+    },
+    {
+     "soc_code": "51-8013",
+     "title": "Power Plant Operators",
+     "median_annual_wage": 107611.0,
+     "total_job_openings": 1900.0,
+     "percent_change": -15.4
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "49-2093": {
    "soc_code": "49-2093",
@@ -23702,50 +26142,109 @@
      "job_training": "Long-term on-the-job training"
     }
    ],
+   "description": "Install, adjust, or maintain mobile electronics communication equipment, including sound, sonar, security, navigation, and surveillance systems on trains, watercraft, or other mobile equipment.",
+   "skills": [
+    {
+     "name": "Critical Thinking",
+     "importance": 3.62
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.38
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.25
+    },
+    {
+     "name": "Quality Control Analysis",
+     "importance": 3.25
+    },
+    {
+     "name": "Complex Problem Solving",
+     "importance": 3.12
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "49-2094",
+     "title": "Electrical and Electronics Repairers, Commercial and Industrial Equipment"
+    },
+    {
+     "soc_code": "17-3023",
+     "title": "Electrical and Electronic Engineering Technologists and Technicians"
+    },
+    {
+     "soc_code": "49-2091",
+     "title": "Avionics Technicians"
+    },
+    {
+     "soc_code": "27-4015",
+     "title": "Lighting Technicians"
+    },
+    {
+     "soc_code": "17-3028",
+     "title": "Calibration Technologists and Technicians"
+    },
+    {
+     "soc_code": "49-2095",
+     "title": "Electrical and Electronics Repairers, Powerhouse, Substation, and Relay"
+    },
+    {
+     "soc_code": "49-9012",
+     "title": "Control and Valve Installers and Repairers, Except Mechanical Door"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "49-9071",
-     "title": "Maintenance and Repair Workers, General",
-     "median_annual_wage": 58612.0,
-     "total_job_openings": 151500.0,
-     "percent_change": 7.3
+     "soc_code": "49-2094",
+     "title": "Electrical and Electronics Repairers, Commercial and Industrial Equipment",
+     "median_annual_wage": 89542.0,
+     "total_job_openings": 5030.0,
+     "percent_change": 5.1
     },
     {
-     "soc_code": "49-3023",
-     "title": "Automotive Service Technicians and Mechanics",
-     "median_annual_wage": 66817.0,
-     "total_job_openings": 66070.0,
-     "percent_change": 4.1
+     "soc_code": "17-3023",
+     "title": "Electrical and Electronics Engineering Technologists and Technicians",
+     "median_annual_wage": 88500.0,
+     "total_job_openings": 11520.0,
+     "percent_change": -2.9
     },
     {
-     "soc_code": "49-1011",
-     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
-     "median_annual_wage": 96308.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
+     "soc_code": "49-2091",
+     "title": "Avionics Technicians",
+     "median_annual_wage": 95095.0,
+     "total_job_openings": 1040.0,
+     "percent_change": 8.3
     },
     {
-     "soc_code": "49-9021",
-     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
-     "median_annual_wage": 74612.0,
-     "total_job_openings": 37750.0,
-     "percent_change": 12.8
+     "soc_code": "27-4015",
+     "title": "Lighting Technicians",
+     "median_annual_wage": 96703.0,
+     "total_job_openings": 2490.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "49-9041",
-     "title": "Industrial Machinery Mechanics",
-     "median_annual_wage": 76504.0,
-     "total_job_openings": 28510.0,
-     "percent_change": 13.8
+     "soc_code": "17-3028",
+     "title": "Calibration Technologists and Technicians",
+     "median_annual_wage": 81222.0,
+     "total_job_openings": 1070.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "49-9099",
-     "title": "Installation, Maintenance, and Repair Workers, All Other",
-     "median_annual_wage": 52679.0,
-     "total_job_openings": 27340.0,
-     "percent_change": 2.1
+     "soc_code": "49-2095",
+     "title": "Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",
+     "median_annual_wage": 124956.0,
+     "total_job_openings": 1320.0,
+     "percent_change": 0.0
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "49-2096": {
    "soc_code": "49-2096",
@@ -23797,13 +26296,71 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "Install, diagnose, or repair communications, sound, security, or navigation equipment in motor vehicles.",
+   "skills": [
+    {
+     "name": "Repairing",
+     "importance": 3.62
+    },
+    {
+     "name": "Troubleshooting",
+     "importance": 3.62
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.5
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.5
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.38
+    },
+    {
+     "name": "Equipment Maintenance",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "49-2093",
+     "title": "Electrical and Electronics Installers and Repairers, Transportation Equipment"
+    },
+    {
+     "soc_code": "49-3023",
+     "title": "Automotive Service Technicians and Mechanics"
+    },
+    {
+     "soc_code": "49-2094",
+     "title": "Electrical and Electronics Repairers, Commercial and Industrial Equipment"
+    },
+    {
+     "soc_code": "49-2091",
+     "title": "Avionics Technicians"
+    },
+    {
+     "soc_code": "49-2021",
+     "title": "Radio, Cellular, and Tower Equipment Installers and Repairers"
+    },
+    {
+     "soc_code": "49-2097",
+     "title": "Audiovisual Equipment Installers and Repairers"
+    },
+    {
+     "soc_code": "49-2098",
+     "title": "Security and Fire Alarm Systems Installers"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
     {
-     "soc_code": "49-9071",
-     "title": "Maintenance and Repair Workers, General",
-     "median_annual_wage": 58612.0,
-     "total_job_openings": 151500.0,
-     "percent_change": 7.3
+     "soc_code": "49-2093",
+     "title": "Electrical and Electronics Installers and Repairers, Transportation Equipment",
+     "median_annual_wage": 87218.0,
+     "total_job_openings": 1190.0,
+     "percent_change": 0.0
     },
     {
      "soc_code": "49-3023",
@@ -23813,34 +26370,35 @@
      "percent_change": 4.1
     },
     {
-     "soc_code": "49-1011",
-     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
-     "median_annual_wage": 96308.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
+     "soc_code": "49-2094",
+     "title": "Electrical and Electronics Repairers, Commercial and Industrial Equipment",
+     "median_annual_wage": 89542.0,
+     "total_job_openings": 5030.0,
+     "percent_change": 5.1
     },
     {
-     "soc_code": "49-9021",
-     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
-     "median_annual_wage": 74612.0,
-     "total_job_openings": 37750.0,
-     "percent_change": 12.8
+     "soc_code": "49-2091",
+     "title": "Avionics Technicians",
+     "median_annual_wage": 95095.0,
+     "total_job_openings": 1040.0,
+     "percent_change": 8.3
     },
     {
-     "soc_code": "49-9041",
-     "title": "Industrial Machinery Mechanics",
-     "median_annual_wage": 76504.0,
-     "total_job_openings": 28510.0,
-     "percent_change": 13.8
+     "soc_code": "49-2021",
+     "title": "Radio, Cellular, and Tower Equipment Installers and Repairers",
+     "median_annual_wage": 64617.0,
+     "total_job_openings": 1120.0,
+     "percent_change": 9.1
     },
     {
-     "soc_code": "49-9099",
-     "title": "Installation, Maintenance, and Repair Workers, All Other",
-     "median_annual_wage": 52679.0,
-     "total_job_openings": 27340.0,
-     "percent_change": 2.1
+     "soc_code": "49-2097",
+     "title": "Audiovisual Equipment Installers and Repairers",
+     "median_annual_wage": 64154.0,
+     "total_job_openings": 2910.0,
+     "percent_change": 3.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "49-3023": {
    "soc_code": "49-3023",
@@ -24368,50 +26926,105 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Diagnose, adjust, repair, or overhaul automotive vehicles.",
+   "skills": [
+    {
+     "name": "Repairing",
+     "importance": 3.75
+    },
+    {
+     "name": "Troubleshooting",
+     "importance": 3.62
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.5
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.5
+    },
+    {
+     "name": "Equipment Maintenance",
+     "importance": 3.38
+    },
+    {
+     "name": "Judgment and Decision Making",
+     "importance": 3.25
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "49-3031",
+     "title": "Bus and Truck Mechanics and Diesel Engine Specialists"
+    },
+    {
+     "soc_code": "51-2031",
+     "title": "Engine and Other Machine Assemblers"
+    },
+    {
+     "soc_code": "49-3051",
+     "title": "Motorboat Mechanics and Service Technicians"
+    },
+    {
+     "soc_code": "49-3052",
+     "title": "Motorcycle Mechanics"
+    },
+    {
+     "soc_code": "49-9012",
+     "title": "Control and Valve Installers and Repairers, Except Mechanical Door"
+    },
+    {
+     "soc_code": "17-3027",
+     "title": "Automotive Engineering Technicians"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
-    {
-     "soc_code": "49-9071",
-     "title": "Maintenance and Repair Workers, General",
-     "median_annual_wage": 58612.0,
-     "total_job_openings": 151500.0,
-     "percent_change": 7.3
-    },
-    {
-     "soc_code": "49-1011",
-     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
-     "median_annual_wage": 96308.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
-    },
-    {
-     "soc_code": "49-9021",
-     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
-     "median_annual_wage": 74612.0,
-     "total_job_openings": 37750.0,
-     "percent_change": 12.8
-    },
-    {
-     "soc_code": "49-9041",
-     "title": "Industrial Machinery Mechanics",
-     "median_annual_wage": 76504.0,
-     "total_job_openings": 28510.0,
-     "percent_change": 13.8
-    },
-    {
-     "soc_code": "49-9099",
-     "title": "Installation, Maintenance, and Repair Workers, All Other",
-     "median_annual_wage": 52679.0,
-     "total_job_openings": 27340.0,
-     "percent_change": 2.1
-    },
     {
      "soc_code": "49-3031",
      "title": "Bus and Truck Mechanics and Diesel Engine Specialists",
      "median_annual_wage": 76041.0,
      "total_job_openings": 20390.0,
      "percent_change": 5.1
+    },
+    {
+     "soc_code": "51-2031",
+     "title": "Engine and Other Machine Assemblers",
+     "median_annual_wage": 47878.0,
+     "total_job_openings": 960.0,
+     "percent_change": -16.7
+    },
+    {
+     "soc_code": "49-3051",
+     "title": "Motorboat Mechanics and Service Technicians",
+     "median_annual_wage": 64092.0,
+     "total_job_openings": 1350.0,
+     "percent_change": 7.7
+    },
+    {
+     "soc_code": "49-3052",
+     "title": "Motorcycle Mechanics",
+     "median_annual_wage": 58653.0,
+     "total_job_openings": 1890.0,
+     "percent_change": 5.3
+    },
+    {
+     "soc_code": "49-9012",
+     "title": "Control and Valve Installers and Repairers, Except Mechanical Door",
+     "median_annual_wage": 103095.0,
+     "total_job_openings": 3850.0,
+     "percent_change": 7.0
+    },
+    {
+     "soc_code": "17-3027",
+     "title": "Mechanical Engineering Technologists and Technicians",
+     "median_annual_wage": 89836.0,
+     "total_job_openings": 3330.0,
+     "percent_change": 5.4
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "49-9051": {
    "soc_code": "49-9051",
@@ -24769,50 +27382,105 @@
      "job_training": "Long-term on-the-job training"
     }
    ],
+   "description": "Install or repair cables or wires used in electrical power or distribution systems. May erect poles and light or heavy duty transmission towers.",
+   "skills": [
+    {
+     "name": "Active Listening",
+     "importance": 3.38
+    },
+    {
+     "name": "Troubleshooting",
+     "importance": 3.38
+    },
+    {
+     "name": "Operation and Control",
+     "importance": 3.25
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.25
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.25
+    },
+    {
+     "name": "Coordination",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "49-9052",
+     "title": "Telecommunications Line Installers and Repairers"
+    },
+    {
+     "soc_code": "47-3013",
+     "title": "Helpers--Electricians"
+    },
+    {
+     "soc_code": "47-2111",
+     "title": "Electricians"
+    },
+    {
+     "soc_code": "49-2095",
+     "title": "Electrical and Electronics Repairers, Powerhouse, Substation, and Relay"
+    },
+    {
+     "soc_code": "49-2093",
+     "title": "Electrical and Electronics Installers and Repairers, Transportation Equipment"
+    },
+    {
+     "soc_code": "49-9096",
+     "title": "Riggers"
+    }
+   ],
+   "bright_outlook": "Rapid Growth",
    "related": [
     {
-     "soc_code": "49-9071",
-     "title": "Maintenance and Repair Workers, General",
-     "median_annual_wage": 58612.0,
-     "total_job_openings": 151500.0,
-     "percent_change": 7.3
+     "soc_code": "49-9052",
+     "title": "Telecommunications Line Installers and Repairers",
+     "median_annual_wage": 100750.0,
+     "total_job_openings": 7040.0,
+     "percent_change": -12.8
     },
     {
-     "soc_code": "49-3023",
-     "title": "Automotive Service Technicians and Mechanics",
-     "median_annual_wage": 66817.0,
-     "total_job_openings": 66070.0,
-     "percent_change": 4.1
+     "soc_code": "47-3013",
+     "title": "Helpers--Electricians",
+     "median_annual_wage": 53491.0,
+     "total_job_openings": 3430.0,
+     "percent_change": 3.1
     },
     {
-     "soc_code": "49-1011",
-     "title": "First-Line Supervisors of Mechanics, Installers, and Repairers",
-     "median_annual_wage": 96308.0,
-     "total_job_openings": 45620.0,
-     "percent_change": 4.8
+     "soc_code": "47-2111",
+     "title": "Electricians",
+     "median_annual_wage": 78223.0,
+     "total_job_openings": 86460.0,
+     "percent_change": 14.9
     },
     {
-     "soc_code": "49-9021",
-     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
-     "median_annual_wage": 74612.0,
-     "total_job_openings": 37750.0,
-     "percent_change": 12.8
+     "soc_code": "49-2095",
+     "title": "Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",
+     "median_annual_wage": 124956.0,
+     "total_job_openings": 1320.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "49-9041",
-     "title": "Industrial Machinery Mechanics",
-     "median_annual_wage": 76504.0,
-     "total_job_openings": 28510.0,
-     "percent_change": 13.8
+     "soc_code": "49-2093",
+     "title": "Electrical and Electronics Installers and Repairers, Transportation Equipment",
+     "median_annual_wage": 87218.0,
+     "total_job_openings": 1190.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "49-9099",
-     "title": "Installation, Maintenance, and Repair Workers, All Other",
-     "median_annual_wage": 52679.0,
-     "total_job_openings": 27340.0,
-     "percent_change": 2.1
+     "soc_code": "49-9096",
+     "title": "Riggers",
+     "median_annual_wage": 88154.0,
+     "total_job_openings": 2470.0,
+     "percent_change": 9.1
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "49-9099": {
    "soc_code": "49-9099",
@@ -25340,6 +28008,10 @@
      "job_training": "Moderate-term on-the-job training"
     }
    ],
+   "description": "All installation, maintenance, and repair workers not listed separately.",
+   "skills": [],
+   "related_onet": [],
+   "bright_outlook": null,
    "related": [
     {
      "soc_code": "49-9071",
@@ -25383,7 +28055,8 @@
      "total_job_openings": 20390.0,
      "percent_change": 5.1
     }
-   ]
+   ],
+   "related_source": "soc_major_group"
   },
   "53-3032": {
    "soc_code": "53-3032",
@@ -25911,20 +28584,67 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
-   "related": [
+   "description": "Drive a tractor-trailer combination or a truck with a capacity of at least 26,001 pounds Gross Vehicle Weight (GVW). May be required to unload truck. Requires commercial drivers' license. Includes tow truck drivers.",
+   "skills": [
     {
-     "soc_code": "53-7065",
-     "title": "Stockers and Order Fillers",
-     "median_annual_wage": 43808.0,
-     "total_job_openings": 565760.0,
-     "percent_change": 15.5
+     "name": "Operation and Control",
+     "importance": 3.75
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.75
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Time Management",
+     "importance": 3.0
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.0
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "53-7051",
+     "title": "Industrial Truck and Tractor Operators"
+    },
+    {
+     "soc_code": "53-3033",
+     "title": "Light Truck Drivers"
+    },
+    {
+     "soc_code": "49-3031",
+     "title": "Bus and Truck Mechanics and Diesel Engine Specialists"
     },
     {
      "soc_code": "53-7062",
-     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
-     "median_annual_wage": 45689.0,
-     "total_job_openings": 502850.0,
-     "percent_change": 8.6
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand"
+    },
+    {
+     "soc_code": "53-3054",
+     "title": "Taxi Drivers"
+    },
+    {
+     "soc_code": "53-3053",
+     "title": "Shuttle Drivers and Chauffeurs"
+    }
+   ],
+   "bright_outlook": "Numerous Job Openings",
+   "related": [
+    {
+     "soc_code": "53-7051",
+     "title": "Industrial Truck and Tractor Operators",
+     "median_annual_wage": 48816.0,
+     "total_job_openings": 100140.0,
+     "percent_change": 11.4
     },
     {
      "soc_code": "53-3033",
@@ -25934,27 +28654,35 @@
      "percent_change": 17.9
     },
     {
-     "soc_code": "53-7064",
-     "title": "Packers and Packagers, Hand",
-     "median_annual_wage": 38076.0,
-     "total_job_openings": 104810.0,
-     "percent_change": -3.1
+     "soc_code": "49-3031",
+     "title": "Bus and Truck Mechanics and Diesel Engine Specialists",
+     "median_annual_wage": 76041.0,
+     "total_job_openings": 20390.0,
+     "percent_change": 5.1
     },
     {
-     "soc_code": "53-7051",
-     "title": "Industrial Truck and Tractor Operators",
-     "median_annual_wage": 48816.0,
-     "total_job_openings": 100140.0,
-     "percent_change": 11.4
+     "soc_code": "53-7062",
+     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
+     "median_annual_wage": 45689.0,
+     "total_job_openings": 502850.0,
+     "percent_change": 8.6
     },
     {
-     "soc_code": "53-1047",
-     "title": "FirstLine Supervisors of Transportation & Material Moving Workers, Exc Aircraft Cargo Handling Supervisor",
-     "median_annual_wage": 66985.0,
-     "total_job_openings": 75030.0,
-     "percent_change": 10.0
+     "soc_code": "53-3054",
+     "title": "Taxi Drivers",
+     "median_annual_wage": 40119.0,
+     "total_job_openings": 66330.0,
+     "percent_change": 48.0
+    },
+    {
+     "soc_code": "53-3053",
+     "title": "Shuttle Drivers and Chauffeurs",
+     "median_annual_wage": 45709.0,
+     "total_job_openings": 52480.0,
+     "percent_change": 19.9
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "53-3033": {
    "soc_code": "53-3033",
@@ -26482,21 +29210,69 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Drive a light vehicle, such as a truck or van, with a capacity of less than 26,001 pounds Gross Vehicle Weight (GVW), primarily to pick up merchandise or packages from a distribution center and deliver. May load and unload vehicle.",
+   "skills": [
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    },
+    {
+     "name": "Operation and Control",
+     "importance": 3.12
+    },
+    {
+     "name": "Reading Comprehension",
+     "importance": 3.12
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.12
+    },
+    {
+     "name": "Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Time Management",
+     "importance": 3.0
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "53-3032",
+     "title": "Heavy and Tractor-Trailer Truck Drivers"
+    },
+    {
+     "soc_code": "53-3053",
+     "title": "Shuttle Drivers and Chauffeurs"
+    },
+    {
+     "soc_code": "53-3031",
+     "title": "Driver/Sales Workers"
+    },
+    {
+     "soc_code": "43-5021",
+     "title": "Couriers and Messengers"
+    },
+    {
+     "soc_code": "53-3054",
+     "title": "Taxi Drivers"
+    },
+    {
+     "soc_code": "53-7051",
+     "title": "Industrial Truck and Tractor Operators"
+    },
+    {
+     "soc_code": "43-5032",
+     "title": "Dispatchers, Except Police, Fire, and Ambulance"
+    },
+    {
+     "soc_code": "53-4031",
+     "title": "Railroad Conductors and Yardmasters"
+    }
+   ],
+   "bright_outlook": "Rapid Growth; Numerous Job Openings",
    "related": [
-    {
-     "soc_code": "53-7065",
-     "title": "Stockers and Order Fillers",
-     "median_annual_wage": 43808.0,
-     "total_job_openings": 565760.0,
-     "percent_change": 15.5
-    },
-    {
-     "soc_code": "53-7062",
-     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
-     "median_annual_wage": 45689.0,
-     "total_job_openings": 502850.0,
-     "percent_change": 8.6
-    },
     {
      "soc_code": "53-3032",
      "title": "Heavy and Tractor-Trailer Truck Drivers",
@@ -26505,11 +29281,32 @@
      "percent_change": 11.4
     },
     {
-     "soc_code": "53-7064",
-     "title": "Packers and Packagers, Hand",
-     "median_annual_wage": 38076.0,
-     "total_job_openings": 104810.0,
-     "percent_change": -3.1
+     "soc_code": "53-3053",
+     "title": "Shuttle Drivers and Chauffeurs",
+     "median_annual_wage": 45709.0,
+     "total_job_openings": 52480.0,
+     "percent_change": 19.9
+    },
+    {
+     "soc_code": "53-3031",
+     "title": "Driver/Sales Workers",
+     "median_annual_wage": 46598.0,
+     "total_job_openings": 44250.0,
+     "percent_change": 11.7
+    },
+    {
+     "soc_code": "43-5021",
+     "title": "Couriers and Messengers",
+     "median_annual_wage": 46034.0,
+     "total_job_openings": 32970.0,
+     "percent_change": 17.8
+    },
+    {
+     "soc_code": "53-3054",
+     "title": "Taxi Drivers",
+     "median_annual_wage": 40119.0,
+     "total_job_openings": 66330.0,
+     "percent_change": 48.0
     },
     {
      "soc_code": "53-7051",
@@ -26517,15 +29314,9 @@
      "median_annual_wage": 48816.0,
      "total_job_openings": 100140.0,
      "percent_change": 11.4
-    },
-    {
-     "soc_code": "53-1047",
-     "title": "FirstLine Supervisors of Transportation & Material Moving Workers, Exc Aircraft Cargo Handling Supervisor",
-     "median_annual_wage": 66985.0,
-     "total_job_openings": 75030.0,
-     "percent_change": 10.0
     }
-   ]
+   ],
+   "related_source": "onet"
   },
   "53-3051": {
    "soc_code": "53-3051",
@@ -27036,27 +29827,92 @@
      "job_training": "Short-term on-the-job training"
     }
    ],
+   "description": "Drive a school bus to transport students. Ensure adherence to safety rules. May assist students in boarding or exiting.",
+   "skills": [
+    {
+     "name": "Monitoring",
+     "importance": 3.38
+    },
+    {
+     "name": "Active Listening",
+     "importance": 3.38
+    },
+    {
+     "name": "Critical Thinking",
+     "importance": 3.38
+    },
+    {
+     "name": "Social Perceptiveness",
+     "importance": 3.25
+    },
+    {
+     "name": "Operations Monitoring",
+     "importance": 3.12
+    },
+    {
+     "name": "Speaking",
+     "importance": 3.12
+    }
+   ],
+   "related_onet": [
+    {
+     "soc_code": "33-9094",
+     "title": "School Bus Monitors"
+    },
+    {
+     "soc_code": "53-3052",
+     "title": "Bus Drivers, Transit and Intercity"
+    },
+    {
+     "soc_code": "53-3053",
+     "title": "Shuttle Drivers and Chauffeurs"
+    },
+    {
+     "soc_code": "53-3054",
+     "title": "Taxi Drivers"
+    },
+    {
+     "soc_code": "53-3033",
+     "title": "Light Truck Drivers"
+    },
+    {
+     "soc_code": "53-4031",
+     "title": "Railroad Conductors and Yardmasters"
+    },
+    {
+     "soc_code": "43-5032",
+     "title": "Dispatchers, Except Police, Fire, and Ambulance"
+    }
+   ],
+   "bright_outlook": null,
    "related": [
     {
-     "soc_code": "53-7065",
-     "title": "Stockers and Order Fillers",
-     "median_annual_wage": 43808.0,
-     "total_job_openings": 565760.0,
-     "percent_change": 15.5
+     "soc_code": "33-9094",
+     "title": "School Bus Monitors",
+     "median_annual_wage": 39332.0,
+     "total_job_openings": 2180.0,
+     "percent_change": 0.0
     },
     {
-     "soc_code": "53-7062",
-     "title": "Laborers and Freight, Stock, and Material Movers, Hand",
-     "median_annual_wage": 45689.0,
-     "total_job_openings": 502850.0,
-     "percent_change": 8.6
+     "soc_code": "53-3052",
+     "title": "Bus Drivers, Transit and Intercity",
+     "median_annual_wage": 68599.0,
+     "total_job_openings": 33100.0,
+     "percent_change": 8.8
     },
     {
-     "soc_code": "53-3032",
-     "title": "Heavy and Tractor-Trailer Truck Drivers",
-     "median_annual_wage": 61548.0,
-     "total_job_openings": 262610.0,
-     "percent_change": 11.4
+     "soc_code": "53-3053",
+     "title": "Shuttle Drivers and Chauffeurs",
+     "median_annual_wage": 45709.0,
+     "total_job_openings": 52480.0,
+     "percent_change": 19.9
+    },
+    {
+     "soc_code": "53-3054",
+     "title": "Taxi Drivers",
+     "median_annual_wage": 40119.0,
+     "total_job_openings": 66330.0,
+     "percent_change": 48.0
     },
     {
      "soc_code": "53-3033",
@@ -27066,20 +29922,14 @@
      "percent_change": 17.9
     },
     {
-     "soc_code": "53-7064",
-     "title": "Packers and Packagers, Hand",
-     "median_annual_wage": 38076.0,
-     "total_job_openings": 104810.0,
-     "percent_change": -3.1
-    },
-    {
-     "soc_code": "53-7051",
-     "title": "Industrial Truck and Tractor Operators",
-     "median_annual_wage": 48816.0,
-     "total_job_openings": 100140.0,
-     "percent_change": 11.4
+     "soc_code": "53-4031",
+     "title": "Railroad Conductors and Yardmasters",
+     "median_annual_wage": 71481.0,
+     "total_job_openings": 1120.0,
+     "percent_change": -6.7
     }
-   ]
+   ],
+   "related_source": "onet"
   }
  }
 }

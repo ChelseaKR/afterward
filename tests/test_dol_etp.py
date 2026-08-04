@@ -10,11 +10,13 @@ import pytest
 
 from camino.sources.dol_etp import (
     Program,
+    clean_earnings,
     clean_measure,
     clean_rate,
     clean_url,
     parse_program,
     parse_state_benchmark,
+    reconcile_rate,
 )
 
 
@@ -241,3 +243,58 @@ class TestCleanRate:
         assert program.completed_percent is None
         assert program.q2_employment_percent == 0.7
         assert "outside 0..1" in capsys.readouterr().err
+
+
+class TestCleanEarnings:
+    """A quarter's earnings, not an hourly rate filed in the wrong box."""
+
+    def test_accepts_a_plausible_quarter(self) -> None:
+        assert clean_earnings(10787.21) == 10787.21
+
+    def test_rejects_an_hourly_rate(self, capsys: pytest.CaptureFixture[str]) -> None:
+        # $16 is a wage per hour. Published as a quarter's earnings beside "Worse than
+        # typical", against a named business, it is a defamatory claim from a unit error.
+        assert clean_earnings(16.0, context="median earnings") is None
+        assert "too small" in capsys.readouterr().err
+
+    def test_keeps_a_genuine_zero(self) -> None:
+        # Nobody earning anything is a real and serious finding, not a unit error.
+        assert clean_earnings(0) == 0.0
+
+    def test_suppressed_stays_none(self) -> None:
+        assert clean_earnings(-1) is None
+
+
+class TestReconcileRate:
+    """DOL rounds to two decimals, so 0.00 means "under 0.5%", not "nobody"."""
+
+    def test_drops_a_zero_the_counts_contradict(self) -> None:
+        # 86 people working out of 15,335 is 0.56%, which rounds to 0.00.
+        assert reconcile_rate(0.0, 86, 15335) is None
+
+    def test_keeps_a_zero_the_counts_support(self) -> None:
+        assert reconcile_rate(0.0, 0, 500) == 0.0
+
+    def test_leaves_a_non_zero_rate_alone(self) -> None:
+        assert reconcile_rate(0.64, 320, 500) == 0.64
+
+    def test_leaves_an_unreported_rate_alone(self) -> None:
+        assert reconcile_rate(None, 86, 15335) is None
+
+    def test_keeps_a_zero_when_the_counts_are_unknown(self) -> None:
+        # Without counts there is nothing to contradict it, so the reported value stands.
+        assert reconcile_rate(0.0, None, 15335) == 0.0
+        assert reconcile_rate(0.0, 86, None) == 0.0
+
+    def test_parsed_program_drops_the_contradicted_zero(self) -> None:
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_c_q2_employment_percent": 0,
+                    "field_total_employed_q2": 86,
+                    "field_c_total_exited": 15335,
+                }
+            }
+        )
+        assert program.q2_employment_percent is None

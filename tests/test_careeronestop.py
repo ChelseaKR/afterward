@@ -16,6 +16,7 @@ from camino.sources.careeronestop import (
     TOKEN_ENV,
     USER_ID_ENV,
     OccupationEnrichment,
+    build_client,
     credentials,
     fetch_occupation,
     onet_code,
@@ -121,6 +122,27 @@ class TestFetchWithoutCredentials:
 
         monkeypatch.setattr(httpx.Client, "get", explode)
         assert fetch_occupation("29-1141") is None
+
+
+class TestSharedClient:
+    """A build fetches every occupation, so it shares one client rather than 670."""
+
+    def test_carries_the_credential_and_identifies_itself(self) -> None:
+        with build_client("token") as client:
+            assert client.headers["Authorization"] == "Bearer token"
+            assert "camino" in client.headers["User-Agent"]
+
+    def test_a_supplied_client_is_left_open_for_its_owner(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Closing a caller's client after one occupation would break the next 669.
+        monkeypatch.setenv(USER_ID_ENV, "user")
+        monkeypatch.setenv(TOKEN_ENV, "token")
+        (tmp_path / "29-1141.00.json").write_text(json.dumps(PAYLOAD), encoding="utf-8")
+
+        with build_client("token") as client:
+            fetch_occupation("29-1141", client=client, cache_dir=tmp_path)
+            assert client.is_closed is False
 
 
 class TestCache:

@@ -88,6 +88,78 @@ def pick(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return list(chosen.values())
 
 
+def _median(values: list[float]) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def fixture_coverage(
+    programs: list[dict[str, Any]],
+    occupations: dict[str, Any],
+    source: dict[str, Any],
+) -> dict[str, Any]:
+    """Describe the fixture, not the dataset it was cut from.
+
+    An earlier version overrode six keys and carried the rest across, so the fixture's
+    coverage file claimed 60 programs alongside 3,266 with a cost and 584 providers. That is
+    not merely untidy: ``peer_medians[...].reporting`` is rendered, so every program page in
+    the CI-built site read "Typical California program: 69% of 1,766 reporting" for a dataset
+    holding sixty. Every count is therefore recomputed here, and anything that cannot be
+    is dropped rather than inherited.
+    """
+    outcomes = [p["outcomes"] for p in programs]
+    total = len(programs)
+    reported = sum(1 for o in outcomes if o["reported"])
+    matched = sum(1 for p in programs if p["occupations"])
+    mapped = sum(1 for p in programs if p.get("region"))
+
+    def counted(key: str) -> int:
+        return sum(1 for o in outcomes if o.get(key) is not None)
+
+    def pct(part: int) -> float:
+        return round(100 * part / total, 1) if total else 0.0
+
+    peers = {
+        measure: {
+            "median": _median([o[measure] for o in outcomes if o.get(measure) is not None]),
+            "reporting": counted(measure),
+        }
+        for measure in ("completion_rate", "employment_rate_q2", "median_earnings")
+    }
+
+    return {
+        "snapshot_date": source["snapshot_date"],
+        "is_fixture": True,
+        "total_programs": total,
+        "programs_with_any_outcome": reported,
+        "programs_with_median_earnings": counted("median_earnings"),
+        "programs_with_employment_rate": counted("employment_rate_q2"),
+        "programs_with_completion_rate": counted("completion_rate"),
+        "programs_with_cost": sum(
+            1 for p in programs if p["cost"]["total_out_of_pocket"] is not None
+        ),
+        "programs_with_soc": sum(1 for p in programs if p["soc_codes"]),
+        "programs_matched_to_occupation": matched,
+        "distinct_providers": len({p["provider_name"] for p in programs if p["provider_name"]}),
+        "distinct_occupations_matched": len(occupations),
+        "occupation_rows_loaded": len(occupations),
+        "programs_mapped_to_area": mapped,
+        "programs_without_area": total - mapped,
+        "outcome_coverage_pct": pct(reported),
+        "occupation_match_pct": pct(matched),
+        "area_match_pct": pct(mapped),
+        # A genuine statewide figure from DOL, not a property of this sample, so it carries
+        # over unchanged. Everything else above describes the sixty rows in this file.
+        "state_benchmark": source.get("state_benchmark"),
+        "peer_medians": peers,
+    }
+
+
 def main() -> int:
     if not (SOURCE / "programs.json").exists():
         print(f"no dataset at {SOURCE} — run `make data` first")
@@ -116,35 +188,26 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    # Real statewide benchmark and snapshot date are kept so the fixture exercises the
-    # comparison rendering; the counts are recomputed to describe the fixture itself.
-    reported = sum(1 for p in programs if p["outcomes"]["reported"])
-    matched = sum(1 for p in programs if p["occupations"])
     (DEST / "coverage.json").write_text(
-        json.dumps(
-            coverage
-            | {
-                "total_programs": len(programs),
-                "programs_with_any_outcome": reported,
-                "programs_matched_to_occupation": matched,
-                "distinct_occupations_matched": len(occupations),
-                "outcome_coverage_pct": round(100 * reported / len(programs), 1),
-                "occupation_match_pct": round(100 * matched / len(programs), 1),
-                "is_fixture": True,
-            },
-            indent=1,
-        ),
+        json.dumps(fixture_coverage(programs, occupations, coverage), indent=1),
         encoding="utf-8",
     )
 
+    summary = fixture_coverage(programs, occupations, coverage)
+    # Across every occupation a program feeds, not just its first — the same bug that once
+    # made the site's headline shrinking count 219 instead of 518.
     shrinking = sum(
         1
         for p in programs
-        if p["occupations"] and (p["occupations"][0].get("percent_change") or 0) < 0
+        if any(
+            o.get("percent_change") is not None and o["percent_change"] < 0
+            for o in p["occupations"]
+        )
     )
     print(
         f"fixture: {len(programs)} programs, {len(occupations)} occupations "
-        f"({reported} reporting outcomes, {shrinking} shrinking) -> {DEST}"
+        f"({summary['programs_with_any_outcome']} reporting outcomes, "
+        f"{shrinking} shrinking) -> {DEST}"
     )
     return 0
 

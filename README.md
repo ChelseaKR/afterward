@@ -63,9 +63,9 @@ occupation. Fixture builds are marked `is_fixture: true` in `coverage.json`.
 
 ## Honesty about coverage
 
-`coverage.json` is a first-class output, not a debug artifact. Roughly **half** of
-California's reported programs have no published outcome data at all, and the pipeline
-counts and publishes that rather than hiding it. Two rules follow from this and are enforced
+`coverage.json` is a first-class output, not a debug artifact. **Roughly a third** of
+California's reported programs publish no outcome data at all — 2,057 of 3,266 report at
+least one measure — and the pipeline counts and publishes that rather than hiding it. Two rules follow from this and are enforced
 in code:
 
 - A withheld or suppressed measure is `null`, never `0`. WIOA suppresses small-cohort cells

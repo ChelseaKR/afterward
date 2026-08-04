@@ -25,9 +25,26 @@ export default async function OccupationPage({
   const t = dict(lang);
   const programs = programsForOccupation(soc);
   const shrinking = occupation.percent_change !== null && occupation.percent_change < 0;
-  const regions = occupation.regions
-    .filter((r) => r.median_annual_wage !== null)
-    .sort((a, b) => (b.median_annual_wage ?? 0) - (a.median_annual_wage ?? 0));
+  /*
+   * Every region EDD publishes for this occupation, including those where it publishes
+   * openings and growth but withholds the wage.
+   *
+   * An earlier version filtered those out, which inverted the project's own rule: a withheld
+   * wage was being used to suppress other measures that were published. It discarded 518
+   * region rows, among them San Diego for General and Operations Managers — 23,790 projected
+   * openings, silently absent — and every one of the 24 regions for Musicians and Singers,
+   * which removed the section entirely.
+   *
+   * Rows without a wage sort last, because the table is ordered by pay and an unknown is not
+   * a low number. Their wage cell says "Not reported", which is the fact.
+   */
+  const regions = [...occupation.regions].sort((a, b) => {
+    const [left, right] = [a.median_annual_wage, b.median_annual_wage];
+    if (left === right) return (a.area_name ?? "").localeCompare(b.area_name ?? "");
+    if (left === null) return 1;
+    if (right === null) return -1;
+    return right - left;
+  });
 
   return (
     <div className="shell detail">
