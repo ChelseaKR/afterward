@@ -37,7 +37,22 @@ export function CompareTray({
   return (
     <div className="compare-tray" role="region" aria-label={t.compareTitle}>
       <div className="shell compare-tray-inner">
-        <p className="compare-tray-count">{t.compareCount(selected.length, MAX_COMPARE)}</p>
+        <p className="compare-tray-count">
+          {t.compareCount(selected.length, MAX_COMPARE)}
+          {/*
+            Said out loud when the limit is reached. The card checkboxes go disabled at that
+            point, which removes them from the tab order, so a keyboard user could never
+            reach the tooltip that used to be the only explanation.
+          */}
+          {selected.length >= MAX_COMPARE && (
+            <span
+              role="status"
+              style={{ display: "block", fontWeight: 400, opacity: 0.85, marginTop: "0.15rem" }}
+            >
+              {t.compareFull}
+            </span>
+          )}
+        </p>
 
         <ul className="compare-chips">
           {selected.map((entry) => (

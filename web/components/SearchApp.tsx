@@ -194,6 +194,15 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </p>
         </div>
 
+        {/*
+          Outside the results branch on purpose. The comparison is a working set the reader
+          assembled, not a view of the current results, so narrowing a search to nothing must
+          not make it vanish while the tray still says two are selected.
+        */}
+        {compareOpen && compareSelected.length >= 2 && (
+          <CompareTable entries={compareSelected} lang={lang} />
+        )}
+
         {results.length === 0 ? (
           <div className="panel panel-quiet">
             <p>
@@ -203,10 +212,6 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </div>
         ) : (
           <>
-            {compareOpen && compareSelected.length >= 2 && (
-              <CompareTable entries={compareSelected} lang={lang} />
-            )}
-
             <ul className="card-list">
               {visible.map((entry) => (
                 <ResultCard
