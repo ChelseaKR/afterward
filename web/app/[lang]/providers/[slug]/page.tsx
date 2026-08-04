@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -13,15 +14,42 @@ export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => providers.map((provider) => ({ lang, slug: provider.slug })));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+/**
+ * The title and description a search result shows for one of the 1,162 provider pages.
+ *
+ * These are the pages people reach by searching a school's name, which makes them the most
+ * consequential results on the site: this is where someone finds out what the college they
+ * were about to enrol in publishes about itself. The name leads, the city follows, and the
+ * site's own name appears nowhere — a result reading "… | Camino" spends its most valuable
+ * characters on the one word a stranger cannot use.
+ *
+ * `lang` was never read here, so all 1,162 pages emitted the same English pair in both trees.
+ *
+ * A provider in more than one city gets a count rather than a first-city-wins guess, which
+ * would name Fresno on a page listing programs in Fresno, Madera and Visalia.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; slug: string }>;
+}): Promise<Metadata> {
+  const { lang, slug } = await params;
+  if (!isLang(lang)) return {};
+
   const provider = findProvider(getSearchIndex().programs, slug);
   if (!provider) return {};
+
+  const t = dict(lang);
+  const { cities } = provider;
+  const place =
+    cities.length === 1 ? `${cities[0]}, CA` : cities.length > 1 ? t.metaProviderCities(cities.length) : "California";
+  // A count of rows in a list, not a measure anyone reported. Zero here would mean this
+  // provider publishes nothing at all, which is a fact and is the point of showing it.
+  const reporting = provider.programs.filter((program) => program.r).length;
+
   return {
-    title: `${tidyName(provider.name)} — training programs and outcomes | Camino`,
-    description: `${provider.programs.length} training programs at ${tidyName(
-      provider.name,
-    )} in California, with cost and reported outcomes.`,
+    title: t.metaProviderTitle(tidyName(provider.name), provider.programs.length, place),
+    description: t.metaProviderDescription(reporting, provider.programs.length),
   };
 }
 

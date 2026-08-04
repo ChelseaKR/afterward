@@ -39,6 +39,7 @@ function entry(partial: Partial<SearchEntry> & { i: string }): SearchEntry {
     a: "Fresno MSA",
     $: 1000,
     $partial: false,
+    at: true,
     w: null,
     s: [],
     o: [],

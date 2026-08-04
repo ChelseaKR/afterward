@@ -87,6 +87,50 @@ The workflow builds the site from that dataset, uploads, invalidates, and smoke-
 The live `coverage.json` check compares the snapshot date and program count against what was
 just uploaded, so a stale edge response fails the deploy instead of passing it.
 
+### How big the export is, and what gets dropped before it ships
+
+Roughly 9,000 pages, and almost none of the bytes are markup. `npm run size-report` (from
+`web/`) prints the breakdown; `npm run build` prints it again and prunes. Measured against
+the 3,266-program snapshot of 2026-08-04:
+
+| Category | Before | After | Files after |
+|---|---|---|---|
+| `index.html` — markup plus the inline payload React hydrates from | 247.4 MiB | 247.4 MiB | 9,046 |
+| `index.txt` — RSC payload for navigation the router did not prefetch | 145.7 MiB | 145.7 MiB | 9,044 |
+| `__next._full.txt` — the same bytes again, requested by nothing | 145.7 MiB | **0** | **0** |
+| `__next.<segment>.__PAGE__.txt` — segment-cache prefetch | 133.4 MiB | 133.4 MiB | 9,044 |
+| `data/**` — `web/public/data`, copied verbatim | 32.9 MiB | 32.9 MiB | 3,940 |
+| `__next._tree.txt` — route tree, ~600 bytes each | 5.3 MiB | 5.3 MiB | 9,044 |
+| `sitemap.xml`, JS, CSS, `robots.txt` | 4.6 MiB | 4.6 MiB | 16 |
+| **Total** | **715.0 MiB / 49,178 objects** | **569.4 MiB / 40,134 objects** | |
+
+`__next._full.txt` is written by the server renderer so a *running* Next server could answer
+a whole-page segment prefetch from the same map it builds the per-segment payloads in. The
+static exporter copies that map to disk wholesale, so a site with no server gets 9,044
+copies of a file no browser will ever request: the string `_full` appears in no chunk this
+site serves, and each file is byte-for-byte the `index.txt` sitting beside it. The prune is
+interlocked on both of those facts and refuses rather than fails if either stops holding —
+see `web/scripts/size-report.mjs`.
+
+Expect the first deploy after this to report about 9,000 fewer objects, and `sync --delete`
+to spend a while removing the old ones. Nothing about what a page says changes.
+
+Two things measured and deliberately left alone:
+
+- **`data/**` (32.9 MiB, 3,940 objects).** Only `coverage.json` is used — the smoke test in
+  the table above fetches it to prove the live site is serving the snapshot just uploaded.
+  Nothing on the site loads any of the rest: the search index is baked into the page at build
+  time
+  and `web/lib/data.ts` reads `public/data` only during the export. But those URLs answer
+  200 today, and `/data/coverage.json` shows the prefix is published on purpose, so dropping
+  the others is a decision about a public surface rather than a size fix. Worth making
+  deliberately; not worth making silently.
+- **The three remaining copies of each payload.** `index.html` needs its inline copy to
+  hydrate. `index.txt` is what the router fetches when it navigates somewhere it has not
+  prefetched — a `router.push`, a link clicked before its prefetch landed, an entry past its
+  300s stale time. The `__PAGE__` segment is what a `<Link>` prefetch actually pulls. Remove
+  any of them and navigation breaks in a way that only shows up on someone else's network.
+
 ### Two details worth knowing
 
 The upload runs three passes: hashed assets without `--delete`, then everything else with

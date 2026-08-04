@@ -26,6 +26,7 @@ import {
 import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
+import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
 import { slugify } from "@/lib/providers";
 
 const COST_CAPS = [2000, 5000, 10000, 20000];
@@ -459,6 +460,23 @@ function ResultCard({
         <Fact label={t.employmentRate} value={percent(entry.er, lang)} lang={lang} />
         <Fact label={t.medianEarnings} value={money(entry.me, lang)} lang={lang} />
       </dl>
+
+      {/*
+        * Said on the card, beneath the figures it qualifies, because the card is where a
+        * reader first compares these numbers against the card above and below it. The
+        * figures stay: they are what the provider filed, and they are real. What the card
+        * must not do is let them pass as this one program's result.
+        *
+        * Gated on `entry.r` as well: five of the 103 reported no outcomes at all, and a
+        * caution about figures that are not on screen would be a puzzle rather than a
+        * warning.
+        */}
+      {entry.r && !isOwnCohort(entry) && (
+        <p style={{ margin: "0.875rem 0 0", fontSize: "0.875rem", lineHeight: 1.45 }}>
+          <span className="badge badge-small">{COHORT_NOT_OWN[lang].badge}</span>{" "}
+          {COHORT_NOT_OWN[lang].note}
+        </p>
+      )}
 
       {entry.o.length > 0 && (
         <p style={{ marginBottom: 0, marginTop: "0.875rem", fontSize: "0.9375rem" }}>

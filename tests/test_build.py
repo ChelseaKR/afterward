@@ -14,6 +14,7 @@ from camino.build import (
     EnrichmentCoverage,
     aggregate_match_coverage,
     area_coverage,
+    cohort_integrity_coverage,
     detailed_soc_codes,
     enrichment_coverage,
     fetch_enrichment,
@@ -25,13 +26,28 @@ from camino.build import (
     unmapped_cities,
 )
 from camino.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
-from camino.sources.dol_etp import parse_program
+from camino.sources.dol_etp import CohortFiling, cohort_integrity, parse_program
 from camino.sources.edd_lmi import area_definitions, parse_projections, principal_city_areas
 
 PROJECTION_CSV = """Area Type,Area Name,Period,SOC Level,Standard Occupational Classification (SOC),Occupational Title,Base Year Employment Estimate,Projected Year Employment Estimate,Numeric Change,Percentage Change,Exits,Transfers,Total Job Openings,Median Hourly Wage,Median Annual Wage,Entry Level Education,Work Experience,Job Training
 State,California,2024-2034,1,00-0000,"Total, All Occupations",100,110,10,10.0,5,5,20,25.00,52000,N/A,N/A,N/A
 State,California,2024-2034,4,15-1252,Software Developers,1000,1200,200,20.0,50,80,330,68.50,142480,Bachelor's degree,None,None
 Metropolitan Area,Fresno MSA,2024-2034,4,15-1252,Software Developers,50,60,10,20.0,3,5,18,45.00,93600,Bachelor's degree,None,None
+"""
+
+
+CLEAN_COHORT = {
+    "attributable": True,
+    "internally_consistent": True,
+    "shared_with_sibling_programs": None,
+    "exited_exceeds_served": False,
+    "completed_exceeds_served": False,
+    "oversized_for_one_program": False,
+}
+"""What :func:`camino.sources.dol_etp.cohort_integrity` writes on a record with nothing wrong.
+
+Spelled out rather than generated, so a change to the emitted shape has to be made twice --
+once in the pipeline and once here, deliberately.
 """
 
 
@@ -654,7 +670,9 @@ State,California,2024-2034,4,15-1211,Computer Systems Analysts,300,330,30,10.0,1
 class TestSearchEntryArea:
     """The search index must be able to filter by area without inventing one."""
 
-    def _entry(self, region: dict | None, city: str | None = "Fresno") -> dict:
+    def _entry(
+        self, region: dict | None, city: str | None = "Fresno", cohort: dict | None = None
+    ) -> dict:
         program = {
             "uuid": "u1",
             "program_name": "Software Development",
@@ -670,6 +688,7 @@ class TestSearchEntryArea:
                 "employment_rate_q2": None,
                 "median_earnings": None,
                 "reported": False,
+                "cohort": cohort or CLEAN_COHORT,
             },
         }
         return search_entry(program)
@@ -744,10 +763,21 @@ class TestPeerMedians:
                     "completion_rate": v,
                     "employment_rate_q2": v,
                     "median_earnings": v,
+                    "cohort": CLEAN_COHORT,
                 }
             }
             for v in values
         ]
+
+    def _unattributable(self, value: float) -> dict:
+        return {
+            "outcomes": {
+                "completion_rate": value,
+                "employment_rate_q2": value,
+                "median_earnings": value,
+                "cohort": dict(CLEAN_COHORT, attributable=False),
+            }
+        }
 
     def test_median_of_an_odd_count(self) -> None:
         result = peer_medians(self._payloads(0.1, 0.9, 0.5))
@@ -777,3 +807,181 @@ class TestPeerMedians:
         result = peer_medians(self._payloads(0.0, 0.5, 1.0))
         assert result["completion_rate"]["median"] == 0.5
         assert result["completion_rate"]["reporting"] == 3
+
+    def test_a_cohort_we_will_not_attribute_does_not_vote(self) -> None:
+        """One institution-level filing stamped on ten programs must not move the yardstick.
+
+        Left in, it would be counted once per row it was copied onto, so the median every
+        other program is judged against would be partly a single provider's paperwork.
+        """
+        result = peer_medians(
+            [*self._payloads(0.4, 0.5, 0.6), *(self._unattributable(0.9) for _ in range(10))]
+        )
+        assert result["completion_rate"]["median"] == 0.5
+        assert result["completion_rate"]["reporting"] == 3
+
+    def test_the_exclusions_are_published_rather_than_hidden(self) -> None:
+        result = peer_medians([*self._payloads(0.5), self._unattributable(0.9)])
+        assert result["employment_rate_q2"]["excluded_not_attributable"] == 1
+
+    def test_nothing_is_excluded_when_every_cohort_is_this_programs_own(self) -> None:
+        result = peer_medians(self._payloads(0.5, None))
+        assert result["median_earnings"]["excluded_not_attributable"] == 0
+
+
+class TestCohortLabellingOnProgramRecords:
+    """The figures survive; the claim that they measure this program does not."""
+
+    def _programs(self, *sources: dict) -> list:
+        return [parse_program({"_source": s}) for s in sources]
+
+    def _payloads(self, *sources: dict) -> list[dict]:
+        programs = self._programs(*sources)
+        verdicts = cohort_integrity([CohortFiling.of(p) for p in programs])
+        return [
+            program_payload(p, _occupations(), cohort=c)
+            for p, c in zip(programs, verdicts, strict=True)
+        ]
+
+    def _desert(self, uuid: str, **extra: object) -> dict:
+        return {
+            "field_uuid": uuid,
+            "field_etp": "COLLEGE OF THE DESERT",
+            "field_c_total_served": 8692,
+            "field_c_total_exited": 1837,
+            "field_c_total_completed": 1618,
+            "field_c_completed_percent": 0.88,
+            "field_c_q2_employment_percent": 0.04,
+            **extra,
+        }
+
+    def test_a_shared_cohort_keeps_every_figure_it_reported(self) -> None:
+        """Marking, not deleting. The filings are real and a reader may want to see them.
+
+        Nulling them would say "not reported", which is false, and is the single confusion
+        this dataset exists to prevent.
+        """
+        outcomes = self._payloads(self._desert("a"), self._desert("b"))[0]["outcomes"]
+        assert outcomes["total_served"] == 8692.0
+        assert outcomes["employment_rate_q2"] == 0.04
+        assert outcomes["reported"] is True
+
+    def test_a_shared_cohort_says_it_is_not_this_programs(self) -> None:
+        outcomes = self._payloads(self._desert("a"), self._desert("b"))[0]["outcomes"]
+        assert outcomes["cohort"]["attributable"] is False
+        assert outcomes["cohort"]["shared_with_sibling_programs"] == 1
+
+    def test_an_ordinary_program_carries_the_block_saying_nothing_is_wrong(self) -> None:
+        payload = self._payloads({"field_uuid": "u", "field_etp": "p"})[0]
+        assert payload["outcomes"]["cohort"] == CLEAN_COHORT
+
+    def test_a_record_built_alone_still_reports_its_own_contradiction(self) -> None:
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_etp": "Lemoore College",
+                    "field_c_total_served": 1796,
+                    "field_c_total_exited": 5214,
+                }
+            }
+        )
+        cohort = program_payload(program, _occupations())["outcomes"]["cohort"]
+        assert cohort["exited_exceeds_served"] is True
+        assert cohort["internally_consistent"] is False
+
+    def test_the_search_index_row_carries_the_same_verdict(self) -> None:
+        payloads = self._payloads(self._desert("a"), self._desert("b"))
+        entry = search_entry(payloads[0])
+        assert entry["at"] is False
+        # …and still carries the numbers, so a null in the index keeps meaning "not
+        # reported" rather than "we declined to attribute this".
+        assert entry["er"] == 0.04
+        assert entry["r"] is True
+
+    def test_a_clean_program_is_marked_comparable_in_the_index(self) -> None:
+        entry = search_entry(self._payloads({"field_uuid": "u", "field_etp": "p"})[0])
+        assert entry["at"] is True
+
+
+class TestCohortIntegrityCoverage:
+    """The scale of what was marked is published, not swallowed."""
+
+    def _payloads(self, *cohorts: dict) -> list[dict]:
+        return [
+            {
+                "provider_name": f"provider {index}",
+                "outcomes": {
+                    "total_served": 10.0,
+                    "total_exited": 10.0,
+                    "total_completed": 10.0,
+                    "cohort": dict(CLEAN_COHORT, **cohort),
+                },
+            }
+            for index, cohort in enumerate(cohorts)
+        ]
+
+    def test_counts_shared_cohorts_and_recovers_their_grouping(self) -> None:
+        # One group of three and one of two: five programs, two groups, largest three.
+        shared = [{"shared_with_sibling_programs": 2, "attributable": False}] * 3
+        pair = [{"shared_with_sibling_programs": 1, "attributable": False}] * 2
+        report = cohort_integrity_coverage(self._payloads(*shared, *pair, {}))
+        assert report.shared_cohorts == 5
+        assert report.shared_cohort_groups == 2
+        assert report.largest_shared_cohort == 3
+
+    def test_a_clean_build_reports_zeros_rather_than_an_absence(self) -> None:
+        report = cohort_integrity_coverage(self._payloads({}, {}))
+        assert report.shared_cohorts == 0
+        assert report.shared_cohort_groups == 0
+        assert report.largest_shared_cohort == 0
+        assert report.not_attributable == 0
+
+    def test_contradictions_are_counted_per_violation_and_as_a_union(self) -> None:
+        report = cohort_integrity_coverage(
+            self._payloads(
+                {"exited_exceeds_served": True, "internally_consistent": False},
+                {
+                    "exited_exceeds_served": True,
+                    "completed_exceeds_served": True,
+                    "internally_consistent": False,
+                },
+                {},
+            )
+        )
+        assert report.exited_exceeds_served == 2
+        assert report.completed_exceeds_served == 1
+        assert report.internally_contradictory == 2
+
+    def test_oversized_rows_are_counted_with_the_providers_behind_them(self) -> None:
+        payloads = self._payloads(
+            {"oversized_for_one_program": True, "attributable": False},
+            {"oversized_for_one_program": True, "attributable": False},
+            {},
+        )
+        payloads[1]["provider_name"] = payloads[0]["provider_name"]
+        report = cohort_integrity_coverage(payloads)
+        assert report.oversized_for_one_program == 2
+        assert report.oversized_providers == 1
+
+    def test_the_union_is_published_because_the_overlap_is_invisible(self) -> None:
+        report = cohort_integrity_coverage(
+            self._payloads(
+                {
+                    "shared_with_sibling_programs": 1,
+                    "oversized_for_one_program": True,
+                    "attributable": False,
+                },
+                {"shared_with_sibling_programs": 1, "attributable": False},
+                {},
+            )
+        )
+        assert report.shared_cohorts == 2
+        assert report.oversized_for_one_program == 1
+        assert report.not_attributable == 2
+
+    def test_silence_is_not_counted_as_a_cohort(self) -> None:
+        payloads = self._payloads({}, {})
+        for key in ("total_served", "total_exited", "total_completed"):
+            payloads[0]["outcomes"][key] = None
+        assert cohort_integrity_coverage(payloads).programs_with_cohort_counts == 1

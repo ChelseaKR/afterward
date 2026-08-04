@@ -23,7 +23,8 @@ import json
 import re
 import sys
 import time
-from collections.abc import Callable, Iterator
+from collections import Counter
+from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
@@ -297,6 +298,244 @@ def parse_program(hit: dict[str, Any]) -> Program:
         employed_q4=clean_measure(source.get("field_total_employed_q4")),
         raw=source,
     )
+
+
+# --------------------------------------------------------------------------------------
+# Cohort integrity
+#
+# Everything above cleans one measure at a time. This section asks a different question:
+# *who* is the population a record's counts describe? A measure can survive every check
+# above and still be attached to the wrong people, and that is the version of this data
+# that libels a named provider, because the site then stamps a verdict on it.
+#
+# Three failures are detectable from the feed itself, and none of them is a judgement about
+# whether a provider trains anyone well:
+#
+# 1. The same cohort is filed against several of one provider's programs.
+# 2. The record's own counts disagree about which population they describe.
+# 3. One provider files many cohorts far too large to be single programs.
+#
+# All three are *marked*, never deleted. The figures are real filings and a reader is
+# entitled to see them; what they are not entitled to be told is that a figure describing
+# some larger population describes the one program whose page they are reading.
+# --------------------------------------------------------------------------------------
+
+
+def normalise_provider(name: str | None) -> str | None:
+    """Key a provider by, so the same filer under two spellings is one filer.
+
+    Case and internal whitespace only. Two of California's providers file under both a
+    cased and a shouting form of the same name ("Procareer Academy" / "PROCAREER ACADEMY"),
+    and a duplicate-detection pass keyed on the literal string would let a provider evade it
+    by shouting. Nothing else is normalised: guessing that two differently-*spelled* names
+    are one organisation is a similarity judgement, and this module does not make those.
+    """
+    if name is None:
+        return None
+    collapsed = re.sub(r"\s+", " ", name).strip()
+    return collapsed.casefold() or None
+
+
+OVERSIZED_COHORT_SERVED = 3000.0
+"""A single program cohort at or above this is large enough to want corroborating.
+
+Argued from the 2026-08-04 California snapshot, over the 2,099 programs that report
+``total_served``: the median is 112, the 90th percentile 634, the 95th 1,221. 3,000 is the
+97.3rd percentile — 56 programs.
+
+That tail is not shaped like a distribution of cohort sizes. Those 56 programs account for
+67% of everyone reported served in the whole state, and they come from 10 of 584 providers.
+The threshold alone is therefore *not* enough to conclude anything: California's community
+colleges are genuinely large, and one flagship course really can put thousands of people
+through a year. Project Heartbeat's Basic Life Support renewal (5,896 served, and the
+provider's only large program) is exactly that, and must not be second-guessed here.
+"""
+
+OVERSIZED_COHORT_MIN_PROGRAMS = 3
+"""How many such cohorts one provider must file before the size stops being credible.
+
+This is the half of the test that does the work. One very large program at a provider is
+ordinary. Three or more separate cohorts of 3,000+ at a single provider is a claim to have
+served 9,000+ people in distinct programs, and in this snapshot every provider that makes it
+is visibly republishing one pool: De Anza's Occupational Training Institute files 32 such
+rows summing to 417,753 served — 40% of every Californian reported served by any of the 584
+providers here — with its top nine cohorts landing within a few hundred of each other
+(25,890 / 25,862 / 25,855 / 25,761 …). College of the Desert files the same 8,692 eleven
+times.
+
+Measured on that snapshot the pair catches 49 programs from 4 providers, and deliberately
+leaves alone the six providers whose one or two large programs are plausible flagships
+(Project Heartbeat 5,896; Calbright 5,738; 160 Driving Academy 5,921 and 4,577; American
+Career College 4,070; Gurnick 3,613; Antelope Valley Adult School 3,131). Two of the four it
+does catch — San Joaquin Valley College and UEI College, three rows each — are large
+multi-campus chains whose figures may well be genuine. They are marked, not suppressed, and
+losing a comparative badge is a far smaller harm than publishing one that is wrong.
+"""
+
+
+def _exceeds(numerator: float | None, denominator: float | None) -> bool:
+    """True only when both counts were reported and the first is genuinely the larger.
+
+    Explicit ``is not None`` rather than truthiness: a reported zero is a count, and folding
+    it in with "not reported" is the one thing this module exists to prevent.
+    """
+    return numerator is not None and denominator is not None and numerator > denominator
+
+
+@dataclass(frozen=True)
+class CohortIntegrity:
+    """What a program's cohort counts can, and cannot, be read to describe.
+
+    Written on every program, including programs that reported nothing: a consumer must be
+    able to tell "checked, and nothing was wrong" from "this record predates the check".
+    """
+
+    shared_with_sibling_programs: int | None
+    """Other programs at the same provider filing this identical (served, exited, completed).
+
+    ``None`` means the cohort is this program's alone, or that there was no cohort to
+    compare. Never 0 — a zero here would read as a count of siblings, and the absence of
+    siblings is not a measurement.
+    """
+
+    exited_exceeds_served: bool
+    completed_exceeds_served: bool
+    oversized_for_one_program: bool
+
+    @property
+    def internally_consistent(self) -> bool:
+        """True when the record's own counts agree about the population they describe.
+
+        Under ETA-9171 the served, exited and completed counts are drawn from different
+        reporting windows, so more exiters than entrants is not upstream corruption. It does
+        mean the two numbers are not one population, and a page showing "enrolled 1,796"
+        above "based on 5,214 people" is asserting that they are.
+        """
+        return not (self.exited_exceeds_served or self.completed_exceeds_served)
+
+    @property
+    def attributable(self) -> bool:
+        """True when these figures may be presented as measuring *this* program.
+
+        False for a cohort filed against several programs and for a cohort too large to be
+        one program at a provider that files many such. Both mean the same thing to a
+        reader: whatever population this describes, it is not only the program in front of
+        them, so nothing here may carry a comparative verdict.
+
+        Internal contradiction deliberately does not clear this flag. The published rates
+        reconcile exactly against completed/exited, so the rate is sound; it is the
+        *enrolled* label that is wrong, which is a different repair.
+        """
+        return self.shared_with_sibling_programs is None and not self.oversized_for_one_program
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "attributable": self.attributable,
+            "internally_consistent": self.internally_consistent,
+            "shared_with_sibling_programs": self.shared_with_sibling_programs,
+            "exited_exceeds_served": self.exited_exceeds_served,
+            "completed_exceeds_served": self.completed_exceeds_served,
+            "oversized_for_one_program": self.oversized_for_one_program,
+        }
+
+
+@dataclass(frozen=True)
+class CohortFiling:
+    """The four fields a claim about "who was measured" is made of.
+
+    A separate type from :class:`Program` so the check can run over records this module did
+    not parse -- the offline build reconstructs these from a committed snapshot of pipeline
+    output, and asking it to rebuild whole ``Program`` objects to answer a question about
+    four fields would be ceremony that invites the two paths to drift apart.
+    """
+
+    provider_name: str | None
+    total_served: float | None
+    total_exited: float | None
+    total_completed: float | None
+
+    @classmethod
+    def of(cls, program: Program) -> CohortFiling:
+        return cls(
+            provider_name=program.provider_name,
+            total_served=program.total_served,
+            total_exited=program.total_exited,
+            total_completed=program.total_completed,
+        )
+
+
+CohortKey = tuple[float | None, float | None, float | None]
+
+
+def _cohort_key(program: CohortFiling) -> CohortKey | None:
+    """The population claim a record makes, or None when it makes none.
+
+    Keyed on the three counts rather than the whole outcome tuple. The counts are the claim
+    about *who was measured*; the rates are arithmetic on top of them. Keying on everything
+    would have missed one of College of the Desert's eleven identical filings, because that
+    one row also carries a median-earnings figure the other ten suppress — the population
+    claim is identical, and it is the population claim that is being republished.
+
+    An all-null cohort is not a claim and never groups: otherwise every silent program at a
+    provider would be flagged as sharing a cohort with every other, which would turn the
+    single most common state in this dataset into a warning.
+    """
+    key = (program.total_served, program.total_exited, program.total_completed)
+    return None if all(count is None for count in key) else key
+
+
+def _is_oversized_cohort(program: CohortFiling) -> bool:
+    return program.total_served is not None and program.total_served >= OVERSIZED_COHORT_SERVED
+
+
+def cohort_integrity(programs: Sequence[CohortFiling]) -> list[CohortIntegrity]:
+    """Judge every program's cohort against its provider's other filings.
+
+    The verdicts are relative to the population passed in, which is the only honest thing
+    they can be. Over a subset they come out weaker rather than wrong: a provider whose nine
+    impossible cohorts are represented by two rows in a sample has not been shown to file
+    many of them, and this says so rather than guessing.
+
+    Returns one verdict per filing, in the order given, because two of the three checks are
+    about a population of records rather than a record: a duplicate is invisible from inside
+    one row, and so is a provider filing nine impossible cohorts. Passing a single program
+    is therefore a supported call that yields exactly what one row can prove about itself —
+    the contradiction checks — and asserts nothing about sharing or scale.
+
+    Programs with no provider name are excluded from both cross-program checks rather than
+    grouped under a shared blank, which would attribute one anonymous filer's duplicate to
+    another's.
+    """
+    filings: Counter[tuple[str, CohortKey]] = Counter()
+    oversized_per_provider: Counter[str] = Counter()
+    for program in programs:
+        provider = normalise_provider(program.provider_name)
+        if provider is None:
+            continue
+        cohort = _cohort_key(program)
+        if cohort is not None:
+            filings[(provider, cohort)] += 1
+        if _is_oversized_cohort(program):
+            oversized_per_provider[provider] += 1
+
+    verdicts: list[CohortIntegrity] = []
+    for program in programs:
+        provider = normalise_provider(program.provider_name)
+        cohort = _cohort_key(program)
+        filed = filings[(provider, cohort)] if provider is not None and cohort is not None else 1
+        verdicts.append(
+            CohortIntegrity(
+                shared_with_sibling_programs=filed - 1 if filed > 1 else None,
+                exited_exceeds_served=_exceeds(program.total_exited, program.total_served),
+                completed_exceeds_served=_exceeds(program.total_completed, program.total_served),
+                oversized_for_one_program=(
+                    provider is not None
+                    and _is_oversized_cohort(program)
+                    and oversized_per_provider[provider] >= OVERSIZED_COHORT_MIN_PROGRAMS
+                ),
+            )
+        )
+    return verdicts
 
 
 STATES_INDEX = "etp_scorecard_states"

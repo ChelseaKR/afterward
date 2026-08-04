@@ -36,10 +36,31 @@ const TRAINING: Record<string, string> = {
   Apprenticeship: "Aprendizaje",
 };
 
+/**
+ * How a program is delivered, from the federal ETP file's `field_program_format`.
+ *
+ * A closed list like the three above, but published as whole sentences rather than as terms,
+ * which is why it went unnoticed: it does not look like a vocabulary. It is one. All 3,266
+ * California programs carry exactly one of these three strings and nothing else, so every
+ * Spanish program page was showing one English sentence in the middle of its own content —
+ * 840 hybrid, 1,882 in-person, 544 online.
+ *
+ * Translated as sentences, not word for word: "e-learning" and "distance learning" are one
+ * idea in Spanish, and the federal phrasing lists them as two.
+ */
+const FORMAT: Record<string, string> = {
+  "This program provides in-person instruction only.":
+    "Este programa se imparte únicamente de manera presencial.",
+  "This is a hybrid or blended program providing both in-person and online instruction.":
+    "Este es un programa híbrido o combinado: se imparte tanto de manera presencial como en línea.",
+  "This program provides online instruction, e-learning, or distance learning only.":
+    "Este programa se imparte únicamente en línea, por aprendizaje electrónico o a distancia.",
+};
+
 /** The feeds use the literal string "None" for "no requirement". */
 const NONE: Record<Lang, string> = { en: "None", es: "Ninguno" };
 
-const TABLES = [EDUCATION, EXPERIENCE, TRAINING];
+const TABLES = [EDUCATION, EXPERIENCE, TRAINING, FORMAT];
 
 /**
  * Translate a controlled-vocabulary value.

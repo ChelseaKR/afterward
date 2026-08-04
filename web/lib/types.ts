@@ -196,6 +196,26 @@ export interface Occupation extends OccupationSummary {
   related_source: RelatedSource | null;
 }
 
+/**
+ * Whether a program's reported cohort actually describes that program.
+ *
+ * Providers file what they file, and some file institution-wide totals against every program
+ * row. Those numbers are real, so nothing is nulled — but a figure that describes a whole
+ * college cannot be compared against other programs as though it described one course, and a
+ * page must not phrase it as this program's result.
+ */
+export interface CohortIntegrity {
+  /** False when the figures cannot be attributed to this program alone. */
+  attributable: boolean;
+  /** False when exited or completed exceeds served — different reporting windows, not one. */
+  internally_consistent: boolean;
+  /** How many sibling programs share this exact cohort. Null means none, never 0. */
+  shared_with_sibling_programs: number | null;
+  exited_exceeds_served: boolean;
+  completed_exceeds_served: boolean;
+  oversized_for_one_program: boolean;
+}
+
 export interface ProgramOutcomes {
   total_served: number | null;
   total_exited: number | null;
@@ -207,6 +227,7 @@ export interface ProgramOutcomes {
   employed_q2: number | null;
   employed_q4: number | null;
   reported: boolean;
+  cohort: CohortIntegrity;
 }
 
 export interface Program {
@@ -258,6 +279,8 @@ export interface SearchEntry {
   $: number | null;
   /** True when a cost component was suppressed, making `$` a floor rather than a total. */
   $partial: boolean;
+  /** Mirrors `outcomes.cohort.attributable`: false means no verdict may be drawn from cr/er/me. */
+  at: boolean;
   w: number | null;
   s: string[];
   o: string[];
@@ -289,6 +312,8 @@ export interface StateBenchmark {
 export interface PeerMedian {
   median: number | null;
   reporting: number;
+  /** Programs whose figures were excluded from the median because they are not attributable. */
+  excluded_not_attributable?: number;
 }
 
 export interface Coverage {

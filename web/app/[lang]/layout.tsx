@@ -61,24 +61,45 @@ export async function generateMetadata({
 }
 
 /**
- * Marks the section link for wherever the visitor currently is.
+ * The two pieces of masthead that depend on which page is being shown: the current-section
+ * marking on the nav, and where the language toggle points.
  *
- * This has to run in the browser, for two reasons that both rule out doing it at build
+ * Both have to run in the browser, for two reasons that each rule out doing it at build
  * time. A layout is a server component and is never told the path being rendered. More
  * decisively, a layout is rendered once and then *kept* across client-side navigations —
  * only the page segment is re-fetched — so a value baked in at build time would be right
- * on first load and wrong from the first link onwards, which is worse than absent. The
- * marking therefore follows the router: `pushState` is what the App Router calls on every
- * client navigation, and `popstate` covers back and forward.
+ * on first load and wrong from the first link onwards, which is worse than absent. Both
+ * therefore follow the router: `pushState` is what the App Router calls on every client
+ * navigation, `popstate` covers back and forward, and `hashchange` covers the jump links on
+ * the browse indexes.
  *
- * Ten lines of inline script rather than making the whole masthead a client component,
- * which would pull the coverage figures and both dictionaries into the bundle to decorate
- * two links. Without JavaScript the nav still works and still reads correctly; what is lost
- * is the announcement of which section you are already in, not the ability to get there.
+ * Inline script rather than making the whole masthead a client component, which would pull
+ * the coverage figures and both dictionaries into the bundle to decorate three links.
+ *
+ * Everything here is an *attribute* mutation. React hydration reconciles element structure
+ * and text, not attributes, so setting `href`, `aria-current` and `hidden` on server-rendered
+ * markup survives hydration; removing or inserting a node would not.
+ *
+ * ---- The language toggle ----
+ *
+ * `/es/programs/<id>/` and `/en/programs/<id>/` differ in exactly one path segment, and the
+ * static export generates every route in both languages, so the equivalent URL is always
+ * derivable from `location.pathname` and always exists. Swapping the first segment is the
+ * whole trick.
+ *
+ * The fallback matters as much as the rewrite. Without JavaScript the href stays at
+ * `/es/` — the other language's home page, which is the only URL this layout can honestly
+ * name — and the qualifier rendered beside the language name says so, in that language:
+ * "Español (inicio)". The script hides the qualifier at the same moment it makes the link
+ * true, so the link never claims to preserve your place and then fails to.
  */
-const MARK_CURRENT_SECTION = `(function () {
-  function mark() {
-    var here = location.pathname;
+const SYNC_MASTHEAD_TO_LOCATION = `(function () {
+  var toggle = document.getElementById("lang-switch");
+  var qualifier = document.getElementById("lang-switch-home");
+  var from = toggle ? "/" + toggle.getAttribute("data-lang-from") + "/" : "";
+  var to = toggle ? "/" + toggle.getAttribute("data-lang-to") : "";
+
+  function markSection(here) {
     document.querySelectorAll(".site-nav a").forEach(function (link) {
       var section = new URL(link.href).pathname;
       if (here === section) link.setAttribute("aria-current", "page");
@@ -86,13 +107,28 @@ const MARK_CURRENT_SECTION = `(function () {
       else link.removeAttribute("aria-current");
     });
   }
+
+  function aimToggle(here) {
+    if (!toggle || here.slice(0, from.length) !== from) return;
+    var rest = here.slice(from.length - 1);
+    toggle.setAttribute("href", to + rest + location.search + location.hash);
+    if (qualifier) qualifier.setAttribute("hidden", "");
+  }
+
+  function sync() {
+    var here = location.pathname;
+    markSection(here);
+    aimToggle(here);
+  }
+
   var push = history.pushState;
   history.pushState = function () {
     push.apply(this, arguments);
-    mark();
+    sync();
   };
-  addEventListener("popstate", mark);
-  mark();
+  addEventListener("popstate", sync);
+  addEventListener("hashchange", sync);
+  sync();
 })();`;
 
 export default async function LangLayout({
@@ -135,9 +171,29 @@ export default async function LangLayout({
                 </Link>
                 <p className="tagline">{t.tagline}</p>
               </div>
-              <Link href={`/${other}/`} lang={other} hrefLang={other}>
+              {/*
+                Deliberately a plain `<a>` and not a `<Link>`. `Link` navigates to its href
+                *prop*, so the script's rewritten DOM attribute would be read by the browser
+                and ignored by the router — every click would still land on the language home.
+                A full document load is also the honest thing for a language switch: it is
+                `<html lang>` and the entire chrome that change, not a page segment.
+
+                `data-lang-from`/`data-lang-to` rather than the script interpolating the
+                languages: the script is a constant, identical on all ~9,000 pages, and the
+                two facts it needs are already in the markup it operates on.
+              */}
+              <a
+                id="lang-switch"
+                href={`/${other}/`}
+                lang={other}
+                hrefLang={other}
+                data-lang-from={lang}
+                data-lang-to={other}
+              >
                 {LANG_NAME[other]}
-              </Link>
+                {/* Hidden by the script once the href points at this page rather than home. */}
+                <span id="lang-switch-home"> ({dict(other).langSwitchHome})</span>
+              </a>
             </div>
 
             {/*
@@ -159,8 +215,12 @@ export default async function LangLayout({
               </ul>
             </nav>
 
-            {/* Inline and immediately after the nav, so the links exist when it runs. */}
-            <script dangerouslySetInnerHTML={{ __html: MARK_CURRENT_SECTION }} />
+            {/*
+              Inline and immediately after the nav, so both the nav links and the language
+              toggle exist when it runs — and so the toggle is corrected before first paint
+              rather than after it.
+            */}
+            <script dangerouslySetInnerHTML={{ __html: SYNC_MASTHEAD_TO_LOCATION }} />
           </div>
         </header>
 

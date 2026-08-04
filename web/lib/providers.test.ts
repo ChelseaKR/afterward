@@ -12,6 +12,7 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     a: "Fresno MSA",
     $: 4000,
     $partial: false,
+    at: true,
     w: 30,
     s: [],
     o: ["Occupation"],

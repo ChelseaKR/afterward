@@ -9,11 +9,16 @@ from __future__ import annotations
 import pytest
 
 from camino.sources.dol_etp import (
+    OVERSIZED_COHORT_MIN_PROGRAMS,
+    OVERSIZED_COHORT_SERVED,
+    CohortFiling,
     Program,
     clean_earnings,
     clean_measure,
     clean_rate,
     clean_url,
+    cohort_integrity,
+    normalise_provider,
     parse_program,
     parse_state_benchmark,
     reconcile_rate,
@@ -298,3 +303,238 @@ class TestReconcileRate:
             }
         )
         assert program.q2_employment_percent is None
+
+
+def _filing(
+    provider: str | None,
+    served: float | None = None,
+    exited: float | None = None,
+    completed: float | None = None,
+) -> CohortFiling:
+    return CohortFiling(
+        provider_name=provider,
+        total_served=served,
+        total_exited=exited,
+        total_completed=completed,
+    )
+
+
+class TestSharedCohorts:
+    """One filing stamped on many programs is not many facts about many programs.
+
+    College of the Desert files served 8,692 / exited 1,837 / completed 1,618 against eleven
+    of its sixteen programs, from an accounting degree to a fire academy. Published as
+    eleven independent facts with a verdict attached, it tells a reader that 96% of the
+    people who finished an architecture degree there are not working six months later.
+    """
+
+    def test_a_cohort_filed_against_several_programs_names_its_siblings(self) -> None:
+        verdicts = cohort_integrity([_filing("COD", 8692, 1837, 1618) for _ in range(11)])
+        assert [v.shared_with_sibling_programs for v in verdicts] == [10] * 11
+
+    def test_a_shared_cohort_is_not_this_programs_to_be_judged_on(self) -> None:
+        verdicts = cohort_integrity([_filing("COD", 8692, 1837, 1618) for _ in range(2)])
+        assert [v.attributable for v in verdicts] == [False, False]
+
+    def test_a_cohort_of_its_own_is_attributable_and_names_no_siblings(self) -> None:
+        verdicts = cohort_integrity([_filing("COD", 8692, 1837, 1618), _filing("COD", 22, 22, 19)])
+        assert verdicts[1].shared_with_sibling_programs is None
+        assert verdicts[1].attributable is True
+
+    def test_the_absence_of_siblings_is_null_rather_than_zero(self) -> None:
+        # A 0 here would read as a count, and this is not a measurement of anything.
+        assert cohort_integrity([_filing("p", 10, 9, 9)])[0].shared_with_sibling_programs is None
+
+    def test_two_providers_filing_the_same_numbers_are_not_sharing_a_cohort(self) -> None:
+        verdicts = cohort_integrity([_filing("A", 40, 30, 30), _filing("B", 40, 30, 30)])
+        assert all(v.shared_with_sibling_programs is None for v in verdicts)
+
+    def test_a_provider_cannot_evade_the_check_by_shouting(self) -> None:
+        verdicts = cohort_integrity(
+            [_filing("Procareer Academy", 40, 30, 30), _filing("PROCAREER ACADEMY", 40, 30, 30)]
+        )
+        assert [v.shared_with_sibling_programs for v in verdicts] == [1, 1]
+
+    def test_programs_reporting_nothing_do_not_all_share_one_cohort(self) -> None:
+        """Otherwise the commonest state in this dataset -- silence -- becomes a warning."""
+        verdicts = cohort_integrity([_filing("COD") for _ in range(3)])
+        assert all(v.shared_with_sibling_programs is None for v in verdicts)
+        assert all(v.attributable for v in verdicts)
+
+    def test_a_partly_suppressed_cohort_still_counts_as_shared(self) -> None:
+        # Served and exited filed identically, completions withheld on both, is still one
+        # population claim made twice.
+        verdicts = cohort_integrity([_filing("CCSF", 11, 11, None) for _ in range(3)])
+        assert [v.shared_with_sibling_programs for v in verdicts] == [2, 2, 2]
+
+    def test_grouping_keys_on_the_population_not_the_rates(self) -> None:
+        """The eleventh College of the Desert row also carries an earnings figure.
+
+        Keying on the whole outcome tuple would call that row unique and publish it as the
+        one trustworthy fact in the group, which is exactly backwards.
+        """
+        verdicts = cohort_integrity([_filing("COD", 8692, 1837, 1618) for _ in range(11)])
+        assert all(v.shared_with_sibling_programs == 10 for v in verdicts)
+
+    def test_an_anonymous_filer_is_not_grouped_with_another(self) -> None:
+        verdicts = cohort_integrity([_filing(None, 40, 30, 30), _filing(None, 40, 30, 30)])
+        assert all(v.shared_with_sibling_programs is None for v in verdicts)
+
+
+class TestContradictoryCohorts:
+    """Two counts from different reporting windows are not one population.
+
+    Lemoore College's Health Science record reads "People enrolled 1,796" directly above
+    "Based on 5,214 people". Both numbers are real; the claim that they describe the same
+    group of people is the page's, not the provider's.
+    """
+
+    def test_more_exiters_than_entrants_is_recorded(self) -> None:
+        verdict = cohort_integrity([_filing("Lemoore", 1796, 5214, 1500)])[0]
+        assert verdict.exited_exceeds_served is True
+        assert verdict.internally_consistent is False
+
+    def test_more_completers_than_entrants_is_recorded(self) -> None:
+        verdict = cohort_integrity([_filing("BAVC", 13, 15, 15)])[0]
+        assert verdict.completed_exceeds_served is True
+        assert verdict.internally_consistent is False
+
+    def test_an_ordinary_record_is_consistent(self) -> None:
+        verdict = cohort_integrity([_filing("p", 374, 300, 280)])[0]
+        assert verdict.internally_consistent is True
+
+    def test_equal_counts_are_not_a_contradiction(self) -> None:
+        # Everyone served exiting and completing is common and entirely possible.
+        verdict = cohort_integrity([_filing("p", 69, 69, 69)])[0]
+        assert verdict.internally_consistent is True
+
+    def test_a_suppressed_count_cannot_contradict_a_reported_one(self) -> None:
+        verdict = cohort_integrity([_filing("p", None, 5214, None)])[0]
+        assert verdict.exited_exceeds_served is False
+        assert verdict.internally_consistent is True
+
+    def test_a_reported_zero_is_compared_rather_than_treated_as_missing(self) -> None:
+        verdict = cohort_integrity([_filing("p", 0, 5, 0)])[0]
+        assert verdict.exited_exceeds_served is True
+
+    def test_a_contradiction_alone_does_not_disown_the_figures(self) -> None:
+        """The published rates reconcile against completed/exited, so the rate is sound.
+
+        What is wrong is the "people enrolled" label above it, and that is a repair to the
+        page rather than a reason to stop comparing the program.
+        """
+        verdict = cohort_integrity([_filing("Lemoore", 1796, 5214, 1500)])[0]
+        assert verdict.attributable is True
+
+
+class TestOversizedCohorts:
+    """A big community college is real. Nine 25,000-person programs at one is not."""
+
+    def test_one_very_large_program_is_left_alone(self) -> None:
+        """Project Heartbeat's Basic Life Support renewal really does run at that scale.
+
+        Its next-largest program is 1,043. Suppressing this to make the site tidier would
+        be exactly the error this project exists to avoid, in the opposite direction.
+        """
+        verdicts = cohort_integrity(
+            [_filing("Heartbeat", 5896, 5896, 5896), _filing("Heartbeat", 1043, 1043, 1043)]
+        )
+        assert all(v.oversized_for_one_program is False for v in verdicts)
+        assert all(v.attributable for v in verdicts)
+
+    def test_many_very_large_programs_at_one_provider_are_marked(self) -> None:
+        verdicts = cohort_integrity(
+            [_filing("De Anza", n, n - 10000, n - 15000) for n in (31439, 26359, 25890)]
+        )
+        assert all(v.oversized_for_one_program for v in verdicts)
+        assert not any(v.attributable for v in verdicts)
+
+    def test_only_the_large_rows_at_such_a_provider_are_marked(self) -> None:
+        """The rule marks what it can prove about each row, not the provider wholesale."""
+        verdicts = cohort_integrity(
+            [*(_filing("De Anza", n) for n in (31439, 26359, 25890)), _filing("De Anza", 361)]
+        )
+        assert verdicts[-1].oversized_for_one_program is False
+        assert verdicts[-1].attributable is True
+
+    def test_the_threshold_is_inclusive_at_both_ends(self) -> None:
+        verdicts = cohort_integrity(
+            [_filing("p", OVERSIZED_COHORT_SERVED)] * OVERSIZED_COHORT_MIN_PROGRAMS
+        )
+        assert all(v.oversized_for_one_program for v in verdicts)
+
+    def test_one_short_of_the_count_is_not_enough(self) -> None:
+        verdicts = cohort_integrity(
+            [_filing("p", OVERSIZED_COHORT_SERVED)] * (OVERSIZED_COHORT_MIN_PROGRAMS - 1)
+        )
+        assert not any(v.oversized_for_one_program for v in verdicts)
+
+    def test_a_cohort_just_under_the_threshold_is_not_counted_toward_it(self) -> None:
+        verdicts = cohort_integrity(
+            [
+                *([_filing("p", OVERSIZED_COHORT_SERVED)] * (OVERSIZED_COHORT_MIN_PROGRAMS - 1)),
+                _filing("p", OVERSIZED_COHORT_SERVED - 1),
+            ]
+        )
+        assert not any(v.oversized_for_one_program for v in verdicts)
+
+    def test_a_suppressed_cohort_is_never_oversized(self) -> None:
+        verdicts = cohort_integrity([_filing("p", None)] * 5)
+        assert not any(v.oversized_for_one_program for v in verdicts)
+
+
+class TestCohortIntegrityContract:
+    def test_a_verdict_is_returned_for_every_filing_in_order(self) -> None:
+        filings = [_filing("a", 10), _filing("b", 20), _filing("a", 10)]
+        assert len(cohort_integrity(filings)) == len(filings)
+
+    def test_a_lone_filing_asserts_nothing_about_sharing_or_scale(self) -> None:
+        verdict = cohort_integrity([_filing("De Anza", 31439, 21209, 14685)])[0]
+        assert verdict.shared_with_sibling_programs is None
+        assert verdict.oversized_for_one_program is False
+
+    def test_every_key_is_always_written(self) -> None:
+        # So "checked and sound" stays distinguishable from "built before the check existed".
+        assert set(cohort_integrity([_filing("p")])[0].as_dict()) == {
+            "attributable",
+            "internally_consistent",
+            "shared_with_sibling_programs",
+            "exited_exceeds_served",
+            "completed_exceeds_served",
+            "oversized_for_one_program",
+        }
+
+    def test_it_reads_the_same_counts_the_parser_produced(self) -> None:
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_etp": "COLLEGE OF THE DESERT",
+                    "field_c_total_served": 8692,
+                    "field_c_total_exited": 1837,
+                    "field_c_total_completed": 1618,
+                }
+            }
+        )
+        filing = CohortFiling.of(program)
+        assert filing == _filing("COLLEGE OF THE DESERT", 8692.0, 1837.0, 1618.0)
+
+    def test_a_suppression_sentinel_never_reaches_the_check_as_a_count(self) -> None:
+        program = parse_program(
+            {"_source": {"field_uuid": "u", "field_etp": "p", "field_c_total_served": -1}}
+        )
+        assert CohortFiling.of(program).total_served is None
+
+
+class TestNormaliseProvider:
+    def test_case_and_whitespace_are_folded(self) -> None:
+        assert normalise_provider("  Procareer   Academy ") == normalise_provider(
+            "PROCAREER ACADEMY"
+        )
+
+    def test_a_missing_name_stays_missing(self) -> None:
+        assert normalise_provider(None) is None
+        assert normalise_provider("   ") is None
+
+    def test_different_names_are_not_guessed_to_be_one_provider(self) -> None:
+        assert normalise_provider("Merced College") != normalise_provider("Merced Adult School")

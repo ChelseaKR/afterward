@@ -151,6 +151,13 @@ areaNote: (unplaced: number, total: number) =>
   occupationsListed: "Occupations listed",
   titlesEnglishOnly:
     "Occupation titles appear in English because that is the only language the state publishes them in.",
+  // The same admission, on the page where a Spanish reader meets the most untranslated text:
+  // the program's own name, the description its provider filed, and the occupation titles.
+  // The occupation page and the occupations index each say why their English is English; the
+  // program page said nothing at all, which left the reader to conclude the translation had
+  // simply run out.
+  programTextEnglishOnly:
+    "Program names, program descriptions and occupation titles appear here in English, because that is the only language the federal and state records publish them in. Everything else on this page is translated.",
   occupationColumn: "Occupation",
   programsHere: "Programs listed here",
   onThisPage: "On this page",
@@ -192,10 +199,68 @@ areaNote: (unplaced: number, total: number) =>
   navOccupations: "Occupations",
   navProviders: "Providers",
 
+  /*
+   * Qualifier on the language toggle, shown only while the toggle still points at the other
+   * language's home page rather than at this page in the other language.
+   *
+   * A layout is never told the path it is rendering, so the server-rendered href can only be
+   * `/es/`. With JavaScript an inline script rewrites it to the equivalent URL and hides this
+   * word. Without JavaScript the word stays, and the link says where it actually goes.
+   * Written in the language of the link it qualifies, which is the language it is attached to.
+   */
+  langSwitchHome: "home",
+
   // Shown at the site root, where a visitor arriving from a search engine has been told
   // nothing yet. Two sentences: what it costs them, and what the numbers are.
   siteSummary:
     "Free to use, with no account. Every figure comes from public federal and state records, and a program that reported nothing is shown as having reported nothing.",
+
+  // ---- What a search engine shows ----
+  //
+  // Titles and descriptions for the roughly nine thousand pages a search engine can reach.
+  // For most people this is the first thing they read and often the only thing, so it is
+  // written to be scanned in the second it gets: the provider's name, the city, and what the
+  // page will actually tell them. "Camino" appears in none of them — the site's own name is
+  // the one piece of information a stranger scanning results cannot use.
+  //
+  // Per-language for the same reason every other string here is. A Spanish result that reads
+  // in English tells a Spanish speaker the page is not for them, before they can find out
+  // that it is.
+  metaProgramTitle: (program: string, place: string) =>
+    place ? `${program} at ${place}` : program,
+  metaProgramReported: (place: string) =>
+    `${place}. Cost, length, and the outcomes this program reported: completion, employment six months on, and earnings.`,
+  // A program that filed nothing is a real finding, and putting it in the search result saves
+  // a click. It is worded so it cannot be read as a bad result: nothing was filed.
+  metaProgramUnreported: (place: string) =>
+    `${place}. Cost and length. This program reported no outcomes, which is not evidence that it performs badly.`,
+
+  metaProviderTitle: (name: string, programs: number, place: string) =>
+    `${name} — ${programs === 1 ? "1 training program" : `${fmt(programs)} training programs`} in ${place}`,
+  metaProviderCities: (n: number) => `${fmt(n)} California cities`,
+  metaProviderDescription: (reporting: number, total: number) =>
+    `${fmt(reporting)} of ${fmt(total)} programs here report what happened to their students. Cost, length and reported outcomes for every one, from public records.`,
+
+  metaOccupationTitle: (title: string) =>
+    `${title} in California — pay, job outlook and training programs`,
+  // Six occupations — Actors, Dancers, Musicians and Singers among them — have no published
+  // wage statewide and none in any region either. Promising "pay" in their title would be a
+  // wrong result before the page even loads, so the word is dropped rather than qualified.
+  metaOccupationTitleNoPay: (title: string) =>
+    `${title} in California — job outlook and training programs`,
+  metaOccupationWage: (wage: string) =>
+    `California projects this work over ten years and publishes a median of ${wage} a year. Every training program here that trains for it is listed.`,
+  // Never "$0", and never silence either: the absence of a published wage is itself the fact,
+  // and it is stated as the statewide absence it is — several of these occupations do have a
+  // published wage in some of their regions.
+  metaOccupationNoWage:
+    "California publishes no statewide median pay for this work. Its ten-year projection, the regions it does publish figures for, and every program here that trains for it are listed.",
+
+  // ---- Page not found ----
+  notFoundTitle: "This page does not exist",
+  notFoundBody:
+    "The address may be mistyped, or it may point at a program or a provider that is not in the federal file this site is built from. Nothing here sits behind an account, so everything the site has is reachable from these three pages.",
+  notFoundSearch: "Search every California training program",
 
   // ---- Federal occupation detail (CareerOneStop / O*NET, PROVENANCE D6) ----
   // The data behind these sections is English only at the source, so each note says whose
@@ -472,6 +537,8 @@ areaNote: (unplaced, total) =>
   occupationsListed: "Ocupaciones en la lista",
   titlesEnglishOnly:
     "Los nombres de las ocupaciones aparecen en inglés porque el estado solo los publica en ese idioma.",
+  programTextEnglishOnly:
+    "Los nombres de los programas, sus descripciones y los nombres de las ocupaciones aparecen aquí en inglés, porque es el único idioma en que los publican los registros federales y estatales. Todo lo demás en esta página está traducido.",
   occupationColumn: "Ocupación",
   programsHere: "Programas en esta lista",
   onThisPage: "En esta página",
@@ -513,8 +580,41 @@ areaNote: (unplaced, total) =>
   navOccupations: "Ocupaciones",
   navProviders: "Instituciones",
 
+  langSwitchHome: "inicio",
+
   siteSummary:
     "De uso gratuito y sin cuenta. Cada cifra viene de registros públicos federales y estatales, y un programa que no reportó nada aparece justamente así: sin nada reportado.",
+
+  // ---- What a search engine shows ----
+  metaProgramTitle: (program: string, place: string) =>
+    place ? `${program} en ${place}` : program,
+  metaProgramReported: (place: string) =>
+    `${place}. Costo, duración y los resultados que reportó este programa: finalización, empleo seis meses después e ingresos.`,
+  metaProgramUnreported: (place: string) =>
+    `${place}. Costo y duración. Este programa no reportó resultados, lo cual no es prueba de que funcione mal.`,
+
+  metaProviderTitle: (name: string, programs: number, place: string) =>
+    `${name} — ${
+      programs === 1 ? "1 programa de capacitación" : `${fmt(programs)} programas de capacitación`
+    } en ${place}`,
+  metaProviderCities: (n: number) => `${fmt(n)} ciudades de California`,
+  metaProviderDescription: (reporting: number, total: number) =>
+    `${fmt(reporting)} de ${fmt(total)} programas aquí reportan qué pasó con sus estudiantes. Costo, duración y resultados reportados de cada uno, con datos públicos.`,
+
+  metaOccupationTitle: (title: string) =>
+    `${title} en California — pago, perspectiva laboral y programas de capacitación`,
+  metaOccupationTitleNoPay: (title: string) =>
+    `${title} en California — perspectiva laboral y programas de capacitación`,
+  metaOccupationWage: (wage: string) =>
+    `California proyecta este trabajo a diez años y publica una mediana de ${wage} al año. Aquí se listan todos los programas que preparan para él.`,
+  metaOccupationNoWage:
+    "California no publica un pago mediano estatal para este trabajo. Aquí están su proyección a diez años, las regiones para las que sí publica cifras y todos los programas que preparan para él.",
+
+  // ---- Page not found ----
+  notFoundTitle: "Esta página no existe",
+  notFoundBody:
+    "Puede que la dirección esté mal escrita, o que apunte a un programa o a una institución que no está en el archivo federal con el que se hizo este sitio. Aquí nada está detrás de una cuenta, así que todo lo que tiene el sitio se alcanza desde estas tres páginas.",
+  notFoundSearch: "Buscar todos los programas de capacitación de California",
 
   // ---- Federal occupation detail (CareerOneStop / O*NET, PROVENANCE D6) ----
   occupationDescriptionNote:

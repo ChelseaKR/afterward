@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -5,7 +6,7 @@ import { Measure } from "@/components/Measure";
 import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
-import type { ProgramOccupation } from "@/lib/types";
+import type { Program, ProgramOccupation } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
 
@@ -13,15 +14,57 @@ export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allProgramIds().map((id) => ({ lang, id })));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+/**
+ * Where this program is, as a phrase: "Palo Verde College, Blythe, CA".
+ *
+ * Both parts are nullable in the type even though neither is null in the current file, and a
+ * phrase built by interpolating a missing one reads "at , CA" or "at undefined" — which is how
+ * a page ends up telling a search engine that a real training provider is called undefined.
+ * Parts that are not there are simply not joined.
+ */
+function placeOf(program: Program): string {
+  return [
+    program.provider_name ? tidyName(program.provider_name) : null,
+    program.location.city ? `${program.location.city}, CA` : null,
+  ]
+    .filter((part): part is string => part !== null)
+    .join(", ");
+}
+
+/**
+ * The title and description a search result shows for one of the 6,532 program pages.
+ *
+ * This used to destructure `{ id }` alone and never read `lang`, so both language trees
+ * emitted the same English title and the same English description: a Spanish result for a
+ * Lemoore College program was entirely in English, and the two trees were duplicates of each
+ * other in everything a crawler compares.
+ *
+ * The site's own name is not in either string. A stranger scanning ten results cannot use it,
+ * and the ~30 characters it costs are characters the provider's name and city need. What the
+ * description adds beyond the title is the one thing worth knowing before clicking: whether
+ * this program reported anything about the people who took it. Roughly a third did not, and
+ * saying so in the result saves a click and cannot be read as a poor result.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; id: string }>;
+}): Promise<Metadata> {
+  const { lang, id } = await params;
+  if (!isLang(lang)) return {};
+
   const program = getProgram(id);
   if (!program) return {};
+
+  const t = dict(lang);
+  const place = placeOf(program);
+  const name = program.program_name ?? place;
+
   return {
-    title: `${program.program_name} — ${tidyName(program.provider_name)} | Camino`,
-    description: `Cost, length, and reported outcomes for ${program.program_name} at ${tidyName(
-      program.provider_name,
-    )} in ${program.location.city}, California.`,
+    title: t.metaProgramTitle(name, place),
+    description: program.outcomes.reported
+      ? t.metaProgramReported(place)
+      : t.metaProgramUnreported(place),
   };
 }
 
@@ -233,6 +276,17 @@ export default async function ProgramPage({
   const shrinking = worstChange !== null && worstChange < 0;
   const smallSample = isSmallSample(outcomes.total_exited);
 
+  /*
+   * Delivery format: a closed list of exactly three federal sentences, and so translated like
+   * every other controlled vocabulary in this data (lib/vocabulary.ts) rather than passed
+   * through. It did not look like a vocabulary because it is published as prose, which is how
+   * it survived as the one English sentence in the middle of every Spanish program page.
+   *
+   * `translateTerm` maps both a null and a blank to null, so an all-whitespace value cannot
+   * render as an empty paragraph.
+   */
+  const format = translateTerm(program.program_format, lang);
+
   return (
     <div className="shell detail">
       <p>
@@ -248,6 +302,15 @@ export default async function ProgramPage({
         ) : null}
         {location.city ? ` · ${location.city}, CA` : ""}
       </p>
+
+      {/*
+        Said before the first English word rather than after the last one. The heading above
+        is the program's own name, filed in English, and a Spanish reader has already met it;
+        what they cannot tell without this is whether the English is the source data or the
+        translation giving out. The occupations index and the occupation page each carry the
+        same admission about their own untranslated text, and this page carried none.
+      */}
+      <p className="compare-note">{t.programTextEnglishOnly}</p>
 
       <dl className="measure-grid panel">
         <Measure
@@ -270,7 +333,7 @@ export default async function ProgramPage({
         <Measure label={t.peopleServed} value={count(outcomes.total_served, lang)} lang={lang} />
       </dl>
 
-      {program.program_format && <p>{program.program_format}</p>}
+      {format !== null && <p>{format}</p>}
 
       <h2>{t.outcomes}</h2>
 

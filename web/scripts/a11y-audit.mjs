@@ -73,6 +73,10 @@ if (SINGLE) {
     // attribute. It was also the one page this audit did not look at, so CI reported no
     // violations while shipping a serious one.
     ["Site root", join(OUT, "index.html")],
+    // Every mistyped or stale URL on the site lands here, and it is the page that arrives
+    // with the least context — so it is also the page most likely to be mistaken for a state
+    // website. It was Next's stock error screen: no lang attribute, no landmarks, no Spanish.
+    ["Page not found", join(OUT, "404.html")],
     ["Search (English)", join(OUT, "en", "index.html")],
     ["Search (Spanish)", join(OUT, "es", "index.html")],
     ["Program detail (English)", firstDirIn("en", "programs")],

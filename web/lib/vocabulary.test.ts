@@ -15,6 +15,23 @@ describe("translateTerm", () => {
     expect(translateTerm("Apprenticeship", "es")).toBe("Aprendizaje");
   });
 
+  it("translates every program delivery format", () => {
+    // The three sentences the federal ETP file uses for `field_program_format`, verbatim.
+    // These are the only three values present across all 3,266 California programs, and each
+    // one used to appear untranslated in the middle of a Spanish program page.
+    const formats = [
+      "This program provides in-person instruction only.",
+      "This is a hybrid or blended program providing both in-person and online instruction.",
+      "This program provides online instruction, e-learning, or distance learning only.",
+    ];
+    for (const value of formats) {
+      const translated = translateTerm(value, "es");
+      expect(translated).not.toBe(value);
+      expect(translated).toMatch(/^Este/);
+      expect(translateTerm(value, "en")).toBe(value);
+    }
+  });
+
   it("translates the literal 'None' the feeds use for no requirement", () => {
     expect(translateTerm("None", "es")).toBe("Ninguno");
     expect(translateTerm("none", "es")).toBe("Ninguno");

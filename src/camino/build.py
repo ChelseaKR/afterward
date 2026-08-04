@@ -66,6 +66,37 @@ class AggregateMatchCoverage:
     programs_with_education_withheld: int
 
 
+@dataclass(frozen=True)
+class CohortIntegrityCoverage:
+    """How many published figures cannot be read as describing the program they sit on.
+
+    Published rather than quietly handled, because the scale is the finding. A reader who
+    is told 103 of California's programs carry a cohort this pipeline will not attribute to
+    them can weigh that; a reader shown 3,266 clean-looking pages cannot.
+
+    The three failures are counted separately and not summed into one "bad data" number:
+    they have different causes, different remedies in the interface, and only two of them
+    stop a figure being comparable. ``not_attributable`` is the union of those two, carried
+    explicitly rather than left to a reader to derive from an overlap they cannot see.
+    """
+
+    programs_with_cohort_counts: int
+    # 1. One cohort filed against several of a provider's programs.
+    shared_cohorts: int
+    shared_cohort_groups: int
+    largest_shared_cohort: int
+    # 2. A record whose own counts disagree about the population they describe. Counted per
+    # violation and as a union, since the two overlap heavily: every program reporting more
+    # completers than entrants also reports more exiters than entrants.
+    exited_exceeds_served: int
+    completed_exceeds_served: int
+    internally_contradictory: int
+    # 3. Cohorts too large to be one program, at a provider filing several such.
+    oversized_for_one_program: int
+    oversized_providers: int
+    not_attributable: int
+
+
 @dataclass
 class CoverageReport:
     """Honest accounting of what the data does and does not cover.
@@ -95,6 +126,8 @@ class CoverageReport:
     programs_mapped_to_area: int
     programs_without_area: int
     programs_with_regional_projection: int
+    # How many outcome figures this build declines to attribute to the program they sit on.
+    cohort_integrity: CohortIntegrityCoverage
     # Occupation-side coverage from CareerOneStop (D6). Zeroed, not absent, when the build
     # ran without credentials.
     enrichment: EnrichmentCoverage
@@ -131,17 +164,27 @@ def peer_medians(payloads: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     the interface actually wants to make: is this program better or worse than the typical
     California program that reported the same number? The count is carried alongside so the
     page can say how many programs the comparison rests on.
+
+    Programs whose cohort this build will not attribute to them are left out of the median
+    entirely -- see :class:`camino.sources.dol_etp.CohortIntegrity`. Including them would let
+    one institution-level filing vote eleven times, once per program row it was stamped on,
+    which is the same misattribution the flag exists to stop, laundered into the yardstick
+    every other program is then measured against. ``excluded_not_attributable`` publishes how
+    many were dropped, so the median can be audited rather than taken on trust.
     """
     summary: dict[str, dict[str, Any]] = {}
+    attributable = [p for p in payloads if p["outcomes"]["cohort"]["attributable"]]
     for measure in PEER_MEASURES:
         values = sorted(
             payload["outcomes"][measure]
-            for payload in payloads
+            for payload in attributable
             if payload["outcomes"].get(measure) is not None
         )
+        reported = sum(1 for p in payloads if p["outcomes"].get(measure) is not None)
         summary[measure] = {
             "median": _median(values),
             "reporting": len(values),
+            "excluded_not_attributable": reported - len(values),
         }
     return summary
 
@@ -614,7 +657,21 @@ def program_payload(
     program: dol_etp.Program,
     occupations: dict[str, dict[str, Any]],
     city_areas: Mapping[str, edd_lmi.ProjectionArea] | None = None,
+    cohort: dol_etp.CohortIntegrity | None = None,
 ) -> dict[str, Any]:
+    """One program record, with its outcomes labelled by who they actually describe.
+
+    ``cohort`` comes from :func:`camino.sources.dol_etp.cohort_integrity` run over the whole
+    snapshot, because a cohort republished across a provider's programs is invisible from
+    inside any one of them. Omitting it judges the program against itself alone, which is a
+    real answer -- the contradiction checks still run -- and is what a caller holding a
+    single record can honestly say.
+    """
+    integrity = (
+        cohort
+        if cohort is not None
+        else dol_etp.cohort_integrity([dol_etp.CohortFiling.of(program)])[0]
+    )
     area = area_for_city(program.city, city_areas)
     area_name = None if area is None else area.area_name
     matched = [
@@ -671,6 +728,10 @@ def program_payload(
             "employed_q2": program.employed_q2,
             "employed_q4": program.employed_q4,
             "reported": program.has_outcomes,
+            # Who the counts above describe. `reported` says a figure exists; this says
+            # whether it is this program's to be judged on. Never omitted, so "checked and
+            # sound" stays distinguishable from "built before the check existed".
+            "cohort": integrity.as_dict(),
         },
         "occupations": matched,
     }
@@ -740,6 +801,16 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         "er": outcomes["employment_rate_q2"],
         "me": outcomes["median_earnings"],
         "r": outcomes["reported"],
+        # False when the three figures above describe a population wider than this program
+        # -- a cohort the provider filed against several of its programs, or one too large
+        # to be a single program at a provider filing many such.
+        #
+        # The values themselves stay, deliberately. Nulling them here would say "not
+        # reported", which is false and is the one confusion this dataset refuses to make;
+        # dropping the row would hide a real program. So the row is published whole and
+        # labelled, and anything that ranks, badges or sorts on `cr`/`er`/`me` has to read
+        # this key first.
+        "at": outcomes["cohort"]["attributable"],
     }
 
 
@@ -798,6 +869,57 @@ def aggregate_match_coverage(payloads: list[dict[str, Any]]) -> AggregateMatchCo
         recovered_programs=recovered,
         occupation_matches=matches,
         programs_with_education_withheld=with_education_withheld,
+    )
+
+
+def cohort_integrity_coverage(payloads: list[dict[str, Any]]) -> CohortIntegrityCoverage:
+    """Count the marked cohorts, from the emitted records rather than the checks.
+
+    Same discipline as :func:`enrichment_coverage` and :func:`aggregate_match_coverage`:
+    counting what shipped is the only count that describes what a reader will meet.
+
+    ``shared_cohort_groups`` is recovered from the sibling counts rather than by regrouping
+    the records. A group of *n* programs writes ``n - 1`` on each of its *n* members, so the
+    programs carrying a given sibling count always divide exactly by the group size, and the
+    arithmetic is a second, independent check on the grouping that produced them.
+    """
+    cohorts = [payload["outcomes"]["cohort"] for payload in payloads]
+    siblings = Counter(
+        cohort["shared_with_sibling_programs"]
+        for cohort in cohorts
+        if cohort["shared_with_sibling_programs"] is not None
+    )
+    exited_over = sum(1 for cohort in cohorts if cohort["exited_exceeds_served"])
+    completed_over = sum(1 for cohort in cohorts if cohort["completed_exceeds_served"])
+    return CohortIntegrityCoverage(
+        programs_with_cohort_counts=sum(
+            1
+            for payload in payloads
+            if any(
+                payload["outcomes"][measure] is not None
+                for measure in ("total_served", "total_exited", "total_completed")
+            )
+        ),
+        shared_cohorts=sum(siblings.values()),
+        shared_cohort_groups=sum(count // (n + 1) for n, count in siblings.items()),
+        # A genuine zero when nothing is shared: this number is ours, counted, not reported.
+        largest_shared_cohort=max(siblings, default=-1) + 1 if siblings else 0,
+        exited_exceeds_served=exited_over,
+        completed_exceeds_served=completed_over,
+        internally_contradictory=sum(
+            1 for cohort in cohorts if not cohort["internally_consistent"]
+        ),
+        oversized_for_one_program=sum(
+            1 for cohort in cohorts if cohort["oversized_for_one_program"]
+        ),
+        oversized_providers=len(
+            {
+                dol_etp.normalise_provider(payload["provider_name"])
+                for payload in payloads
+                if payload["outcomes"]["cohort"]["oversized_for_one_program"]
+            }
+        ),
+        not_attributable=sum(1 for cohort in cohorts if not cohort["attributable"]),
     )
 
 
@@ -869,6 +991,38 @@ def emit_site_bundle(
         )
 
 
+def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
+    """Re-derive every record's cohort verdict from the records themselves, in place.
+
+    The offline build reads a committed snapshot of this pipeline's own output, so the
+    verdicts could in principle be trusted as they were written. They are recomputed anyway,
+    for two reasons. A fixture predating the check carries no verdict at all, and defaulting
+    one in would publish "we checked this and it was fine" about a record nothing had
+    checked. And a fixture is a *sample*: the two cross-program checks are relative to the
+    population they run over, so verdicts copied from a 3,266-program build would assert
+    things about a 60-program one that its own contents do not support.
+
+    The rule is the same rule over the same four fields, so on a full snapshot this
+    reproduces what :func:`build` wrote.
+    """
+    for payload, verdict in zip(
+        payloads,
+        dol_etp.cohort_integrity(
+            [
+                dol_etp.CohortFiling(
+                    provider_name=payload["provider_name"],
+                    total_served=payload["outcomes"]["total_served"],
+                    total_exited=payload["outcomes"]["total_exited"],
+                    total_completed=payload["outcomes"]["total_completed"],
+                )
+                for payload in payloads
+            ]
+        ),
+        strict=True,
+    ):
+        payload["outcomes"]["cohort"] = verdict.as_dict()
+
+
 def build_offline(fixture_dir: Path, *, output_dir: Path | None = None) -> int:
     """Emit the site bundle from a committed fixture instead of the live sources.
 
@@ -887,6 +1041,9 @@ def build_offline(fixture_dir: Path, *, output_dir: Path | None = None) -> int:
     payloads = programs_doc["programs"]
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
+    _attach_cohort_integrity(payloads)
+    coverage["cohort_integrity"] = asdict(cohort_integrity_coverage(payloads))
+    coverage["peer_medians"] = peer_medians(payloads)
 
     for name, document in (
         ("programs.json", programs_doc),
@@ -927,7 +1084,14 @@ def build(
     areas = edd_lmi.area_definitions(projections)
     city_areas = edd_lmi.principal_city_areas(areas)
 
-    payloads = [program_payload(p, occupations, city_areas) for p in programs]
+    # Judged over the whole snapshot before any record is built: a cohort republished across
+    # a provider's programs, and a provider filing many impossible ones, are both invisible
+    # from inside a single row.
+    integrity = dol_etp.cohort_integrity([dol_etp.CohortFiling.of(p) for p in programs])
+    payloads = [
+        program_payload(p, occupations, city_areas, cohort=c)
+        for p, c in zip(programs, integrity, strict=True)
+    ]
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
     # aggregation those are no longer the same set, and the emitted records are the ones a
     # reader can check.
@@ -955,6 +1119,7 @@ def build(
         programs_with_regional_projection=sum(
             1 for p in payloads if any(o["region"] is not None for o in p["occupations"])
         ),
+        cohort_integrity=cohort_integrity_coverage(payloads),
         enrichment=enrichment_coverage(occupations),
     )
 

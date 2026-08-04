@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -85,6 +86,50 @@ function relatedCaption(
 
 export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allOccupationCodes().map((soc) => ({ lang, soc })));
+}
+
+/**
+ * The title and description a search result shows for one of the 1,340 occupation pages.
+ *
+ * There was no `generateMetadata` here at all, so every one of them inherited the layout's
+ * and shipped under the identical title "Camino — California training programs, and what
+ * happened to the people who took them". A search engine holding 1,340 pages with one title
+ * has 1,340 pages it cannot tell apart, and a person scanning results has no reason to open
+ * any of them.
+ *
+ * The occupation title is English in both languages, because California publishes it in
+ * English only — the same limitation the page itself states. What is translated is everything
+ * around it, which is what tells a Spanish reader the page is theirs.
+ *
+ * The wage goes in the description only when California published a statewide one. The other
+ * thirteen occupations say plainly that none is published rather than borrowing a nearby
+ * figure or, worse, formatting a null as $0 in a search result. Six of those thirteen — Actors,
+ * Dancers, Musicians and Singers among them — have no published wage in any region either, and
+ * they lose the word "pay" from their title too: a result promising a figure the page does not
+ * contain is a wrong answer delivered before the page is even opened.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string; soc: string }>;
+}): Promise<Metadata> {
+  const { lang, soc } = await params;
+  if (!isLang(lang)) return {};
+
+  const occupation = getOccupation(soc);
+  if (!occupation) return {};
+
+  const t = dict(lang);
+  const wage = money(occupation.median_annual_wage, lang);
+  const anyWage =
+    occupation.median_annual_wage !== null ||
+    occupation.regions.some((region) => region.median_annual_wage !== null);
+  const name = occupation.title ?? `SOC ${occupation.soc_code ?? soc}`;
+
+  return {
+    title: anyWage ? t.metaOccupationTitle(name) : t.metaOccupationTitleNoPay(name),
+    description: wage === null ? t.metaOccupationNoWage : t.metaOccupationWage(wage),
+  };
 }
 
 export default async function OccupationPage({
