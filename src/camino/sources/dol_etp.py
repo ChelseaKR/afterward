@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 import time
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
@@ -56,6 +57,32 @@ def clean_measure(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return None if numeric == SUPPRESSED else numeric
+
+
+def clean_rate(value: Any, *, field: str = "") -> float | None:
+    """Parse a rate, enforcing the contract that it is a fraction between 0 and 1.
+
+    Every rate in the current feed is a fraction (0.64 meaning 64%), but nothing upstream
+    guarantees that, and the display layer used to hedge with "if it is above 1, assume it is
+    a whole percentage". That hedge is wrong per-row rather than wholesale: it renders 64 as
+    64% correctly while rendering a genuine 1% as 100% and 0.5% as 50%, and nothing would
+    ever flag it.
+
+    So the unit is checked once, here, where the data enters. A value outside 0..1 is not a
+    rate this code knows how to read, so it becomes "not reported" and says so on stderr
+    rather than being silently reinterpreted downstream.
+    """
+    parsed = clean_measure(value)
+    if parsed is None:
+        return None
+    if not 0.0 <= parsed <= 1.0:
+        print(
+            f"warning: {field or 'rate'} = {parsed!r} is outside 0..1; expected a fraction. "
+            "Treating as not reported — check whether the feed changed units.",
+            file=sys.stderr,
+        )
+        return None
+    return parsed
 
 
 SAFE_URL_SCHEMES = ("http://", "https://")
@@ -203,10 +230,14 @@ def parse_program(hit: dict[str, Any]) -> Program:
         total_served=clean_measure(source.get("field_c_total_served")),
         total_exited=clean_measure(source.get("field_c_total_exited")),
         total_completed=clean_measure(source.get("field_c_total_completed")),
-        completed_percent=clean_measure(source.get("field_c_completed_percent")),
+        completed_percent=clean_rate(
+            source.get("field_c_completed_percent"), field="completion rate"
+        ),
         total_credential=clean_measure(source.get("field_c_total_credential")),
         median_earnings=clean_measure(source.get("field_c_median_earnings")),
-        q2_employment_percent=clean_measure(source.get("field_c_q2_employment_percent")),
+        q2_employment_percent=clean_rate(
+            source.get("field_c_q2_employment_percent"), field="Q2 employment rate"
+        ),
         employed_q2=clean_measure(source.get("field_total_employed_q2")),
         employed_q4=clean_measure(source.get("field_total_employed_q4")),
         raw=source,
@@ -249,10 +280,16 @@ def parse_state_benchmark(state: str, source: dict[str, Any]) -> StateBenchmark:
     """Build a benchmark from a states-index document."""
     return StateBenchmark(
         state=state,
-        completion_rate=clean_measure(source.get("field_c_completed_percent")),
-        q2_employment_rate=clean_measure(source.get("field_c_q2_employment_percent")),
+        completion_rate=clean_rate(
+            source.get("field_c_completed_percent"), field="state completion rate"
+        ),
+        q2_employment_rate=clean_rate(
+            source.get("field_c_q2_employment_percent"), field="state Q2 employment rate"
+        ),
         median_earnings=clean_measure(source.get("field_c_median_earnings")),
-        credential_rate=clean_measure(source.get("field_c_cred_attainment_percent")),
+        credential_rate=clean_rate(
+            source.get("field_c_cred_attainment_percent"), field="state credential rate"
+        ),
         total_exited=clean_measure(source.get("field_c_total_exited")),
         total_completed=clean_measure(source.get("field_c_total_completed")),
     )

@@ -11,6 +11,7 @@ import pytest
 from camino.sources.dol_etp import (
     Program,
     clean_measure,
+    clean_rate,
     clean_url,
     parse_program,
     parse_state_benchmark,
@@ -196,3 +197,47 @@ class TestCleanUrl:
     def test_drops_empty_and_null(self) -> None:
         assert clean_url(None) is None
         assert clean_url("   ") is None
+
+
+class TestCleanRate:
+    """Rates are fractions. The unit is checked here so nothing downstream has to guess."""
+
+    def test_accepts_a_fraction(self) -> None:
+        assert clean_rate(0.64) == 0.64
+
+    def test_accepts_the_boundaries(self) -> None:
+        assert clean_rate(0) == 0.0
+        assert clean_rate(1) == 1.0
+
+    def test_rejects_a_whole_percentage(self, capsys: pytest.CaptureFixture[str]) -> None:
+        # 64 could only mean 64%, but accepting it would mean the reader can no longer trust
+        # that 1 means 100% rather than 1%. Refuse and say so.
+        assert clean_rate(64, field="completion rate") is None
+        assert "outside 0..1" in capsys.readouterr().err
+
+    def test_rejects_a_negative_rate(self, capsys: pytest.CaptureFixture[str]) -> None:
+        assert clean_rate(-0.5) is None
+        assert "outside 0..1" in capsys.readouterr().err
+
+    def test_suppressed_stays_none_without_a_warning(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        # -1 is the ordinary "not reported" sentinel, not a unit problem.
+        assert clean_rate(-1) is None
+        assert capsys.readouterr().err == ""
+
+    def test_parsed_program_rates_go_through_the_check(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_c_completed_percent": 250,
+                    "field_c_q2_employment_percent": 0.7,
+                }
+            }
+        )
+        assert program.completed_percent is None
+        assert program.q2_employment_percent == 0.7
+        assert "outside 0..1" in capsys.readouterr().err

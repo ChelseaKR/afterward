@@ -33,14 +33,17 @@ describe("money", () => {
 });
 
 describe("percent", () => {
-  it("treats values at or below 1 as fractions", () => {
+  it("formats a fraction", () => {
     expect(percent(0.64, "en")).toBe("64%");
     expect(percent(1, "en")).toBe("100%");
   });
 
-  it("treats values above 1 as whole percentages", () => {
-    // The feed is inconsistent about this; both encodings appear.
-    expect(percent(64, "en")).toBe("64%");
+  it("does not guess units", () => {
+    // The pipeline validates that rates are fractions at parse time and refuses anything
+    // outside 0..1, so there is nothing to disambiguate here. The old heuristic ("above 1
+    // means whole percentages") read a genuine 1% as 100%, silently.
+    expect(percent(0.01, "en")).toBe("1%");
+    expect(percent(0.005, "en")).toBe("1%"); // rounds, but does not become 50%
   });
 });
 

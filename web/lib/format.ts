@@ -23,14 +23,21 @@ export function money(value: number | null, lang: Lang): string | null {
   }).format(value);
 }
 
+/**
+ * Format a rate. The value is always a fraction: the pipeline validates that at parse time
+ * and refuses anything outside 0..1, so there is no unit-guessing to do here.
+ *
+ * An earlier version hedged with "if it is above 1, assume whole percentages". That hedge
+ * was wrong per-row rather than wholesale — it read 64 as 64% while reading a genuine 1% as
+ * 100% and 0.5% as 50%, silently. Checking the unit once, where the data enters, is the only
+ * place the question has a real answer.
+ */
 export function percent(value: number | null, lang: Lang): string | null {
   if (value === null) return null;
-  // The feed expresses rates as fractions (0.64), but occasionally as whole percentages.
-  const fraction = value > 1 ? value / 100 : value;
   return new Intl.NumberFormat(LOCALE[lang], {
     style: "percent",
     maximumFractionDigits: 0,
-  }).format(fraction);
+  }).format(value);
 }
 
 export function signedPercent(value: number | null, lang: Lang): string | null {

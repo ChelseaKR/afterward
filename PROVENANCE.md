@@ -33,7 +33,25 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D2 | CA EDD — Long-Term Occupational Employment Projections (2024–2034) | `https://data.ca.gov/dataset/long-term-occupational-employment-projections` | 2026-08-04 | California open data, public domain | Occupation growth, job openings, median wages, entry-level education, by region |
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Wage detail (percentiles) where projections lack it |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
-| D5 | O\*NET Database | `https://www.onetcenter.org/database.html` | pending | CC BY 4.0 (attribution required) | Skills/tasks per SOC; occupation adjacency (Phase 2) |
+| D5 | O\*NET Database | `https://www.onetcenter.org/database.html` | not used | CC BY 4.0 (attribution required) | Superseded by D6, which serves the same O\*NET content through an API |
+| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, O\*NET related occupations, Bright Outlook |
+
+### Notes on D6
+
+Requires a registered user id and token, read from the environment (`CAREERONESTOP_USER_ID`,
+`CAREERONESTOP_TOKEN`) via a gitignored `.env.local`; see `.env.example`. Credentials are
+used at build time only and never reach the browser, since the site ships as static files.
+
+Enrichment is **optional**. With no credentials configured the pipeline runs unchanged and
+occupation pages simply carry no description, skills, or related-occupation list. CI has no
+credentials and builds from the committed fixture.
+
+Responses are cached under `data/raw/cos-cache/` so a rebuild does not re-ask for data that
+has not changed. One request per occupation, throttled.
+
+The API serves English only. Passing `language=es` returns English, so this does not help
+with the project's known limitation that occupation titles and descriptions are untranslated
+on Spanish pages.
 
 ### Notes on D1
 

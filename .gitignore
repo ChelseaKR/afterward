@@ -16,3 +16,11 @@ build/
 data/raw/
 data/interim/
 data/processed/
+
+# Secrets. Never commit. CareerOneStop and any other API credentials live here.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
