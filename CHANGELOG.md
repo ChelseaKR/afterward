@@ -23,6 +23,18 @@ All notable changes to this project are documented here. The format follows
 - Offline build path and a committed 60-program fixture, so CI does not depend on a
   government endpoint being reachable.
 - Mechanical provenance check enforcing this project's clean-room constraint.
+- Browse indexes for occupations (banded by projected outlook, shrinking first) and
+  providers (alphabetical, with how many of each provider's programs report anything).
+- Regional wages: 1,525 programs are matched to a published EDD area using EDD's own area
+  labels, so a Fresno program can show the Fresno figure. 44% of comparable rows differ from
+  the statewide wage by more than 10%.
+- Side-by-side comparison of up to four programs, a city filter, and provider pages.
+- A build-time data cache with stamp-based invalidation and deep-frozen records, so pages
+  cannot corrupt each other's data.
+- A SOC aggregation table recovering 61 of the 77 programs whose occupation code EDD does
+  not publish (not yet wired into the pipeline).
+- A CareerOneStop client for occupation descriptions, O*NET skill ratings and O*NET related
+  occupations. Optional: the build runs unchanged without credentials.
 
 ### Fixed
 

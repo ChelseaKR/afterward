@@ -230,6 +230,32 @@ checking that the two numbers mean the same thing is worse than showing no bench
 from the occupation's annual wage, so the natural reading was that graduates earn about a
 sixth of the going rate. It now states its period in both languages.
 
+### D15 — Prefer the source that states the relationship over the one that implies it
+
+Three decisions made the same call on the same day, which is worth naming as a pattern.
+
+**Regional wages** are attached only where EDD's own area label names the city. A core-based
+statistical area is titled after cities inside it by construction, so matching "Bakersfield"
+to "Bakersfield-Delano MSA" restates EDD's published definition rather than asserting
+California geography. 1,741 programs across 178 cities are deliberately left unmapped.
+Pleasant Hill is in Contra Costa and therefore the Oakland MD — but EDD did not say so, and
+a guessed region renders on the page identically to a correct one.
+
+**The unmatched-SOC investigation** overturned its own premise. The gap is not a vintage
+mismatch: the codes involved are identical across the 2010 and 2018 SOC. It is aggregation
+level, where BLS publishes some occupations only as a broad group or a hybrid code. 61 of 77
+recover with citations; 16 are refused, including two tempting traps — a residual "all other"
+category defined by *excluding* the occupation being mapped, and nearest-neighbour matching
+by job title, which is not a crosswalk.
+
+**Related occupations** will prefer O*NET's own list over the SOC-sibling heuristic, and the
+record says which was used, because "shares a classification prefix" and "involves similar
+work" are different claims and the page should not blur them.
+
+The common rule: when a relationship can be read directly from a source, read it. When it
+can only be inferred, either cite the inference or decline it. Coverage bought by guessing is
+not coverage, because a wrong wage and a right wage look identical to the person reading it.
+
 ### Still open
 
 - Does California's own ETPL list programs the federal file omits? **Still unresolved, and
