@@ -13,9 +13,9 @@ from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
-from camino.sources import careeronestop, dol_etp, edd_lmi
+from camino.sources import careeronestop, dol_etp, edd_lmi, soc_vintage
 
 DEFAULT_STATE = "CA"
 
@@ -46,6 +46,26 @@ class EnrichmentCoverage:
     without_related: int
 
 
+@dataclass(frozen=True)
+class AggregateMatchCoverage:
+    """How much of the program-to-occupation join runs through a published aggregate.
+
+    Published rather than folded into the headline match rate, because "matched" and
+    "matched to the broad group above the occupation it trains for" are different claims and
+    a reader auditing the 99.5% is entitled to see how many of them are the second kind.
+
+    ``programs_with_education_withheld`` is the cost of the treatment in
+    :func:`occupation_summary`, counted rather than estimated: that many program pages carry
+    an occupation whose typical-entry credential this pipeline declined to publish because it
+    describes a wider population than the program's own occupation.
+    """
+
+    programs: int
+    recovered_programs: int
+    occupation_matches: int
+    programs_with_education_withheld: int
+
+
 @dataclass
 class CoverageReport:
     """Honest accounting of what the data does and does not cover.
@@ -63,6 +83,9 @@ class CoverageReport:
     programs_with_cost: int
     programs_with_soc: int
     programs_matched_to_occupation: int
+    # Of those matches, the ones reached through a broader published occupation rather than
+    # the program's own SOC code. Carried so the headline match rate can be read honestly.
+    aggregate_matches: AggregateMatchCoverage
     distinct_providers: int
     distinct_occupations_matched: int
     occupation_rows_loaded: int
@@ -380,6 +403,84 @@ def _is_enriched(record: Mapping[str, Any]) -> bool:
     )
 
 
+MATCH_EXACT: Final = "exact"
+"""The program's own SOC code is one EDD publishes, so the figures are that occupation's.
+
+The other values ``OccupationMatch.kind`` can take are the two ``SocAggregation.kind``
+values, and both mean something weaker: the figures belong to a larger published occupation
+that *contains* the one the program trains for.
+"""
+
+
+@dataclass(frozen=True)
+class OccupationMatch:
+    """One occupation a program feeds, and how the join reached it.
+
+    ``program_soc_codes`` holds the program's own codes that landed here, plural because two
+    of them can resolve to one aggregate: a home health aide programme tagged both 31-1121
+    and 31-1122 gets a single 31-1120 row, and this is what says why it is single.
+    """
+
+    soc_code: str
+    kind: str
+    program_soc_codes: tuple[str, ...]
+
+    @property
+    def is_aggregate(self) -> bool:
+        """True when the figures describe a population wider than the program's occupation."""
+        return self.kind != MATCH_EXACT
+
+
+def match_occupations(
+    soc_codes: Iterable[str], occupations: Mapping[str, Any]
+) -> list[OccupationMatch]:
+    """Resolve a program's SOC codes to occupations this dataset can actually show.
+
+    A code EDD publishes matches itself. A code EDD publishes only inside a larger occupation
+    matches that aggregate, on the containment argument cited row by row in
+    :mod:`camino.sources.soc_vintage` -- without it, 61 California programs have no
+    occupation panel at all, and 74 more are missing one of theirs. A code with neither is
+    dropped rather than guessed at.
+
+    The feed's order is kept, since it is the provider's own priority order, and a target
+    appears once however many of the program's codes reached it. Where one code matches a
+    published occupation exactly and another reaches the same occupation only as an
+    aggregate, the exact match wins and the row is labelled ``exact``: DOL naming the
+    published code itself is a stronger claim than one this pipeline derived, and it is not
+    this pipeline's to weaken.
+    """
+    order: list[str] = []
+    kinds: dict[str, str] = {}
+    sources: dict[str, list[str]] = {}
+
+    for code in soc_codes:
+        target = soc_vintage.resolve_published_soc(code, occupations)
+        if target is None:
+            continue
+        # An aggregation row only describes this match when it is the row that produced it.
+        # A code EDD publishes under its own name resolves to itself even if it also appears
+        # as a member of some group, and that is an exact match.
+        aggregation = soc_vintage.aggregation_for(code)
+        kind = (
+            aggregation.kind
+            if aggregation is not None and aggregation.target == target
+            else MATCH_EXACT
+        )
+        if target not in kinds:
+            order.append(target)
+            kinds[target] = kind
+        elif kind == MATCH_EXACT:
+            kinds[target] = kind
+        contributing = sources.setdefault(target, [])
+        if code not in contributing:
+            contributing.append(code)
+
+    return [
+        OccupationMatch(soc_code=code, kind=kinds[code], program_soc_codes=tuple(sources[code]))
+        for code in order
+    ]
+
+
 OCCUPATION_SUMMARY_FIELDS = (
     "soc_code",
     "title",
@@ -431,7 +532,9 @@ def regional_projection(
     return None
 
 
-def occupation_summary(occupation: dict[str, Any], area_name: str | None = None) -> dict[str, Any]:
+def occupation_summary(
+    occupation: dict[str, Any], match: OccupationMatch, area_name: str | None = None
+) -> dict[str, Any]:
     """Slim projection of an occupation for embedding in a program record.
 
     Programs reference occupations by SOC rather than carrying a copy: the full record,
@@ -444,8 +547,46 @@ def occupation_summary(occupation: dict[str, Any], area_name: str | None = None)
     that applies to the program being built, so the page can show both and say which is
     which -- a Fresno program's occupation is not well described by a statewide median that
     a Bay Area concentration has pulled upward.
+
+    ``match`` says how the join reached this occupation, and is never omitted: an exact match
+    and an aggregate one look identical once the figures are in hand, and a consumer that
+    cannot tell them apart will present a broad group's numbers as the occupation's own.
+
+    **``entry_level_education`` is dropped on an aggregate match.** The other figures survive
+    because a median wage or an opening count over a wider population is still an estimate of
+    a population the trainee belongs to -- approximate, labelled, and the only one California
+    publishes for those workers. The typical-entry credential is not that kind of figure. It
+    is a single category BLS assigns to the whole aggregate, so on a union of occupations with
+    different credentials it is not an approximation of the member's answer, it is a different
+    answer: 21-1018 reads "Master's degree" from its mental-health-counselor half and would
+    land on community-college substance-use-counseling certificates, and 29-2010 reads
+    "Bachelor's degree" from its technologist half and would land on associate-level
+    phlebotomy and MLT programs. Telling someone they need a degree they do not need, for the
+    job they are training for right now, is the same class of error as rendering a suppressed
+    measure as zero, and it is worse than saying nothing.
+
+    The rule is mechanical -- every aggregate match, not the ones judged wrong. Deciding
+    case by case which aggregate's credential happens to fit a given program is precisely the
+    similarity judgement :mod:`camino.sources.soc_vintage` refuses to make, and it would put
+    that judgement somewhere nobody could audit it.
+
+    Two absences would otherwise reach the page as the same null, so
+    ``match.entry_level_education_withheld`` separates them: true means EDD published a
+    credential for the aggregate and this pipeline declined to attach it to the program,
+    false means there was none to publish. Consumers must not treat the withheld case as
+    "the provider did not report it".
     """
     summary = {key: occupation.get(key) for key in OCCUPATION_SUMMARY_FIELDS}
+    withheld = match.is_aggregate and summary["entry_level_education"] is not None
+    if withheld:
+        summary["entry_level_education"] = None
+    summary["match"] = {
+        "kind": match.kind,
+        # The program's own codes, so the claim can be audited against the cited table
+        # rather than taken on trust.
+        "program_soc_codes": list(match.program_soc_codes),
+        "entry_level_education_withheld": withheld,
+    }
     summary["region"] = regional_projection(occupation, area_name)
     return summary
 
@@ -477,9 +618,8 @@ def program_payload(
     area = area_for_city(program.city, city_areas)
     area_name = None if area is None else area.area_name
     matched = [
-        occupation_summary(occupations[soc], area_name)
-        for soc in program.soc_codes
-        if soc in occupations
+        occupation_summary(occupations[match.soc_code], match, area_name)
+        for match in match_occupations(program.soc_codes, occupations)
     ]
     return {
         "uuid": program.uuid,
@@ -610,6 +750,38 @@ def area_coverage(
     ]
 
 
+def aggregate_match_coverage(payloads: list[dict[str, Any]]) -> AggregateMatchCoverage:
+    """Count the aggregate half of the join, from the emitted records rather than the table.
+
+    Counted the same way :func:`enrichment_coverage` is, and for the same reason: this
+    measures what a reader will actually find on the pages, not what the mapping table would
+    have allowed. ``recovered_programs`` is the subset with no exact match at all -- programs
+    that would show no occupation whatsoever without the aggregation, as distinct from the
+    ones that merely gained a row.
+    """
+    programs = 0
+    recovered = 0
+    matches = 0
+    with_education_withheld = 0
+    for payload in payloads:
+        occupations = payload["occupations"]
+        aggregates = [o for o in occupations if o["match"]["kind"] != MATCH_EXACT]
+        if not aggregates:
+            continue
+        programs += 1
+        matches += len(aggregates)
+        if len(aggregates) == len(occupations):
+            recovered += 1
+        if any(o["match"]["entry_level_education_withheld"] for o in aggregates):
+            with_education_withheld += 1
+    return AggregateMatchCoverage(
+        programs=programs,
+        recovered_programs=recovered,
+        occupation_matches=matches,
+        programs_with_education_withheld=with_education_withheld,
+    )
+
+
 def unmapped_cities(payloads: list[dict[str, Any]]) -> dict[str, int]:
     """Cities this build declined to place, with how many programs each cost.
 
@@ -737,7 +909,10 @@ def build(
     city_areas = edd_lmi.principal_city_areas(areas)
 
     payloads = [program_payload(p, occupations, city_areas) for p in programs]
-    matched_socs = {soc for p in payloads for soc in p["soc_codes"] if soc in occupations}
+    # Counted from the occupations actually attached, not from the raw SOC codes: after the
+    # aggregation those are no longer the same set, and the emitted records are the ones a
+    # reader can check.
+    matched_socs = {o["soc_code"] for p in payloads for o in p["occupations"]}
     mapped_to_area = sum(1 for p in payloads if p["region"] is not None)
 
     report = CoverageReport(
@@ -752,6 +927,7 @@ def build(
         programs_with_cost=sum(1 for p in programs if p.total_cost is not None),
         programs_with_soc=sum(1 for p in programs if p.soc_codes),
         programs_matched_to_occupation=sum(1 for p in payloads if p["occupations"]),
+        aggregate_matches=aggregate_match_coverage(payloads),
         distinct_providers=len({p.provider_name for p in programs if p.provider_name}),
         distinct_occupations_matched=len(matched_socs),
         occupation_rows_loaded=len(occupations),

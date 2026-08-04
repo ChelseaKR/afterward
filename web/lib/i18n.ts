@@ -176,6 +176,32 @@ const en = {
   // nothing yet. Two sentences: what it costs them, and what the numbers are.
   siteSummary:
     "Free to use, with no account. Every figure comes from public federal and state records, and a program that reported nothing is shown as having reported nothing.",
+
+  // ---- Federal occupation detail (CareerOneStop / O*NET, PROVENANCE D6) ----
+  // The data behind these sections is English only at the source, so each note says whose
+  // words they are and which language they were published in, rather than leaving a Spanish
+  // reader to guess why a paragraph is in English.
+  occupationDescriptionNote:
+    "How the U.S. Department of Labor describes this work. Published in English only.",
+
+  skillsHeading: "Skills this work uses most",
+  skillsNote:
+    "O*NET, the U.S. Department of Labor's occupation database, rates how important each of these is to this work, and they are listed in that order, most important first. The ratings themselves are not shown, because the data carries the number without the scale it was measured on. The names are as published, in English.",
+  skillsUnrated: (names: string) =>
+    `O*NET lists these as well but rated none of them, so they are left out of the order rather than placed at the bottom of it: ${names}.`,
+
+  brightOutlookLabel: "Bright Outlook — a U.S. Department of Labor designation",
+  brightOutlookNote:
+    "The Department's own designation, made from its national projections. It is not this project's assessment and it is not California's: every other figure on this page comes from California's projection, which can point the other way and for some occupations does.",
+  // The designation's categories are descriptive phrases and are translated on the same
+  // terms as every other controlled vocabulary in the data. "Bright Outlook" is the name of
+  // the federal designation itself and stays in English in both languages.
+  outlookRapidGrowth: "Rapid Growth",
+  outlookManyOpenings: "Numerous Job Openings",
+
+  similarWork: "Similar work",
+  similarWorkNote:
+    "O*NET, the U.S. Department of Labor's occupation database, names these as occupations involving work similar to this one — its own reading of the job, not a grouping by code. They keep O*NET's order, and only those California publishes a projection for are shown.",
 };
 
 /**
@@ -348,6 +374,26 @@ const es: Dictionary = {
 
   siteSummary:
     "De uso gratuito y sin cuenta. Cada cifra viene de registros públicos federales y estatales, y un programa que no reportó nada aparece justamente así: sin nada reportado.",
+
+  // ---- Federal occupation detail (CareerOneStop / O*NET, PROVENANCE D6) ----
+  occupationDescriptionNote:
+    "Así describe este trabajo el Departamento de Trabajo de EE. UU. Solo se publica en inglés.",
+
+  skillsHeading: "Las habilidades que más se usan en este trabajo",
+  skillsNote:
+    "O*NET, la base de datos ocupacional del Departamento de Trabajo de EE. UU., califica qué tan importante es cada una para este trabajo, y aquí aparecen en ese orden, de mayor a menor. Las calificaciones no se muestran, porque los datos traen el número sin la escala en la que se midió. Los nombres aparecen tal como se publican, en inglés.",
+  skillsUnrated: (names: string) =>
+    `O*NET también menciona estas, pero no las calificó, así que quedan fuera del orden en vez de ir al final: ${names}.`,
+
+  brightOutlookLabel: "Bright Outlook: una designación del Departamento de Trabajo de EE. UU.",
+  brightOutlookNote:
+    "Es la designación del propio Departamento, hecha con sus proyecciones nacionales. No es una evaluación de este proyecto ni de California: las demás cifras de esta página vienen de la proyección de California, que puede apuntar en sentido contrario y en algunas ocupaciones lo hace.",
+  outlookRapidGrowth: "Crecimiento rápido",
+  outlookManyOpenings: "Muchas vacantes",
+
+  similarWork: "Trabajos similares",
+  similarWorkNote:
+    "O*NET, la base de datos ocupacional del Departamento de Trabajo de EE. UU., señala estas ocupaciones como trabajos parecidos a este: es su propia lectura del oficio, no una agrupación por código. Conservan el orden de O*NET y solo aparecen las que California proyecta.",
 };
 
 function fmt(n: number): string {

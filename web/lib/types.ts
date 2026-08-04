@@ -79,6 +79,49 @@ export interface ProgramOccupation extends OccupationSummary {
   region: OccupationRegion | null;
 }
 
+/**
+ * One skill O*NET associates with an occupation, as served by CareerOneStop (PROVENANCE D6).
+ *
+ * `importance` is the rating exactly as published, and null means the source rated the skill
+ * for this occupation without giving a number — absence of a rating, never a rating of zero.
+ * A zero would rank the skill below every skill genuinely judged unimportant, which is the
+ * same collapse this file exists to prevent for wages and openings.
+ *
+ * The number arrives with no scale attached: the record says `4.12` and nothing about what
+ * 4.12 is out of. Consumers can therefore honour the *order* the ratings give but must not
+ * present the figure as a score, a percentage, or a proportion of any maximum.
+ */
+export interface OccupationSkill {
+  name: string;
+  importance: number | null;
+}
+
+/**
+ * An occupation O*NET's own related-occupation list names for this one.
+ *
+ * The pipeline keeps only entries this dataset can open a page for, so every row here is a
+ * live link rather than a title with nothing behind it.
+ */
+export interface OnetRelatedOccupation {
+  soc_code: string;
+  title: string;
+}
+
+/**
+ * How `Occupation.related` was arrived at. The two are different claims, not two routes to
+ * the same one, and anything rendering the list has to say which it is showing.
+ *
+ * `"onet"` — O*NET's own list: a judgement about the work itself, that someone doing this
+ * job could plausibly do that one. Kept in O*NET's order, which is its relevance ranking.
+ *
+ * `"soc_major_group"` — occupations whose SOC code starts with the same two digits. That is
+ * a statement about how the classification files the work, not about the work, and it is the
+ * weaker of the two. Ordered by projected openings.
+ *
+ * Null when neither source produced a list, in which case `related` is empty.
+ */
+export type RelatedSource = "onet" | "soc_major_group";
+
 export interface Occupation extends OccupationSummary {
   period: string | null;
   median_hourly_wage: number | null;
@@ -89,6 +132,24 @@ export interface Occupation extends OccupationSummary {
   job_training: string | null;
   regions: RegionalProjection[];
   related: RelatedOccupation[];
+  /**
+   * Plain-language account of what the work is, from the federal source. Null for the
+   * occupations that source has no entry for; the key is always written, so "no description
+   * published" and "this record predates the field" stay distinguishable.
+   */
+  description: string | null;
+  /** Most important first, as the pipeline sorts them. Empty when none were published. */
+  skills: OccupationSkill[];
+  related_onet: OnetRelatedOccupation[];
+  /**
+   * The U.S. Department of Labor's Bright Outlook designation, e.g. "Rapid Growth" or
+   * "Rapid Growth; Numerous Job Openings". Null means the Department did not designate this
+   * occupation — which is not the same as designating it poorly. It rests on *national*
+   * projections, so it can disagree with the California figures beside it, and it is the
+   * Department's assessment rather than this project's.
+   */
+  bright_outlook: string | null;
+  related_source: RelatedSource | null;
 }
 
 export interface ProgramOutcomes {

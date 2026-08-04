@@ -8,14 +8,17 @@ from pathlib import Path
 import pytest
 
 from camino.build import (
+    MATCH_EXACT,
     RELATED_SOURCE_ONET,
     RELATED_SOURCE_SOC_SIBLINGS,
     EnrichmentCoverage,
+    aggregate_match_coverage,
     area_coverage,
     detailed_soc_codes,
     enrichment_coverage,
     fetch_enrichment,
     index_occupations,
+    match_occupations,
     peer_medians,
     program_payload,
     unmapped_cities,
@@ -80,6 +83,207 @@ class TestProgramPayload:
         outcomes = program_payload(program, _occupations())["outcomes"]
         assert outcomes["median_earnings"] is None
         assert outcomes["reported"] is False
+
+
+class TestAggregateOccupationMatch:
+    """Programs EDD publishes only inside a larger occupation, and the credential hazard.
+
+    EDD marks every one of these aggregates as SOC level 4, its most detailed level, because
+    there is no California estimate below them to publish. The fixture is faithful to that.
+    """
+
+    CSV = """Area Type,Area Name,Period,SOC Level,Standard Occupational Classification (SOC),Occupational Title,Base Year Employment Estimate,Projected Year Employment Estimate,Numeric Change,Percentage Change,Exits,Transfers,Total Job Openings,Median Hourly Wage,Median Annual Wage,Entry Level Education,Work Experience,Job Training
+State,California,2024-2034,4,15-1252,Software Developers,1000,1200,200,20.0,50,80,330,68.50,142480,Bachelor's degree,None,None
+State,California,2024-2034,4,31-1120,Home Health and Personal Care Aides,900,990,90,10.0,40,60,190,20.00,41600,High school diploma or equivalent,None,None
+State,California,2024-2034,4,21-1018,"Substance Abuse, Behavioral Disorder, and Mental Health Counselors",500,550,50,10.0,20,30,100,30.00,62400,Master's degree,None,None
+State,California,2024-2034,4,29-2010,Clinical Laboratory Technologists and Technicians,400,440,40,10.0,15,25,80,40.00,83200,Bachelor's degree,None,None
+State,California,2024-2034,4,47-4090,Miscellaneous Construction and Related Workers,300,330,30,10.0,10,20,60,25.00,52000,N/A,None,None
+"""
+
+    def _occupations(self) -> dict:
+        return index_occupations(list(parse_projections(self.CSV)))
+
+    def _payload(self, *socs: str) -> dict:
+        source = {"field_uuid": "u1"}
+        for index, soc in enumerate(socs, start=1):
+            source[f"field_program_soc_occ_{index}"] = soc.replace("-", "") + "00"
+        return program_payload(parse_program({"_source": source}), self._occupations())
+
+    def test_a_detailed_code_edd_hides_inside_a_broad_group_still_matches(self) -> None:
+        # 31-1121 Home Health Aides has no California estimate of its own; without this the
+        # program shows no occupation panel at all.
+        occupations = self._payload("31-1121")["occupations"]
+        assert [o["soc_code"] for o in occupations] == ["31-1120"]
+
+    def test_a_broad_group_match_says_it_is_a_broad_group(self) -> None:
+        match = self._payload("31-1121")["occupations"][0]["match"]
+        assert match["kind"] == "soc_broad_group"
+        assert match["program_soc_codes"] == ["31-1121"]
+
+    def test_a_hybrid_match_says_it_is_a_hybrid(self) -> None:
+        match = self._payload("21-1011")["occupations"][0]["match"]
+        assert match["kind"] == "bls_hybrid_occupation"
+
+    def test_an_exact_match_is_labelled_exact_and_keeps_its_education(self) -> None:
+        occupation = self._payload("15-1252")["occupations"][0]
+        assert occupation["match"]["kind"] == MATCH_EXACT
+        assert occupation["match"]["entry_level_education_withheld"] is False
+        assert occupation["entry_level_education"] == "Bachelor's degree"
+
+    def test_a_masters_from_the_other_half_of_a_hybrid_is_not_shown(self) -> None:
+        """The whole reason this was not wired in sooner.
+
+        21-1018's "Master's degree" comes from its mental-health-counselor half. Attached to
+        a community-college substance-use-counseling certificate it tells someone their
+        credential does not qualify them for the job it does qualify them for.
+        """
+        occupation = self._payload("21-1011")["occupations"][0]
+        assert occupation["entry_level_education"] is None
+        assert occupation["match"]["entry_level_education_withheld"] is True
+
+    def test_a_bachelors_from_the_technologist_half_is_not_shown_to_a_technician(self) -> None:
+        occupation = self._payload("29-2012")["occupations"][0]
+        assert occupation["entry_level_education"] is None
+        assert occupation["match"]["entry_level_education_withheld"] is True
+
+    def test_education_is_withheld_even_where_the_aggregate_happens_to_agree(self) -> None:
+        # 31-1120's "High school diploma or equivalent" is very likely right for a home
+        # health aide certificate. Keeping it anyway would mean deciding case by case which
+        # aggregate's credential fits, which is the similarity judgement the mapping module
+        # refuses to make, in a place nobody could audit it.
+        occupation = self._payload("31-1121")["occupations"][0]
+        assert occupation["entry_level_education"] is None
+        assert occupation["match"]["entry_level_education_withheld"] is True
+
+    def test_the_other_figures_survive_the_aggregate_match(self) -> None:
+        # A median wage over a wider population is still an estimate of a population this
+        # trainee is in, and it is the only one California publishes for them.
+        occupation = self._payload("31-1121")["occupations"][0]
+        assert occupation["median_annual_wage"] == 41600.0
+        assert occupation["total_job_openings"] == 190.0
+        assert occupation["percent_change"] == 10.0
+        assert occupation["title"] == "Home Health and Personal Care Aides"
+
+    def test_a_missing_education_is_not_reported_as_withheld(self) -> None:
+        # Two absences that would otherwise render as the same null: EDD published no
+        # credential for 47-4090, so there was nothing for this pipeline to decline.
+        occupation = self._payload("47-4099")["occupations"][0]
+        assert occupation["entry_level_education"] is None
+        assert occupation["match"]["entry_level_education_withheld"] is False
+
+    def test_two_codes_collapsing_onto_one_aggregate_yield_one_row(self) -> None:
+        payload = self._payload("31-1121", "31-1122")
+        assert [o["soc_code"] for o in payload["occupations"]] == ["31-1120"]
+        assert payload["occupations"][0]["match"]["program_soc_codes"] == ["31-1121", "31-1122"]
+
+    def test_an_already_matched_program_keeps_its_exact_row_and_gains_the_aggregate(self) -> None:
+        # The 74-program case: the exact match was never at risk, and the added row is
+        # labelled so the page can tell the reader which is which.
+        payload = self._payload("15-1252", "29-2012")
+        assert [o["soc_code"] for o in payload["occupations"]] == ["15-1252", "29-2010"]
+        assert [o["match"]["kind"] for o in payload["occupations"]] == [
+            MATCH_EXACT,
+            "soc_broad_group",
+        ]
+        assert payload["occupations"][0]["entry_level_education"] == "Bachelor's degree"
+        assert payload["occupations"][1]["entry_level_education"] is None
+
+    def test_an_unresolvable_code_is_still_dropped_rather_than_guessed_at(self) -> None:
+        # 19-3094 Political Scientists: no published parent, and the residual sibling
+        # 19-3099 is by definition the social scientists who are not political scientists.
+        assert self._payload("19-3094")["occupations"] == []
+
+    def test_every_occupation_row_carries_a_match_block(self) -> None:
+        # A consumer must never have to guess, so the key is present on exact matches too.
+        payload = self._payload("15-1252", "21-1011", "47-4099")
+        for occupation in payload["occupations"]:
+            assert set(occupation["match"]) == {
+                "kind",
+                "program_soc_codes",
+                "entry_level_education_withheld",
+            }
+
+    def test_the_feed_order_is_preserved(self) -> None:
+        payload = self._payload("21-1011", "15-1252")
+        assert [o["soc_code"] for o in payload["occupations"]] == ["21-1018", "15-1252"]
+
+
+class TestMatchKindResolution:
+    """``match_occupations`` on its own, including cases the live snapshot does not have."""
+
+    def _published(self) -> dict:
+        return {"15-1252": {}, "31-1120": {}, "31-1121": {}, "21-1018": {}}
+
+    def test_a_code_published_under_its_own_name_is_exact_even_if_it_has_a_parent(self) -> None:
+        # 31-1121 is a member of 31-1120 in the table, but this snapshot publishes it
+        # directly, so resolving it to its parent would discard detail EDD does have.
+        matches = match_occupations(["31-1121"], self._published())
+        assert [(m.soc_code, m.kind) for m in matches] == [("31-1121", MATCH_EXACT)]
+
+    def test_an_exact_match_wins_over_an_aggregate_reaching_the_same_occupation(self) -> None:
+        # DOL naming the published code itself is a stronger claim than one derived here.
+        published = {"31-1120": {}, "15-1252": {}}
+        matches = match_occupations(["31-1122", "31-1120"], published)
+        assert len(matches) == 1
+        assert matches[0].kind == MATCH_EXACT
+        assert matches[0].program_soc_codes == ("31-1122", "31-1120")
+
+    def test_is_aggregate_is_the_complement_of_exact(self) -> None:
+        published = {"21-1018": {}, "15-1252": {}}
+        matches = match_occupations(["15-1252", "21-1014"], published)
+        assert [m.is_aggregate for m in matches] == [False, True]
+
+    def test_a_target_the_snapshot_does_not_publish_is_not_invented(self) -> None:
+        # The mapping table is checked against the live snapshot at call time, not trusted.
+        assert match_occupations(["21-1014"], {"15-1252": {}}) == []
+
+    def test_a_malformed_code_is_dropped_rather_than_raising(self) -> None:
+        matches = match_occupations(["not-a-soc", "15-1252"], self._published())
+        assert [m.soc_code for m in matches] == ["15-1252"]
+
+
+class TestAggregateMatchCoverage:
+    """The aggregate half of the join is published, not folded into the headline."""
+
+    def _payload(self, *kinds: tuple[str, bool]) -> dict:
+        return {
+            "occupations": [
+                {"match": {"kind": kind, "entry_level_education_withheld": withheld}}
+                for kind, withheld in kinds
+            ]
+        }
+
+    def test_counts_programs_rows_and_withheld_credentials(self) -> None:
+        report = aggregate_match_coverage(
+            [
+                self._payload((MATCH_EXACT, False)),
+                self._payload(("soc_broad_group", True)),
+                self._payload((MATCH_EXACT, False), ("bls_hybrid_occupation", True)),
+                self._payload(("soc_broad_group", False)),
+                self._payload(),
+            ]
+        )
+        assert report.programs == 3
+        assert report.occupation_matches == 3
+        assert report.programs_with_education_withheld == 2
+
+    def test_separates_programs_recovered_from_programs_that_merely_gained_a_row(self) -> None:
+        # Only the first would show no occupation at all without the aggregation.
+        report = aggregate_match_coverage(
+            [
+                self._payload(("soc_broad_group", True)),
+                self._payload((MATCH_EXACT, False), ("soc_broad_group", True)),
+            ]
+        )
+        assert report.programs == 2
+        assert report.recovered_programs == 1
+
+    def test_a_build_with_no_aggregate_matches_reports_zeros(self) -> None:
+        report = aggregate_match_coverage([self._payload((MATCH_EXACT, False))])
+        assert report.programs == 0
+        assert report.recovered_programs == 0
+        assert report.occupation_matches == 0
+        assert report.programs_with_education_withheld == 0
 
 
 class TestProjectionHelpers:
