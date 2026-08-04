@@ -466,7 +466,11 @@ body {
 
 .detail {
   padding-block: 1.5rem 4rem;
-  max-width: 52rem;
+  /* Centered rather than left-aligned in the wider shell. Left-aligned it stranded roughly a
+     third of a desktop viewport as empty space beside every page, which reads as a layout
+     that failed rather than as breathing room. */
+  max-width: 54rem;
+  margin-inline: auto;
 }
 
 .detail h1 {
@@ -1193,4 +1197,36 @@ td.num {
   padding: 0.875rem 1.125rem;
   font-size: 0.9375rem;
   max-width: var(--measure);
+}
+
+/* The three facts a reader came for, above everything that explains them. */
+.at-a-glance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2.5rem;
+  margin: 1.25rem 0 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--gray-20);
+  border-left: 4px solid var(--primary-60);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+.at-a-glance dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gray-90);
+  margin-bottom: 0.15rem;
+}
+
+.at-a-glance dd {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.at-a-glance dd .unreported {
+  font-size: 0.9375rem;
+  font-weight: 400;
 }

@@ -1400,6 +1400,50 @@ export default async function ProgramPage({
         translation giving out. The occupations index and the occupation page each carry the
         same admission about their own untranslated text, and this page carried none.
       */}
+      {/*
+        The four facts a reader came for, before any prose about any of them.
+        Measured before this existed: 900 pixels of desktop and 2.7 phone screens went by
+        carrying the program's name, two caveats and a residual occupation title, and not one
+        number. The narrative below is unchanged and still explains each of these properly —
+        this only stops the page making someone scroll to find out whether it is even
+        relevant to them. Every value routes through the same null handling as the detail
+        below it, so "not reported" still reads as not reported.
+      */}
+      <dl className="at-a-glance">
+        <div>
+          <dt>{t.cost}</dt>
+          <dd>
+            {cost.total_out_of_pocket === null ? (
+              <span className="unreported">{t.notReported}</span>
+            ) : cost.total_is_complete ? (
+              money(cost.total_out_of_pocket, lang)
+            ) : (
+              t.costAtLeast(money(cost.total_out_of_pocket, lang) ?? "")
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>{t.length}</dt>
+          <dd>
+            {length.weeks === null ? (
+              <span className="unreported">{t.notReported}</span>
+            ) : (
+              t.weeks(length.weeks)
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>{t.employmentRate}</dt>
+          <dd>
+            {outcomes.employment_rate_q2 === null || !attributable ? (
+              <span className="unreported">{t.notReported}</span>
+            ) : (
+              percent(outcomes.employment_rate_q2, lang)
+            )}
+          </dd>
+        </div>
+      </dl>
+
       <p className="compare-note">{t.programTextEnglishOnly}</p>
 
       {/*
