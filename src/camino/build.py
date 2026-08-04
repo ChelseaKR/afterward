@@ -224,9 +224,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     # than one. Reading only the first understated the programs training for declining work
     # by more than half (219 against 518), because the shrinking occupation is frequently
     # not the one listed first. Summarise across all of them.
-    changes = [
-        o["percent_change"] for o in occupations if o.get("percent_change") is not None
-    ]
+    changes = [o["percent_change"] for o in occupations if o.get("percent_change") is not None]
     wages = [
         o["median_annual_wage"] for o in occupations if o.get("median_annual_wage") is not None
     ]
