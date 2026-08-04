@@ -21,6 +21,7 @@ export interface Filters {
   onlyReported: boolean;
   outlook: Outlook;
   maxCost: number | null;
+  city: string | null;
   sort: Sort;
 }
 
@@ -29,8 +30,27 @@ export const DEFAULT_FILTERS: Filters = {
   onlyReported: false,
   outlook: "any",
   maxCost: null,
+  city: null,
   sort: "relevance",
 };
+
+/**
+ * Cities with at least one program, most programs first.
+ *
+ * Deliberately cities rather than invented "regions": the data carries a city per program
+ * and nothing that reliably rolls up to a labour market area, so grouping them would mean
+ * guessing which region a town belongs to and presenting the guess as fact.
+ */
+export function cities(programs: SearchEntry[]): { name: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const program of programs) {
+    const name = program.c?.trim();
+    if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
 
 export const isShrinking = (growth: number | null): boolean => growth !== null && growth < 0;
 
@@ -71,6 +91,7 @@ export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
   if (filters.outlook === "growing" && (entry.g === null || entry.g <= 0)) return false;
 
   if (filters.maxCost !== null && (entry.$ === null || entry.$ > filters.maxCost)) return false;
+  if (filters.city !== null && entry.c !== filters.city) return false;
   return true;
 }
 

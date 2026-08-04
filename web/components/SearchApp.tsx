@@ -5,7 +5,14 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import { dict, type Lang } from "@/lib/i18n";
 import { money, percent, signedPercent, tidyName } from "@/lib/format";
-import { isShrinking, runSearch, summarise, type Outlook, type Sort } from "@/lib/search";
+import {
+  cities,
+  isShrinking,
+  runSearch,
+  summarise,
+  type Outlook,
+  type Sort,
+} from "@/lib/search";
 import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
@@ -19,17 +26,19 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const [onlyReported, setOnlyReported] = useState(false);
   const [outlook, setOutlook] = useState<Outlook>("any");
   const [maxCost, setMaxCost] = useState<number | null>(null);
+  const [city, setCity] = useState<string | null>(null);
   const [sort, setSort] = useState<Sort>("relevance");
   const [limit, setLimit] = useState(PAGE_SIZE);
 
   const deferredQuery = useDeferredValue(query);
 
   const results = useMemo(
-    () => runSearch(programs, { query: deferredQuery, onlyReported, outlook, maxCost, sort }),
-    [programs, deferredQuery, onlyReported, outlook, maxCost, sort],
+    () => runSearch(programs, { query: deferredQuery, onlyReported, outlook, maxCost, city, sort }),
+    [programs, deferredQuery, onlyReported, outlook, maxCost, city, sort],
   );
 
   const stats = useMemo(() => summarise(programs), [programs]);
+  const cityOptions = useMemo(() => cities(programs), [programs]);
 
   // Comparison selection, kept as ids so it survives filtering: picking two programs and
   // then narrowing the search should not silently discard the choice.
@@ -59,6 +68,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     setOnlyReported(false);
     setOutlook("any");
     setMaxCost(null);
+    setCity(null);
     setSort("relevance");
     setLimit(PAGE_SIZE);
   }
@@ -102,6 +112,25 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             <option value="any">{t.outlookAny}</option>
             <option value="growing">{t.outlookGrowing}</option>
             <option value="shrinking">{t.outlookShrinking}</option>
+          </select>
+        </div>
+
+        <div className="field">
+          <label htmlFor="city">{t.filterCity}</label>
+          <select
+            id="city"
+            value={city ?? ""}
+            onChange={(e) => {
+              setCity(e.target.value === "" ? null : e.target.value);
+              setLimit(PAGE_SIZE);
+            }}
+          >
+            <option value="">{t.filterAnyCity}</option>
+            {cityOptions.map((option) => (
+              <option key={option.name} value={option.name}>
+                {option.name} ({option.count})
+              </option>
+            ))}
           </select>
         </div>
 

@@ -40,6 +40,8 @@ const en = {
   statReported: (n: number, total: number) =>
     `${fmt(n)} of ${fmt(total)} report what happened to their students`,
   showThese: "Show these",
+  filterCity: "City",
+  filterAnyCity: "Anywhere in California",
   filterMaxCost: "Maximum out-of-pocket cost",
   filterAnyCost: "Any cost",
   sortBy: "Sort by",
@@ -140,6 +142,8 @@ const es: Dictionary = {
   statReported: (n: number, total: number) =>
     `${fmt(n)} de ${fmt(total)} reportan qué pasó con sus estudiantes`,
   showThese: "Ver estos",
+  filterCity: "Ciudad",
+  filterAnyCity: "Cualquier lugar de California",
   filterMaxCost: "Costo máximo de su bolsillo",
   filterAnyCost: "Cualquier costo",
   sortBy: "Ordenar por",

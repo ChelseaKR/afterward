@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cities,
   DEFAULT_FILTERS,
   isShrinking,
   matchesFilters,
@@ -172,5 +173,39 @@ describe("isShrinking", () => {
     expect(isShrinking(null)).toBe(false);
     expect(isShrinking(0)).toBe(false);
     expect(isShrinking(-0.1)).toBe(true);
+  });
+});
+
+describe("cities", () => {
+  it("lists cities by program count, then alphabetically", () => {
+    const list = cities([
+      entry({ c: "Fresno" }),
+      entry({ c: "Bakersfield" }),
+      entry({ c: "Fresno" }),
+      entry({ c: "Anaheim" }),
+    ]);
+    expect(list).toEqual([
+      { name: "Fresno", count: 2 },
+      { name: "Anaheim", count: 1 },
+      { name: "Bakersfield", count: 1 },
+    ]);
+  });
+
+  it("ignores programs with no city rather than inventing one", () => {
+    const list = cities([entry({ c: null }), entry({ c: "   " }), entry({ c: "Fresno" })]);
+    expect(list).toEqual([{ name: "Fresno", count: 1 }]);
+  });
+});
+
+describe("city filter", () => {
+  it("matches exactly, so one city cannot stand in for another", () => {
+    const filters = { ...DEFAULT_FILTERS, city: "Fresno" };
+    expect(matchesFilters(entry({ c: "Fresno" }), filters)).toBe(true);
+    expect(matchesFilters(entry({ c: "Fresno County" }), filters)).toBe(false);
+    expect(matchesFilters(entry({ c: null }), filters)).toBe(false);
+  });
+
+  it("is inert when unset", () => {
+    expect(matchesFilters(entry({ c: null }), DEFAULT_FILTERS)).toBe(true);
   });
 });
