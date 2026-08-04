@@ -37,6 +37,17 @@ async function auditOnePage(file) {
   globalThis.NodeList = window.NodeList;
   globalThis.getComputedStyle = window.getComputedStyle.bind(window);
 
+  // Expand every disclosure before auditing.
+  //
+  // The filter panel ships collapsed so a phone reaches results sooner, and a closed
+  // <details> is hidden from the accessibility tree — so axe skips everything inside it.
+  // Left alone, this audit would have gone green on the filter controls by no longer
+  // looking at them, which is the most dangerous way for a gate to pass. Opening them
+  // audits the state a user actually operates the controls in.
+  for (const details of window.document.querySelectorAll("details")) {
+    details.open = true;
+  }
+
   const { default: axe } = await import("axe-core");
   const results = await axe.run(window.document, {
     resultTypes: ["violations", "incomplete"],

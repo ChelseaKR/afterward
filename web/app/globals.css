@@ -1230,3 +1230,65 @@ td.num {
   font-size: 0.9375rem;
   font-weight: 400;
 }
+
+/*
+  Filters as a disclosure: collapsed on a phone, always open on a desktop.
+
+  On a phone the panel put 2,262 pixels — five selects and twenty-six checkboxes — between
+  someone arriving and the first program. Collapsing it is not hiding the filters; it is
+  admitting that most arrivals want to see results and refine second.
+
+  The desktop reveal is gated on `@supports selector(::details-content)`. Without the gate, a
+  browser that lacks the pseudo-element would apply the `display: none` on the summary and
+  leave desktop users with a filter panel that is both closed and impossible to open. With it,
+  such a browser simply keeps the toggle and everything still works, one click worse.
+*/
+.filters-disclosure > summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background: var(--gray-20);
+  border: 1px solid var(--gray-30);
+  border-radius: var(--border-radius-sm);
+  list-style-position: inside;
+}
+.filters-disclosure > summary:hover {
+  background: var(--gray-30);
+}
+.filters-disclosure > summary:focus-visible {
+  outline: 2px solid var(--primary-60);
+  outline-offset: 2px;
+}
+
+@media (min-width: 62rem) {
+  @supports selector(::details-content) {
+    .filters-disclosure > summary {
+      display: none;
+    }
+    .filters-disclosure::details-content {
+      content-visibility: visible;
+      block-size: auto;
+    }
+  }
+}
+
+.query-form {
+  margin-bottom: 1rem;
+}
+.query-form .field {
+  margin: 0;
+}
+
+/*
+  One grid child, not three.
+
+  `.search-layout` is a two-column grid on a desktop, and its column assignment is positional.
+  Adding the query form and the filter disclosure as separate children silently pushed the
+  results into a third implicit row: the sidebar and the results stopped being side by side and
+  desktop scrolling more than doubled. Grouping the controls restores the two-child contract.
+*/
+.search-controls {
+  align-self: start;
+  min-width: 0;
+}

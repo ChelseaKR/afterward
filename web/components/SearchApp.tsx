@@ -548,10 +548,29 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         </p>
       </div>
 
+      {/*
+        Collapsed on a phone, always open on a desktop.
+
+        Measured before this: 2,262 pixels — 2.7 phone screens — of masthead, intro and
+        filter controls before the first result. Someone arriving from a search engine met
+        five selects and twenty-six checkboxes before a single program. The panel is not
+        wrong, it is just not what they came for.
+
+        A <details> rather than CSS `order`, because reordering with CSS separates what a
+        sighted reader sees from what a keyboard reaches, and the results-before-filters
+        arrangement would then be true only visually. Here the document order never changes;
+        the desktop rule below simply always reveals the content and hides the toggle.
+      */}
+      <div className="search-controls">
+      {/*
+        The query box sits outside the disclosure on purpose. Collapsing the filter panel
+        with the search field still inside it hid the one control every visitor needs, which
+        is a worse failure than the scrolling it was meant to fix.
+      */}
       <form
-        className="filters"
+        className="query-form"
         role="search"
-        aria-label={t.filters}
+        aria-label={t.searchLabel}
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="field">
@@ -567,7 +586,15 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             }}
           />
         </div>
+      </form>
 
+      <details className="filters-disclosure">
+        <summary>{t.filters}</summary>
+        <form
+          className="filters"
+          aria-label={t.filters}
+          onSubmit={(e) => e.preventDefault()}
+        >
         {/*
           The checkbox names its own consequence and the note underneath refuses the
           inference it invites. "Only programs with reported outcomes" was true and unusable:
@@ -723,6 +750,8 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           {t.clearFilters}
         </button>
       </form>
+      </details>
+      </div>
 
       <section aria-label={copy.resultsRegion}>
         {/*
