@@ -22,5 +22,19 @@
   "total_exited": 664260.0,
   "total_completed": 469808.0
  },
+ "peer_medians": {
+  "completion_rate": {
+   "median": 0.86,
+   "reporting": 2047
+  },
+  "employment_rate_q2": {
+   "median": 0.69,
+   "reporting": 1766
+  },
+  "median_earnings": {
+   "median": 10787.21,
+   "reporting": 1432
+  }
+ },
  "is_fixture": true
 }

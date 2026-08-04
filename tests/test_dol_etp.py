@@ -11,6 +11,7 @@ import pytest
 from camino.sources.dol_etp import (
     Program,
     clean_measure,
+    clean_url,
     parse_program,
     parse_state_benchmark,
 )
@@ -158,3 +159,40 @@ class TestStateBenchmark:
         assert payload["employment_rate_q2"] == 0.27
         assert payload["median_earnings"] == 16978.95
         assert payload["state"] == "CA"
+
+
+class TestCleanUrl:
+    """`field_program_url` is free text from third parties and lands in an href."""
+
+    def test_keeps_absolute_http_urls(self) -> None:
+        assert clean_url("https://example.org/program") == "https://example.org/program"
+        assert clean_url("http://example.org") == "http://example.org"
+
+    def test_repairs_a_bare_domain(self) -> None:
+        # Unambiguous, and discarding it would lose a working provider link.
+        assert clean_url("www.amanet.org") == "https://www.amanet.org"
+        assert clean_url("www.example.com/path/") == "https://www.example.com/path/"
+
+    def test_repairs_a_protocol_relative_url(self) -> None:
+        assert clean_url("//example.org/x") == "https://example.org/x"
+
+    def test_drops_text_that_is_not_a_url(self) -> None:
+        # Five California records hold a course title where a URL belongs. Rendered raw,
+        # these made "Provider's website" navigate to a path inside this site.
+        assert clean_url("Data Science Career Track") is None
+        assert clean_url("Supply Management") is None
+
+    def test_drops_dangerous_schemes(self) -> None:
+        # React does not block javascript: in an href, so this is a script-injection sink.
+        for hostile in (
+            "javascript:alert(1)",
+            "JavaScript:alert(1)",
+            "data:text/html;base64,PHNjcmlwdD4=",
+            "vbscript:msgbox(1)",
+            "file:///etc/passwd",
+        ):
+            assert clean_url(hostile) is None, hostile
+
+    def test_drops_empty_and_null(self) -> None:
+        assert clean_url(None) is None
+        assert clean_url("   ") is None

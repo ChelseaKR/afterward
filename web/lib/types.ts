@@ -120,9 +120,16 @@ export interface StateBenchmark {
   total_completed: number | null;
 }
 
+export interface PeerMedian {
+  median: number | null;
+  reporting: number;
+}
+
 export interface Coverage {
   snapshot_date: string;
   state_benchmark: StateBenchmark | null;
+  /** Median of each measure across CA programs that reported it — the like-for-like peer. */
+  peer_medians: Record<"completion_rate" | "employment_rate_q2" | "median_earnings", PeerMedian>;
   total_programs: number;
   programs_with_any_outcome: number;
   programs_with_median_earnings: number;

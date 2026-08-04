@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from camino.build import index_occupations, program_payload
+import pytest
+
+from camino.build import index_occupations, peer_medians, program_payload
 from camino.sources.dol_etp import parse_program
 from camino.sources.edd_lmi import parse_projections
 
@@ -104,3 +106,48 @@ State,California,2024-2034,4,15-1252,Software Developers,80,96,16,20.0,4,6,500,6
     def test_never_relates_an_occupation_to_itself(self) -> None:
         for soc_code, occupation in self._occupations().items():
             assert soc_code not in {r["soc_code"] for r in occupation["related"]}
+
+
+class TestPeerMedians:
+    """The benchmark must be the same statistic as the thing it is compared against."""
+
+    def _payloads(self, *values: float | None) -> list[dict]:
+        return [
+            {
+                "outcomes": {
+                    "completion_rate": v,
+                    "employment_rate_q2": v,
+                    "median_earnings": v,
+                }
+            }
+            for v in values
+        ]
+
+    def test_median_of_an_odd_count(self) -> None:
+        result = peer_medians(self._payloads(0.1, 0.9, 0.5))
+        assert result["completion_rate"]["median"] == 0.5
+
+    def test_median_of_an_even_count_averages_the_middle_two(self) -> None:
+        result = peer_medians(self._payloads(0.2, 0.4, 0.6, 0.8))
+        assert result["completion_rate"]["median"] == 0.5
+
+    def test_unreported_values_are_excluded_not_counted_as_zero(self) -> None:
+        # Treating nulls as 0 would drag every median toward the floor and make most
+        # programs look above average for no reason.
+        result = peer_medians(self._payloads(0.8, None, 0.9, None))
+        assert result["completion_rate"]["median"] == pytest.approx(0.85)
+        assert result["completion_rate"]["reporting"] == 2
+
+    def test_reports_how_many_programs_the_median_rests_on(self) -> None:
+        result = peer_medians(self._payloads(0.5, 0.6, 0.7))
+        assert result["employment_rate_q2"]["reporting"] == 3
+
+    def test_no_reporters_gives_no_median_rather_than_zero(self) -> None:
+        result = peer_medians(self._payloads(None, None))
+        assert result["median_earnings"]["median"] is None
+        assert result["median_earnings"]["reporting"] == 0
+
+    def test_a_reported_zero_counts_toward_the_median(self) -> None:
+        result = peer_medians(self._payloads(0.0, 0.5, 1.0))
+        assert result["completion_rate"]["median"] == 0.5
+        assert result["completion_rate"]["reporting"] == 3

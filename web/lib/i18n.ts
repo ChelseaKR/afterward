@@ -70,7 +70,9 @@ const en = {
   outcomes: "What happened to people who took this",
   completionRate: "Finished the program",
   employmentRate: "Working 6 months later",
-  medianEarnings: "Typical earnings after",
+  medianEarnings: "Earnings in one quarter after",
+  medianEarningsNote:
+    "A single quarter of earnings, roughly three months, not a yearly salary. Do not compare it directly with the yearly pay shown for the occupation.",
   peopleServed: "People enrolled",
   peopleExited: "People who left or finished",
   outcomesUnreported: "No outcomes reported for this program",
@@ -107,11 +109,12 @@ const en = {
   compareNote:
     "A highlighted cell is the strongest reported figure in that row. Rows where fewer than two programs reported anything are not marked, because being the only one to file a number is not the same as being the best.",
 
-  vsState: "California average",
-  vsStateAbove: "Above the California average",
-  vsStateBelow: "Below the California average",
+  vsState: "Typical California program",
+  vsStateAbove: "Better than typical",
+  vsStateBelow: "Worse than typical",
+  ofReporting: (n: number) => `of ${fmt(n)} reporting`,
   benchmarkNote:
-    "Compared with every California program that reported this measure. The statewide average is low, so beating it is a floor, not a guarantee.",
+    "Compared with the median California program that reported this same measure. Programs reporting nothing are not in the comparison, so this is a comparison among those willing to publish.",
 
   aboutData: "Where this comes from",
   snapshot: (d: string) => `Data snapshot: ${d}`,
@@ -188,7 +191,9 @@ const es: Dictionary = {
   outcomes: "Qué pasó con quienes tomaron este programa",
   completionRate: "Terminaron el programa",
   employmentRate: "Trabajando 6 meses después",
-  medianEarnings: "Ingresos típicos después",
+  medianEarnings: "Ingresos en un trimestre después",
+  medianEarningsNote:
+    "Los ingresos de un solo trimestre, unos tres meses, no un salario anual. No los compare directamente con el pago anual de la ocupación.",
   peopleServed: "Personas inscritas",
   peopleExited: "Personas que salieron o terminaron",
   outcomesUnreported: "Este programa no reportó resultados",
@@ -225,11 +230,12 @@ const es: Dictionary = {
   compareNote:
     "La celda resaltada es la cifra reportada más fuerte de esa fila. Las filas donde menos de dos programas reportaron algo no se marcan, porque ser el único que reportó un número no es lo mismo que ser el mejor.",
 
-  vsState: "Promedio de California",
-  vsStateAbove: "Por encima del promedio de California",
-  vsStateBelow: "Por debajo del promedio de California",
+  vsState: "Programa típico de California",
+  vsStateAbove: "Mejor que lo típico",
+  vsStateBelow: "Peor que lo típico",
+  ofReporting: (n: number) => `de ${fmt(n)} que reportan`,
   benchmarkNote:
-    "Comparado con todos los programas de California que reportaron esta medida. El promedio estatal es bajo, así que superarlo es un mínimo, no una garantía.",
+    "Comparado con el programa típico de California que reportó esta misma medida. Los programas que no reportan nada no entran en la comparación.",
 
   aboutData: "De dónde vienen estos datos",
   snapshot: (d: string) => `Datos actualizados: ${d}`,

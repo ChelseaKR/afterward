@@ -51,6 +51,46 @@ class CoverageReport:
         return round(100.0 * numerator / self.total_programs, 1) if self.total_programs else 0.0
 
 
+PEER_MEASURES = ("completion_rate", "employment_rate_q2", "median_earnings")
+
+
+def peer_medians(payloads: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Median of each outcome across the California programs that reported it.
+
+    This replaced a comparison against DOL's published statewide aggregate, which turned out
+    not to be the same statistic: DOL reports 27% employed at two quarters, while the median
+    reporting California program reports 69%. Comparing one to the other made 91% of programs
+    read as "above the California average", which flatters nearly everyone and tells a reader
+    nothing.
+
+    A median over the identical population, measured the identical way, supports the claim
+    the interface actually wants to make: is this program better or worse than the typical
+    California program that reported the same number? The count is carried alongside so the
+    page can say how many programs the comparison rests on.
+    """
+    summary: dict[str, dict[str, Any]] = {}
+    for measure in PEER_MEASURES:
+        values = sorted(
+            payload["outcomes"][measure]
+            for payload in payloads
+            if payload["outcomes"].get(measure) is not None
+        )
+        summary[measure] = {
+            "median": _median(values),
+            "reporting": len(values),
+        }
+    return summary
+
+
+def _median(values: list[float]) -> float | None:
+    if not values:
+        return None
+    middle = len(values) // 2
+    if len(values) % 2:
+        return values[middle]
+    return (values[middle - 1] + values[middle]) / 2
+
+
 def index_occupations(
     projections: list[edd_lmi.OccupationProjection],
 ) -> dict[str, dict[str, Any]]:
@@ -398,7 +438,11 @@ def build(
             | {
                 "outcome_coverage_pct": report.outcome_coverage_pct,
                 "occupation_match_pct": report.occupation_match_pct,
+                # DOL's own statewide aggregate. Kept as published context, but NOT used
+                # for per-program comparison: it is computed on a different basis (27%
+                # employed against a 69% median among reporting programs).
                 "state_benchmark": benchmark.as_dict() if benchmark else None,
+                "peer_medians": peer_medians(payloads),
             },
             indent=1,
         ),

@@ -20,6 +20,7 @@ how they identify themselves or how hard they push a public endpoint.
 from __future__ import annotations
 
 import json
+import re
 import time
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
@@ -55,6 +56,39 @@ def clean_measure(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return None if numeric == SUPPRESSED else numeric
+
+
+SAFE_URL_SCHEMES = ("http://", "https://")
+_BARE_DOMAIN = re.compile(r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9-]+)+(/.*)?$", re.I)
+
+
+def clean_url(value: Any) -> str | None:
+    """Return an absolute http(s) URL, or None.
+
+    The feed's ``field_program_url`` is free text and providers treat it as such: some file a
+    bare domain, and five California records hold a course title where a URL belongs. Those
+    were rendered straight into an ``href``, so "Provider's website" navigated to a relative
+    path inside this site.
+
+    Anything that is not http(s) is dropped rather than passed through. React does not block
+    ``javascript:`` in an ``href``, so an unvalidated third-party string in that position is a
+    script-injection sink waiting for one bad row upstream. Nothing in the current feed
+    exploits it, which is not a reason to keep the hole open.
+
+    A bare domain is repaired to https rather than discarded: it is unambiguous, and losing a
+    working provider link helps nobody.
+    """
+    text = clean_text(value)
+    if not text:
+        return None
+    lowered = text.lower()
+    if lowered.startswith(SAFE_URL_SCHEMES):
+        return text
+    if lowered.startswith("//"):
+        return f"https:{text}"
+    if " " not in text and _BARE_DOMAIN.match(text):
+        return f"https://{text}"
+    return None
 
 
 def clean_text(value: Any) -> str | None:
@@ -152,7 +186,7 @@ def parse_program(hit: dict[str, Any]) -> Program:
         program_name=clean_text(source.get("field_program_name")),
         description=clean_text(source.get("field_program_description")),
         program_format=clean_text(source.get("field_program_format")),
-        program_url=clean_text(source.get("field_program_url")),
+        program_url=clean_url(source.get("field_program_url")),
         cip_code=clean_text(source.get("field_cip_code")),
         soc_codes=_soc_codes(source),
         city=clean_text(source.get("field_city")),

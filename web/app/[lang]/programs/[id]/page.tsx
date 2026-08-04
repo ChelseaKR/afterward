@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Measure } from "@/components/Measure";
 import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
-import { LANGUAGES, dict, isLang } from "@/lib/i18n";
+import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
 
@@ -31,13 +31,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
  */
 function compare(
   programValue: number | null,
-  stateValue: number | null | undefined,
+  peer: { median: number | null; reporting: number } | undefined,
   format: (value: number) => string | null,
+  lang: Lang,
 ): { formatted: string; programBeatsState: boolean | null } | undefined {
-  if (programValue === null || stateValue === null || stateValue === undefined) return undefined;
-  const formatted = format(stateValue);
+  if (programValue === null || !peer || peer.median === null) return undefined;
+  const formatted = format(peer.median);
   if (formatted === null) return undefined;
-  return { formatted, programBeatsState: programValue > stateValue };
+  return {
+    formatted: `${formatted} ${dict(lang).ofReporting(peer.reporting)}`,
+    // Equal to the median is neither better nor worse, so it gets no verdict.
+    programBeatsState: programValue === peer.median ? null : programValue > peer.median,
+  };
 }
 
 export default async function ProgramPage({
@@ -52,7 +57,7 @@ export default async function ProgramPage({
   if (!program) notFound();
 
   const t = dict(lang);
-  const state = getCoverage().state_benchmark;
+  const peers = getCoverage().peer_medians;
   const { outcomes, cost, length, location } = program;
   // Every occupation this program feeds. Showing only the first named the wrong job on
   // hundreds of pages and hid the shrinking one whenever it was not listed first.
@@ -118,25 +123,20 @@ export default async function ProgramPage({
               value={percent(outcomes.completion_rate, lang)}
               note={outcomes.total_exited !== null ? t.basedOn(outcomes.total_exited) : undefined}
               lang={lang}
-              benchmark={compare(outcomes.completion_rate, state?.completion_rate, (v) =>
-                percent(v, lang),
-              )}
+              benchmark={compare(outcomes.completion_rate, peers?.completion_rate, (v) => percent(v, lang), lang)}
             />
             <Measure
               label={t.employmentRate}
               value={percent(outcomes.employment_rate_q2, lang)}
               lang={lang}
-              benchmark={compare(outcomes.employment_rate_q2, state?.employment_rate_q2, (v) =>
-                percent(v, lang),
-              )}
+              benchmark={compare(outcomes.employment_rate_q2, peers?.employment_rate_q2, (v) => percent(v, lang), lang)}
             />
             <Measure
               label={t.medianEarnings}
               value={money(outcomes.median_earnings, lang)}
+              note={t.medianEarningsNote}
               lang={lang}
-              benchmark={compare(outcomes.median_earnings, state?.median_earnings, (v) =>
-                money(v, lang),
-              )}
+              benchmark={compare(outcomes.median_earnings, peers?.median_earnings, (v) => money(v, lang), lang)}
             />
           </dl>
         </>
