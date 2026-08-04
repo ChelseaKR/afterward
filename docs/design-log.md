@@ -165,6 +165,48 @@ builds are marked `is_fixture: true` so nobody mistakes 60 rows for California's
 The scheduled freshness job still hits the live sources and is still allowed to fail. That
 is now its only purpose: telling us when upstream changed, without blocking anything.
 
+---
+
+## 2026-08-04 (later still) — What an adversarial review found
+
+Two independent reviews were run against the repository and the data. They converged on the
+same defects, and the most important one made the project's headline claim wrong.
+
+**The shrinking-jobs number was 219. It should have been 518.** A program can feed up to
+three occupations, and 1,588 of California's 3,266 feed more than one — but every surface
+read only `occupations[0]`. The shrinking occupation is frequently not the one listed first.
+The same bug named the wrong job on hundreds of detail pages: an automotive program showed an
+electrical installer's wage because that SOC happened to sort first. Programs now summarise
+across every occupation they feed, taking the weakest outlook, and detail pages list all of
+them.
+
+**About 94 statistical aggregates were published as though they were jobs.**
+`is_detailed_occupation` guessed from the code shape and rejected only major groups
+(`XX-0000`); minor groups end `-1000`, `-2000` and slipped through. EDD publishes its own
+hierarchy level, and the parser had been reading it into `soc_level` and never using it — the
+correct filter was sitting three lines above the broken one. 764 "occupations" became 670 real
+ones. This had also poisoned the related-work lists, where aggregates won on openings by
+construction; one occupation page offered, as related work, the category containing itself.
+
+**Thirteen occupations rendered "$0 a year".** EDD writes 0 where it publishes no wage,
+typically for irregular or hourly-only work. Chemical Engineers do not earn nothing. This was
+the suppressed-versus-zero failure arriving by a third route, through data this project had
+treated as clean.
+
+**Total cost summed a suppressed component as zero** — the invariant this codebase states in
+its own docstrings, violated inside a sum helper, and locked in by a test asserting the wrong
+behaviour. Costs now carry a completeness flag and render as "At least $X".
+
+**The site root was an error shell.** `redirect()` under `output: "export"` emits no redirect
+at all: an empty body with no `lang` attribute. Visitors without JavaScript got a blank page
+at the most-linked URL. The accessibility audit had not been checking the root, which is
+precisely why CI called it clean. It checks it now.
+
+The lesson worth keeping: every one of these passed lint, types, 75 tests, and a clean axe
+run. Gates catch what they were built to catch. Two of these were found by reading the data
+rather than the code, and the null-versus-zero rule turned out to have been broken in three
+places nobody had thought to look.
+
 ### Still open
 
 - Does California's own ETPL list programs the federal file omits? **Still unresolved, and

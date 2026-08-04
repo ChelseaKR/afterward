@@ -23,6 +23,16 @@ All notable changes to this project are documented here. The format follows
   government endpoint being reachable.
 - Mechanical provenance check enforcing this project's clean-room constraint.
 
+### Fixed
+
+- Programs summarise across every occupation they feed, not just the first. The count of
+  programs training for declining occupations was understated by more than half (219 against
+  518), and hundreds of detail pages named the wrong job.
+- Statistical aggregates are no longer published as occupations (764 → 670 real ones).
+- Wages of exactly zero are treated as unpublished rather than rendered as "$0 a year".
+- Partial costs render as "At least $X" instead of presenting a floor as the price.
+- The site root is a real language chooser rather than an error shell with no `lang`.
+
 ### Known limitations
 
 - Occupation titles and program descriptions render in English on Spanish pages. The
@@ -32,3 +42,9 @@ All notable changes to this project are documented here. The format follows
   layout engine.
 - Whether California's own ETPL lists programs the federal file omits is unresolved; the
   state publishes no bulk export.
+- `median_earnings` is a quarterly WIOA measure displayed near annual occupation wages
+  without a period label, which invites a reader to compare two different things.
+- The statewide benchmark is not a like-for-like comparison: 91% of programs read as "above
+  the California average" on employment, which suggests the statewide figure is computed
+  differently from the per-program one.
+- `program_url` is rendered without scheme validation; eight values are not absolute URLs.
