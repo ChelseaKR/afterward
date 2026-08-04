@@ -19,7 +19,7 @@ point the subdomain at it. Nobody reaches a half-built site at the real address.
 aws cloudformation create-stack \
   --stack-name camino-static-site --region us-east-1 \
   --template-body file://infra/aws-static-site.yml \
-  --capabilities CAPABILITY_IAM \
+  --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=PublishDns,ParameterValue=false
 
 # Certificate validation is DNS-based against the hosted zone and takes a few minutes.
@@ -46,7 +46,7 @@ aws s3 sync out/_next/static/ s3://camino.chelseakr.com/_next/static/ --delete \
 aws cloudformation update-stack \
   --stack-name camino-static-site --region us-east-1 \
   --template-body file://infra/aws-static-site.yml \
-  --capabilities CAPABILITY_IAM \
+  --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=PublishDns,ParameterValue=true
 ```
 
