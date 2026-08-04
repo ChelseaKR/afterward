@@ -6,6 +6,7 @@ import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang } from "@/lib/i18n";
 import { translateTerm } from "@/lib/vocabulary";
+import { slugify } from "@/lib/providers";
 
 export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allProgramIds().map((id) => ({ lang, id })));
@@ -65,7 +66,11 @@ export default async function ProgramPage({
 
       <h1>{program.program_name}</h1>
       <p style={{ color: "var(--gray-90)", fontSize: "1.0625rem" }}>
-        {tidyName(program.provider_name)}
+        {program.provider_name ? (
+          <Link href={`/${lang}/providers/${slugify(program.provider_name)}/`}>
+            {tidyName(program.provider_name)}
+          </Link>
+        ) : null}
         {location.city ? ` · ${location.city}, CA` : ""}
       </p>
 

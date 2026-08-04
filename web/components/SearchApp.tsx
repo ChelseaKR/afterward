@@ -16,6 +16,7 @@ import {
 import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
+import { slugify } from "@/lib/providers";
 
 const COST_CAPS = [2000, 5000, 10000, 20000];
 const PAGE_SIZE = 25;
@@ -282,7 +283,9 @@ function ResultCard({
         </label>
       </div>
       <p className="card-provider">
-        {tidyName(entry.p)}
+        {entry.p ? (
+          <Link href={`/${lang}/providers/${slugify(entry.p)}/`}>{tidyName(entry.p)}</Link>
+        ) : null}
         {entry.c ? ` · ${entry.c}` : ""}
       </p>
 
