@@ -102,6 +102,30 @@ describe("groupByProvider", () => {
     const slugs = providers.map((p) => p.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
   });
+
+  it("reuses the roster it already built for the same programs", () => {
+    const programs = [entry({ i: "a" })];
+    expect(groupByProvider(programs)).toBe(groupByProvider(programs));
+  });
+
+  it("regroups when handed a different array, so new data is never stale", () => {
+    const first = groupByProvider([entry({ i: "a", p: "Alpha College" })]);
+    const second = groupByProvider([entry({ i: "b", p: "Beta College" })]);
+    expect(first).not.toBe(second);
+    expect(second.map((p) => p.name)).toEqual(["Beta College"]);
+  });
+
+  it("freezes what it returns, since pages share it", () => {
+    const providers = groupByProvider([entry({ i: "a" })]);
+    const provider = providers[0];
+    expect(Object.isFrozen(providers)).toBe(true);
+    expect(Object.isFrozen(provider)).toBe(true);
+    expect(Object.isFrozen(provider?.programs)).toBe(true);
+    expect(Object.isFrozen(provider?.cities)).toBe(true);
+    // A page that wants a different order or an extra row has to copy first, which is what
+    // the pages do. Mutating the shared roster in place fails loudly instead.
+    expect(() => provider?.programs.push(entry({ i: "z" }))).toThrow(TypeError);
+  });
 });
 
 describe("findProvider", () => {
@@ -112,5 +136,10 @@ describe("findProvider", () => {
 
   it("returns null for an unknown slug", () => {
     expect(findProvider([entry()], "no-such-school")).toBeNull();
+  });
+
+  it("returns the same provider object the grouping returned", () => {
+    const programs = [entry()];
+    expect(findProvider(programs, "fresno-city-college")).toBe(groupByProvider(programs)[0]);
   });
 });
