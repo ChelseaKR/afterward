@@ -22,6 +22,15 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
  * Per-language, because the notice is only useful in a language its reader speaks. Built
  * from the existing dictionary, so there is nothing here to translate separately and
  * nothing that can drift out of step with the page it describes.
+ *
+ * Deliberately NO `alternates` and no `openGraph.url` here. Next merges layout metadata into
+ * every descendant that does not override the same key, and a page-level `generateMetadata`
+ * that sets only title and description inherits the rest — so a canonical of `/en/` declared
+ * once here became a canonical of `/en/` on all ~9,000 pages, telling search engines that
+ * every program, provider and occupation page is a duplicate of the home page. For a site
+ * whose whole purpose is being findable when someone searches a provider's name, that is the
+ * most expensive line of code it could contain. A per-URL canonical belongs in each page's
+ * own metadata or nowhere; absent, engines self-canonicalise, which is correct here.
  */
 export async function generateMetadata({
   params,
@@ -38,19 +47,12 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: {
-      canonical: SITE_URL ? `${SITE_URL}/${lang}/` : `/${lang}/`,
-      languages: Object.fromEntries(
-        LANGUAGES.map((other) => [other, SITE_URL ? `${SITE_URL}/${other}/` : `/${other}/`]),
-      ),
-    },
     openGraph: {
       type: "website",
       siteName: t.siteName,
       locale: lang === "es" ? "es_US" : "en_US",
       title,
       description,
-      ...(SITE_URL ? { url: `${SITE_URL}/${lang}/` } : {}),
     },
     // Summary rather than a large image card: there is no image, and the large variant
     // renders as an empty banner above the text when none is supplied.
