@@ -226,11 +226,16 @@ function compare(
   peer: { median: number | null; reporting: number } | undefined,
   format: (value: number) => string | null,
   lang: Lang,
-): { formatted: string; programBeatsState: boolean | null } | undefined {
+  ownCohort: boolean,
+): { formatted: string; programBeatsState: boolean | null; ownCohort: boolean } | undefined {
   if (programValue === null || !peer || peer.median === null) return undefined;
   const formatted = format(peer.median);
   if (formatted === null) return undefined;
   return {
+    // A program whose figures describe its whole college has nothing to compare. Inviting
+    // the comparison is itself the assessment, so the median line is withheld rather than
+    // shown beside a number that is not this program's.
+    ownCohort,
     formatted: `${formatted} ${dict(lang).ofReporting(peer.reporting)}`,
     // Equal to the median is neither better nor worse, so it gets no verdict.
     programBeatsState: programValue === peer.median ? null : programValue > peer.median,
@@ -252,6 +257,8 @@ export default async function ProgramPage({
   const region = REGION_COPY[lang];
   const peers = getCoverage().peer_medians;
   const { outcomes, cost, length, location } = program;
+  // False when the filing describes the provider's whole institution rather than this program.
+  const attributable = outcomes.cohort.attributable;
   // Every occupation this program feeds. Showing only the first named the wrong job on
   // hundreds of pages and hid the shrinking one whenever it was not listed first.
   const occupations = program.occupations;
@@ -350,20 +357,20 @@ export default async function ProgramPage({
               value={percent(outcomes.completion_rate, lang)}
               note={outcomes.total_exited !== null ? t.basedOn(outcomes.total_exited) : undefined}
               lang={lang}
-              benchmark={compare(outcomes.completion_rate, peers?.completion_rate, (v) => percent(v, lang), lang)}
+              benchmark={compare(outcomes.completion_rate, peers?.completion_rate, (v) => percent(v, lang), lang, attributable)}
             />
             <Measure
               label={t.employmentRate}
               value={percent(outcomes.employment_rate_q2, lang)}
               lang={lang}
-              benchmark={compare(outcomes.employment_rate_q2, peers?.employment_rate_q2, (v) => percent(v, lang), lang)}
+              benchmark={compare(outcomes.employment_rate_q2, peers?.employment_rate_q2, (v) => percent(v, lang), lang, attributable)}
             />
             <Measure
               label={t.medianEarnings}
               value={money(outcomes.median_earnings, lang)}
               note={t.medianEarningsNote}
               lang={lang}
-              benchmark={compare(outcomes.median_earnings, peers?.median_earnings, (v) => money(v, lang), lang)}
+              benchmark={compare(outcomes.median_earnings, peers?.median_earnings, (v) => money(v, lang), lang, attributable)}
             />
           </dl>
         </>

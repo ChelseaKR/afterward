@@ -136,6 +136,8 @@ areaNote: (unplaced: number, total: number) =>
     statUnplaced: (n: number, total: number) =>
       `${fmt(n)} of ${fmt(total)} are in cities California places in no region`,
 
+  onetCredit:
+    "This site incorporates information from O*NET Web Services by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). O*NET\u00ae is a trademark of USDOL/ETA.",
   aboutData: "Where this comes from",
   snapshot: (d: string) => `Data snapshot: ${d}`,
   viewProgram: "Program details",
@@ -350,7 +352,7 @@ areaNote: (unplaced: number, total: number) =>
   aboutComparisonsBody:
     "A rate on its own is unreadable: nobody knows whether 45% employed is good. So where a program reports a measure, it is shown against the median California program that reported the same measure. Programs that reported nothing are not in that median, which makes it a comparison among those willing to publish rather than a comparison against the state as a whole.",
   aboutComparisonsSecond:
-    "“Better than typical” means one reported number is above that median. It is not a judgement of teaching, of a provider, or of whether a program is right for you, and it takes no account of who enrolled, where, or in what year. Where two programs are placed side by side, the marked cell is simply the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best.",
+    "This site once labelled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is simply the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best.",
   aboutComparisonsThird:
     "No comparison is ever built out of a blank. A program that reported nothing is never called below average, because there is nothing to compare and saying so would be an accusation rather than a fact.",
 
@@ -522,6 +524,8 @@ areaNote: (unplaced, total) =>
     statUnplaced: (n, total) =>
       `${fmt(n)} de ${fmt(total)} están en ciudades que California no ubica en ninguna región`,
 
+  onetCredit:
+    "Este sitio incorpora información de O*NET Web Services del Departamento de Trabajo de Estados Unidos, Administración de Empleo y Capacitación (USDOL/ETA). O*NET\u00ae es una marca registrada de USDOL/ETA.",
   aboutData: "De dónde vienen estos datos",
   snapshot: (d: string) => `Datos actualizados: ${d}`,
   viewProgram: "Detalles del programa",

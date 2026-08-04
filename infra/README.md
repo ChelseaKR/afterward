@@ -119,9 +119,8 @@ Two things measured and deliberately left alone:
 
 - **`data/**` (32.9 MiB, 3,940 objects).** Only `coverage.json` is used — the smoke test in
   the table above fetches it to prove the live site is serving the snapshot just uploaded.
-  Nothing on the site loads any of the rest: the search index is baked into the page at build
-  time
-  and `web/lib/data.ts` reads `public/data` only during the export. But those URLs answer
+  The comparison panel fetches `/data/programs/<id>.json` when a reader opens it, so those
+objects are load-bearing and must not be pruned from the bucket.ts` reads `public/data` only during the export. But those URLs answer
   200 today, and `/data/coverage.json` shows the prefix is published on purpose, so dropping
   the others is a decision about a public surface rather than a size fix. Worth making
   deliberately; not worth making silently.

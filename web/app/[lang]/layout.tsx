@@ -236,6 +236,20 @@ export default async function LangLayout({
               California Employment Development Department, Long-Term Occupational Employment
               Projections.
             </p>
+            {/*
+              Required by the O*NET Web Services Data License: any product using the
+              Services must credit and link to O*NET. This is owed for the skill ratings,
+              descriptions and related occupations the site publishes, which are O*NET
+              content. It is not optional decoration — do not remove it while any
+              O*NET-derived field is displayed.
+            */}
+            <p>
+              {t.onetCredit}{" "}
+              <a href="https://services.onetcenter.org/" rel="noopener noreferrer">
+                O*NET Web Services
+              </a>
+            </p>
+
             <p>{t.notAffiliated}</p>
           </div>
         </footer>

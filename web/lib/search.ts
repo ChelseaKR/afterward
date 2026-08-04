@@ -225,10 +225,17 @@ export function summarise(programs: SearchEntry[]) {
  */
 const COMPARATORS: Record<Sort, (a: Ranked, b: Ranked) => number> = {
   relevance: (a, b) => b.rank - a.rank || (a.entry.n ?? "").localeCompare(b.entry.n ?? ""),
-  earnings: (a, b) => (b.entry.me ?? -1) - (a.entry.me ?? -1),
+  // `at === false` means the filing describes the provider's whole institution, so the
+  // earnings figure is real but is not this program's. Ranking on it would let an
+  // institution-wide number win a list of programs.
+  earnings: (a, b) => ownEarnings(b.entry) - ownEarnings(a.entry),
   cost: (a, b) => (a.entry.$ ?? Infinity) - (b.entry.$ ?? Infinity),
   openings: (a, b) => (b.entry.op ?? -1) - (a.entry.op ?? -1),
 };
+
+function ownEarnings(entry: SearchEntry): number {
+  return entry.at && entry.me !== null ? entry.me : -1;
+}
 
 interface Ranked {
   entry: SearchEntry;

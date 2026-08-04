@@ -103,7 +103,7 @@ export function Measure({
    * owned elsewhere: `compare()` in the program page should pass
    * `ownCohort: outcomes.cohort.attributable`, at which point this can become required.
    */
-  benchmark?: { formatted: string; programBeatsState: boolean | null; ownCohort?: boolean };
+  benchmark?: { formatted: string; programBeatsState: boolean | null; ownCohort: boolean };
   /**
    * Optional same-measure figure for the area this program sits in. Subordinate to the
    * headline on purpose: statewide stays the headline because graduates do not necessarily
@@ -160,7 +160,7 @@ export function Measure({
             * text. A reader can still draw the comparison. The site no longer draws it for
             * them on evidence that cannot carry it.
             */}
-          {benchmark && benchmark.ownCohort !== false ? (
+          {benchmark && benchmark.ownCohort ? (
             <>
               <small>
                 {t.vsState}: {benchmark.formatted}
