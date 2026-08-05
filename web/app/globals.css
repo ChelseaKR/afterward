@@ -440,7 +440,7 @@ body {
 .unreported {
   font-weight: 400;
   font-style: italic;
-  color: var(--gray-80);
+  color: var(--gray-90);
 }
 
 .badge {
@@ -453,12 +453,14 @@ body {
 }
 
 .badge-shrinking {
-  background: var(--orange-highlight, #ffe9d6);
+  background: #ffe9d6;
+  border: 1px solid #c2410c;
   color: var(--gray-120);
 }
 
 .badge-small {
-  background: var(--yellow-highlight, #fff4d1);
+  background: #fff4d1;
+  border: 1px solid #a16207;
   color: var(--gray-120);
 }
 
@@ -503,7 +505,8 @@ body {
 
 .callout {
   border-left: 4px solid var(--orange-70, var(--orange-static-70));
-  background: var(--orange-highlight, #fff3e8);
+  background: #ffe9d6;
+  border-left: 4px solid #c2410c;
   padding: 0.875rem 1.125rem;
   border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
 }
@@ -1402,9 +1405,9 @@ td.num {
 */
 .save-toggle {
   background: transparent;
-  border: 1px solid var(--link);
+  border: 1px solid var(--primary-100);
   border-radius: var(--border-radius-sm);
-  color: var(--link);
+  color: var(--primary-100);
   cursor: pointer;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -1415,8 +1418,8 @@ td.num {
   background: var(--gray-20);
 }
 .save-toggle.is-saved {
-  background: var(--link);
-  border-color: var(--link);
+  background: var(--primary-100);
+  border-color: var(--primary-100);
   color: #fff;
 }
 .save-toggle:disabled {
@@ -1449,7 +1452,7 @@ td.num {
 .saved-bar button {
   background: transparent;
   border: 1px solid var(--gray-50);
-  color: var(--link);
+  color: var(--primary-100);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-size: 0.9375rem;
@@ -1468,7 +1471,7 @@ td.num {
   background: transparent;
   border: 1px solid var(--gray-50);
   border-radius: var(--border-radius-sm);
-  color: var(--link);
+  color: var(--primary-100);
   cursor: pointer;
   font-size: 0.9375rem;
   padding: 0.375rem 0.875rem;
@@ -1611,7 +1614,7 @@ td.num {
 */
 .shared-bar {
   background: var(--gray-20);
-  border: 1px solid var(--link);
+  border: 1px solid var(--primary-100);
   border-radius: var(--border-radius-sm);
   margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
@@ -1627,7 +1630,7 @@ td.num {
   background: transparent;
   border: 1px solid var(--gray-50);
   border-radius: var(--border-radius-sm);
-  color: var(--link);
+  color: var(--primary-100);
   cursor: pointer;
   font-size: 0.9375rem;
   padding: 0.375rem 0.875rem;
@@ -1725,4 +1728,71 @@ td.num {
   .who-decides {
     display: block !important;
   }
+}
+
+/*
+  Alert chips and callouts: pale ground, dark text, accent as a border.
+
+  They previously set near-black on a saturated fill — 5.47:1 for the shrinking badge and
+  6.37:1 for the small-sample one, both at 12px, which WCAG does not count as large text.
+  Neither cleared 1.4.6's 7:1, and both carry warnings this site treats as load-bearing: a
+  caveat that is hard to read is a caveat that does not work. Colours are fixed rather than
+  themed because the values are the same in both schemes and the ratio is above 13:1 either
+  way.
+*/
+
+/* ---------- Wage range chart ---------- */
+
+.wage-chart {
+  display: block;
+  height: auto;
+  margin: 0.5rem 0 0.25rem;
+  max-width: 100%;
+  width: 100%;
+}
+.wage-chart-label {
+  fill: var(--gray-90);
+  font-size: 12px;
+}
+.wage-chart-range {
+  fill: var(--gray-40);
+}
+.wage-chart-range.is-emphasis {
+  fill: var(--primary-40, #a9d3d9);
+}
+.wage-chart-mid {
+  fill: var(--gray-60);
+}
+.wage-chart-mid.is-emphasis {
+  fill: var(--primary-60);
+}
+.wage-chart-median {
+  stroke: var(--gray-120);
+  stroke-width: 2;
+}
+.wage-chart-key {
+  color: var(--gray-90);
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem;
+}
+
+/*
+  Two AAA contrast overrides for things this stylesheet does not own.
+
+  `.button` is the design system's own primary button: white on --primary-70, which measures
+  4.6:1 at 18px/600 — and 18px at weight 600 is not "large text" under WCAG, so the threshold
+  is 7:1, not 4.5:1. Darkening the ground to --primary-100 takes it past 10:1 and leaves the
+  shape, size and hit area untouched.
+
+  The regulation citations sit inside a panel, so their links are --link on --gray-20 rather
+  than on the page: 5.72:1, not the 7.02:1 the same colour manages on white. These are the
+  links that let a reader check a claim about somebody else's money against the actual rule,
+  which makes them a poor place to be the hardest text on the page to read.
+*/
+.button {
+  background: var(--primary-100);
+  border-color: var(--primary-100);
+}
+.funding-cite a {
+  color: var(--primary-100);
 }

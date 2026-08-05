@@ -49,12 +49,35 @@ async function auditOnePage(file) {
   }
 
   const { default: axe } = await import("axe-core");
+
+  /*
+   * Every rule axe ships, including the ones it disables by default.
+   *
+   * Running axe with no configuration is not "all the checks". Sixteen rules are off unless
+   * asked for, and four of them are the ones that matter for the level this site claims:
+   * color-contrast-enhanced (AAA 1.4.6), identical-links-same-purpose (AAA 2.4.9),
+   * meta-refresh-no-exceptions (AAA 2.2.4) and target-size (WCAG 2.2 AA 2.5.8). A report
+   * saying "no violations" while those sat switched off was answering a narrower question
+   * than the one it appeared to answer.
+   *
+   * Two of them need a layout engine jsdom does not have and are checked in the browser pass
+   * instead; they are enabled here anyway, so they surface as incomplete rather than being
+   * silently absent from the run.
+   */
+  const enableAll = Object.fromEntries(
+    axe.getRules().map((rule) => [rule.ruleId, { enabled: true }]),
+  );
+
   const results = await axe.run(window.document, {
     resultTypes: ["violations", "incomplete"],
+    rules: enableAll,
   });
 
-  const violations = results.violations.filter((v) => v.id !== "color-contrast");
-  const contrast = results.incomplete.filter((v) => v.id === "color-contrast").length;
+  // Contrast needs real layout; `npm run contrast` resolves the tokens analytically and the
+  // browser pass measures the rendered page. Both are reported separately rather than here.
+  const LAYOUT_DEPENDENT = new Set(["color-contrast", "color-contrast-enhanced", "target-size"]);
+  const violations = results.violations.filter((v) => !LAYOUT_DEPENDENT.has(v.id));
+  const contrast = results.incomplete.filter((v) => LAYOUT_DEPENDENT.has(v.id)).length;
 
   process.stdout.write(
     JSON.stringify({

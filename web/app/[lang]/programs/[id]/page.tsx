@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { CENTERS_STEP, LEAD_STEP, stepCopy } from "@/components/funding";
 import { Measure } from "@/components/Measure";
+import { WageRangeChart } from "@/components/WageRangeChart";
 import { programCount, programCountsBySoc } from "@/lib/browse";
 import {
   allProgramIds,
@@ -1666,6 +1667,19 @@ export default async function ProgramPage({
                   return (
                     <div className="local-range">
                       <h4>{t.localRangeHeading(areaLabel)}</h4>
+                      {/*
+                        The picture first, the figures under it. The finding here is that a
+                        region is differently shaped rather than uniformly lower, and that is
+                        a comparison of two intervals — which is the one thing six numbers in
+                        a table are genuinely bad at showing.
+                      */}
+                      <WageRangeChart
+                        rows={[
+                          { label: areaShort, percentiles: localSpread, emphasis: true },
+                          { label: t.localRangeStatewide, percentiles: spread },
+                        ]}
+                      />
+                      <p className="wage-chart-key">{t.wageChartKey}</p>
                       <table>
                         <thead>
                           <tr>

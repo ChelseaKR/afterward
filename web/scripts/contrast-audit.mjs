@@ -29,8 +29,19 @@ const THEME_CSS = readFileSync(
 );
 
 /** WCAG 2.1 minimums. Large text is >=24px, or >=18.66px bold. */
-const AA_NORMAL = 4.5;
-const AA_LARGE = 3.0;
+/*
+ * WCAG 2.2 level AAA, 1.4.6 Contrast (Enhanced): 7:1 for body text, 4.5:1 for large text.
+ *
+ * Raised from AA on 2026-08-05. Four pairings failed at the higher bar and are fixed rather
+ * than excepted: the not-reported grey went from --gray-80 (6.63:1) to --gray-90 (9.51:1),
+ * and every control tinted with --link moved to --primary-100. Several of those were sitting
+ * at 7.02:1 — clearing AAA by two hundredths — which is the same margin this project already
+ * refused once on the browse filter's count line.
+ *
+ * The names are kept as AA_* so the pairings below read unchanged; the values are AAA.
+ */
+const AA_NORMAL = 7.0;
+const AA_LARGE = 4.5;
 
 /** Literal hex values: `--gray-static-10: #fefefe`. These never vary by theme. */
 function staticTokens() {
@@ -117,7 +128,7 @@ const PAIRS = [
   ["link on card", "--primary-100", "--gray-10", AA_NORMAL],
   ["card provider line", "--gray-90", "--gray-10", AA_NORMAL],
   ["fact label", "--gray-90", "--gray-10", AA_NORMAL],
-  ["not-reported text", "--gray-80", "--gray-10", AA_NORMAL],
+  ["not-reported text", "--gray-90", "--gray-10", AA_NORMAL],
   ["filters panel text", "--gray-120", "--gray-20", AA_NORMAL],
   ["stat strip", "--gray-120", "--gray-20", AA_NORMAL],
   ["compare tray", "--gray-20", "--gray-120", AA_NORMAL],
@@ -131,7 +142,7 @@ const PAIRS = [
   // a different background. Easy to forget precisely because it only exists on hover.
   ["hovered row link", "--primary-100", "--gray-20", AA_NORMAL],
   ["hovered row text", "--gray-120", "--gray-20", AA_NORMAL],
-  ["hovered row unreported", "--gray-80", "--gray-20", AA_NORMAL],
+  ["hovered row unreported", "--gray-90", "--gray-20", AA_NORMAL],
   /*
    * The save, share and filter controls, added after this list was first written — and the
    * reason this list now exists as something to append to rather than a fixed set.
@@ -143,10 +154,10 @@ const PAIRS = [
    * checks the pairings named here and none of those were among them. A new control needs a
    * new line here, or it is unchecked rather than correct.
    */
-  ["save button", "--link", "--gray-10", AA_NORMAL],
-  ["save button, saved", "--gray-10", "--link", AA_NORMAL],
-  ["copy-link button", "--link", "--gray-10", AA_NORMAL],
-  ["saved bar button", "--link", "--gray-20", AA_NORMAL],
+  ["save button", "--primary-100", "--gray-10", AA_NORMAL],
+  ["save button, saved", "--gray-10", "--primary-100", AA_NORMAL],
+  ["copy-link button", "--primary-100", "--gray-10", AA_NORMAL],
+  ["saved bar button", "--primary-100", "--gray-20", AA_NORMAL],
   ["saved bar note", "--gray-90", "--gray-20", AA_NORMAL],
   ["browse filter count", "--gray-90", "--gray-10", AA_NORMAL],
   ["related-work facts line", "--gray-90", "--gray-10", AA_NORMAL],
@@ -156,7 +167,7 @@ const PAIRS = [
   ["local range column header", "--gray-90", "--gray-10", AA_NORMAL],
   ["local range figure", "--gray-120", "--gray-10", AA_NORMAL],
   ["shared list body", "--gray-90", "--gray-20", AA_NORMAL],
-  ["shared list button", "--link", "--gray-20", AA_NORMAL],
+  ["shared list button", "--primary-100", "--gray-20", AA_NORMAL],
 ];
 
 const statics = staticTokens();
@@ -191,11 +202,11 @@ for (const scheme of ["light", "dark"]) {
 
 if (failures > 0 || unresolved > 0) {
   const parts = [];
-  if (failures) parts.push(`${failures} pairing(s) below the WCAG AA minimum`);
+  if (failures) parts.push(`${failures} pairing(s) below the WCAG 2.2 AAA minimum (1.4.6)`);
   if (unresolved) parts.push(`${unresolved} pairing(s) could not be resolved`);
   console.error(`\ncontrast-audit: ${parts.join("; ")}`);
   process.exit(1);
 }
 console.log(
-  `\ncontrast-audit: all ${PAIRS.length} pairings meet WCAG AA in both light and dark`,
+  `\ncontrast-audit: all ${PAIRS.length} pairings meet WCAG 2.2 AAA (1.4.6) in both light and dark`,
 );

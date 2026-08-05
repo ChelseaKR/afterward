@@ -284,6 +284,8 @@ areaNote: (unplaced: number, total: number) =>
   localRangeHeading: (area: string): string => `What this pays in ${area}`,
   localRangeStatewide: "Across California",
   localRangeAreaColumn: "Area",
+  wageChartKey:
+    "Each bar runs from the lowest-paid tenth to the highest-paid tenth. The darker middle is where half the people are, and the line is the median.",
   localRangeNote: (area: string, year: number): string =>
     `The federal Bureau of Labor Statistics' ${year} figures for ${area} beside the same figures for the whole state. A region can sit well below or above the statewide spread, and the statewide number is the one most often quoted — so where they differ, the local row is the one that describes the work near this program.`,
   wageP10: "The lowest-paid tenth earn under",
@@ -914,6 +916,8 @@ areaNote: (unplaced, total) =>
   localRangeHeading: (area: string): string => `Cuánto se paga en ${area}`,
   localRangeStatewide: "En todo California",
   localRangeAreaColumn: "Zona",
+  wageChartKey:
+    "Cada barra va desde la décima parte peor pagada hasta la mejor pagada. La parte más oscura del medio es donde está la mitad de las personas, y la línea es la mediana.",
   localRangeNote: (area: string, year: number): string =>
     `Las cifras de ${year} de la Oficina de Estadísticas Laborales de EE. UU. para ${area}, junto a las mismas cifras de todo el estado. Una región puede quedar bastante por debajo o por encima del rango estatal, y el dato estatal es el que más se cita, así que cuando difieren, la fila local es la que describe el trabajo cerca de este programa.`,
   wageP10: "La décima parte peor pagada gana menos de",
