@@ -1,9 +1,9 @@
-# Camino
+# Afterward
 
 **California training programs, what happened to the people who took them, and where those
 programs actually lead.**
 
-### [camino.chelseakr.com](https://camino.chelseakr.com)
+### [afterward.chelseakr.com](https://afterward.chelseakr.com)
 
 > Not affiliated with the State of California. It uses the state's open-source design
 > system, so a permanent notice on every page says so.
@@ -22,7 +22,7 @@ published by the federal government in a form no Californian is expected to find
 Meanwhile the state publishes excellent occupation data: what jobs are growing, in which
 regions, and what they pay. Nobody puts the two next to each other.
 
-Camino does exactly that, from public data, with no account and no tracking.
+Afterward does exactly that, from public data, with no account and no tracking.
 
 ## What it does today
 

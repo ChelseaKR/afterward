@@ -28,14 +28,14 @@ import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
  * The tab and the search result, said in both languages for the same reason the page is.
  *
  * Next reads a `metadata` export from this file and applies it last, after the root layout's,
- * so this replaces rather than joins "Camino — California training programs and their
+ * so this replaces rather than joins "Afterward — California training programs and their
  * outcomes" — which on a page that does not exist would be a third wrong thing about it.
  *
  * No `robots` key: Next marks the not-found route `noindex` on its own, and declaring it here
  * as well emits the tag twice.
  */
 export const metadata: Metadata = {
-  title: `${dict("en").notFoundTitle} · ${dict("es").notFoundTitle} — Camino`,
+  title: `${dict("en").notFoundTitle} · ${dict("es").notFoundTitle} — Afterward`,
 };
 
 export default function NotFound() {
@@ -66,7 +66,7 @@ export default function NotFound() {
           <div className="masthead">
             <div className="shell masthead-row">
               <Link href="/" className="wordmark">
-                Camino<span> · CA</span>
+                Afterward<span> · CA</span>
               </Link>
             </div>
           </div>

@@ -20,7 +20,7 @@ export function generateStaticParams() {
  * These are the pages people reach by searching a school's name, which makes them the most
  * consequential results on the site: this is where someone finds out what the college they
  * were about to enrol in publishes about itself. The name leads, the city follows, and the
- * site's own name appears nowhere — a result reading "… | Camino" spends its most valuable
+ * site's own name appears nowhere — a result reading "… | Afterward" spends its most valuable
  * characters on the one word a stranger cannot use.
  *
  * `lang` was never read here, so all 1,162 pages emitted the same English pair in both trees.

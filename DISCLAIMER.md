@@ -2,7 +2,7 @@
 
 ## This is not a California state website
 
-Camino is an independent, non-commercial project. It is **not** affiliated with, endorsed
+Afterward is an independent, non-commercial project. It is **not** affiliated with, endorsed
 by, or operated by the State of California, the California Employment Development
 Department, the California Community Colleges Chancellor's Office, any California workforce
 development board, or the U.S. Department of Labor.

@@ -1,6 +1,6 @@
 # Infrastructure
 
-One CloudFormation stack publishes [camino.chelseakr.com](https://camino.chelseakr.com):
+One CloudFormation stack publishes [afterward.chelseakr.com](https://afterward.chelseakr.com):
 a private, versioned S3 bucket; CloudFront with Origin Access Control and TLS; Route 53
 A/AAAA aliases; directory-route rewriting so `/en/occupations/` resolves to its
 `index.html`; security headers; and a narrowly scoped GitHub OIDC deploy role.
@@ -17,34 +17,34 @@ point the subdomain at it. Nobody reaches a half-built site at the real address.
 ```bash
 # Phase 1 — everything except DNS. CloudFront requires certificates from us-east-1.
 aws cloudformation create-stack \
-  --stack-name camino-static-site --region us-east-1 \
+  --stack-name afterward-static-site --region us-east-1 \
   --template-body file://infra/aws-static-site.yml \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=PublishDns,ParameterValue=false
 
 # Certificate validation is DNS-based against the hosted zone and takes a few minutes.
 aws cloudformation wait stack-create-complete \
-  --stack-name camino-static-site --region us-east-1
+  --stack-name afterward-static-site --region us-east-1
 
 # Build against the real dataset and the real hostname. Both matter: an offline build
 # publishes the 60-program fixture, and an unset site URL puts example.invalid in the
 # sitemap and robots.txt.
 make data                      # or: cp -r data/processed/* web/public/data/
-cd web && NEXT_PUBLIC_SITE_URL=https://camino.chelseakr.com npm run build
+cd web && NEXT_PUBLIC_SITE_URL=https://afterward.chelseakr.com npm run build
 
 # Upload. Hashed assets are immutable; everything else must revalidate, because the
 # dataset changes underneath the same URLs.
-aws s3 sync out/ s3://camino.chelseakr.com/ --delete \
+aws s3 sync out/ s3://afterward.chelseakr.com/ --delete \
   --cache-control "public, max-age=0, must-revalidate" \
   --exclude "_next/static/*"
-aws s3 sync out/_next/static/ s3://camino.chelseakr.com/_next/static/ --delete \
+aws s3 sync out/_next/static/ s3://afterward.chelseakr.com/_next/static/ --delete \
   --cache-control "public, max-age=31536000, immutable"
 
 # Check it at the CloudFront domain first (see the stack's CloudFrontDomainName output).
 
 # Phase 2 — publish DNS once the content is verified.
 aws cloudformation update-stack \
-  --stack-name camino-static-site --region us-east-1 \
+  --stack-name afterward-static-site --region us-east-1 \
   --template-body file://infra/aws-static-site.yml \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=PublishDns,ParameterValue=true

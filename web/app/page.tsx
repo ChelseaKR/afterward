@@ -5,7 +5,7 @@ import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "Camino — California training programs and their outcomes",
+  title: "Afterward — California training programs and their outcomes",
 };
 
 /**

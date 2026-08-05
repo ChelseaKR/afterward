@@ -167,7 +167,7 @@ export default async function LangLayout({
             <div className="shell masthead-row">
               <div>
                 <Link href={`/${lang}/`} className="wordmark">
-                  Camino<span> · CA</span>
+                  Afterward<span> · CA</span>
                 </Link>
                 <p className="tagline">{t.tagline}</p>
               </div>

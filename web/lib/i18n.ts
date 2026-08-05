@@ -17,7 +17,7 @@ export function isLang(value: string): value is Lang {
 }
 
 const en = {
-  siteName: "Camino",
+  siteName: "Afterward",
   tagline: "California training programs, and what happened to the people who took them",
   notAffiliated:
     "Not a California state website. An independent project built from public data.",
@@ -228,7 +228,7 @@ areaNote: (unplaced: number, total: number) =>
   // Titles and descriptions for the roughly nine thousand pages a search engine can reach.
   // For most people this is the first thing they read and often the only thing, so it is
   // written to be scanned in the second it gets: the provider's name, the city, and what the
-  // page will actually tell them. "Camino" appears in none of them — the site's own name is
+  // page will actually tell them. "Afterward" appears in none of them — the site's own name is
   // the one piece of information a stranger scanning results cannot use.
   //
   // Per-language for the same reason every other string here is. A Spanish result that reads
@@ -334,7 +334,7 @@ areaNote: (unplaced: number, total: number) =>
   aboutLede:
     "This site publishes performance figures about named California training providers, in public, and puts them side by side. That is worth doing, and it is worth being exact about what the numbers are. Everything below describes where each figure comes from, who produced it, what it leaves out, and what to do if you think it misrepresents you.",
   aboutIndependence:
-    "Camino is an independent, non-commercial project. It is not affiliated with, endorsed by, or operated by the State of California, the California Employment Development Department, any California workforce development board, or the U.S. Department of Labor. It uses California's open-source design system, which is why these pages resemble official state websites. They are not official ones.",
+    "Afterward is an independent, non-commercial project. It is not affiliated with, endorsed by, or operated by the State of California, the California Employment Development Department, any California workforce development board, or the U.S. Department of Labor. It uses California's open-source design system, which is why these pages resemble official state websites. They are not official ones.",
   aboutProgramsCounted: "Programs described here",
   aboutProvidersNamed: "Providers named here",
   aboutProgramsReporting: "Programs that report any outcome",
@@ -679,7 +679,7 @@ type Dictionary = typeof en;
 export type Copy = Dictionary;
 
 const es: Dictionary = {
-  siteName: "Camino",
+  siteName: "Afterward",
   tagline: "Programas de capacitación en California y qué pasó con quienes los tomaron",
   notAffiliated:
     "No es un sitio del estado de California. Es un proyecto independiente hecho con datos públicos.",
@@ -959,7 +959,7 @@ areaNote: (unplaced, total) =>
   aboutLede:
     "Este sitio publica en abierto cifras de desempeño sobre instituciones de capacitación de California, con nombre y apellido, y las pone una al lado de la otra. Vale la pena hacerlo, y vale la pena ser preciso sobre qué son esas cifras. Todo lo que sigue explica de dónde sale cada dato, quién lo produjo, qué deja fuera y qué hacer si usted cree que lo representa mal.",
   aboutIndependence:
-    "Camino es un proyecto independiente y sin fines de lucro. No está afiliado ni respaldado ni operado por el estado de California, el Departamento de Desarrollo del Empleo de California, ninguna junta local de desarrollo laboral ni el Departamento de Trabajo de EE. UU. Usa el sistema de diseño de código abierto de California, y por eso estas páginas se parecen a los sitios oficiales del estado. No lo son.",
+    "Afterward es un proyecto independiente y sin fines de lucro. No está afiliado ni respaldado ni operado por el estado de California, el Departamento de Desarrollo del Empleo de California, ninguna junta local de desarrollo laboral ni el Departamento de Trabajo de EE. UU. Usa el sistema de diseño de código abierto de California, y por eso estas páginas se parecen a los sitios oficiales del estado. No lo son.",
   aboutProgramsCounted: "Programas descritos aquí",
   aboutProvidersNamed: "Instituciones nombradas aquí",
   aboutProgramsReporting: "Programas que reportan algún resultado",
