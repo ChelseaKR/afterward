@@ -94,9 +94,10 @@ data:
 #
 # Never with --size-only: chunk names are fixed-length hashes, so a page whose only change is
 # which chunk it loads is byte-identical in length and gets skipped.
-DISTRIBUTION_ID ?= E166CPAG407D0L
-# Still camino: the site is renamed, the infrastructure is not yet.
-SITE_BUCKET ?= camino.chelseakr.com
+# The Afterward distribution. The old camino one (E166CPAG407D0L) still serves
+# camino.chelseakr.com and is republished deliberately, by overriding these two.
+DISTRIBUTION_ID ?= E2WV13UCB2U1MF
+SITE_BUCKET ?= afterward.chelseakr.com
 publish: publish-preflight
 	@echo "1/4 uploading new assets (additive: nothing references them yet)"
 	aws s3 sync web/out/_next/static/ "s3://$(SITE_BUCKET)/_next/static/" \
@@ -121,11 +122,11 @@ publish: publish-preflight
 publish-preflight:
 	uv run python scripts/publish_preflight.py web/out
 
-SITE_URL ?= https://camino.chelseakr.com
+SITE_URL ?= https://afterward.chelseakr.com
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
 
-BACKUP_DIR ?= ../camino-dataset-backup
+BACKUP_DIR ?= ../afterward-dataset-backup
 backup-data:
 	@mkdir -p "$(BACKUP_DIR)"
 	@rsync -a --delete data/processed/ "$(BACKUP_DIR)/processed/"

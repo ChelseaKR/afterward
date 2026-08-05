@@ -1,6 +1,6 @@
 name: Deploy
 
-# Publishes the static site to S3 behind CloudFront at https://camino.chelseakr.com.
+# Publishes the static site to S3 behind CloudFront at https://afterward.chelseakr.com.
 #
 # ---------------------------------------------------------------------------------------
 # Why this is dispatch-only, and why it does not build the dataset
@@ -59,8 +59,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SITE_URL: https://camino.chelseakr.com
-  SITE_BUCKET: camino.chelseakr.com
+  SITE_URL: https://afterward.chelseakr.com
+  SITE_BUCKET: afterward.chelseakr.com
   CLOUDFRONT_DISTRIBUTION_ID: E166CPAG407D0L
   # Floor for a believable production dataset. The real one is 3,266 programs; the CI
   # fixture is 60. Anything under this is a fixture, a truncated download, or a source
@@ -77,12 +77,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     # Required, and not merely as an approval gate: the deploy role's trust policy accepts
-    # exactly one subject, `repo:ChelseaKR/camino:environment:production`. A job without
+    # exactly one subject, `repo:ChelseaKR/afterward:environment:production`. A job without
     # this environment cannot assume the role at all. See GitHubDeployRole in
     # infra/aws-static-site.yml.
     environment:
       name: production
-      url: https://camino.chelseakr.com
+      url: https://afterward.chelseakr.com
 
     steps:
       # ---------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ jobs:
         # bad build is the artifact scan after `npm run build`.
         run: |
           set -euo pipefail
-          if [ "${SITE_URL:-}" != "https://camino.chelseakr.com" ]; then
+          if [ "${SITE_URL:-}" != "https://afterward.chelseakr.com" ]; then
             echo "::error::SITE_URL is '${SITE_URL:-<unset>}', not the production host."
             exit 1
           fi
@@ -290,12 +290,12 @@ jobs:
       # ---------------------------------------------------------------------------------
       - name: Assume the deploy role
         # OIDC, short-lived credentials, no stored secrets. The role is created by the
-        # camino-static-site stack and can do four things: list the bucket, read/write/
+        # afterward-static-site stack and can do four things: list the bucket, read/write/
         # delete objects in it, and invalidate this one distribution.
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::014248889144:role/camino-static-site-github-deploy
-          role-session-name: camino-deploy-${{ github.run_id }}
+          role-to-assume: arn:aws:iam::014248889144:role/afterward-static-site-github-deploy
+          role-session-name: afterward-deploy-${{ github.run_id }}
           # The stack, the bucket and CloudFront's certificate all live in us-east-1.
           aws-region: us-east-1
 
@@ -305,7 +305,7 @@ jobs:
           arn=$(aws sts get-caller-identity --query Arn --output text)
           echo "Assumed: ${arn}"
           case "$arn" in
-            *camino-static-site-github-deploy*) ;;
+            *afterward-static-site-github-deploy*) ;;
             *) echo "::error::Unexpected deploy identity: ${arn}"; exit 1 ;;
           esac
 

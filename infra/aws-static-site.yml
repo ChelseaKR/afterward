@@ -1,22 +1,22 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
-  Private S3 and CloudFront origin for camino.chelseakr.com, including
+  Private S3 and CloudFront origin for afterward.chelseakr.com, including
   Route 53 DNS, an ACM certificate, and a least-privilege GitHub OIDC deploy role.
 
 Parameters:
   DomainName:
     Type: String
-    Default: camino.chelseakr.com
+    Default: afterward.chelseakr.com
     AllowedPattern: ^[a-z0-9.-]+$
   HostedZoneId:
     Type: AWS::Route53::HostedZone::Id
     Default: Z09063681IX9IVZF7L6YB
   SiteBucketName:
     Type: String
-    Default: camino.chelseakr.com
+    Default: afterward.chelseakr.com
   GitHubRepository:
     Type: String
-    Default: ChelseaKR/camino
+    Default: ChelseaKR/afterward
     AllowedPattern: ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$
   PublishDns:
     Type: String
@@ -278,9 +278,9 @@ Resources:
                 "token.actions.githubusercontent.com:aud": sts.amazonaws.com
                 "token.actions.githubusercontent.com:sub": !Sub >-
                   repo:${GitHubRepository}:environment:production
-      Description: Deploy the reviewed NearMiss static artifact from the production environment.
+      Description: Deploy the reviewed Afterward static artifact from the production environment.
       Policies:
-        - PolicyName: DeployNearMissStaticSite
+        - PolicyName: DeployAfterwardStaticSite
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
