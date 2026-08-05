@@ -244,6 +244,15 @@ export interface SpanishOccupation {
   also_called: string[];
 }
 
+export interface WageSpread {
+  p10: number | null;
+  p25: number | null;
+  p50: number | null;
+  p75: number | null;
+  p90: number | null;
+  year: number | null;
+}
+
 export interface Occupation extends OccupationSummary {
   period: string | null;
   median_hourly_wage: number | null;
@@ -282,6 +291,14 @@ export interface Occupation extends OccupationSummary {
    * machine translation nobody reviewed.
    */
   spanish: SpanishOccupation | null;
+  /**
+   * What the occupation pays across its distribution, from the federal OEWS extract.
+   *
+   * Null on a dataset built before any `fetch-wages` run. Each percentile is independently
+   * suppressible at source and stays null where it was suppressed — never interpolated from
+   * its neighbours and never read as zero.
+   */
+  wage_spread: WageSpread | null;
   /**
    * What the work involves, most important first. Empty for the 89 occupations O*NET has no
    * profile for — precisely the same 89 that have no `skills`, since O*NET either rates an

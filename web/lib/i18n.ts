@@ -278,6 +278,14 @@ areaNote: (unplaced: number, total: number) =>
     "How the U.S. Department of Labor describes this work. Published in English only.",
   occupationDescriptionNoteEs:
     "How the U.S. Department of Labor describes this work, in the Department's own Spanish.",
+  wageSpreadHeading: "What the pay actually ranges across",
+  wageSpreadNote: (year: number): string =>
+    `A median is one point. These are the federal Bureau of Labor Statistics' ${year} figures for California, and they say how far apart the people doing this job actually are. Read them as the spread across everyone already in the work — not as a starting wage and not as a promise about where anyone lands.`,
+  wageP10: "The lowest-paid tenth earn under",
+  wageP25: "A quarter earn under",
+  wageP50: "Half earn under",
+  wageP75: "Three quarters earn under",
+  wageP90: "The highest-paid tenth earn over",
 
   skillsHeading: "Skills this work uses most",
   skillsNote:
@@ -880,6 +888,14 @@ areaNote: (unplaced, total) =>
     "Así describe este trabajo el Departamento de Trabajo de EE. UU. Solo se publica en inglés.",
   occupationDescriptionNoteEs:
     "Así describe este trabajo el Departamento de Trabajo de EE. UU., en el español del propio Departamento.",
+  wageSpreadHeading: "El rango real de sueldos",
+  wageSpreadNote: (year: number): string =>
+    `Una mediana es un solo punto. Estas son las cifras de ${year} de la Oficina de Estadísticas Laborales de EE. UU. para California, y muestran qué tan distintos son los sueldos de quienes ya hacen este trabajo. Léalas como ese rango, no como un sueldo inicial ni como una promesa de dónde va a terminar una persona.`,
+  wageP10: "La décima parte peor pagada gana menos de",
+  wageP25: "Una cuarta parte gana menos de",
+  wageP50: "La mitad gana menos de",
+  wageP75: "Tres cuartas partes ganan menos de",
+  wageP90: "La décima parte mejor pagada gana más de",
 
   skillsHeading: "Las habilidades que más se usan en este trabajo",
   skillsNote:

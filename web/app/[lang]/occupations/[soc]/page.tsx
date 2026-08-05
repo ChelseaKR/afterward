@@ -382,6 +382,47 @@ export default async function OccupationPage({
         </>
       )}
 
+      {/*
+        The spread, not just the midpoint.
+        
+        The page showed one median, which answers "what does this pay?" and not "what would
+        it pay me?" — and the distance between those is the entire question for someone
+        deciding whether to spend a year training for it. Pharmacy technicians in California
+        run from about $44,000 at the tenth percentile to about $83,000 at the ninetieth
+        around a $57,000 median, and a reader shown only the median cannot see that.
+        
+        Each percentile is printed only where one was published. They are independently
+        suppressible at source, so a row can carry four of five, and a missing one is left
+        out rather than interpolated from its neighbours.
+      */}
+      {occupation.wage_spread !== null && (
+        <>
+          <h2>{t.wageSpreadHeading}</h2>
+          <dl className="wage-spread">
+            {(
+              [
+                ["p10", t.wageP10],
+                ["p25", t.wageP25],
+                ["p50", t.wageP50],
+                ["p75", t.wageP75],
+                ["p90", t.wageP90],
+              ] as const
+            ).map(([key, label]) => {
+              const value = occupation.wage_spread?.[key] ?? null;
+              return value === null ? null : (
+                <div key={key}>
+                  <dt>{label}</dt>
+                  <dd>{money(value, lang)}</dd>
+                </div>
+              );
+            })}
+          </dl>
+          {occupation.wage_spread.year !== null && (
+            <p className="compare-note">{t.wageSpreadNote(occupation.wage_spread.year)}</p>
+          )}
+        </>
+      )}
+
       {occupation.related.length > 0 && related !== null && (
         <>
           <h2>{related.heading}</h2>

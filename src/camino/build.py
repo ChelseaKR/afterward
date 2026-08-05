@@ -343,6 +343,27 @@ def fetch_enrichment(
 
 ONET_CACHE_DIR = COS_CACHE_DIR
 
+WAGE_SPREAD_PATH = Path("data/interim/oews-statewide.json")
+
+
+def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]:
+    """Read the OEWS statewide percentiles a previous fetch left, or an empty mapping.
+
+    A separate step for the same reason `check-links` is one: the published extract is the
+    whole 2009-2026 panel, ~112 MB and 580,790 records, because EDD publishes no per-year
+    resource. No build should pay that to learn a set of numbers that changes annually, and a
+    build with no file is complete -- the pages then say what they said before, which is the
+    median alone.
+    """
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    occupations = payload.get("occupations")
+    return occupations if isinstance(occupations, dict) else {}
+
 
 def fetch_spanish_occupations(
     soc_codes: Iterable[str],
@@ -752,6 +773,7 @@ def index_occupations(
     *,
     enrichment: Mapping[str, careeronestop.OccupationEnrichment] | None = None,
     spanish: Mapping[str, onet.SpanishOccupation] | None = None,
+    wage_spread: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Index statewide detailed-SOC projections by SOC code.
 
@@ -795,8 +817,41 @@ def index_occupations(
 
     _attach_enrichment(statewide, enrichment or {})
     _attach_spanish(statewide, spanish or {})
+    _attach_wage_spread(statewide, wage_spread or {})
     _attach_related(statewide)
     return statewide
+
+
+def _attach_wage_spread(
+    occupations: dict[str, dict[str, Any]],
+    spread: Mapping[str, Mapping[str, Any]],
+) -> None:
+    """Attach the five OEWS percentiles, or null.
+
+    California publishes one median for an occupation, which answers "what does this pay?"
+    and not "what would it pay me?" -- and the gap between those is the whole question for
+    someone deciding whether a year of training is worth it. The tenth and ninetieth
+    percentiles are the honest bracket around the median already on the page.
+
+    Every percentile is independently suppressible at source and stays null when it was
+    suppressed. None is interpolated from its neighbours, and none is read as zero: a
+    withheld wage is a wage nobody published, which is the same rule the rest of this
+    dataset follows.
+    """
+    for soc_code, occupation in occupations.items():
+        row = spread.get(soc_code)
+        occupation["wage_spread"] = (
+            None
+            if row is None
+            else {
+                "p10": row.get("p10"),
+                "p25": row.get("p25"),
+                "p50": row.get("p50"),
+                "p75": row.get("p75"),
+                "p90": row.get("p90"),
+                "year": row.get("year"),
+            }
+        )
 
 
 def _attach_spanish(
@@ -1672,7 +1727,11 @@ def build(
     # O*NET's Spanish records, for the same occupations and on the same terms: absent
     # without a key, absent for the occupations Mi Próximo Paso does not carry.
     spanish = fetch_spanish_occupations(detailed_soc_codes(projections))
-    occupations = index_occupations(projections, enrichment=enrichment, spanish=spanish)
+    # Whatever a previous `camino fetch-wages` left behind; absent is a complete build.
+    wage_spread = load_wage_spread()
+    occupations = index_occupations(
+        projections, enrichment=enrichment, spanish=spanish, wage_spread=wage_spread
+    )
     areas = edd_lmi.area_definitions(projections)
     city_areas = edd_lmi.principal_city_areas(areas)
 

@@ -151,6 +151,8 @@ const PAIRS = [
   ["browse filter count", "--gray-90", "--gray-10", AA_NORMAL],
   ["related-work facts line", "--gray-90", "--gray-10", AA_NORMAL],
   ["English title under a Spanish one", "--gray-90", "--gray-10", AA_NORMAL],
+  ["wage percentile label", "--gray-90", "--gray-10", AA_NORMAL],
+  ["wage percentile value", "--gray-120", "--gray-10", AA_NORMAL],
 ];
 
 const statics = staticTokens();
