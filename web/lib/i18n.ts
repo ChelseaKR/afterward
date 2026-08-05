@@ -625,6 +625,18 @@ areaNote: (unplaced: number, total: number) =>
   savedClear: "Clear saved",
   savedFull: "You can save up to 20 programs. Remove one to save another.",
   savedWhere: "Saved on this device only. Nothing is sent anywhere, and clearing your browser data clears this.",
+  shareSaved: "Copy a link to these",
+  sharedListTitle: "Someone shared these programs with you",
+  sharedListBody: (n: number): string =>
+    n === 1
+      ? "One program, from someone else's list. Nothing is saved on this device unless you save it."
+      : `${n} programs, from someone else's list. Nothing is saved on this device unless you save them.`,
+  sharedListDropped: (n: number): string =>
+    n === 1
+      ? "One program in that link is no longer in the state's data and is not shown."
+      : `${n} programs in that link are no longer in the state's data and are not shown.`,
+  sharedListSave: "Save these to my list",
+  sharedListExit: "Search all programs instead",
   copyLink: "Copy link to this search",
   copyLinkDone: "Link copied",
   providerCostRange: "Cost range",
@@ -1234,6 +1246,18 @@ areaNote: (unplaced, total) =>
   savedFull: "Puede guardar hasta 20 programas. Quite uno para guardar otro.",
   savedWhere:
     "Se guardan solo en este dispositivo. No se envía nada a ningún lado, y si borra los datos del navegador, esto se borra.",
+  shareSaved: "Copiar un enlace a estos",
+  sharedListTitle: "Alguien le compartió estos programas",
+  sharedListBody: (n: number): string =>
+    n === 1
+      ? "Un programa, de la lista de otra persona. No se guarda nada en este dispositivo a menos que usted lo guarde."
+      : `${n} programas, de la lista de otra persona. No se guarda nada en este dispositivo a menos que usted los guarde.`,
+  sharedListDropped: (n: number): string =>
+    n === 1
+      ? "Un programa de ese enlace ya no está en los datos del estado y no se muestra."
+      : `${n} programas de ese enlace ya no están en los datos del estado y no se muestran.`,
+  sharedListSave: "Guardar estos en mi lista",
+  sharedListExit: "Buscar todos los programas",
   copyLink: "Copiar el enlace de esta búsqueda",
   copyLinkDone: "Enlace copiado",
   providerCostRange: "Rango de costos",

@@ -32,6 +32,10 @@ import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
 import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
 import { filtersToQueryString } from "@/lib/shareable";
 import {
+  SHORTLIST_PARAM,
+  shortlistIds,
+  idsFromParam,
+  idsToParam,
   MAX_ITEMS as MAX_SAVED,
   type ShortlistItem,
   isSaved as idIsSaved,
@@ -512,6 +516,46 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     setSaved(readShortlist());
   }, []);
 
+  /*
+   * A shortlist someone was sent.
+   *
+   * This is the thing people actually do with a site like this: pick four programs and show
+   * them to a case manager, a partner, or whoever is helping. A URL does that better than an
+   * account would, because the person receiving it does not have to sign up to open it — and
+   * the ids are already short enough that twenty fit in a link.
+   *
+   * Read after mount, like the shortlist itself: these pages are statically exported and
+   * prerendered where there is no location to read.
+   */
+  const [sharedIds, setSharedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const raw = new URLSearchParams(window.location.search).get(SHORTLIST_PARAM);
+    setSharedIds(idsFromParam(raw));
+  }, []);
+
+  /*
+   * Only the ids this dataset can actually open. An id that no longer exists is dropped and
+   * counted, and the count is shown: a link that quietly renders three programs when it was
+   * sent with four leaves the reader believing they have seen the whole list.
+   */
+  const sharedPrograms = useMemo(
+    () =>
+      sharedIds
+        .map((id) => programs.find((entry) => entry.i === id))
+        .filter((entry): entry is SearchEntry => entry !== undefined),
+    [sharedIds, programs],
+  );
+  const droppedFromShare = sharedIds.length - sharedPrograms.length;
+  const viewingShared = sharedIds.length > 0;
+
+  function exitShared() {
+    setSharedIds([]);
+    const url = new URL(window.location.href);
+    url.searchParams.delete(SHORTLIST_PARAM);
+    window.history.replaceState(null, "", url.pathname + url.search);
+  }
+
   function onToggleSave(id: string) {
     setSaved((current) => {
       const next = toggleSaved(current, id, Date.now());
@@ -543,7 +587,11 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
    * who saved four programs and then typed a new query is asking which of their four match
    * it, not to have the query thrown away.
    */
-  const shown = savedOnly ? visible.filter((entry) => idIsSaved(saved, entry.i)) : visible;
+  const shown = viewingShared
+    ? sharedPrograms
+    : savedOnly
+      ? visible.filter((entry) => idIsSaved(saved, entry.i))
+      : visible;
 
   /*
    * The current search, as a query string. Encoding the state in the URL makes the search
@@ -899,7 +947,43 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           bar appears the moment the first program is saved, which is also the moment the
           sentence about where it is stored becomes true and worth reading.
         */}
-        {saved.length > 0 && (
+        {viewingShared && (
+          <div className="shared-bar">
+            <p className="shared-bar-title">
+              <strong>{t.sharedListTitle}</strong>
+            </p>
+            <p className="shared-bar-body">{t.sharedListBody(sharedPrograms.length)}</p>
+            {droppedFromShare > 0 && (
+              <p className="shared-bar-body">{t.sharedListDropped(droppedFromShare)}</p>
+            )}
+            <div className="saved-bar-actions">
+              <button
+                type="button"
+                onClick={() => {
+                  // Merged, not replaced: someone opening a shared link may already have a
+                  // list of their own, and losing it to a link they were sent would be the
+                  // worst possible reading of "save these".
+                  setSaved((current) => {
+                    let next = current;
+                    for (const entry of sharedPrograms) {
+                      if (!idIsSaved(next, entry.i)) next = toggleSaved(next, entry.i, Date.now());
+                    }
+                    writeShortlist(next);
+                    return next;
+                  });
+                  exitShared();
+                }}
+              >
+                {t.sharedListSave}
+              </button>
+              <button type="button" onClick={exitShared}>
+                {t.sharedListExit}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!viewingShared && saved.length > 0 && (
           <div className="saved-bar">
             <p className="saved-bar-count">
               <strong>{t.savedCount(saved.length)}</strong>
@@ -907,6 +991,20 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             <div className="saved-bar-actions">
               <button type="button" onClick={() => setSavedOnly((v) => !v)}>
                 {savedOnly ? t.savedShowAll : t.savedShow}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const url = new URL(window.location.href);
+                  url.search = "";
+                  url.searchParams.set(SHORTLIST_PARAM, idsToParam(shortlistIds(saved)));
+                  void navigator.clipboard?.writeText(url.toString()).then(() => {
+                    setCopied(true);
+                    window.setTimeout(() => setCopied(false), 2000);
+                  });
+                }}
+              >
+                {copied ? t.copyLinkDone : t.shareSaved}
               </button>
               <button
                 type="button"
@@ -931,7 +1029,9 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             `role="status"`, which would replace the heading role and take the outline back.
           */}
           <h2 className="results-count" aria-live="polite" aria-atomic="true">
-            {t.resultsCount(results.length, programs.length)}
+            {viewingShared
+              ? t.resultsCount(sharedPrograms.length, programs.length)
+              : t.resultsCount(results.length, programs.length)}
           </h2>
           {/*
             Sharing is the thing people actually do with this site: send it to a case manager,

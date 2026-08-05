@@ -155,6 +155,8 @@ const PAIRS = [
   ["wage percentile value", "--gray-120", "--gray-10", AA_NORMAL],
   ["local range column header", "--gray-90", "--gray-10", AA_NORMAL],
   ["local range figure", "--gray-120", "--gray-10", AA_NORMAL],
+  ["shared list body", "--gray-90", "--gray-20", AA_NORMAL],
+  ["shared list button", "--link", "--gray-20", AA_NORMAL],
 ];
 
 const statics = staticTokens();
