@@ -2,7 +2,7 @@
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
-	publish-preflight publish
+	publish-preflight publish dataset-check dataset-manifest
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -52,8 +52,10 @@ provenance-check:
 # to ask about having the training paid for. Without them the build is complete and simply
 # claims nothing about where the nearest office is -- which is what CI does. The centre
 # directory is one request for the whole state and is cached under data/raw/cos-cache.
-data:
+# Backs up first, and the backup refuses to run over a dataset that does not look real.
+data: backup-data
 	uv run afterward build --output-dir web/public/data
+	@$(MAKE) dataset-check
 
 # Copy the built dataset somewhere a mistake cannot reach.
 #
@@ -126,8 +128,21 @@ SITE_URL ?= https://afterward.chelseakr.com
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
 
+# Is the working dataset the real one, or the 60-program fixture?
+#
+# Guards the direction publish-preflight cannot: `backup-data` mirrors with `rsync --delete`,
+# so backing up a corrupted dataset destroys the last good copy. Any automatic backup without
+# this check is worse than a manual one.
+dataset-check:
+	uv run python scripts/dataset_check.py
+
+# Record the current dataset's shape as the thing to compare against. Run after a real
+# refresh, never to paper over a check that just failed.
+dataset-manifest:
+	uv run python scripts/dataset_check.py --write
+
 BACKUP_DIR ?= ../afterward-dataset-backup
-backup-data:
+backup-data: dataset-check
 	@mkdir -p "$(BACKUP_DIR)"
 	@rsync -a --delete data/processed/ "$(BACKUP_DIR)/processed/"
 	@rsync -a --delete web/public/data/ "$(BACKUP_DIR)/webdata/"
