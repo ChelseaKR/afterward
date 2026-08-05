@@ -3,7 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Measure } from "@/components/Measure";
-import { allOccupationCodes, getOccupation, programsForOccupation } from "@/lib/data";
+import {
+  allOccupationCodes,
+  getOccupation,
+  occupationTitleIn,
+  programsForOccupation,
+} from "@/lib/data";
 import { count, money, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang } from "@/lib/i18n";
 import type { OccupationSkill, RelatedSource } from "@/lib/types";
@@ -398,15 +403,20 @@ export default async function OccupationPage({
                 </tr>
               </thead>
               <tbody>
-                {occupation.related.map((sibling) => (
+                {occupation.related.map((sibling) => {
+                  // Same name here as on the page this row opens. A related-work table in
+                  // English pointing at a Spanish page is the inconsistency this resolver
+                  // exists to prevent.
+                  const siblingName = occupationTitleIn(lang, sibling.soc_code, sibling.title);
+                  return (
                   <tr key={sibling.soc_code}>
                     <th scope="row" style={{ fontWeight: 400 }}>
                       {sibling.soc_code ? (
                         <Link href={`/${lang}/occupations/${sibling.soc_code}/`}>
-                          {sibling.title}
+                          {siblingName}
                         </Link>
                       ) : (
-                        sibling.title
+                        siblingName
                       )}
                     </th>
                     <td className="num">
@@ -429,7 +439,8 @@ export default async function OccupationPage({
                       )}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

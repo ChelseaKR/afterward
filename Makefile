@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
-	link-check dataset-verify dataset-package dataset-publish
+	link-check dataset-verify dataset-package dataset-publish backup-data
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -53,6 +53,23 @@ provenance-check:
 # directory is one request for the whole state and is cached under data/raw/cos-cache.
 data:
 	uv run camino build --output-dir web/public/data
+
+# Copy the built dataset somewhere a mistake cannot reach.
+#
+# web/public/data and data/processed are both gitignored, so the working dataset is the only
+# copy of roughly 3,300 programs' worth of DOL and EDD fetches. `make data` overwrites it in
+# place, the DOL endpoint answers CI with 403, and a full refetch is slow -- so a build that
+# goes wrong halfway is not an inconvenience, it is the loss of the data the site publishes.
+# Run this before any pipeline change.
+BACKUP_DIR ?= ../camino-dataset-backup
+backup-data:
+	@mkdir -p "$(BACKUP_DIR)"
+	@rsync -a --delete data/processed/ "$(BACKUP_DIR)/processed/"
+	@rsync -a --delete web/public/data/ "$(BACKUP_DIR)/webdata/"
+	@rsync -a --delete data/raw/ "$(BACKUP_DIR)/raw/"
+	@python3 -c "import json,sys; d=json.load(open('$(BACKUP_DIR)/webdata/occupations.json')); \
+	  p=json.load(open('$(BACKUP_DIR)/webdata/programs.json')); \
+	  print(f\"backup ok: {len(d['occupations'])} occupations, {len(p['programs'])} programs\")"
 
 # Ask every provider URL in the current dataset whether it still goes anywhere, and leave a
 # report for the next `make data` to read.

@@ -131,3 +131,24 @@ export const allOccupationCodes = (): string[] => idsIn("occupations");
 export function programsForOccupation(soc: string): SearchIndex["programs"] {
   return getSearchIndex().programs.filter((p) => p.s.includes(soc));
 }
+
+/**
+ * An occupation's title in the reader's language: O*NET's Spanish where it exists, the
+ * English otherwise.
+ *
+ * Centralised because the alternative is worse than not translating at all. When only the
+ * occupation detail page spoke Spanish, a Spanish reader met "Pharmacy Technicians" on a
+ * program page, clicked it, and arrived at "Técnicos de Farmacia" — two names for one job,
+ * with nothing on either page explaining that they are the same. Consistency is the point.
+ *
+ * Falls back rather than throwing: 70 of California's 670 occupations have no Mi Próximo
+ * Paso record, and their pages carry the English name on purpose.
+ */
+export function occupationTitleIn(
+  lang: string,
+  soc: string | null | undefined,
+  fallback: string | null,
+): string | null {
+  if (lang !== "es" || soc === null || soc === undefined) return fallback;
+  return getOccupation(soc)?.spanish?.title ?? fallback;
+}

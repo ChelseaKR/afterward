@@ -5,7 +5,14 @@ import { notFound } from "next/navigation";
 import { CENTERS_STEP, LEAD_STEP, stepCopy } from "@/components/funding";
 import { Measure } from "@/components/Measure";
 import { programCount, programCountsBySoc } from "@/lib/browse";
-import { allProgramIds, getCoverage, getOccupation, getProgram, getSearchIndex } from "@/lib/data";
+import {
+  allProgramIds,
+  getCoverage,
+  getOccupation,
+  getProgram,
+  getSearchIndex,
+  occupationTitleIn,
+} from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
 import type {
@@ -162,7 +169,8 @@ const REGION_COPY: Record<Lang, RegionCopy> = {
  * vague one at exactly the moment the page is trying to be precise.
  */
 function occupationName(occupation: ProgramOccupation, lang: Lang): string {
-  return occupation.title ?? occupation.soc_code ?? dict(lang).unnamedOccupation;
+  const titled = occupationTitleIn(lang, occupation.soc_code, occupation.title);
+  return titled ?? occupation.soc_code ?? dict(lang).unnamedOccupation;
 }
 
 /** SOC codes as prose: "31-1121 and 31-1122" in English, "31-1121 y 31-1122" in Spanish. */
@@ -1321,7 +1329,7 @@ export default async function ProgramPage({
         if (alternativeIndex.has(rel.soc_code)) continue;
         alternativeIndex.set(rel.soc_code, {
           soc_code: rel.soc_code,
-          title: rel.title ?? rel.soc_code,
+          title: occupationTitleIn(lang, rel.soc_code, rel.title) ?? rel.soc_code,
           median_annual_wage: rel.median_annual_wage ?? null,
           percent_change: rel.percent_change,
           programs: programCount(socCounts, rel.soc_code),
@@ -1608,10 +1616,10 @@ export default async function ProgramPage({
                 <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
                   {occupation.soc_code ? (
                     <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>
-                      {occupation.title}
+                      {occupationName(occupation, lang)}
                     </Link>
                   ) : (
-                    occupation.title
+                    occupationName(occupation, lang)
                   )}
                 </h3>
                 <Collapsible open={occIndex === 0} label={t.jobDetail}>

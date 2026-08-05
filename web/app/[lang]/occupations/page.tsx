@@ -11,7 +11,12 @@ import {
   programCountsBySoc,
   summariseOccupations,
 } from "@/lib/browse";
-import { allOccupationCodes, getOccupation, getSearchIndex } from "@/lib/data";
+import {
+  allOccupationCodes,
+  getOccupation,
+  getSearchIndex,
+  occupationTitleIn,
+} from "@/lib/data";
 import { count, money, signedPercent } from "@/lib/format";
 import { LANGUAGES, type Lang, dict, isLang } from "@/lib/i18n";
 import { translateTerm } from "@/lib/vocabulary";
@@ -83,7 +88,7 @@ export default async function OccupationsIndexPage({
     if (!occupation) continue;
     rows.push({
       soc,
-      title: occupation.title,
+      title: occupationTitleIn(lang, soc, occupation.title),
       openings: occupation.total_job_openings,
       wage: occupation.median_annual_wage,
       change: occupation.percent_change,
