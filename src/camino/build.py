@@ -365,6 +365,24 @@ def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]
     return occupations if isinstance(occupations, dict) else {}
 
 
+def load_wage_regions(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]:
+    """The same extract's per-area percentiles, keyed by SOC then by published area name.
+
+    Areas are kept under the names OEWS publishes. Those are the strings the projections use
+    before their parenthetical county gloss, so joining is an equality test: a vintage that
+    renamed an area drops out here rather than being repaired by a prefix or edit-distance
+    match, which could attribute one region's wages to another.
+    """
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    regions = payload.get("regions")
+    return regions if isinstance(regions, dict) else {}
+
+
 def fetch_spanish_occupations(
     soc_codes: Iterable[str],
     *,
@@ -774,6 +792,7 @@ def index_occupations(
     enrichment: Mapping[str, careeronestop.OccupationEnrichment] | None = None,
     spanish: Mapping[str, onet.SpanishOccupation] | None = None,
     wage_spread: Mapping[str, Mapping[str, Any]] | None = None,
+    wage_regions: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Index statewide detailed-SOC projections by SOC code.
 
@@ -817,7 +836,7 @@ def index_occupations(
 
     _attach_enrichment(statewide, enrichment or {})
     _attach_spanish(statewide, spanish or {})
-    _attach_wage_spread(statewide, wage_spread or {})
+    _attach_wage_spread(statewide, wage_spread or {}, wage_regions or {})
     _attach_related(statewide)
     return statewide
 
@@ -825,6 +844,7 @@ def index_occupations(
 def _attach_wage_spread(
     occupations: dict[str, dict[str, Any]],
     spread: Mapping[str, Mapping[str, Any]],
+    regions: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> None:
     """Attach the five OEWS percentiles, or null.
 
@@ -838,20 +858,30 @@ def _attach_wage_spread(
     withheld wage is a wage nobody published, which is the same rule the rest of this
     dataset follows.
     """
+    regions = regions or {}
     for soc_code, occupation in occupations.items():
         row = spread.get(soc_code)
-        occupation["wage_spread"] = (
-            None
-            if row is None
-            else {
-                "p10": row.get("p10"),
-                "p25": row.get("p25"),
-                "p50": row.get("p50"),
-                "p75": row.get("p75"),
-                "p90": row.get("p90"),
-                "year": row.get("year"),
-            }
-        )
+        if row is None:
+            occupation["wage_spread"] = None
+            continue
+        # Only areas this dataset can name. An OEWS area the projections do not publish has
+        # no region page, no median beside it and nothing to compare, so carrying it would
+        # put a row on the page that nothing else on the site can corroborate.
+        published = {area["short_name"] for area in occupation.get("regions", []) if area.get("short_name")}
+        by_area = {
+            area: {k: cells.get(k) for k in ("p10", "p25", "p50", "p75", "p90")}
+            for area, cells in (regions.get(soc_code) or {}).items()
+            if not published or area in published
+        }
+        occupation["wage_spread"] = {
+            "p10": row.get("p10"),
+            "p25": row.get("p25"),
+            "p50": row.get("p50"),
+            "p75": row.get("p75"),
+            "p90": row.get("p90"),
+            "year": row.get("year"),
+            "regions": by_area,
+        }
 
 
 def _attach_spanish(
@@ -1729,8 +1759,13 @@ def build(
     spanish = fetch_spanish_occupations(detailed_soc_codes(projections))
     # Whatever a previous `camino fetch-wages` left behind; absent is a complete build.
     wage_spread = load_wage_spread()
+    wage_regions = load_wage_regions()
     occupations = index_occupations(
-        projections, enrichment=enrichment, spanish=spanish, wage_spread=wage_spread
+        projections,
+        enrichment=enrichment,
+        spanish=spanish,
+        wage_spread=wage_spread,
+        wage_regions=wage_regions,
     )
     areas = edd_lmi.area_definitions(projections)
     city_areas = edd_lmi.principal_city_areas(areas)

@@ -244,13 +244,22 @@ export interface SpanishOccupation {
   also_called: string[];
 }
 
-export interface WageSpread {
+export interface WagePercentiles {
   p10: number | null;
   p25: number | null;
   p50: number | null;
   p75: number | null;
   p90: number | null;
+}
+
+export interface WageSpread extends WagePercentiles {
   year: number | null;
+  /**
+   * The same percentiles for each published labour-market area, keyed by the area's short
+   * name — the string both OEWS and the projections use, so the join is an equality test.
+   * Empty for an occupation the Bureau publishes no regional rows for.
+   */
+  regions: Record<string, WagePercentiles>;
 }
 
 export interface Occupation extends OccupationSummary {

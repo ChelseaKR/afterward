@@ -1551,3 +1551,53 @@ td.num {
 .wage-spread > div + div dd {
   border-top: 1px solid var(--gray-30);
 }
+
+/* ---------- Local pay range ---------- */
+
+.local-range {
+  margin: 1rem 0 1.25rem;
+}
+.local-range h4 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+.local-range table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.local-range th,
+.local-range td {
+  border-bottom: 1px solid var(--gray-30);
+  padding: 0.4375rem 0.5rem;
+  text-align: left;
+}
+.local-range thead th {
+  color: var(--gray-90);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.local-range td.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.local-range tbody th {
+  font-weight: 600;
+}
+
+/*
+  Present to assistive technology, absent on screen.
+
+  Not `display: none` and not `visibility: hidden`, both of which remove the element from the
+  accessibility tree as well — which would leave the same empty header axe flagged.
+*/
+.visually-hidden {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

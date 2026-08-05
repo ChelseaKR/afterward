@@ -281,6 +281,11 @@ areaNote: (unplaced: number, total: number) =>
   wageSpreadHeading: "What the pay actually ranges across",
   wageSpreadNote: (year: number): string =>
     `A median is one point. These are the federal Bureau of Labor Statistics' ${year} figures for California, and they say how far apart the people doing this job actually are. Read them as the spread across everyone already in the work — not as a starting wage and not as a promise about where anyone lands.`,
+  localRangeHeading: (area: string): string => `What this pays in ${area}`,
+  localRangeStatewide: "Across California",
+  localRangeAreaColumn: "Area",
+  localRangeNote: (area: string, year: number): string =>
+    `The federal Bureau of Labor Statistics' ${year} figures for ${area} beside the same figures for the whole state. A region can sit well below or above the statewide spread, and the statewide number is the one most often quoted — so where they differ, the local row is the one that describes the work near this program.`,
   wageP10: "The lowest-paid tenth earn under",
   wageP25: "A quarter earn under",
   wageP50: "Half earn under",
@@ -894,6 +899,11 @@ areaNote: (unplaced, total) =>
   wageSpreadHeading: "El rango real de sueldos",
   wageSpreadNote: (year: number): string =>
     `Una mediana es un solo punto. Estas son las cifras de ${year} de la Oficina de Estadísticas Laborales de EE. UU. para California, y muestran qué tan distintos son los sueldos de quienes ya hacen este trabajo. Léalas como ese rango, no como un sueldo inicial ni como una promesa de dónde va a terminar una persona.`,
+  localRangeHeading: (area: string): string => `Cuánto se paga en ${area}`,
+  localRangeStatewide: "En todo California",
+  localRangeAreaColumn: "Zona",
+  localRangeNote: (area: string, year: number): string =>
+    `Las cifras de ${year} de la Oficina de Estadísticas Laborales de EE. UU. para ${area}, junto a las mismas cifras de todo el estado. Una región puede quedar bastante por debajo o por encima del rango estatal, y el dato estatal es el que más se cita, así que cuando difieren, la fila local es la que describe el trabajo cerca de este programa.`,
   wageP10: "La décima parte peor pagada gana menos de",
   wageP25: "Una cuarta parte gana menos de",
   wageP50: "La mitad gana menos de",

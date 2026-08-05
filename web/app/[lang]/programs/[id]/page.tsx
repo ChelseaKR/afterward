@@ -1637,6 +1637,77 @@ export default async function ProgramPage({
                   * have already decided whose wage it is.
                   */}
                 <AggregateNote occupation={occupation} lang={lang} />
+                {/*
+                  * The local pay range, where California published one for this area.
+                  *
+                  * The panel below carries a statewide median and a local median. Two
+                  * midpoints do not show that pharmacy technicians in Bakersfield run about
+                  * $40,000 to $74,000 against $44,000 to $83,000 across the state — the
+                  * region is not uniformly lower, it is differently shaped, and someone
+                  * deciding where to train cannot see that from medians alone.
+                  *
+                  * Only for a program whose city California's own area titles name. The 1,741
+                  * unplaced programs get nothing here rather than the nearest area's figures,
+                  * which is the same rule the rest of this page follows.
+                  */}
+                {(() => {
+                  // Guarded first so the area label below is a string, not a maybe-string.
+                  if (!placed || areaShort === null) return null;
+                  const record = occupation.soc_code === null ? null : getOccupation(occupation.soc_code);
+                  const spread = record?.wage_spread ?? null;
+                  const localSpread = spread?.regions?.[areaShort] ?? null;
+                  if (spread === null || localSpread === null) return null;
+                  const cells = ["p10", "p50", "p90"] as const;
+                  // Every cell must be present on both rows: a comparison with a hole in it
+                  // invites the reader to fill it in, and the value they would guess is the
+                  // one the Bureau declined to publish.
+                  if (cells.some((k) => localSpread[k] === null || spread[k] === null)) return null;
+                  const areaLabel: string = areaName ?? areaShort;
+                  return (
+                    <div className="local-range">
+                      <h4>{t.localRangeHeading(areaLabel)}</h4>
+                      <table>
+                        <thead>
+                          <tr>
+                            {/*
+                              Named, not empty. The corner cell labels the row headers
+                              beneath it, and a screen reader announcing a blank there gives
+                              no clue what "Los Angeles-Long Beach-Glendale MD" is the name
+                              of. Hidden visually because the rows read as their own labels
+                              on screen, which is exactly what a visually-hidden label is for.
+                            */}
+                            <th scope="col">
+                              <span className="visually-hidden">{t.localRangeAreaColumn}</span>
+                            </th>
+                            <th scope="col">{t.wageP10}</th>
+                            <th scope="col">{t.wageP50}</th>
+                            <th scope="col">{t.wageP90}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row">{areaLabel}</th>
+                            {cells.map((k) => (
+                              <td key={k} className="num">{money(localSpread[k], lang)}</td>
+                            ))}
+                          </tr>
+                          <tr>
+                            <th scope="row">{t.localRangeStatewide}</th>
+                            {cells.map((k) => (
+                              <td key={k} className="num">{money(spread[k], lang)}</td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                      {spread.year !== null && (
+                        <p className="compare-note">
+                          {t.localRangeNote(areaLabel, spread.year)}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+
                 <dl className="measure-grid panel">
                   <Measure
                     label={t.medianWage}
