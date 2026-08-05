@@ -1511,3 +1511,16 @@ td.num {
   font-size: 0.9375rem;
   margin-top: 0.125rem;
 }
+
+/*
+  The English title beneath a Spanish one.
+
+  Not a subtitle and not decoration: it is the name on the certificate, on the job advert and
+  in every California record, so a reader working in Spanish still needs to be able to
+  recognise and search for it elsewhere.
+*/
+.title-original {
+  color: var(--gray-90);
+  font-size: 1rem;
+  margin: -0.25rem 0 0.5rem;
+}

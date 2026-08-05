@@ -97,9 +97,12 @@ export function generateStaticParams() {
  * has 1,340 pages it cannot tell apart, and a person scanning results has no reason to open
  * any of them.
  *
- * The occupation title is English in both languages, because California publishes it in
- * English only — the same limitation the page itself states. What is translated is everything
- * around it, which is what tells a Spanish reader the page is theirs.
+ * The occupation title is O*NET's own Spanish where Mi Próximo Paso publishes one, and
+ * English where it does not. California publishes its titles in English only, which is why
+ * this page said for months that the title had to stay English; that was true of the state's
+ * data and false of the Department of Labor's, which publishes the same occupations in
+ * Spanish. Nothing here is translated by this project — it is the Department's text or it is
+ * the English, never a machine translation nobody reviewed.
  *
  * The wage goes in the description only when California published a statewide one. The other
  * thirteen occupations say plainly that none is published rather than borrowing a nearby
@@ -124,7 +127,8 @@ export async function generateMetadata({
   const anyWage =
     occupation.median_annual_wage !== null ||
     occupation.regions.some((region) => region.median_annual_wage !== null);
-  const name = occupation.title ?? `SOC ${occupation.soc_code ?? soc}`;
+  const spanishName = lang === "es" ? (occupation.spanish?.title ?? null) : null;
+  const name = spanishName ?? occupation.title ?? `SOC ${occupation.soc_code ?? soc}`;
 
   return {
     title: anyWage ? t.metaOccupationTitle(name) : t.metaOccupationTitleNoPay(name),
@@ -176,7 +180,11 @@ export default async function OccupationPage({
    * A description that exists but is blank is absence wearing a different shape, and is
    * treated as absence rather than as a heading over an empty paragraph.
    */
-  const described = occupation.description === null ? "" : occupation.description.trim();
+  const spanishTitle = lang === "es" ? (occupation.spanish?.title ?? null) : null;
+  const displayTitle = spanishTitle ?? occupation.title;
+  const spanishDescription = lang === "es" ? (occupation.spanish?.description ?? null) : null;
+  const describedSource = spanishDescription ?? occupation.description;
+  const described = describedSource === null ? "" : describedSource.trim();
   const description = described.length > 0 ? described : null;
   const { ranked, unrated } = partitionSkills(occupation.skills);
   const outlook =
@@ -189,7 +197,18 @@ export default async function OccupationPage({
         <Link href={`/${lang}/`}>← {t.backToSearch}</Link>
       </p>
 
-      <h1>{occupation.title}</h1>
+      {/*
+        O*NET's Spanish title where one exists, the English where it does not. A reader who
+        asked for Spanish and gets "Pharmacy Technicians" has been told the page is not
+        really theirs; one who gets "Técnicos de Farmacia" has not.
+      */}
+      <h1>{displayTitle}</h1>
+      {/* The English stays visible: it is the name on the certificate, the job advert and
+          every state record, and a reader who only ever saw the Spanish could not search for
+          the work anywhere else. */}
+      {spanishTitle !== null && occupation.title !== null && (
+        <p className="title-original">{occupation.title}</p>
+      )}
       <p style={{ color: "var(--gray-90)" }}>
         SOC {occupation.soc_code}
         {occupation.period ? ` · ${occupation.period}` : ""}
@@ -202,7 +221,18 @@ export default async function OccupationPage({
       {description !== null && (
         <>
           <p>{description}</p>
-          <p className="compare-note">{t.occupationDescriptionNote}</p>
+          {/*
+            Which note depends on which text was actually rendered above it.
+            
+            The Spanish description shipped for a few minutes under a note reading "Solo se
+            publica en inglés" — published in English only — directly contradicting the
+            Spanish paragraph the reader had just finished. A caveat that describes a
+            limitation the page no longer has is worse than no caveat: it tells a reader that
+            what they can plainly see is not what they are getting.
+          */}
+          <p className="compare-note">
+            {spanishDescription === null ? t.occupationDescriptionNote : t.occupationDescriptionNoteEs}
+          </p>
         </>
       )}
 

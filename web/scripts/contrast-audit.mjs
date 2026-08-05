@@ -150,6 +150,7 @@ const PAIRS = [
   ["saved bar note", "--gray-90", "--gray-20", AA_NORMAL],
   ["browse filter count", "--gray-90", "--gray-10", AA_NORMAL],
   ["related-work facts line", "--gray-90", "--gray-10", AA_NORMAL],
+  ["English title under a Spanish one", "--gray-90", "--gray-10", AA_NORMAL],
 ];
 
 const statics = staticTokens();

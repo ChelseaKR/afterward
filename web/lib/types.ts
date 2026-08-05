@@ -238,6 +238,12 @@ export interface OnetRelatedOccupation {
  */
 export type RelatedSource = "onet" | "soc_major_group";
 
+export interface SpanishOccupation {
+  title: string | null;
+  description: string | null;
+  also_called: string[];
+}
+
 export interface Occupation extends OccupationSummary {
   period: string | null;
   median_hourly_wage: number | null;
@@ -266,6 +272,16 @@ export interface Occupation extends OccupationSummary {
    */
   bright_outlook: string | null;
   related_source: RelatedSource | null;
+  /**
+   * O*NET's own Spanish record for this occupation, from Mi Próximo Paso.
+   *
+   * Null where Mi Próximo Paso carries no entry — it covers 923 of O*NET's 1,016
+   * occupations — and null on any dataset built without an O*NET key. Nothing here is
+   * translated by this project: it is the Department of Labor's Spanish text or it is
+   * absent, and an absent record leaves the English title standing rather than inviting a
+   * machine translation nobody reviewed.
+   */
+  spanish: SpanishOccupation | null;
   /**
    * What the work involves, most important first. Empty for the 89 occupations O*NET has no
    * profile for — precisely the same 89 that have no `skills`, since O*NET either rates an

@@ -16,7 +16,15 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Final
 
-from camino.sources import careeronestop, dol_etp, edd_lmi, link_check, local_help, soc_vintage
+from camino.sources import (
+    careeronestop,
+    dol_etp,
+    edd_lmi,
+    link_check,
+    local_help,
+    onet,
+    soc_vintage,
+)
 
 DEFAULT_STATE = "CA"
 
@@ -330,6 +338,41 @@ def fetch_enrichment(
             )
             if enrichment is not None:
                 found[soc_code] = enrichment
+    return found
+
+
+ONET_CACHE_DIR = COS_CACHE_DIR
+
+
+def fetch_spanish_occupations(
+    soc_codes: Iterable[str],
+    *,
+    cache_dir: Path | None = ONET_CACHE_DIR,
+) -> dict[str, onet.SpanishOccupation]:
+    """Look up each occupation's Spanish record from O*NET's Mi Próximo Paso, keyed by SOC.
+
+    Every program page tells a Spanish reader that occupation titles appear in English
+    "because that is the only language the federal and state records publish them in". That
+    was true of the sources this build already read and false of the Department of Labor as a
+    whole: O*NET publishes the same occupations in Spanish, and this fills the gap rather
+    than continuing to explain it.
+
+    Same contract as :func:`fetch_enrichment`. No key is the CI case and is not an error --
+    the build then emits what it emitted before, with the field present and null. Mi Próximo
+    Paso covers 923 of O*NET's 1,016 occupations, so an occupation with no Spanish record is
+    ordinary; it carries null and its page keeps the English title, which is the honest
+    outcome rather than a machine translation this project did not make.
+    """
+    key = onet.api_key()
+    if key is None:
+        return {}
+
+    found: dict[str, onet.SpanishOccupation] = {}
+    with onet.build_client(key) as http:
+        for soc_code in soc_codes:
+            record = onet.fetch_spanish(onet.onet_code(soc_code), client=http, cache_dir=cache_dir)
+            if record is not None:
+                found[soc_code] = record
     return found
 
 
@@ -708,6 +751,7 @@ def index_occupations(
     projections: list[edd_lmi.OccupationProjection],
     *,
     enrichment: Mapping[str, careeronestop.OccupationEnrichment] | None = None,
+    spanish: Mapping[str, onet.SpanishOccupation] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Index statewide detailed-SOC projections by SOC code.
 
@@ -750,8 +794,32 @@ def index_occupations(
         occupation["regions"] = regional.get(soc_code, [])
 
     _attach_enrichment(statewide, enrichment or {})
+    _attach_spanish(statewide, spanish or {})
     _attach_related(statewide)
     return statewide
+
+
+def _attach_spanish(
+    occupations: dict[str, dict[str, Any]],
+    spanish: Mapping[str, onet.SpanishOccupation],
+) -> None:
+    """Attach the Spanish title, description and reported titles, or null.
+
+    Written for every occupation whether or not a record was found, so a reader downstream
+    can tell "no Spanish record exists" from "this dataset predates the field". Nothing here
+    is translated by this project: it is O*NET's own Spanish text or it is absent.
+    """
+    for soc_code, occupation in occupations.items():
+        record = spanish.get(soc_code)
+        occupation["spanish"] = (
+            None
+            if record is None
+            else {
+                "title": record.title,
+                "description": record.description,
+                "also_called": list(record.also_called),
+            }
+        )
 
 
 def _attach_enrichment(
@@ -1601,7 +1669,10 @@ def build(
     enrichment = fetch_enrichment(
         detailed_soc_codes(projections), state=state, cache_dir=COS_CACHE_DIR
     )
-    occupations = index_occupations(projections, enrichment=enrichment)
+    # O*NET's Spanish records, for the same occupations and on the same terms: absent
+    # without a key, absent for the occupations Mi Próximo Paso does not carry.
+    spanish = fetch_spanish_occupations(detailed_soc_codes(projections))
+    occupations = index_occupations(projections, enrichment=enrichment, spanish=spanish)
     areas = edd_lmi.area_definitions(projections)
     city_areas = edd_lmi.principal_city_areas(areas)
 

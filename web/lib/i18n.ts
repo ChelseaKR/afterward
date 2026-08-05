@@ -276,6 +276,8 @@ areaNote: (unplaced: number, total: number) =>
   // reader to guess why a paragraph is in English.
   occupationDescriptionNote:
     "How the U.S. Department of Labor describes this work. Published in English only.",
+  occupationDescriptionNoteEs:
+    "How the U.S. Department of Labor describes this work, in the Department's own Spanish.",
 
   skillsHeading: "Skills this work uses most",
   skillsNote:
@@ -876,6 +878,8 @@ areaNote: (unplaced, total) =>
   // ---- Federal occupation detail (CareerOneStop / O*NET, PROVENANCE D6) ----
   occupationDescriptionNote:
     "Así describe este trabajo el Departamento de Trabajo de EE. UU. Solo se publica en inglés.",
+  occupationDescriptionNoteEs:
+    "Así describe este trabajo el Departamento de Trabajo de EE. UU., en el español del propio Departamento.",
 
   skillsHeading: "Las habilidades que más se usan en este trabajo",
   skillsNote:
