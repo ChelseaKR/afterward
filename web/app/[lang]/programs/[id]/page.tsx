@@ -2,13 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import {
-  CENTERS_STEP,
-  Citations,
-  LEAD_STEP,
-  Questions,
-  stepCopy,
-} from "@/components/funding";
+import { CENTERS_STEP, LEAD_STEP, stepCopy } from "@/components/funding";
 import { Measure } from "@/components/Measure";
 import { programCount, programCountsBySoc } from "@/lib/browse";
 import { allProgramIds, getCoverage, getOccupation, getProgram, getSearchIndex } from "@/lib/data";
@@ -1156,9 +1150,13 @@ function FundingBlock({
       */}
       {centersStep !== undefined && (
         <section className="funding-step">
+          {/*
+            The heading names the offices; the paragraph explaining what a comprehensive
+            one-stop centre is, and the regulation it rests on, are the last generic passage
+            that was still being printed on all 6,532 program pages. Both are on the guide
+            this block links to, so what stays here is the offices themselves.
+          */}
           <h3>{stepCopy(centersStep, t).heading}</h3>
-          <p>{stepCopy(centersStep, t).detail}</p>
-          <Citations citations={centersStep.citations} label={t.fundingRuleLabel} />
           <NearestCenters program={program} localHelp={localHelp} lang={lang} />
         </section>
       )}

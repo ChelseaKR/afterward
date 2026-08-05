@@ -216,7 +216,13 @@ export default async function OccupationPage({
         </p>
       )}
 
-      <h2>{t.occupation}</h2>
+      {/*
+        Was "The job this trains for", which is program-page wording: on an occupation page
+        there is no "this", the page is the job, and the heading read as though something
+        above it trained for the thing below. It sits over the state's pay and openings
+        projections, so it now says so. Wrong on 1,340 pages.
+      */}
+      <h2>{t.occupationOutlook}</h2>
       <dl className="measure-grid panel">
         <Measure
           label={t.medianWage}
@@ -349,7 +355,7 @@ export default async function OccupationPage({
             <table>
               <thead>
                 <tr>
-                  <th scope="col">{t.occupation}</th>
+                  <th scope="col">{t.occupationColumn}</th>
                   <th scope="col" style={{ textAlign: "right" }}>
                     {t.medianWage}
                   </th>
@@ -402,8 +408,14 @@ export default async function OccupationPage({
 
       {programs.length > 0 && (
         <>
+          {/*
+            "Leads to — 66" pointed the wrong way. A program leads to an occupation, which is
+            what the phrase means on a program card and in the provider table; on an
+            occupation page the 66 are what lead *here*, so the heading was claiming this job
+            leads to sixty-six things.
+          */}
           <h2>
-            {t.leadsTo} — {programs.length}
+            {t.programsForThisJob} — {programs.length}
           </h2>
           <ul className="card-list">
             {programs.slice(0, 40).map((entry) => (

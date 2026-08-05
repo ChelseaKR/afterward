@@ -64,6 +64,7 @@ const en = {
   providerProgramList: "All programs here",
   allPrograms: "See all programs from this provider",
   leadsTo: "Leads to",
+  programsForThisJob: "Programs that train for this job",
   notReported: "Not reported",
   notReportedLong: "The provider did not report this, or it was withheld to protect the privacy of a small group.",
 
@@ -81,7 +82,7 @@ const en = {
   basedOn: (n: number) => `Based on ${fmt(n)} people`,
   smallSample: "Small group — treat with caution",
 
-  occupation: "The job this trains for",
+  occupationOutlook: "What California expects of this job",
   medianWage: "Typical pay in California",
   jobOpenings: "Projected openings",
   growth: "Projected change",
@@ -697,6 +698,7 @@ const es: Dictionary = {
   providerProgramList: "Todos los programas aquí",
   allPrograms: "Ver todos los programas de esta institución",
   leadsTo: "Lleva a",
+  programsForThisJob: "Programas que capacitan para este empleo",
   notReported: "No reportado",
   notReportedLong:
     "La institución no reportó este dato, o se omitió para proteger la privacidad de un grupo pequeño.",
@@ -715,7 +717,7 @@ const es: Dictionary = {
   basedOn: (n: number) => `Con base en ${fmt(n)} personas`,
   smallSample: "Grupo pequeño — interprete con cuidado",
 
-  occupation: "La ocupación para la que prepara",
+  occupationOutlook: "Lo que California espera de este empleo",
   medianWage: "Pago típico en California",
   jobOpenings: "Vacantes proyectadas",
   growth: "Cambio proyectado",
