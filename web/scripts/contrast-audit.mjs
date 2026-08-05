@@ -149,6 +149,7 @@ const PAIRS = [
   ["saved bar button", "--link", "--gray-20", AA_NORMAL],
   ["saved bar note", "--gray-90", "--gray-20", AA_NORMAL],
   ["browse filter count", "--gray-90", "--gray-10", AA_NORMAL],
+  ["related-work facts line", "--gray-90", "--gray-10", AA_NORMAL],
 ];
 
 const statics = staticTokens();

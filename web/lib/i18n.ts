@@ -592,6 +592,12 @@ areaNote: (unplaced: number, total: number) =>
   filterShowing: (shown: number, total: number): string =>
     `Showing ${shown.toLocaleString("en-US")} of ${total.toLocaleString("en-US")}`,
   filterNoMatches: "Nothing here matches that. Try fewer letters, or a word from the middle of the name.",
+  alternativesHeading: "Related work California expects more of",
+  alternativesNote:
+    "The U.S. Department of Labor lists these as related to the job above, and California projects growth in them rather than decline. Related is not the same as interchangeable: the training, the licences and the pay can all differ, and this program does not train for these. It is a place to start asking, not a recommendation.",
+  alternativesPrograms: (n: number): string =>
+    n === 1 ? "1 program here" : `${n.toLocaleString("en-US")} programs here`,
+  alternativesNoPrograms: "No programs here train for it",
   saveProgram: "Save",
   savedProgram: "Saved",
   savedCount: (n: number): string => (n === 1 ? "1 saved program" : `${n} saved programs`),
@@ -1174,6 +1180,12 @@ areaNote: (unplaced, total) =>
     `Mostrando ${shown.toLocaleString("es-MX")} de ${total.toLocaleString("es-MX")}`,
   filterNoMatches:
     "Nada coincide con eso. Pruebe con menos letras o con una palabra del medio del nombre.",
+  alternativesHeading: "Trabajos relacionados de los que California espera más",
+  alternativesNote:
+    "El Departamento del Trabajo de EE. UU. considera que estos empleos están relacionados con el de arriba, y California proyecta crecimiento en ellos en lugar de disminución. Relacionado no significa intercambiable: la capacitación, las licencias y el sueldo pueden ser distintos, y este programa no capacita para estos empleos. Es un punto de partida para preguntar, no una recomendación.",
+  alternativesPrograms: (n: number): string =>
+    n === 1 ? "1 programa aquí" : `${n.toLocaleString("es-MX")} programas aquí`,
+  alternativesNoPrograms: "Ningún programa de aquí capacita para eso",
   saveProgram: "Guardar",
   savedProgram: "Guardado",
   savedCount: (n: number): string =>

@@ -10,7 +10,8 @@ import {
   stepCopy,
 } from "@/components/funding";
 import { Measure } from "@/components/Measure";
-import { allProgramIds, getCoverage, getOccupation, getProgram } from "@/lib/data";
+import { programCount, programCountsBySoc } from "@/lib/browse";
+import { allProgramIds, getCoverage, getOccupation, getProgram, getSearchIndex } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
 import type {
@@ -1298,6 +1299,42 @@ export default async function ProgramPage({
    * "All Other" codes and federal publication buckets — and those pages are meant to be the
    * page they already were, one section shorter, rather than a heading over an apology.
    */
+  /*
+   * Growing work adjacent to this program's shrinking occupations.
+   *
+   * Built only when something is actually shrinking, so the ordinary page does no extra work
+   * and no reader is offered an alternative to a job the state expects to hold up fine.
+   */
+  const ownSocs = new Set(occupations.map((o) => o.soc_code).filter((c): c is string => c !== null));
+  const socCounts = programCountsBySoc(getSearchIndex().programs);
+  const alternativeIndex = new Map<
+    string,
+    { soc_code: string; title: string; median_annual_wage: number | null; percent_change: number | null; programs: number }
+  >();
+  if (shrinking) {
+    for (const own of occupations) {
+      if (own.soc_code === null) continue;
+      if (own.percent_change === null || own.percent_change >= 0) continue;
+      const record = getOccupation(own.soc_code);
+      for (const rel of record?.related ?? []) {
+        if (rel.soc_code === null || ownSocs.has(rel.soc_code)) continue;
+        // Growing only. A related job the state also expects to shrink is not an alternative.
+        if (rel.percent_change === null || rel.percent_change <= 0) continue;
+        if (alternativeIndex.has(rel.soc_code)) continue;
+        alternativeIndex.set(rel.soc_code, {
+          soc_code: rel.soc_code,
+          title: rel.title ?? rel.soc_code,
+          median_annual_wage: rel.median_annual_wage ?? null,
+          percent_change: rel.percent_change,
+          programs: programCount(socCounts, rel.soc_code),
+        });
+      }
+    }
+  }
+  const alternatives = [...alternativeIndex.values()]
+    .sort((a, b) => b.programs - a.programs || (b.percent_change ?? 0) - (a.percent_change ?? 0))
+    .slice(0, 6);
+
   const profiled = occupations.map((occupation) => ({
     occupation,
     profile: workProfile(occupation.soc_code),
@@ -1487,6 +1524,50 @@ export default async function ProgramPage({
             </p>
           )}
           {occupations.length > 1 && <p>{t.leadsToSeveral}</p>}
+
+          {/*
+            * A warning with somewhere to go.
+            *
+            * 538 programs on this site train for work California projects will shrink, and
+            * until now the page said so and stopped. Telling someone the trade they were
+            * about to spend a year and several thousand dollars on is contracting, and then
+            * offering nothing, is the least useful true thing this dataset can say.
+            *
+            * These come from the Department of Labor's own related-occupation list, filtered
+            * to the ones California projects upward, with the jobs this program already
+            * trains for removed — suggesting the shrinking occupation back to the reader as
+            * an alternative to itself would be absurd. Sorted by projected openings, because
+            * where the openings are is the one thing that makes a related job reachable
+            * rather than merely adjacent.
+            *
+            * Deliberately not a recommendation, and the note says so. This project publishes
+            * no verdicts about programs and will not start publishing them about careers: the
+            * page can say what the state expects and how many programs here train for it, and
+            * the reader decides whether any of it is theirs.
+            */}
+          {alternatives.length > 0 && (
+            <section className="alternatives">
+              <h3>{t.alternativesHeading}</h3>
+              <p className="compare-note">{t.alternativesNote}</p>
+              <ul className="alternatives-list">
+                {alternatives.map((alt) => (
+                  <li key={alt.soc_code}>
+                    <Link href={`/${lang}/occupations/${alt.soc_code}/`}>{alt.title}</Link>
+                    <span className="alternatives-facts">
+                      {money(alt.median_annual_wage, lang) ?? t.notReported}
+                      {alt.percent_change === null
+                        ? ""
+                        : ` · ${signedPercent(alt.percent_change, lang)}`}
+                      {" · "}
+                      {alt.programs === 0
+                        ? t.alternativesNoPrograms
+                        : t.alternativesPrograms(alt.programs)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/*
             * Two different absences, told apart before a single number is shown.
