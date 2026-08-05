@@ -2,7 +2,7 @@
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
-	publish-preflight
+	publish-preflight publish
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -72,6 +72,31 @@ data:
 # in *length*; --size-only compares length alone and skips it, while the asset sync's
 # --delete removes the chunk the stale copy still points at. The result is a page that
 # loads, fails to hydrate, and looks fine to every check that counts things.
+# Publish the built site, in the only order that is safe.
+#
+# Assembled by hand seven times on 2026-08-04 and got wrong three different ways: HTML synced
+# with --size-only (which skips a page whose only change is a fixed-length chunk hash, so
+# 22,528 files silently stayed stale and the search page served references to chunks the
+# asset sync had just deleted); the verification run from web/ where the Makefile is not, so
+# it reported success by not running; and no guard at all against publishing the test
+# fixture, which deploy.yml protects and a hand-run sync does not.
+#
+# So the sequence is here rather than in anyone's memory: refuse a fixture build, sync HTML
+# without --size-only, sync immutable assets, invalidate, then ask the live site whether the
+# assets its pages reference actually resolve.
+DISTRIBUTION_ID ?= E166CPAG407D0L
+SITE_BUCKET ?= camino.chelseakr.com
+publish: publish-preflight
+	aws s3 sync web/out/ "s3://$(SITE_BUCKET)/" --delete \
+	  --cache-control "public, max-age=300, must-revalidate" --exclude "_next/static/*"
+	aws s3 sync web/out/_next/static/ "s3://$(SITE_BUCKET)/_next/static/" --delete \
+	  --cache-control "public, max-age=31536000, immutable"
+	@id=$$(aws cloudfront create-invalidation --distribution-id $(DISTRIBUTION_ID) \
+	  --paths "/*" --query 'Invalidation.Id' --output text); \
+	  echo "invalidation $$id"; \
+	  aws cloudfront wait invalidation-completed --distribution-id $(DISTRIBUTION_ID) --id "$$id"
+	$(MAKE) deploy-check
+
 # Refuse to publish a build made from the test fixture.
 #
 # deploy.yml guards this and a manual `aws s3 sync` does not go through deploy.yml. Run
