@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
-	link-check dataset-verify dataset-package dataset-publish backup-data
+	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -61,6 +61,20 @@ data:
 # place, the DOL endpoint answers CI with 403, and a full refetch is slow -- so a build that
 # goes wrong halfway is not an inconvenience, it is the loss of the data the site publishes.
 # Run this before any pipeline change.
+# Ask the live site whether every asset its pages reference actually resolves.
+#
+# Run after every publish. The object-count comparison this replaces matched perfectly while
+# 22,528 HTML files on S3 were stale -- a count cannot see a file that was skipped.
+#
+# NEVER publish this site's HTML with `aws s3 sync --size-only`. Next.js chunk names are
+# fixed-length hashes, so a page whose only change is which chunk it loads is byte-identical
+# in *length*; --size-only compares length alone and skips it, while the asset sync's
+# --delete removes the chunk the stale copy still points at. The result is a page that
+# loads, fails to hydrate, and looks fine to every check that counts things.
+SITE_URL ?= https://camino.chelseakr.com
+deploy-check:
+	uv run python scripts/deploy_check.py "$(SITE_URL)"
+
 BACKUP_DIR ?= ../camino-dataset-backup
 backup-data:
 	@mkdir -p "$(BACKUP_DIR)"
