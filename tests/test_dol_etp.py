@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from camino.sources.dol_etp import (
+from afterward.sources.dol_etp import (
     OVERSIZED_COHORT_MIN_PROGRAMS,
     OVERSIZED_COHORT_SERVED,
     CohortFiling,

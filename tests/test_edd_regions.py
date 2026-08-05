@@ -7,7 +7,7 @@ narrow -- most of them assert that something is *not* matched.
 
 from __future__ import annotations
 
-from camino.sources.edd_lmi import (
+from afterward.sources.edd_lmi import (
     area_definitions,
     normalise_place,
     parse_area,

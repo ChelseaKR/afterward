@@ -25,8 +25,8 @@ from typing import Any
 import httpx
 import pytest
 
-from camino.sources.careeronestop import TOKEN_ENV, USER_ID_ENV
-from camino.sources.local_help import (
+from afterward.sources.careeronestop import TOKEN_ENV, USER_ID_ENV
+from afterward.sources.local_help import (
     COMPREHENSIVE,
     ETPL_SNAPSHOT_CAVEAT,
     QUESTIONS,
@@ -327,7 +327,7 @@ STATE_PATH = "/v1/ajcfinder/user/CA/25/0/0/0/0/0/0/0/500"
 def _credentials(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv(USER_ID_ENV, "user")
     monkeypatch.setenv(TOKEN_ENV, "token")
-    monkeypatch.setattr("camino.sources.local_help.time.sleep", lambda _: None)
+    monkeypatch.setattr("afterward.sources.local_help.time.sleep", lambda _: None)
 
 
 class TestFetchWithoutCredentials:

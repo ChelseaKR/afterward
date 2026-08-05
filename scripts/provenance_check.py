@@ -25,7 +25,7 @@ ALLOWLIST = {
 }
 
 # Word-boundary patterns. Kept narrow enough to avoid false hits on ordinary English
-# ("nj" inside a word, "camino" containing no trigger) while catching real references.
+# ("nj" inside a word, "afterward" containing no trigger) while catching real references.
 PATTERNS = [
     re.compile(r"\bmcnj\b", re.I),
     re.compile(r"\bmy\s*career\s*nj\b", re.I),

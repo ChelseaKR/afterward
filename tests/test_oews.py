@@ -12,8 +12,8 @@ this module exists to hold is that a suppressed wage is None and never zero.
 
 from __future__ import annotations
 
-from camino.sources.edd_lmi import STATEWIDE_AREA, parse_area
-from camino.sources.oews import (
+from afterward.sources.edd_lmi import STATEWIDE_AREA, parse_area
+from afterward.sources.oews import (
     ANNUAL,
     HOURLY,
     WageDistribution,

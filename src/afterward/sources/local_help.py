@@ -1,7 +1,7 @@
 """The next step: America's Job Centers, and the funding route that may pay for a program.
 
 Source D6 in PROVENANCE.md -- the same CareerOneStop Web API and the same credentials as
-:mod:`camino.sources.careeronestop`, a different endpoint. This module exists because the
+:mod:`afterward.sources.careeronestop`, a different endpoint. This module exists because the
 site currently ends a program page with a link to the provider's own website and nothing
 else, and for 334 programs that link is dead. A person who has just read what a program
 costs and what happened to the people who took it is then on their own.
@@ -58,8 +58,8 @@ from urllib.parse import quote
 
 import httpx
 
-from camino.sources.careeronestop import BASE_URL, build_client, credentials
-from camino.sources.dol_etp import FetchError, clean_text, clean_url, get_with_retry
+from afterward.sources.careeronestop import BASE_URL, build_client, credentials
+from afterward.sources.dol_etp import FetchError, clean_text, clean_url, get_with_retry
 
 REQUEST_TIMEOUT = 45.0
 PAUSE_BETWEEN_CALLS = 0.3

@@ -16,7 +16,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Final
 
-from camino.sources import (
+from afterward.sources import (
     careeronestop,
     dol_etp,
     edd_lmi,
@@ -35,7 +35,7 @@ LINK_CACHE_DIR = Path("data/raw") / link_check.DEFAULT_CACHE_SUBDIR
 """Per-URL link verdicts, kept so a re-run asks only about what has expired."""
 
 LINK_CHECK_PATH = Path("data/interim/link-checks.json")
-"""Where ``camino check-links`` leaves its report and where ``camino build`` looks for one.
+"""Where ``afterward check-links`` leaves its report and where ``afterward build`` looks for one.
 
 Under ``data/interim`` rather than ``data/processed`` because it is not part of the site
 dataset: it is advisory input to the build, produced by a separate, explicitly-invoked step,
@@ -262,7 +262,7 @@ def peer_medians(payloads: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     page can say how many programs the comparison rests on.
 
     Programs whose cohort this build will not attribute to them are left out of the median
-    entirely -- see :class:`camino.sources.dol_etp.CohortIntegrity`. Including them would let
+    entirely -- see :class:`afterward.sources.dol_etp.CohortIntegrity`. Including them would let
     one institution-level filing vote eleven times, once per program row it was stamped on,
     which is the same misattribution the flag exists to stop, laundered into the yardstick
     every other program is then measured against. ``excluded_not_attributable`` publishes how
@@ -488,16 +488,16 @@ def check_provider_links(
 
     The URLs come from a dataset this pipeline has already emitted rather than from a fresh
     fetch, so checking links costs DOL nothing and can be run against exactly what is
-    published. Run ``camino build`` first; run it again afterwards to pick the report up.
+    published. Run ``afterward build`` first; run it again afterwards to pick the report up.
 
     ``sleep`` is injectable for the reason
-    :func:`camino.sources.link_check.check_urls` makes it injectable: the pacing between
+    :func:`afterward.sources.link_check.check_urls` makes it injectable: the pacing between
     requests to one provider is a property worth testing and not worth waiting for.
     """
     programs_path = dataset_dir / "programs.json"
     if not programs_path.exists():
         raise FileNotFoundError(
-            f"no dataset at {programs_path}. Run `camino build` first: the check reads the "
+            f"no dataset at {programs_path}. Run `afterward build` first: the check reads the "
             "URLs from an emitted dataset rather than re-fetching them."
         )
     document = json.loads(programs_path.read_text(encoding="utf-8"))
@@ -620,7 +620,7 @@ def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCovera
 # This site cannot determine anybody's eligibility and must never appear to -- that is done
 # by a one-stop centre after an interview (20 CFR 680.220). What it can do is name the
 # nearest offices where the question is answered. Those come from one statewide read of the
-# federal finder, ranked locally, exactly as `camino.sources.local_help` was built to be
+# federal finder, ranked locally, exactly as `afterward.sources.local_help` was built to be
 # used: 183 centres in one request, not 227 requests for the same 183.
 # --------------------------------------------------------------------------------------
 
@@ -766,7 +766,7 @@ def local_help_document(
     ``guidance`` is present on every build, credentials or not: what the Workforce Innovation
     and Opportunity Act route is, and what to ask about it, does not depend on whether this
     machine could reach a directory of offices. It arrives from
-    :func:`camino.sources.local_help.funding_guidance`, which is the only way to obtain the
+    :func:`afterward.sources.local_help.funding_guidance`, which is the only way to obtain the
     steps, so the sentence naming who actually decides eligibility cannot be emitted apart
     from them.
 
@@ -1112,7 +1112,7 @@ def match_occupations(
 
     A code EDD publishes matches itself. A code EDD publishes only inside a larger occupation
     matches that aggregate, on the containment argument cited row by row in
-    :mod:`camino.sources.soc_vintage` -- without it, 61 California programs have no
+    :mod:`afterward.sources.soc_vintage` -- without it, 61 California programs have no
     occupation panel at all, and 74 more are missing one of theirs. A code with neither is
     dropped rather than guessed at.
 
@@ -1241,7 +1241,7 @@ def occupation_summary(
 
     The rule is mechanical -- every aggregate match, not the ones judged wrong. Deciding
     case by case which aggregate's credential happens to fit a given program is precisely the
-    similarity judgement :mod:`camino.sources.soc_vintage` refuses to make, and it would put
+    similarity judgement :mod:`afterward.sources.soc_vintage` refuses to make, and it would put
     that judgement somewhere nobody could audit it.
 
     Two absences would otherwise reach the page as the same null, so
@@ -1294,7 +1294,7 @@ def program_payload(
 ) -> dict[str, Any]:
     """One program record, with its outcomes labelled by who they actually describe.
 
-    ``cohort`` comes from :func:`camino.sources.dol_etp.cohort_integrity` run over the whole
+    ``cohort`` comes from :func:`afterward.sources.dol_etp.cohort_integrity` run over the whole
     snapshot, because a cohort republished across a provider's programs is invisible from
     inside any one of them. Omitting it judges the program against itself alone, which is a
     real answer -- the contradiction checks still run -- and is what a caller holding a
@@ -1746,7 +1746,7 @@ def build(
     """Fetch, join and emit. Reads a provider-link report if one has been left for it.
 
     ``link_checks_path`` is consumed, never produced: the check is
-    :func:`check_provider_links`, invoked deliberately by ``camino check-links``, and a build
+    :func:`check_provider_links`, invoked deliberately by ``afterward check-links``, and a build
     that found no report is a complete build whose links are published exactly as filed.
     """
     output_dir = output_dir or Path("data/processed")
@@ -1765,7 +1765,7 @@ def build(
     # O*NET's Spanish records, for the same occupations and on the same terms: absent
     # without a key, absent for the occupations Mi Próximo Paso does not carry.
     spanish = fetch_spanish_occupations(detailed_soc_codes(projections))
-    # Whatever a previous `camino fetch-wages` left behind; absent is a complete build.
+    # Whatever a previous `afterward fetch-wages` left behind; absent is a complete build.
     wage_spread = load_wage_spread()
     wage_regions = load_wage_regions()
     occupations = index_occupations(

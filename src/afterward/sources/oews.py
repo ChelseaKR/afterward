@@ -43,11 +43,11 @@ from typing import Any, Final, Literal
 
 import httpx
 
-from camino.sources.dol_etp import build_client, get_with_retry
+from afterward.sources.dol_etp import build_client, get_with_retry
 
 # Resolved by slug through the same CKAN helper the projections use, so both EDD datasets
 # are located the same way and neither can be pinned to a resource id that will rot.
-from camino.sources.edd_lmi import OEWS, STATEWIDE_AREA, resolve_resource_url
+from afterward.sources.edd_lmi import OEWS, STATEWIDE_AREA, resolve_resource_url
 
 REQUEST_TIMEOUT = 300.0
 """Longer than the projections' timeout: the published extract is ~112 MB in one response."""
@@ -385,7 +385,7 @@ def area_name_joins_to_projections(area_name: str | None) -> str | None:
     2026 vintage OEWS names its 31 non-statewide areas with exactly the strings the
     projections put before their parenthetical county gloss -- OEWS "Fresno MSA" against the
     projections' "Fresno MSA (Fresno and Madera Counties)" -- so
-    :attr:`~camino.sources.edd_lmi.ProjectionArea.short_name` is the join key on both sides
+    :attr:`~afterward.sources.edd_lmi.ProjectionArea.short_name` is the join key on both sides
     and all 32 areas match, statewide included.
 
     This function exists so that fact is asserted in one place and tested, rather than being

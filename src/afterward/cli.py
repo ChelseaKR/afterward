@@ -6,7 +6,7 @@ from pathlib import Path
 
 import typer
 
-from camino.build import (
+from afterward.build import (
     CLOSE_ENOUGH_MILES,
     LINK_CACHE_DIR,
     LINK_CHECK_PATH,
@@ -16,7 +16,7 @@ from camino.build import (
     build_offline,
     check_provider_links,
 )
-from camino.sources import link_check
+from afterward.sources import link_check
 
 app = typer.Typer(
     add_completion=False,
@@ -38,7 +38,7 @@ def build_command(
     link_checks: Path = typer.Option(
         LINK_CHECK_PATH,
         "--link-checks",
-        help="Provider-link report to read, if it exists. Produced by `camino check-links`; "
+        help="Provider-link report to read, if it exists. Produced by `afterward check-links`; "
         "a build that finds none publishes every link exactly as filed.",
     ),
 ) -> None:
@@ -93,7 +93,7 @@ def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None
     if not links.programs_checked:
         typer.echo(f"  checked                   {0:>6}")
         typer.echo(f"  (no link report at {report_path}; every link published as filed.")
-        typer.echo("   Run `camino check-links` to establish which of them still go anywhere.)")
+        typer.echo("   Run `afterward check-links` to establish which of them still go anywhere.)")
         return
 
     typer.echo(
@@ -174,7 +174,7 @@ def check_links_command(
     decided to spend them -- on a quarterly refresh cadence, not on every build. Results are
     cached per URL, so a re-run asks only about what has expired.
 
-    Nothing here changes the dataset. It writes a report; the next `camino build` reads it.
+    Nothing here changes the dataset. It writes a report; the next `afterward build` reads it.
     """
     typer.echo(f"Reading provider links from {dataset_dir}/programs.json...")
     seen = 0
@@ -209,7 +209,7 @@ def check_links_command(
     typer.echo(f"\n  front pages read for the 404s   {run.front_pages_checked:>6}")
     typer.echo(f"  HTTP requests these results cost  {run.recorded_requests:>6} (cached entries")
     typer.echo("    carry the cost of the run that made them, not of this one)")
-    typer.echo("\nRun `camino build` again to publish with these results.")
+    typer.echo("\nRun `afterward build` again to publish with these results.")
 
 
 @app.command("build-offline")

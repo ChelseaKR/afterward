@@ -40,8 +40,8 @@ from typing import Any, Final
 
 import httpx
 
-from camino.sources.dol_etp import USER_AGENT, FetchError, get_with_retry
-from camino.sources.soc_vintage import AGGREGATIONS
+from afterward.sources.dol_etp import USER_AGENT, FetchError, get_with_retry
+from afterward.sources.soc_vintage import AGGREGATIONS
 
 BASE_URL = "https://api.careeronestop.org/v1"
 REQUEST_TIMEOUT = 45.0
@@ -136,7 +136,7 @@ _AGGREGATE_MEMBERS: Final[MappingProxyType[str, tuple[str, ...]]] = MappingProxy
 )
 """Each aggregate EDD publishes, and the detailed occupations it is published in place of.
 
-Inverted from :data:`camino.sources.soc_vintage.AGGREGATIONS` rather than restated, so the
+Inverted from :data:`afterward.sources.soc_vintage.AGGREGATIONS` rather than restated, so the
 two cannot drift. Every one of these codes 404s on this API -- they are BLS publication
 aggregates and BLS hybrids, not O*NET occupations -- which is why an occupation page for one
 carries no description and no skills. See :func:`_aggregate_education`.

@@ -21,9 +21,9 @@ from typing import Any, get_args
 import httpx
 import pytest
 
-from camino.sources import link_check
-from camino.sources.dol_etp import USER_AGENT
-from camino.sources.link_check import (
+from afterward.sources import link_check
+from afterward.sources.dol_etp import USER_AGENT
+from afterward.sources.link_check import (
     CACHE_TTL,
     DOCUMENT_VERSION,
     LABEL_PROGRAM_PAGE,

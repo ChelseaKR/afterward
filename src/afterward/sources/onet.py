@@ -49,7 +49,7 @@ from typing import Any
 
 import httpx
 
-from camino.sources.dol_etp import USER_AGENT, FetchError, get_with_retry
+from afterward.sources.dol_etp import USER_AGENT, FetchError, get_with_retry
 
 BASE_URL = "https://api-v2.onetcenter.org"
 """The v2 host. The older ``services.onetcenter.org`` answers 401 to everything, key or not."""

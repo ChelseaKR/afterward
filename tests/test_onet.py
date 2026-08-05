@@ -18,7 +18,7 @@ from typing import Any
 import httpx
 import pytest
 
-from camino.sources.onet import (
+from afterward.sources.onet import (
     API_KEY_ENV,
     ATTRIBUTION,
     BASE_URL,
@@ -308,7 +308,7 @@ class TestSharedClient:
         with build_client("abc123") as client:
             assert client.headers["X-API-Key"] == "abc123"
             assert client.headers["Accept"] == "application/json"
-            assert "camino" in client.headers["User-Agent"]
+            assert "afterward" in client.headers["User-Agent"]
 
     def test_a_supplied_client_is_left_open_for_its_owner(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch

@@ -10,7 +10,7 @@ from typing import Any, ClassVar
 import httpx
 import pytest
 
-from camino.build import (
+from afterward.build import (
     MATCH_EXACT,
     RELATED_SOURCE_ONET,
     RELATED_SOURCE_SOC_SIBLINGS,
@@ -39,11 +39,11 @@ from camino.build import (
     search_entry,
     unmapped_cities,
 )
-from camino.sources import link_check
-from camino.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
-from camino.sources.dol_etp import CohortFiling, cohort_integrity, parse_program
-from camino.sources.edd_lmi import area_definitions, parse_projections, principal_city_areas
-from camino.sources.link_check import (
+from afterward.sources import link_check
+from afterward.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
+from afterward.sources.dol_etp import CohortFiling, cohort_integrity, parse_program
+from afterward.sources.edd_lmi import area_definitions, parse_projections, principal_city_areas
+from afterward.sources.link_check import (
     LABEL_PROGRAM_PAGE,
     LABEL_PROVIDER_HOME,
     NOTICE_UNREACHABLE,
@@ -54,7 +54,7 @@ from camino.sources.link_check import (
     Reason,
     checks_document,
 )
-from camino.sources.local_help import COMPREHENSIVE, WHO_DECIDES, AmericanJobCenter
+from afterward.sources.local_help import COMPREHENSIVE, WHO_DECIDES, AmericanJobCenter
 
 FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "data"
 
@@ -73,7 +73,7 @@ CLEAN_COHORT = {
     "completed_exceeds_served": False,
     "oversized_for_one_program": False,
 }
-"""What :func:`camino.sources.dol_etp.cohort_integrity` writes on a record with nothing wrong.
+"""What :func:`afterward.sources.dol_etp.cohort_integrity` writes on a record with nothing wrong.
 
 Spelled out rather than generated, so a change to the emitted shape has to be made twice --
 once in the pipeline and once here, deliberately.
@@ -597,7 +597,7 @@ class TestFetchEnrichment:
         """
         import httpx
 
-        from camino.sources.careeronestop import REQUEST_PARAMS, cache_envelope
+        from afterward.sources.careeronestop import REQUEST_PARAMS, cache_envelope
 
         monkeypatch.setenv(USER_ID_ENV, "user")
         monkeypatch.setenv(TOKEN_ENV, "token")
@@ -1342,7 +1342,7 @@ class TestCheckProviderLinks:
         assert second.requests == []
 
     def test_it_refuses_to_guess_at_a_dataset_that_is_not_there(self, tmp_path: Path) -> None:
-        with pytest.raises(FileNotFoundError, match="camino build"):
+        with pytest.raises(FileNotFoundError, match="afterward build"):
             check_provider_links(tmp_path / "nowhere", output_path=tmp_path / "out.json")
 
 
@@ -1509,7 +1509,7 @@ class TestFetchJobCenters:
         program as the place to ask about California money.
         """
         monkeypatch.setattr(
-            "camino.build.local_help.fetch_centers",
+            "afterward.build.local_help.fetch_centers",
             lambda *a, **k: (*CENTERS, _center("phoenix", 33.45, -112.07, state="AZ")),
         )
         found = fetch_job_centers("CA")

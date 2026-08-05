@@ -11,7 +11,7 @@ DIST_DIR ?= dist
 MIN_PROGRAMS ?= 2000
 
 help:
-	@uv run camino --help
+	@uv run afterward --help
 
 install:
 	uv sync --all-groups
@@ -27,7 +27,7 @@ typecheck:
 	uv run mypy src
 
 test:
-	uv run pytest --cov=camino --cov-report=term-missing
+	uv run pytest --cov=afterward --cov-report=term-missing
 
 security:
 	uv run bandit -q -c pyproject.toml -r src
@@ -53,7 +53,7 @@ provenance-check:
 # claims nothing about where the nearest office is -- which is what CI does. The centre
 # directory is one request for the whole state and is cached under data/raw/cos-cache.
 data:
-	uv run camino build --output-dir web/public/data
+	uv run afterward build --output-dir web/public/data
 
 # Copy the built dataset somewhere a mistake cannot reach.
 #
@@ -95,6 +95,7 @@ data:
 # Never with --size-only: chunk names are fixed-length hashes, so a page whose only change is
 # which chunk it loads is byte-identical in length and gets skipped.
 DISTRIBUTION_ID ?= E166CPAG407D0L
+# Still camino: the site is renamed, the infrastructure is not yet.
 SITE_BUCKET ?= camino.chelseakr.com
 publish: publish-preflight
 	@echo "1/4 uploading new assets (additive: nothing references them yet)"
@@ -145,13 +146,13 @@ backup-data:
 #
 # Run `make data` first, then this, then `make data` again to publish the result.
 link-check:
-	uv run camino check-links --dataset-dir $(DATASET_DIR)
+	uv run afterward check-links --dataset-dir $(DATASET_DIR)
 
 # Build the site dataset from the committed fixture, with no network access.
 # CI uses this: the DOL endpoint refuses GitHub Actions runners, and a build that depends on
 # a third party being reachable fails for reasons unrelated to the change under test.
 data-offline:
-	uv run camino build-offline
+	uv run afterward build-offline
 
 # Regenerate the committed fixture from a real dataset. Run after `make data`.
 fixture:

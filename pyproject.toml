@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "camino"
+name = "afterward"
 version = "0.1.0"
 description = "California training programs, their reported outcomes, and the occupations they lead to."
 readme = "README.md"
@@ -27,12 +27,12 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/ChelseaKR/camino#readme"
-Issues = "https://github.com/ChelseaKR/camino/issues"
-Source = "https://github.com/ChelseaKR/camino"
+Documentation = "https://github.com/ChelseaKR/afterward#readme"
+Issues = "https://github.com/ChelseaKR/afterward/issues"
+Source = "https://github.com/ChelseaKR/afterward"
 
 [project.scripts]
-camino = "camino.cli:main"
+afterward = "afterward.cli:main"
 
 [dependency-groups]
 dev = [
@@ -47,7 +47,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/camino"]
+packages = ["src/afterward"]
 
 [tool.ruff]
 target-version = "py312"
@@ -61,7 +61,7 @@ select = ["E", "F", "I", "B", "S", "UP", "SIM", "C90", "RUF"]
 # E501: CSV fixtures must stay byte-accurate to the real EDD export header.
 "tests/*" = ["S101", "E501"]
 # B008: typer.Option in a default is the framework's documented idiom.
-"src/camino/cli.py" = ["B008"]
+"src/afterward/cli.py" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"

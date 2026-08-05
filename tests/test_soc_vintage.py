@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from camino.sources.soc_vintage import (
+from afterward.sources.soc_vintage import (
     AGGREGATIONS,
     SocAggregation,
     aggregation_for,

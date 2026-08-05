@@ -14,7 +14,7 @@ from typing import Any, ClassVar
 import httpx
 import pytest
 
-from camino.sources.careeronestop import (
+from afterward.sources.careeronestop import (
     ALTERNATE_TITLE_LIMIT,
     REQUEST_PARAMS,
     TOKEN_ENV,
@@ -335,7 +335,7 @@ class TestSharedClient:
     def test_carries_the_credential_and_identifies_itself(self) -> None:
         with build_client("token") as client:
             assert client.headers["Authorization"] == "Bearer token"
-            assert "camino" in client.headers["User-Agent"]
+            assert "afterward" in client.headers["User-Agent"]
 
     def test_a_supplied_client_is_left_open_for_its_owner(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -413,7 +413,7 @@ class TestCache:
     ) -> None:
         monkeypatch.setenv(USER_ID_ENV, "user")
         monkeypatch.setenv(TOKEN_ENV, "token")
-        monkeypatch.setattr("camino.sources.careeronestop.time.sleep", lambda _: None)
+        monkeypatch.setattr("afterward.sources.careeronestop.time.sleep", lambda _: None)
         with _stub_client({"/v1/occupation/user/29-1141.00/CA": PAYLOAD}) as client:
             fetch_occupation("29-1141", client=client, cache_dir=tmp_path)
 
@@ -430,7 +430,7 @@ class TestCache:
     ) -> None:
         monkeypatch.setenv(USER_ID_ENV, "secret-user")
         monkeypatch.setenv(TOKEN_ENV, "secret-token")
-        monkeypatch.setattr("camino.sources.careeronestop.time.sleep", lambda _: None)
+        monkeypatch.setattr("afterward.sources.careeronestop.time.sleep", lambda _: None)
         with _stub_client({"/v1/occupation/secret-user/29-1141.00/CA": PAYLOAD}) as client:
             fetch_occupation("29-1141", client=client, cache_dir=tmp_path)
 
@@ -441,7 +441,7 @@ class TestCache:
 
 def _refetched(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> bool:
     """True when a fetch against ``tmp_path`` went to the network rather than the cache."""
-    monkeypatch.setattr("camino.sources.careeronestop.time.sleep", lambda _: None)
+    monkeypatch.setattr("afterward.sources.careeronestop.time.sleep", lambda _: None)
     with _stub_client({"/v1/occupation/user/29-1141.00/CA": PAYLOAD}) as client:
         fetch_occupation("29-1141", client=client, cache_dir=tmp_path)
         return bool(client.requested)
@@ -513,7 +513,7 @@ class TestAggregateEducation:
     ) -> OccupationEnrichment | None:
         monkeypatch.setenv(USER_ID_ENV, "user")
         monkeypatch.setenv(TOKEN_ENV, "token")
-        monkeypatch.setattr("camino.sources.careeronestop.time.sleep", lambda _: None)
+        monkeypatch.setattr("afterward.sources.careeronestop.time.sleep", lambda _: None)
         with _stub_client(self.ROUTES if routes is None else routes) as client:
             return fetch_occupation("21-1018", client=client)
 
@@ -574,7 +574,7 @@ class TestAggregateEducation:
         # nothing, and there is no aggregate to reach for.
         monkeypatch.setenv(USER_ID_ENV, "user")
         monkeypatch.setenv(TOKEN_ENV, "token")
-        monkeypatch.setattr("camino.sources.careeronestop.time.sleep", lambda _: None)
+        monkeypatch.setattr("afterward.sources.careeronestop.time.sleep", lambda _: None)
         with _stub_client({}) as client:
             assert fetch_occupation("15-1252", client=client) is None
             assert client.requested == ["/v1/occupation/user/15-1252.00/CA"]

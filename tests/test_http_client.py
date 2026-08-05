@@ -15,8 +15,8 @@ from email.utils import format_datetime
 import httpx
 import pytest
 
-from camino.sources import dol_etp, edd_lmi
-from camino.sources.dol_etp import (
+from afterward.sources import dol_etp, edd_lmi
+from afterward.sources.dol_etp import (
     BACKOFF_CAP_SECONDS,
     MAX_ATTEMPTS,
     PAUSE_BETWEEN_PAGES,
@@ -85,8 +85,8 @@ class TestIdentity:
     """The User-Agent is a disclosure, not a disguise."""
 
     def test_names_the_project_and_where_to_complain(self) -> None:
-        assert USER_AGENT.startswith("camino/")
-        assert "https://github.com/ChelseaKR/camino" in USER_AGENT
+        assert USER_AGENT.startswith("afterward/")
+        assert "https://github.com/ChelseaKR/afterward" in USER_AGENT
         assert "non-commercial open-data client" in USER_AGENT
 
     def test_does_not_impersonate_a_browser(self) -> None:
@@ -252,7 +252,7 @@ class TestRefusals:
         # The operational point: this is a CI/datacenter-IP symptom, with a way out.
         assert "CI" in message and "datacenter" in message
         assert "committed data snapshot" in message
-        assert "camino build-offline" in message
+        assert "afterward build-offline" in message
 
     def test_404_is_not_retried(self) -> None:
         client, handler = replay(httpx.Response(404))

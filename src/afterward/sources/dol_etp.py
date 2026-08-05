@@ -32,7 +32,7 @@ from typing import Any
 
 import httpx
 
-from camino import __version__
+from afterward import __version__
 
 BASE_URL = "https://cxsearch.dol.gov/etp"
 PROGRAMS_INDEX = "etp_scorecard_programs"
@@ -599,7 +599,7 @@ def parse_state_benchmark(state: str, source: dict[str, Any]) -> StateBenchmark:
 # --------------------------------------------------------------------------------------
 
 USER_AGENT = (
-    f"camino/{__version__} (+https://github.com/ChelseaKR/camino; "
+    f"afterward/{__version__} (+https://github.com/ChelseaKR/afterward; "
     "non-commercial open-data client; quarterly bulk read)"
 )
 """Who we say we are.
@@ -655,7 +655,7 @@ def _forbidden_message(url: str) -> str:
         f"already sends a descriptive User-Agent ({USER_AGENT!r}) and will not impersonate "
         "a browser to get around the filter.\n"
         "If this happened in CI, build from the committed data snapshot instead "
-        "(`camino build-offline`) and refresh that snapshot from a workstation."
+        "(`afterward build-offline`) and refresh that snapshot from a workstation."
     )
 
 

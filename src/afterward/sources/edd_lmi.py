@@ -19,7 +19,7 @@ import httpx
 # The HTTP manners -- descriptive User-Agent, bounded retry with backoff, Retry-After --
 # are defined once in dol_etp and shared, so both public endpoints get approached the same
 # way and neither can quietly become the rude one.
-from camino.sources.dol_etp import build_client, get_with_retry
+from afterward.sources.dol_etp import build_client, get_with_retry
 
 CKAN_BASE = "https://data.ca.gov/api/3/action"
 OCCUPATIONAL_PROJECTIONS = "long-term-occupational-employment-projections"

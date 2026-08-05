@@ -37,7 +37,7 @@ Manners, since every host here is a small college or an adult school rather than
 HEAD before GET, GET streamed so a provider is not billed for a body nobody reads, one
 request at a time per site with a pause between them, bounded concurrency across sites,
 retries only for what is plausibly transient, ``Retry-After`` honoured, and the honest
-:data:`~camino.sources.dol_etp.USER_AGENT` this project uses everywhere else. No browser
+:data:`~afterward.sources.dol_etp.USER_AGENT` this project uses everywhere else. No browser
 impersonation: a host that wants to refuse this client is entitled to recognise it and do so,
 which is exactly why a refusal is classified ``indeterminate`` instead of ``dead``.
 
@@ -69,7 +69,7 @@ from typing import Any, Final, Literal
 
 import httpx
 
-from camino.sources.dol_etp import (
+from afterward.sources.dol_etp import (
     BACKOFF_CAP_SECONDS,
     BACKOFF_INITIAL_SECONDS,
     BACKOFF_MULTIPLIER,
@@ -640,7 +640,7 @@ def check_url(
     """Establish what, if anything, is at ``url``.
 
     Raises ``ValueError`` for anything that is not an absolute http(s) URL. Callers get their
-    URLs from :func:`camino.sources.dol_etp.clean_url`, which already refuses everything
+    URLs from :func:`afterward.sources.dol_etp.clean_url`, which already refuses everything
     else; a malformed string is a caller bug, not a dead link, and must not be recorded as
     one.
     """

@@ -1,7 +1,7 @@
 """The funding wording the site publishes is the wording this project checked.
 
 `tests/test_local_help.py::TestWording` scans every sentence in
-:mod:`camino.sources.local_help` for phrasing that turns a description of a public program
+:mod:`afterward.sources.local_help` for phrasing that turns a description of a public program
 into a promise to one reader -- "you qualify", "guarantee", "free training", "at no cost to
 you". That check is worth nothing if the sentences a visitor actually reads are a second copy
 of the text, edited in the web app where no such check runs.
@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pytest
 
-from camino.sources.local_help import etpl_listing_note, funding_guidance
+from afterward.sources.local_help import etpl_listing_note, funding_guidance
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 I18N = REPO_ROOT / "web" / "lib" / "i18n.ts"
@@ -102,7 +102,7 @@ class TestEnglishIsTheCheckedWording:
         assert expected in english, (
             f"{origin} is not in web/lib/i18n.ts as this module writes it. The English on the "
             "site must be the English the wording check scans: edit "
-            "src/camino/sources/local_help.py and copy the sentence across, rather than "
+            "src/afterward/sources/local_help.py and copy the sentence across, rather than "
             "editing it in the web app where nothing checks it."
         )
 

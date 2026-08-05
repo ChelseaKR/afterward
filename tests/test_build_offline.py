@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from camino.build import build_offline
+from afterward.build import build_offline
 
 FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "data"
 
@@ -152,7 +152,7 @@ class TestFixtureShapeMatchesReal:
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """CI has no OEWS extract, so the honest answer is null -- never a missing key."""
-        import camino.build as build_module
+        import afterward.build as build_module
 
         # `load_wage_spread(path=WAGE_SPREAD_PATH)` binds its default at definition time, so
         # repointing the module constant would not reach it. Patch the loaders themselves.
