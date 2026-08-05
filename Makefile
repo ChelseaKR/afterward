@@ -81,20 +81,36 @@ data:
 # it reported success by not running; and no guard at all against publishing the test
 # fixture, which deploy.yml protects and a hand-run sync does not.
 #
-# So the sequence is here rather than in anyone's memory: refuse a fixture build, sync HTML
-# without --size-only, sync immutable assets, invalidate, then ask the live site whether the
-# assets its pages reference actually resolve.
+# Order matters more than the flags, and getting it wrong breaks the site in two opposite
+# ways. HTML first leaves a window -- ten minutes wide on a full upload -- where published
+# pages reference a stylesheet and chunks that are not there yet; that shipped once and the
+# site loaded unstyled. Deleting assets first leaves stale HTML pointing at files that have
+# just been removed; that shipped too, and the search page went dead.
+#
+# So: upload new assets (additive, content-hashed, referenced by nothing yet), then HTML
+# (every asset it names is already present), then invalidate, and only then prune the assets
+# nothing points at any more. There is no moment in that sequence when a served page can
+# reference a missing file.
+#
+# Never with --size-only: chunk names are fixed-length hashes, so a page whose only change is
+# which chunk it loads is byte-identical in length and gets skipped.
 DISTRIBUTION_ID ?= E166CPAG407D0L
 SITE_BUCKET ?= camino.chelseakr.com
 publish: publish-preflight
+	@echo "1/4 uploading new assets (additive: nothing references them yet)"
+	aws s3 sync web/out/_next/static/ "s3://$(SITE_BUCKET)/_next/static/" \
+	  --cache-control "public, max-age=31536000, immutable"
+	@echo "2/4 uploading HTML (every asset it references is already there)"
 	aws s3 sync web/out/ "s3://$(SITE_BUCKET)/" --delete \
 	  --cache-control "public, max-age=300, must-revalidate" --exclude "_next/static/*"
-	aws s3 sync web/out/_next/static/ "s3://$(SITE_BUCKET)/_next/static/" --delete \
-	  --cache-control "public, max-age=31536000, immutable"
+	@echo "3/4 invalidating"
 	@id=$$(aws cloudfront create-invalidation --distribution-id $(DISTRIBUTION_ID) \
 	  --paths "/*" --query 'Invalidation.Id' --output text); \
-	  echo "invalidation $$id"; \
+	  echo "    invalidation $$id"; \
 	  aws cloudfront wait invalidation-completed --distribution-id $(DISTRIBUTION_ID) --id "$$id"
+	@echo "4/4 pruning assets no longer referenced"
+	aws s3 sync web/out/_next/static/ "s3://$(SITE_BUCKET)/_next/static/" --delete \
+	  --cache-control "public, max-age=31536000, immutable"
 	$(MAKE) deploy-check
 
 # Refuse to publish a build made from the test fixture.

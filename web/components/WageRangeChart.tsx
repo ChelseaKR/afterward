@@ -19,10 +19,21 @@ import type { WagePercentiles } from "@/lib/types";
  * worse, not better. A chart that duplicates an accessible table should get out of the way.
  */
 
+/*
+ * Labels sit above their bars, not beside them.
+ *
+ * Beside them needs a fixed label column, and the labels here are published area names —
+ * "Los Angeles-Long Beach-Glendale MD (Los Angeles County)" is fifty-three characters. Any
+ * column narrow enough to leave a usable plot is too narrow for the names, and SVG text does
+ * not wrap or clip: it simply drew straight through the bar. Stacking removes the constraint
+ * rather than trading one bad width for another.
+ */
 const WIDTH = 640;
-const ROW_HEIGHT = 34;
-const LABEL_WIDTH = 132;
-const BAR_HEIGHT = 10;
+const LABEL_HEIGHT = 17;
+const BAR_HEIGHT = 12;
+const ROW_GAP = 16;
+const ROW_HEIGHT = LABEL_HEIGHT + BAR_HEIGHT + ROW_GAP;
+const PLOT_INSET = 2;
 
 export interface WageRangeRow {
   label: string;
@@ -53,9 +64,9 @@ export function WageRangeChart({ rows }: { rows: readonly WageRangeRow[] }) {
   // Every row identical, or a single point: a scale of zero width has no shape to show.
   if (span <= 0) return null;
 
-  const plot = WIDTH - LABEL_WIDTH - 8;
-  const x = (value: number) => LABEL_WIDTH + ((value - min) / span) * plot;
-  const height = usable.length * ROW_HEIGHT + 8;
+  const plot = WIDTH - PLOT_INSET * 2;
+  const x = (value: number) => PLOT_INSET + ((value - min) / span) * plot;
+  const height = usable.length * ROW_HEIGHT;
 
   return (
     <svg
@@ -67,12 +78,12 @@ export function WageRangeChart({ rows }: { rows: readonly WageRangeRow[] }) {
     >
       {usable.map((row, index) => {
         const p = row.percentiles;
-        const y = index * ROW_HEIGHT + 12;
-        const mid = y + BAR_HEIGHT / 2;
+        const top = index * ROW_HEIGHT;
+        const y = top + LABEL_HEIGHT;
         const hasQuartiles = p.p25 !== null && p.p75 !== null;
         return (
           <g key={row.label}>
-            <text className="wage-chart-label" x={0} y={mid + 4}>
+            <text className="wage-chart-label" x={0} y={top + 12}>
               {row.label}
             </text>
             {/* Tenth to ninetieth: the full published interval. */}
