@@ -1,6 +1,25 @@
 # Contributing
 
+## Where to start
+
+- **A figure looks wrong**, the Spanish reads badly, or something is hard to use — open an
+  issue. There are templates for those three; none of them needs you to run the code.
+- **Spanish review is the most valuable thing an outside contributor can do here.** The
+  translation has had no native reviewer, the site says so, and the strings are all in one
+  file. You do not need TypeScript.
+- **Code**: issues labelled `good first issue` are scoped to one file and say what "done"
+  looks like.
+
 ## Setup
+
+You do **not** need API credentials or the production dataset. `make data-offline` builds
+everything from a committed 60-program fixture with no network access, and that is what CI
+uses. Credentials only matter if you are changing how a source is fetched.
+
+If you have a real dataset on this machine, `make data-offline` backs it up before the
+fixture overwrites it — it writes straight over `web/public/data`, which is otherwise the
+only copy.
+
 
 ```bash
 make install       # Python pipeline (uv)

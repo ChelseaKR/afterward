@@ -167,7 +167,18 @@ link-check:
 # Build the site dataset from the committed fixture, with no network access.
 # CI uses this: the DOL endpoint refuses GitHub Actions runners, and a build that depends on
 # a third party being reachable fails for reasons unrelated to the change under test.
+#
+# It writes the 60-program fixture directly over web/public/data, which is the only copy of
+# the real dataset on an operator's machine. That is almost certainly how the working dataset
+# silently became the fixture on 2026-08-05. So: if a real dataset is present, back it up
+# first; if none is (CI, or a fresh clone), carry on, because there is nothing to lose.
 data-offline:
+	@if uv run python scripts/dataset_check.py >/dev/null 2>&1; then \
+	  echo "real dataset present — backing it up before the fixture overwrites it"; \
+	  $(MAKE) --no-print-directory backup-data; \
+	else \
+	  echo "no production dataset here — nothing to preserve"; \
+	fi
 	uv run afterward build-offline
 
 # Regenerate the committed fixture from a real dataset. Run after `make data`.
