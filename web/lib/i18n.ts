@@ -343,7 +343,10 @@ areaNote: (unplaced: number, total: number) =>
     "California's Employment Development Department: its long-term occupational employment projections for 2024 to 2034, and its wage statistics where the projections carry no wage. These are the state's own ten-year estimates for an occupation, statewide and for the areas it names.",
   aboutSourceFederalLabel: "Job descriptions and skills",
   aboutSourceFederalBody:
-    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content. It serves English only, which is why an occupation description stays in English on a Spanish page.",
+    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name, and nothing on this site is machine-translated.",
+  aboutSourceWagesLabel: "What an occupation pays across its range",
+  aboutSourceWagesBody:
+    "The Bureau of Labor Statistics' Occupational Employment and Wage Statistics for California, published by EDD. It gives the 10th, 25th, 50th, 75th and 90th percentiles, which is how an occupation page can show the spread rather than the median alone. Each percentile can be withheld separately, and a withheld one is left blank rather than estimated from the ones on either side of it.",
   aboutSourcesDates:
     "Each source, its licence, and the date it was read are recorded in the project's public provenance file, and the whole dataset can be rebuilt from those sources by anyone.",
   aboutProvenanceLink: "Read the provenance file",
@@ -946,7 +949,10 @@ areaNote: (unplaced, total) =>
     "El Departamento de Desarrollo del Empleo de California: sus proyecciones de empleo por ocupación a largo plazo para 2024–2034 y sus estadísticas de salarios cuando la proyección no trae salario. Son las estimaciones propias del estado a diez años para una ocupación, a nivel estatal y en las áreas que el estado nombra.",
   aboutSourceFederalLabel: "Descripciones de la ocupación y habilidades",
   aboutSourceFederalBody:
-    "CareerOneStop, el servicio del Departamento de Trabajo de EE. UU. que publica el contenido ocupacional de O*NET. Solo lo ofrece en inglés, y por eso la descripción de una ocupación aparece en inglés en una página en español.",
+    "CareerOneStop, el servicio del Departamento de Trabajo de EE. UU. que publica en inglés el contenido ocupacional de O*NET. Cuando el Departamento también publica la ocupación en español mediante Mi Próximo Paso —600 de las 670 de California—, la página en español usa el nombre y la descripción en español del propio Departamento. Las otras 70 conservan el nombre en inglés, y nada en este sitio está traducido por máquina.",
+  aboutSourceWagesLabel: "Cuánto paga una ocupación en todo su rango",
+  aboutSourceWagesBody:
+    "Las Estadísticas de Empleo y Salarios por Ocupación de California, que publica el EDD a partir de la Oficina de Estadísticas Laborales de EE. UU. Incluyen los percentiles 10, 25, 50, 75 y 90, y por eso una página de ocupación puede mostrar el rango completo y no solo la mediana. Cada percentil puede ocultarse por separado, y cuando se oculta se deja en blanco en lugar de estimarlo a partir de los percentiles vecinos.",
   aboutSourcesDates:
     "Cada fuente, su licencia y la fecha en que se consultó están registradas en el archivo público de procedencia del proyecto, y cualquiera puede reconstruir el conjunto de datos completo a partir de esas fuentes.",
   aboutProvenanceLink: "Leer el archivo de procedencia",

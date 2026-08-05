@@ -248,6 +248,8 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
         <dd>{t.aboutSourceOccupationsBody}</dd>
         <dt>{t.aboutSourceFederalLabel}</dt>
         <dd>{t.aboutSourceFederalBody}</dd>
+        <dt>{t.aboutSourceWagesLabel}</dt>
+        <dd>{t.aboutSourceWagesBody}</dd>
       </dl>
 
       <p>{t.aboutSourcesDates}</p>

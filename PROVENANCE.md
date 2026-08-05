@@ -31,10 +31,19 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 |---|---|---|---|---|---|
 | D1 | U.S. DOL Eligible Training Provider scorecard search API (backs the public TrainingProviderResults.gov site) | `https://cxsearch.dol.gov/etp` | 2026-08-04 | U.S. Government work, public domain (17 U.S.C. §105). Public WIOA ETP performance data DOL is required to publish under WIOA §116(d)(4). | Program records, provider names, cost, length, CIP + SOC codes, WIOA outcome measures |
 | D2 | CA EDD — Long-Term Occupational Employment Projections (2024–2034) | `https://data.ca.gov/dataset/long-term-occupational-employment-projections` | 2026-08-04 | California open data, public domain | Occupation growth, job openings, median wages, entry-level education, by region |
-| D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Wage detail (percentiles) where projections lack it |
+| D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Statewide annual wage percentiles (10th, 25th, 50th, 75th, 90th) shown as the pay range on occupation pages, 2026 vintage. Fetched separately from a build, not on every one: the published extract is the whole 2009–2026 panel (~112 MB, 580,790 records) because EDD publishes no per-year resource. |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
-| D5 | O\*NET Web Services (USDOL/ETA) | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered project "Camino"; key is per-user and never committed. | Tasks, technology skills, work activities, job zones, related occupations |
+| D5 | O\*NET Web Services (USDOL/ETA), including Mi Próximo Paso | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered project "Camino"; key is per-user and never committed. | Spanish occupation titles and descriptions from Mi Próximo Paso, on the 600 of California's 670 occupations it covers. Nothing is translated by this project: an occupation Mi Próximo Paso does not carry keeps its English name. |
 | D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, education attainment distribution, typical experience and on-the-job training, O\*NET related occupations, Bright Outlook |
+
+### Notes on D5 — what is and is not taken from it
+
+O\*NET's `software_skills` table was read, wired in and removed rather than published; the
+measurements and the reasoning are in `docs/onet-technologies-not-shipped-2026-08-04.md`.
+Job zones and work activities are likewise parsed by the client and not displayed. The tasks,
+skill ratings, alternate titles, education distribution and related-occupation lists on this
+site reach it through CareerOneStop (D6), which serves O\*NET-derived data under its own
+terms — so O\*NET is credited for those as well, and the notice below covers both routes.
 
 ### Notes on D5 — required attribution
 
