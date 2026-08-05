@@ -116,3 +116,8 @@ make verify    # provenance-check, lint, typecheck, test, security, audit
 
 Apache 2.0. Source data is U.S. Government work (public domain) and California open data;
 see [PROVENANCE.md](PROVENANCE.md) for per-source terms.
+
+## Support
+
+This is independent, unpaid work. If it has been useful to you, you can
+<a href='https://ko-fi.com/T6T6GMYTU' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
