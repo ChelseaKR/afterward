@@ -867,7 +867,9 @@ def _attach_wage_spread(
         # Only areas this dataset can name. An OEWS area the projections do not publish has
         # no region page, no median beside it and nothing to compare, so carrying it would
         # put a row on the page that nothing else on the site can corroborate.
-        published = {area["short_name"] for area in occupation.get("regions", []) if area.get("short_name")}
+        published = {
+            area["short_name"] for area in occupation.get("regions", []) if area.get("short_name")
+        }
         by_area = {
             area: {k: cells.get(k) for k in ("p10", "p25", "p50", "p75", "p90")}
             for area, cells in (regions.get(soc_code) or {}).items()
@@ -1699,6 +1701,12 @@ def build_offline(
     snapshot = programs_doc["snapshot_date"]
     _attach_cohort_integrity(payloads)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
+    # The fixture predates the wage spread and carries no such key, so without this every
+    # occupation reaches the page with the field absent rather than null -- a shape no real
+    # build produces, which is how a page that guards `!== null` still crashed the export.
+    # With no OEWS extract on the machine this attaches null everywhere, which is the honest
+    # answer: nothing published a spread here, so the pages say the median alone.
+    _attach_wage_spread(occupations, load_wage_spread(), load_wage_regions())
     # No centres are looked up here, for the same reason no links are checked: this is the
     # hermetic build, and a distance copied out of another machine's read would be an
     # observation this build did not make. The pages it produces carry the funding route and

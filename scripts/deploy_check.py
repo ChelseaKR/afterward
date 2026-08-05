@@ -25,14 +25,21 @@ import re
 import sys
 import urllib.request
 
-ASSET = re.compile(r'/_next/static/[A-Za-z0-9_./-]+\.(?:js|css)')
+ASSET = re.compile(r"/_next/static/[A-Za-z0-9_./-]+\.(?:js|css)")
 PAGES = ("/en/", "/es/", "/en/occupations/", "/en/paying-for-training/")
 
 
 def fetch(url: str) -> tuple[int, str]:
-    request = urllib.request.Request(url, headers={"User-Agent": "camino-deploy-check"})
+    # This only ever asks a CDN for a page a visitor would get. Pinning the scheme keeps a
+    # stray argv value from turning the check into a local file read that then "passes".
+    if not url.startswith("https://"):
+        print(f"  refusing non-https URL: {url}")
+        return 0, ""
+    request = urllib.request.Request(  # noqa: S310 - scheme pinned to https above
+        url, headers={"User-Agent": "camino-deploy-check"}
+    )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310 - same
             return response.status, response.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as exc:
         return exc.code, ""

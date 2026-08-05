@@ -395,7 +395,7 @@ export default async function OccupationPage({
         suppressible at source, so a row can carry four of five, and a missing one is left
         out rather than interpolated from its neighbours.
       */}
-      {occupation.wage_spread !== null && (
+      {occupation.wage_spread != null && (
         <>
           <h2>{t.wageSpreadHeading}</h2>
           <dl className="wage-spread">
@@ -417,7 +417,7 @@ export default async function OccupationPage({
               );
             })}
           </dl>
-          {occupation.wage_spread.year !== null && (
+          {occupation.wage_spread?.year != null && (
             <p className="compare-note">{t.wageSpreadNote(occupation.wage_spread.year)}</p>
           )}
         </>

@@ -129,3 +129,37 @@ class TestFixtureIsCurrent:
         # Present-but-null is "unplaced"; a missing key means the fixture predates the field.
         for program in self._programs():
             assert "region" in program, f"{program['uuid']} predates regional matching"
+
+
+class TestFixtureShapeMatchesReal:
+    """A fixture whose *shape* differs from a real build tests less than it appears to.
+
+    The fixture predates the wage spread, so `build_offline` passed occupations through with
+    the key absent rather than null. Nothing in Python noticed -- the divergence only showed
+    up in the static export, where a page guarding `wage_spread !== null` let `undefined`
+    through and crashed the whole build. Absent and null are different shapes, and only one
+    of them is a shape a real build can produce.
+    """
+
+    def test_every_occupation_carries_the_wage_spread_key(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        details = sorted((tmp_path / "occupations").glob("*.json"))
+        assert details, "fixture should emit occupation detail pages"
+        absent = [p.name for p in details if "wage_spread" not in json.loads(p.read_text())]
+        assert absent == [], f"wage_spread key absent (not null) in: {absent[:5]}"
+
+    def test_wage_spread_is_null_when_no_extract_is_present(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """CI has no OEWS extract, so the honest answer is null -- never a missing key."""
+        import camino.build as build_module
+
+        # `load_wage_spread(path=WAGE_SPREAD_PATH)` binds its default at definition time, so
+        # repointing the module constant would not reach it. Patch the loaders themselves.
+        monkeypatch.setattr(build_module, "load_wage_spread", dict)
+        monkeypatch.setattr(build_module, "load_wage_regions", dict)
+        out = tmp_path / "out"
+        build_offline(FIXTURE_DIR, output_dir=out)
+        details = sorted((out / "occupations").glob("*.json"))
+        spreads = [json.loads(p.read_text()).get("wage_spread", "MISSING") for p in details]
+        assert spreads and all(s is None for s in spreads), "expected null, not a missing key"
