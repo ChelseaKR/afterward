@@ -1639,3 +1639,90 @@ td.num {
   outline: 2px solid var(--primary-60);
   outline-offset: 2px;
 }
+
+/* ---------- Print ---------- */
+
+/*
+  A program page that survives being printed and handed to someone.
+
+  This site's own design note says the thing people do with it is show a few programs to a
+  case manager, a partner, or the person at the job center — and a good number of its readers
+  will print at a library rather than pass a phone across a desk. Until now printing produced
+  the navigation, the filter panel, the save and compare controls, and every disclosure shut.
+
+  The disclosures are the part that mattered. A collapsed <details> prints collapsed, so the
+  funding guidance, the secondary occupations and the extra tasks would all have been missing
+  from the paper with nothing to indicate anything had been left out — and on paper there is
+  no control to open them with. They print expanded, with their toggles hidden, because a
+  disclosure is a screen affordance and paper has no state to disclose.
+*/
+@media print {
+  .site-nav,
+  .lang-switch,
+  .save-toggle,
+  .compare-check,
+  .compare-tray,
+  .filters-disclosure,
+  .copy-link,
+  .saved-bar-actions,
+  .shared-bar button,
+  .table-filter,
+  .jump-nav,
+  .browse-more {
+    display: none !important;
+  }
+
+  /* Everything a disclosure was hiding is on the page, and its toggle is not. */
+  details > summary {
+    display: none !important;
+  }
+  details::details-content {
+    content-visibility: visible !important;
+    block-size: auto !important;
+  }
+
+  /*
+    A printed "Provider's website →" is a dead end. The address goes beside it so someone
+    reading on paper can type it in. Internal links are left alone: their targets are on the
+    same site and the full URL would be noise on every one of them.
+  */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  /* Nothing is a link colour on paper, and the measure can use the full width. */
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+  .shell,
+  .detail {
+    max-width: none;
+    padding: 0;
+  }
+
+  /* A figure and its label must not be separated by a page break. */
+  .at-a-glance,
+  .measure-grid,
+  .local-range,
+  .wage-spread,
+  .card {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /*
+    The one thing that must never be lost to a stylesheet: a printed page carrying
+    California's design system and no notice would be a state document to anyone holding it.
+  */
+  .not-affiliated,
+  .who-decides {
+    display: block !important;
+  }
+}

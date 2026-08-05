@@ -1,7 +1,8 @@
 .DEFAULT_GOAL := help
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
-	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check
+	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
+	publish-preflight
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -71,6 +72,13 @@ data:
 # in *length*; --size-only compares length alone and skips it, while the asset sync's
 # --delete removes the chunk the stale copy still points at. The result is a page that
 # loads, fails to hydrate, and looks fine to every check that counts things.
+# Refuse to publish a build made from the test fixture.
+#
+# deploy.yml guards this and a manual `aws s3 sync` does not go through deploy.yml. Run
+# before every hand publish; the dataset is gitignored and sync will ship whatever is in out/.
+publish-preflight:
+	uv run python scripts/publish_preflight.py web/out
+
 SITE_URL ?= https://camino.chelseakr.com
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
