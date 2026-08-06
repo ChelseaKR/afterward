@@ -29,6 +29,7 @@ from afterward.sources.link_check import (
     LABEL_PROGRAM_PAGE,
     LABEL_PROVIDER_HOME,
     MAX_ATTEMPTS,
+    NOTICE_FOR_SALE,
     NOTICE_UNREACHABLE,
     RETRYABLE_REASONS,
     SUBSTITUTION_FRONT_PAGE,
@@ -114,6 +115,26 @@ class Clock:
         self.waits.append(seconds)
 
 
+_SERVED: list[int] = []
+"""Which chunks of a scripted body the checker actually pulled.
+
+Politeness towards a small college is measured in what it was asked to send, so the tests
+count that rather than trusting a comment about it.
+"""
+
+
+def _counted(*chunks: bytes) -> Iterator[bytes]:
+    """A response body that records each chunk at the moment it is pulled."""
+    for index, chunk in enumerate(chunks or (b"x" * 5_000_000,)):
+        _SERVED.append(index)
+        yield chunk
+
+
+def _titled(title: str, *, padding: int = 0) -> str:
+    """A page whose only relevant feature is what it calls itself."""
+    return f"<!doctype html><html><head>{'<!--' + 'x' * padding + '-->' if padding else ''}<title>{title}</title></head><body><p>hello</p></body></html>"
+
+
 def redirect(location: str, status: int = 301) -> httpx.Response:
     return httpx.Response(status, headers={"Location": location})
 
@@ -181,7 +202,13 @@ class TestClassificationTable:
 
     def test_only_conclusive_evidence_counts_as_dead(self) -> None:
         dead = {reason for reason, verdict in VERDICT_BY_REASON.items() if verdict == "dead"}
-        assert dead == {"dns_failure", "not_found", "gone"}
+        assert dead == {
+            "dns_failure",
+            "not_found",
+            "gone",
+            "soft_not_found",
+            "domain_for_sale",
+        }
 
     def test_a_socket_that_would_not_open_is_not_evidence_about_a_provider(self) -> None:
         """Measured: every ``connection_failed`` in the real corpus was our end of the wire.
@@ -275,13 +302,23 @@ class TestAlive:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("alive", "ok")
         assert check.status_code == 200
-        assert handler.methods == ["HEAD"]
+        assert handler.methods == ["GET"]
 
-    def test_head_is_tried_before_get(self) -> None:
-        client, handler = replay(httpx.Response(200))
-        with client:
-            check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert handler.methods == ["HEAD"]
+    def test_every_url_is_asked_the_way_a_reader_would_ask(self) -> None:
+        """GET, and only GET, whatever the answer turns out to be.
+
+        This module used to send HEAD first and confirm anything negative with a GET, because
+        HEAD is the method servers implement worst -- the August 2026 audit measured 33 of 769
+        live URLs whose HEAD disagreed with their GET, 8 of them answering HEAD with 404 for a
+        page that GETs perfectly well. Asking once, with the method a browser uses, makes that
+        whole class of disagreement unreachable rather than survivable, and it is what puts
+        the page's own title within reach.
+        """
+        for outcome in (httpx.Response(200), httpx.Response(404), httpx.Response(403)):
+            client, handler = replay(outcome)
+            with client:
+                check_url(PAGE, client=client, sleep=Clock(), now=at())
+            assert handler.methods == ["GET"]
 
     def test_a_redirect_chain_ending_at_a_page_is_alive(self) -> None:
         check = probe(
@@ -317,15 +354,15 @@ class TestAlive:
 
 
 class TestDead:
-    def test_a_404_confirmed_by_get_is_dead(self) -> None:
-        client, handler = replay(httpx.Response(404), httpx.Response(404))
+    def test_a_404_is_dead(self) -> None:
+        client, handler = replay(httpx.Response(404))
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("dead", "not_found")
-        assert handler.methods == ["HEAD", "GET"]
+        assert handler.methods == ["GET"]
 
     def test_a_410_is_dead(self) -> None:
-        check = probe(httpx.Response(410), httpx.Response(410))
+        check = probe(httpx.Response(410))
         assert (check.verdict, check.reason) == ("dead", "gone")
 
     def test_a_host_that_does_not_resolve_is_dead(self, unresolvable: None) -> None:
@@ -340,14 +377,15 @@ class TestDead:
         assert check.status_code is None
         assert check.final_url is None
 
-    def test_a_name_that_does_not_resolve_is_not_asked_again_with_get(
+    def test_a_name_that_does_not_resolve_is_asked_no_more_than_the_retry_budget(
         self, unresolvable: None
     ) -> None:
-        """A GET cannot make DNS work. Asking anyway is noise, not diligence."""
+        """A resolver hiccup and a lapsed domain raise the same exception, so DNS is retried
+        -- but only within the one budget, and never doubled by asking a second way."""
         client, handler = replay(*[httpx.ConnectError("no such host")] * MAX_ATTEMPTS)
         with client:
             check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert set(handler.methods) == {"HEAD"}
+        assert handler.methods == ["GET"] * MAX_ATTEMPTS
 
     def test_a_redirect_to_a_dead_name_blames_the_dead_name(
         self, monkeypatch: pytest.MonkeyPatch
@@ -387,51 +425,35 @@ class TestDead:
 class TestConservatism:
     """Everything a host might do to a robot that is not evidence about the page."""
 
-    def test_a_403_on_both_methods_is_indeterminate(self) -> None:
-        check = probe(httpx.Response(403), httpx.Response(403))
+    def test_a_403_is_indeterminate(self) -> None:
+        """The single most important false positive this checker has to avoid."""
+        check = probe(httpx.Response(403))
         assert (check.verdict, check.reason) == ("indeterminate", "forbidden")
 
-    def test_a_403_on_head_but_a_200_on_get_is_alive(self) -> None:
-        """The single most important false positive this checker has to avoid."""
-        client, handler = replay(httpx.Response(403), httpx.Response(200))
-        with client:
-            check = check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert check.verdict == "alive"
-        assert handler.methods == ["HEAD", "GET"]
-
-    def test_a_404_on_head_but_a_200_on_get_is_alive(self) -> None:
-        """Some servers answer HEAD badly. A negative HEAD is never believed alone."""
-        check = probe(httpx.Response(404), httpx.Response(200))
-        assert check.verdict == "alive"
-
-    def test_a_405_on_head_but_a_200_on_get_is_alive(self) -> None:
-        check = probe(httpx.Response(405), httpx.Response(200))
-        assert check.verdict == "alive"
-
-    def test_a_405_on_both_is_indeterminate(self) -> None:
-        check = probe(httpx.Response(405), httpx.Response(405))
+    def test_a_405_is_indeterminate(self) -> None:
+        check = probe(httpx.Response(405))
         assert (check.verdict, check.reason) == ("indeterminate", "method_not_allowed")
 
     def test_a_persistent_500_is_broken_not_gone(self) -> None:
-        check = probe(*[httpx.Response(500)] * (2 * MAX_ATTEMPTS))
+        check = probe(*[httpx.Response(500)] * MAX_ATTEMPTS)
         assert (check.verdict, check.reason) == ("indeterminate", "server_error")
 
     def test_a_cloudflare_525_is_indeterminate(self) -> None:
-        client, _ = replay(httpx.Response(525), httpx.Response(525))
+        client, _ = replay(httpx.Response(525))
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at(), max_attempts=1)
         assert check.verdict == "indeterminate"
 
     def test_a_409_is_indeterminate(self) -> None:
-        check = probe(httpx.Response(409), httpx.Response(409))
+        check = probe(httpx.Response(409))
         assert (check.verdict, check.reason) == ("indeterminate", "other_client_error")
 
     def test_a_451_is_indeterminate(self) -> None:
-        check = probe(httpx.Response(451), httpx.Response(451))
+        check = probe(httpx.Response(451))
         assert check.verdict == "indeterminate"
 
     def test_a_timeout_means_slow_not_absent(self) -> None:
-        client, _ = replay(*[httpx.ConnectTimeout("timed out")] * (2 * MAX_ATTEMPTS))
+        client, _ = replay(*[httpx.ConnectTimeout("timed out")] * MAX_ATTEMPTS)
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("indeterminate", "timeout")
@@ -440,34 +462,193 @@ class TestConservatism:
         """An expired cert is a broken door on a building that is still there."""
         failure = httpx.ConnectError("certificate verify failed")
         failure.__cause__ = ssl.SSLCertVerificationError("expired")
-        client, handler = replay(failure, failure)
+        client, handler = replay(failure)
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("indeterminate", "tls_failure")
-        # Deterministic: tried once per method, never retried.
-        assert handler.methods == ["HEAD", "GET"]
+        # Deterministic: asked once, never retried.
+        assert handler.methods == ["GET"]
 
     def test_a_server_that_hangs_up_is_present_not_absent(self, resolving: None) -> None:
-        client, _ = replay(*[httpx.RemoteProtocolError("server disconnected")] * (2 * MAX_ATTEMPTS))
+        client, _ = replay(*[httpx.RemoteProtocolError("server disconnected")] * MAX_ATTEMPTS)
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("indeterminate", "protocol_error")
 
     def test_a_redirect_loop_is_indeterminate(self, resolving: None) -> None:
-        client, _ = replay(httpx.TooManyRedirects("loop"), httpx.TooManyRedirects("loop"))
+        client, _ = replay(httpx.TooManyRedirects("loop"))
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
         assert (check.verdict, check.reason) == ("indeterminate", "too_many_redirects")
 
     def test_a_host_still_rate_limiting_after_every_retry_is_indeterminate(self) -> None:
         """Being asked to slow down is not a statement about whether the page exists."""
-        check = probe(*[httpx.Response(429)] * (2 * MAX_ATTEMPTS))
+        check = probe(*[httpx.Response(429)] * MAX_ATTEMPTS)
         assert (check.verdict, check.reason) == ("indeterminate", "rate_limited")
 
-    def test_a_soft_404_served_as_200_is_reported_alive(self) -> None:
-        """Documented limitation: this cannot be detected without reading the body."""
-        check = probe(httpx.Response(200, text="Sorry, page not found"))
+
+# ------------------------------------------------------------------------------------------
+# What a 200 turns out to be
+#
+# Every title below was served by a real California provider with HTTP 200 on 2026-08-05, and
+# every one of them sat behind a confident "Provider's website" link on a program page. They
+# are quoted rather than invented because the pattern that matches them is only as good as the
+# strings it was written against, and a fixture nobody measured is a guess with a test around
+# it. 20 of the 767 live URLs in that corpus are in here; the other 747 must survive it
+# untouched, which is what TestTitlesThatMeanNothing is for.
+# ------------------------------------------------------------------------------------------
+
+# Punctuation these providers actually served is escaped rather than typed: a curly
+# apostrophe and an em dash are what separate a segment or sit inside one, and neither is
+# distinguishable from its ASCII lookalike in a diff.
+SOFT_404_TITLES = [
+    "Not Found",  # springboard.com, 2 pages
+    "404 - Elk Grove Unified School District",  # egace.egusd.net, 4 pages
+    "404 Error",  # butte.edu, 3 pages
+    "Page Not Found | Maiquela\u2019s Cosmetology Academy",  # maiquelascosmetology.net, 2 pages
+]
+
+FOR_SALE_TITLES = [
+    "AselBeauty.com is for sale | HugeDomains",  # 2 pages
+    "DronitEk.com is for sale | HugeDomains",  # 7 pages
+    "intechcollege.com \u2014 Buy this expired domain | ED.com",  # 2 pages
+    "catruckschool.com \u2014 Buy this expired domain | ED.com",  # 1 page
+]
+
+WORKING_TITLES = [
+    "Medical Assistant Training | Bay Area Medical Academy",
+    "Butte College",
+    "Elk Grove Adult and Community Education - Home",
+    "School of Career Education | Riverside County Office of Education",
+    "Catalog",  # the elumenapp catalogue shell, ~50 pages of real course listings
+    "Angeles University | Nursing & Business School in Los Angeles",
+    "Truck Driving School in West Sacramento | 1 on 1 Truck Academy",
+]
+
+
+class TestWhatA200SaysItIs:
+    """A 200 is a promise of a page, not a page.
+
+    Measured on the August 2026 corpus: of the 767 provider URLs that answered 2xx, 20 were
+    not pages at all -- 10 were the provider's own "page not found" screen served with HTTP
+    200, and 10 were listings offering the address for sale. Between them they sat under 23
+    program pages, each of which published "Provider's website" and sent a reader who was
+    ready to enrol into a dead end that looked like a working link.
+    """
+
+    @pytest.mark.parametrize("title", SOFT_404_TITLES)
+    def test_a_page_that_says_it_is_not_there_is_not_there(self, title: str) -> None:
+        check = probe(httpx.Response(200, html=_titled(title)))
+        assert (check.verdict, check.reason) == ("dead", "soft_not_found")
+
+    @pytest.mark.parametrize("title", FOR_SALE_TITLES)
+    def test_an_address_offered_for_sale_is_not_a_provider(self, title: str) -> None:
+        check = probe(httpx.Response(200, html=_titled(title)))
+        assert (check.verdict, check.reason) == ("dead", "domain_for_sale")
+
+    def test_the_title_that_convicted_it_is_kept_as_the_evidence(self) -> None:
+        """A verdict this consequential has to be arguable after the fact, not taken on
+        trust, so the report records the sentence the page used about itself."""
+        check = probe(httpx.Response(200, html=_titled("404 Error")))
+        assert check.detail == "page title: 404 Error"
+        assert check.status_code == 200, "the status line is still recorded as what it was"
+
+    def test_what_the_page_says_outranks_where_it_landed(self) -> None:
+        """Four of these were redirects to another domain, which this module used to call
+        `redirected_offsite` and publish as a working link. The stronger finding wins."""
+        check = probe(
+            redirect("https://www.hugedomains.com/domain_profile.cfm?d=dronitek.com"),
+            httpx.Response(200, html=_titled("DronitEk.com is for sale | HugeDomains")),
+        )
+        assert check.reason == "domain_for_sale"
+
+
+class TestTitlesThatMeanNothing:
+    """The other 747, and the ways a checker could wrongly convict one of them.
+
+    A wrong `dead` hides a real school from someone trying to enrol, and nothing downstream
+    can tell it apart from a true one. Every case here is a shape that appears in the real
+    corpus and must survive untouched.
+    """
+
+    @pytest.mark.parametrize("title", WORKING_TITLES)
+    def test_an_ordinary_provider_page_is_left_alone(self, title: str) -> None:
+        check = probe(httpx.Response(200, html=_titled(title)))
         assert check.verdict == "alive"
+
+    def test_a_page_that_merely_mentions_the_words_is_not_convicted(self) -> None:
+        """The pattern is anchored to a whole title segment, not searched for inside one.
+
+        A course about handling 404s, or a school whose page discusses what to do when a
+        record is not found, says those words without being that page.
+        """
+        for title in (
+            "Web Server Administration: 404 Handling | Example College",
+            "What to do if your transcript is not found",
+            "Lost and Found | Student Services",
+            "Homes for sale: Real Estate Licensing Program",
+        ):
+            check = probe(httpx.Response(200, html=_titled(title)))
+            assert check.verdict == "alive", title
+
+    def test_a_page_with_no_title_is_not_judged(self) -> None:
+        """16 URLs in the corpus answer with a SiteGround bot-check interstitial: a bare
+        meta-refresh, no title, no text. They are byte-for-byte as empty as a parking stub,
+        and the providers behind them are open. Emptiness is not evidence."""
+        stub = '<html><head><meta http-equiv="refresh" content="0;/.well-known/sgcaptcha/"></head></html>'
+        check = probe(httpx.Response(200, html=stub))
+        assert check.verdict == "alive"
+
+    def test_a_body_that_is_not_html_is_not_judged(self) -> None:
+        """10 provider links in the corpus are PDFs. A PDF has no title element, and
+        pattern-matching its bytes would be reading tea leaves."""
+        check = probe(
+            httpx.Response(
+                200,
+                headers={"content-type": "application/pdf"},
+                content=b"%PDF-1.4 404 not found is for sale",
+            )
+        )
+        assert check.verdict == "alive"
+
+    def test_a_title_beyond_the_read_cap_fails_towards_alive(self) -> None:
+        """32 of the corpus's 755 HTML responses push `</title>` past the cap, the furthest
+        at 170 KB. Truncation can only cost a detection, never manufacture one -- a title
+        nobody read is a title nobody matched."""
+        check = probe(
+            httpx.Response(
+                200, html=_titled("404 Not Found", padding=link_check.BODY_READ_CAP + 1_000)
+            )
+        )
+        assert check.verdict == "alive"
+
+    def test_a_title_split_across_the_markup_is_still_read(self) -> None:
+        """Entities and inline tags are how the page was written, not what it says."""
+        check = probe(
+            httpx.Response(200, html="<html><head><title>Page&nbsp;<b>Not Found</b></title></head>")
+        )
+        assert (check.verdict, check.reason) == ("dead", "soft_not_found")
+
+    def test_a_body_that_stops_arriving_is_not_a_finding(self) -> None:
+        """The status line already arrived and is the answer. A connection that dies while
+        the page is still being read has told us nothing further, and must not be allowed to
+        turn a page that answered into a page that did not."""
+
+        def cut_off() -> Iterator[bytes]:
+            yield b"<html><head><title>Welding Cer"
+            raise httpx.ReadError("connection reset")
+
+        check = probe(
+            httpx.Response(200, headers={"content-type": "text/html"}, content=cut_off()),
+            probe_https=False,
+        )
+        assert (check.verdict, check.reason) == ("alive", "ok")
+
+    def test_only_a_2xx_body_is_read_for_a_title(self) -> None:
+        """A 404 is already conclusive from its status line, and a 403's body is a bot wall
+        rather than a page -- reading either could only muddle a settled answer."""
+        check = probe(httpx.Response(403, html=_titled("404 Not Found")))
+        assert (check.verdict, check.reason) == ("indeterminate", "forbidden")
 
 
 class TestRetries:
@@ -479,11 +660,11 @@ class TestRetries:
         assert check.verdict == "alive"
         assert check.attempts == 2
         assert clock.waits == [1.0]
-        assert handler.methods == ["HEAD", "HEAD"]
+        assert handler.methods == ["GET", "GET"]
 
     def test_backoff_is_bounded_and_exponential(self) -> None:
         clock = Clock()
-        client, _ = replay(*[httpx.Response(503)] * (2 * MAX_ATTEMPTS))
+        client, _ = replay(*[httpx.Response(503)] * MAX_ATTEMPTS)
         with client:
             check_url(PAGE, client=client, sleep=clock, now=at())
         assert clock.waits[:2] == [1.0, 2.0]
@@ -502,57 +683,76 @@ class TestRetries:
     def test_a_retry_after_longer_than_we_will_hold_stops_rather_than_waits(self) -> None:
         """Being asked to go away for an hour is answered by going away, not by waiting."""
         clock = Clock()
-        client, handler = replay(
-            httpx.Response(503, headers={"Retry-After": "3600"}),
-            httpx.Response(503, headers={"Retry-After": "3600"}),
-        )
+        client, handler = replay(httpx.Response(503, headers={"Retry-After": "3600"}))
         with client:
             check = check_url(PAGE, client=client, sleep=clock, now=at())
         assert check.verdict == "indeterminate"
-        assert handler.methods == ["HEAD", "GET"]
+        assert handler.methods == ["GET"]
         assert 3600.0 not in clock.waits
 
     def test_a_404_is_never_retried(self) -> None:
-        """A decision, not a hiccup. One HEAD, one confirming GET, and no more."""
-        client, handler = replay(httpx.Response(404), httpx.Response(404))
+        """A decision, not a hiccup. One request, and no more."""
+        client, handler = replay(httpx.Response(404))
         with client:
             check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert handler.methods == ["HEAD", "GET"]
+        assert handler.methods == ["GET"]
 
     def test_a_403_is_never_retried(self) -> None:
-        client, handler = replay(httpx.Response(403), httpx.Response(403))
+        client, handler = replay(httpx.Response(403))
         with client:
             check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert handler.methods == ["HEAD", "GET"]
+        assert handler.methods == ["GET"]
 
 
 class TestPoliteness:
-    def test_a_pause_separates_head_from_get_on_the_same_host(self) -> None:
+    def test_a_pause_separates_a_url_from_the_https_probe_of_the_same_host(self) -> None:
         clock = Clock()
-        client, _ = replay(httpx.Response(404), httpx.Response(404))
+        client, _ = replay(httpx.Response(200), httpx.Response(200))
         with client:
-            check_url(PAGE, client=client, sleep=clock, now=at(), pause=2.5)
+            check_url(INSECURE, client=client, sleep=clock, now=at(), pause=2.5)
         assert 2.5 in clock.waits
 
-    def test_a_get_body_is_never_downloaded(self) -> None:
-        """A provider should not pay to serve a page nobody reads."""
-        served: list[int] = []
+    def test_only_a_page_that_answered_is_read_at_all(self) -> None:
+        """A provider should not pay to serve a body that could not settle anything.
 
-        def body() -> Iterator[bytes]:
-            served.append(1)
-            yield b"x" * 5_000_000
+        A 404's body is not evidence -- the status line already said it -- and neither is a
+        PDF's, which has no title to read. Both are closed unread. Only the 2xx HTML case is
+        worth a provider's bandwidth, and even then only as far as ``</title>``.
+        """
+        for response in (
+            httpx.Response(404, headers={"content-type": "text/html"}, content=_counted()),
+            httpx.Response(200, headers={"content-type": "application/pdf"}, content=_counted()),
+            httpx.Response(200, headers={"content-type": ""}, content=_counted()),
+        ):
+            _SERVED.clear()
+            client, _ = replay(response)
+            with client:
+                check_url(PAGE, client=client, sleep=Clock(), now=at(), probe_https=False)
+            assert _SERVED == []
 
-        client, _ = replay(httpx.Response(404), httpx.Response(404, content=body()))
+    def test_a_page_is_read_only_as_far_as_its_title(self) -> None:
+        """Measured median on the real corpus: 529 characters. The rest is never asked for."""
+        _SERVED.clear()
+        client, _ = replay(
+            httpx.Response(
+                200,
+                headers={"content-type": "text/html; charset=utf-8"},
+                content=_counted(
+                    b"<html><head><title>Welding Certificate</title>", b"x" * 5_000_000
+                ),
+            )
+        )
         with client:
-            check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert served == []
+            check = check_url(PAGE, client=client, sleep=Clock(), now=at(), probe_https=False)
+        assert check.reason == "ok"
+        assert _SERVED == [0], "read past </title> and made a provider serve the whole page"
 
     def test_the_request_budget_for_one_url_is_bounded(self) -> None:
-        client, handler = replay(*[httpx.Response(503)] * (2 * MAX_ATTEMPTS))
+        client, handler = replay(*[httpx.Response(503)] * MAX_ATTEMPTS)
         with client:
             check = check_url(PAGE, client=client, sleep=Clock(), now=at())
-        assert len(handler.requests) == 2 * MAX_ATTEMPTS
-        assert check.attempts == 2 * MAX_ATTEMPTS
+        assert len(handler.requests) == MAX_ATTEMPTS
+        assert check.attempts == MAX_ATTEMPTS
 
 
 class TestHttpsUpgrade:
@@ -563,10 +763,10 @@ class TestHttpsUpgrade:
         assert check.verdict == "alive"
         assert check.https_alternative == "https://example.edu/programs/welding"
         assert check.is_upgradeable is True
-        assert handler.calls[1] == ("HEAD", "https://example.edu/programs/welding")
+        assert handler.calls[1] == ("GET", "https://example.edu/programs/welding")
 
     def test_an_http_url_with_no_https_answer_offers_no_upgrade(self) -> None:
-        client, _ = replay(httpx.Response(200), httpx.Response(404), httpx.Response(404))
+        client, _ = replay(httpx.Response(200), httpx.Response(404))
         with client:
             check = check_url(INSECURE, client=client, sleep=Clock(), now=at())
         assert check.verdict == "alive"
@@ -583,11 +783,20 @@ class TestHttpsUpgrade:
         assert len(handler.requests) == 2
 
     def test_a_dead_http_url_that_lives_on_https_is_still_worth_upgrading(self) -> None:
-        client, _ = replay(httpx.Response(404), httpx.Response(404), httpx.Response(200))
+        client, _ = replay(httpx.Response(404), httpx.Response(200))
         with client:
             check = check_url(INSECURE, client=client, sleep=Clock(), now=at())
         assert check.verdict == "dead"
         assert check.https_alternative == "https://example.edu/programs/welding"
+
+    def test_an_address_that_is_for_sale_is_not_probed_over_tls(self) -> None:
+        """It is for sale on both schemes. Asking the parking host twice buys nothing."""
+        client, handler = replay(httpx.Response(200, html=_titled("Example.com is for sale")))
+        with client:
+            check = check_url(INSECURE, client=client, sleep=Clock(), now=at())
+        assert check.reason == "domain_for_sale"
+        assert check.https_alternative is None
+        assert all(url.startswith("http://") for _, url in handler.calls)
 
     def test_a_name_that_does_not_resolve_is_not_probed_over_tls(self, unresolvable: None) -> None:
         client, handler = replay(*[httpx.ConnectError("no such host")] * MAX_ATTEMPTS)
@@ -977,6 +1186,16 @@ class TestFrontPageCandidates:
     def test_a_dead_front_page_asks_for_nothing_further(self) -> None:
         assert front_page_candidates(results(checked(ROOT, "not_found"))) == []
 
+    def test_a_soft_404_earns_a_front_page_check_like_any_other(self) -> None:
+        """A page that says it is not there is a page that is not there, and the provider is
+        plainly still answering -- all four soft-404 hosts in the corpus have a live root."""
+        assert front_page_candidates(results(checked(PAGE, "soft_not_found"))) == [ROOT]
+
+    def test_an_address_for_sale_earns_nothing(self) -> None:
+        """Its front page is the same sales listing. Asking would spend a request on a
+        foregone answer, for the same reason a name that does not resolve is not asked."""
+        assert front_page_candidates(results(checked(PAGE, "domain_for_sale"))) == []
+
 
 class TestDecideUnchecked:
     """The first case, and the one the whole design turns on."""
@@ -1191,12 +1410,50 @@ class TestDecideDead:
         assert decision.label == LABEL_PROGRAM_PAGE
 
     def test_the_wording_hook_is_an_observation_not_a_diagnosis(self) -> None:
-        """The only notice this module emits is about our own reading, and it never travels
+        """Every notice this module emits is about our own reading, and none of them travels
         without the date that gives it a shelf life."""
-        decision = decide(results(checked(PAGE, "not_found")), PAGE)
+        for reason in ("not_found", "dns_failure", "soft_not_found", "domain_for_sale"):
+            decision = decide(results(checked(PAGE, reason)), PAGE)
+            assert decision is not None
+            assert decision.notice is not None
+            assert decision.checked_on is not None
+
+    def test_a_soft_404_is_treated_exactly_like_the_404_it_is(self) -> None:
+        """The reader's situation is identical -- the filed page is not there and the school
+        is -- so the treatment is too, down to the wording."""
+        checks = results(checked(PAGE, "soft_not_found"), checked(ROOT, "ok"))
+        decision = decide(checks, PAGE)
         assert decision is not None
+        assert decision.href == ROOT
+        assert decision.label == LABEL_PROVIDER_HOME
+        assert decision.substitution == SUBSTITUTION_FRONT_PAGE
         assert decision.notice == NOTICE_UNREACHABLE
-        assert decision.checked_on is not None
+
+    def test_an_address_for_sale_publishes_no_link(self) -> None:
+        checks = results(checked(PAGE, "domain_for_sale"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.linked is False
+        assert decision.url == PAGE, "the record's own value survives, for the archive"
+
+    def test_an_address_for_sale_gets_its_own_sentence(self) -> None:
+        """ "We could not reach this page" would be false -- we reached it perfectly well,
+        and an advertisement answered -- and it would send a reader back to retry an address
+        that is never coming back. What they need to know is to look the school up by name.
+        """
+        decision = decide(results(checked(PAGE, "domain_for_sale")), PAGE)
+        assert decision is not None
+        assert decision.notice == NOTICE_FOR_SALE
+
+    def test_an_address_for_sale_is_never_sent_to_its_own_front_page(self) -> None:
+        """Even with a root on file that answered: whatever is there is the same listing,
+        and the corpus's parking hosts serve it at every path."""
+        checks = results(checked(PAGE, "domain_for_sale"), checked(ROOT, "ok"))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.href is None
+        assert decision.substitution is None
 
 
 class TestFrontPageFor:

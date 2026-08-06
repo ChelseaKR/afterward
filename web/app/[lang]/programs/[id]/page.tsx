@@ -17,6 +17,7 @@ import {
 } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
+import { linkNotice } from "@/lib/links";
 import type {
   AmericanJobCenter,
   EducationLevelShare,
@@ -1262,6 +1263,7 @@ export default async function ProgramPage({
           substitution: null,
         }
       : null);
+  const linkNote = link === null ? null : linkNotice(t, link);
   // Every occupation this program feeds. Showing only the first named the wrong job on
   // hundreds of pages and hid the shrinking one whenever it was not listed first.
   const occupations = program.occupations;
@@ -1811,7 +1813,7 @@ export default async function ProgramPage({
 
       {/*
         Where this link goes is the last thing between a reader and enrolling, and 333 of
-        these pages pointed somewhere that no longer answers. Three rules, all deliberate:
+        these pages pointed somewhere that no longer answers. Four rules, all deliberate:
 
         - Link `href`, not `url`. They differ where a page was upgraded to https or the
           filed page was gone and the provider's home page stood in.
@@ -1822,6 +1824,9 @@ export default async function ProgramPage({
           institution.
         - When there is nothing to link to, show the URL as text rather than dropping it,
           so a reader can still try it or look it up in an archive.
+        - Switch on the notice exhaustively, and render nothing for one this build does not
+          recognise. A dataset written by a newer builder must degrade to silence rather
+          than to a sentence chosen by a fallback that never saw the evidence.
       */}
       {link && (
         <div className="provider-link">
@@ -1835,11 +1840,7 @@ export default async function ProgramPage({
             <p className="provider-link-plain">{link.url}</p>
           )}
 
-          {link.notice === "page_unreachable" && link.checked_on !== null && (
-            <p className="compare-note">
-              {link.linked ? t.linkSubstituted(link.checked_on) : t.linkUnreachable(link.checked_on)}
-            </p>
-          )}
+          {linkNote && <p className="compare-note">{linkNote}</p>}
         </div>
       )}
 

@@ -1,5 +1,13 @@
 # Dead provider links — 2026-08-04
 
+> **Superseded in part.** This document is left as the measurement it was, including the
+> parts the code no longer matches. Two of them have since been answered by
+> [`soft-404-provider-links-2026-08-05.md`](soft-404-provider-links-2026-08-05.md): the soft
+> 404s this pass could not see are now detected from the page's own `<title>` — 20 URLs on 23
+> pages, measured — and the HEAD-then-GET sequence described under "Manners" is now a single
+> GET, for the reasons Control 4 below already implies. The floor this document warned about
+> is lower than it was, and is still a floor.
+
 Every program record from source D1 may carry a `program_url`, which the site renders as
 **"Provider's website →"**. That link is an assertion this project makes on a reader's
 behalf, and the federal feed does not maintain it. This is a measurement of how many of

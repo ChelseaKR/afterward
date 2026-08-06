@@ -492,8 +492,9 @@ def fetch_spanish_occupations(
 # --------------------------------------------------------------------------------------
 # Provider links
 #
-# The check is not part of a build and must never become one. It costs ~1,500 HTTP requests
-# against small colleges and adult schools, CI has no network at all, and a build that
+# The check is not part of a build and must never become one. It costs one HTTP request per
+# provider address -- roughly 1,100 against small colleges and adult schools, once the front
+# pages of the 404s are counted -- CI has no network at all, and a build that
 # depends on a thousand third parties being reachable fails for reasons that have nothing to
 # do with the data. So it is a separate command, cached on disk, whose report a later build
 # reads if it is there. No report is not an error and not a gap to be filled with a default:

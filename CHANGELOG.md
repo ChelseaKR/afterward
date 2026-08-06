@@ -61,6 +61,13 @@ All notable changes to this project are documented here. The format follows
 - A build refuses to emit a `coverage.json` missing anything the site reads from it. One
   snapshot without `state_benchmark` had already removed every statewide comparison from
   2,057 outcome pages with no error, no warning and no visible difference.
+- A provider link that answers HTTP 200 is no longer taken at its word. 20 of the 767 links
+  that answered were not pages: 10 were the provider's own "page not found" screen served
+  with a 200, and 10 were listings offering the domain for sale. Between them they sat under
+  23 program pages that published a confident "Provider's website" link into a dead end. The
+  soft 404s are now treated as the 404s they are — 11 of those pages gain a working link to
+  the provider's home page instead — and a for-sale address is published unlinked, with a
+  dated sentence saying what it served and suggesting the reader look the school up by name.
 
 ### Known limitations
 
