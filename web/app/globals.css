@@ -410,6 +410,15 @@ body {
   border-left-color: var(--orange-70, var(--orange-static-70));
 }
 
+/* The caution shown under outcome figures the provider filed against a wider cohort than
+   the program named. Matches the inline treatment the search cards have used, as a class so
+   the occupation page's program list and the search results stay in step. */
+.cohort-note {
+  margin: 0.875rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
 .facts {
   display: flex;
   flex-wrap: wrap;
