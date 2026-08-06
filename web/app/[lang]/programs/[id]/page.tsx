@@ -13,6 +13,7 @@ import {
   getProgram,
   getSearchIndex,
   occupationTitleIn,
+  occupationTitleLang,
 } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
@@ -1616,11 +1617,16 @@ export default async function ProgramPage({
               <section key={occupation.soc_code} className="occ-block">
                 <h3 style={{ fontSize: "1.0625rem", marginBottom: "0.5rem" }}>
                   {occupation.soc_code ? (
-                    <Link href={`/${lang}/occupations/${occupation.soc_code}/`}>
+                    <Link
+                      href={`/${lang}/occupations/${occupation.soc_code}/`}
+                      lang={occupationTitleLang(lang, occupation.soc_code)}
+                    >
                       {occupationName(occupation, lang)}
                     </Link>
                   ) : (
-                    occupationName(occupation, lang)
+                    <span lang={occupationTitleLang(lang, occupation.soc_code)}>
+                      {occupationName(occupation, lang)}
+                    </span>
                   )}
                 </h3>
                 <Collapsible open={occIndex === 0} label={t.jobDetail}>

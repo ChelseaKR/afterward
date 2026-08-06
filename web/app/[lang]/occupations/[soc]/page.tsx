@@ -7,6 +7,7 @@ import {
   allOccupationCodes,
   getOccupation,
   occupationTitleIn,
+  occupationTitleLang,
   programsForOccupation,
 } from "@/lib/data";
 import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
@@ -209,12 +210,14 @@ export default async function OccupationPage({
         asked for Spanish and gets "Pharmacy Technicians" has been told the page is not
         really theirs; one who gets "Técnicos de Farmacia" has not.
       */}
-      <h1>{displayTitle}</h1>
+      <h1 lang={occupationTitleLang(lang, occupation.soc_code)}>{displayTitle}</h1>
       {/* The English stays visible: it is the name on the certificate, the job advert and
           every state record, and a reader who only ever saw the Spanish could not search for
           the work anywhere else. */}
       {spanishTitle !== null && occupation.title !== null && (
-        <p className="title-original">{occupation.title}</p>
+        <p className="title-original" lang="en">
+          {occupation.title}
+        </p>
       )}
       <p style={{ color: "var(--gray-90)" }}>
         SOC {occupation.soc_code}
@@ -455,11 +458,16 @@ export default async function OccupationPage({
                   <tr key={sibling.soc_code}>
                     <th scope="row" style={{ fontWeight: 400 }}>
                       {sibling.soc_code ? (
-                        <Link href={`/${lang}/occupations/${sibling.soc_code}/`}>
+                        <Link
+                          href={`/${lang}/occupations/${sibling.soc_code}/`}
+                          lang={occupationTitleLang(lang, sibling.soc_code)}
+                        >
                           {siblingName}
                         </Link>
                       ) : (
-                        siblingName
+                        <span lang={occupationTitleLang(lang, sibling.soc_code)}>
+                          {siblingName}
+                        </span>
                       )}
                     </th>
                     <td className="num">

@@ -158,14 +158,18 @@ areaNote: (unplaced: number, total: number) =>
     "California publishes a ten-year projection for every occupation it tracks. All of them are here, grouped by whether the state expects the work to grow or shrink and ordered by the openings it projects.",
   occupationsListed: "Occupations listed",
   titlesEnglishOnly:
-    "Occupation titles appear in English because that is the only language the state publishes them in.",
+    "Occupation titles use O*NET's published Spanish name where there is one, and stay in " +
+    "English where there is not.",
   // The same admission, on the page where a Spanish reader meets the most untranslated text:
   // the program's own name, the description its provider filed, and the occupation titles.
   // The occupation page and the occupations index each say why their English is English; the
   // program page said nothing at all, which left the reader to conclude the translation had
   // simply run out.
   programTextEnglishOnly:
-    "Program names, program descriptions and occupation titles appear here in English, because that is the only language the federal and state records publish them in. Everything else on this page is translated.",
+    "Program names and program descriptions appear here in English, because that is the " +
+    "only language the federal and state records publish them in. Occupation titles are " +
+    "translated where O*NET publishes a Spanish name. Everything else on this page is " +
+    "translated.",
   occupationColumn: "Occupation",
   programsHere: "Programs listed here",
   onThisPage: "On this page",
@@ -825,9 +829,13 @@ areaNote: (unplaced, total) =>
     "California publica una proyección a diez años para cada ocupación que sigue. Aquí están todas, agrupadas según si el estado espera que el trabajo crezca o se reduzca y ordenadas por las vacantes que proyecta.",
   occupationsListed: "Ocupaciones en la lista",
   titlesEnglishOnly:
-    "Los nombres de las ocupaciones aparecen en inglés porque el estado solo los publica en ese idioma.",
+    "Los nombres de las ocupaciones usan el nombre en español que publica O*NET cuando existe, " +
+    "y permanecen en inglés cuando no.",
   programTextEnglishOnly:
-    "Los nombres de los programas, sus descripciones y los nombres de las ocupaciones aparecen aquí en inglés, porque es el único idioma en que los publican los registros federales y estatales. Todo lo demás en esta página está traducido.",
+    "Los nombres de los programas y sus descripciones aparecen aquí en inglés, porque es el " +
+    "único idioma en que los publican los registros federales y estatales. Los nombres de las " +
+    "ocupaciones están traducidos cuando O*NET publica un nombre en español. Todo lo demás en " +
+    "esta página está traducido.",
   occupationColumn: "Ocupación",
   programsHere: "Programas en esta lista",
   onThisPage: "En esta página",
