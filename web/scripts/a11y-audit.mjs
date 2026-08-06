@@ -133,6 +133,12 @@ if (SINGLE) {
     // grid every other page reuses, so nothing else covers its structure.
     ["About (English)", join(OUT, "en", "about", "index.html")],
     ["About (Spanish)", join(OUT, "es", "about", "index.html")],
+    // Every one of the 3,266 program pages links here, in both languages, and it is the page
+    // this site sends somebody to before they spend money or take a morning off work. It is
+    // also built from nested disclosures holding an ordered list of questions, which is a
+    // structure nothing else here uses — and it had no coverage at all.
+    ["Paying for training (English)", join(OUT, "en", "paying-for-training", "index.html")],
+    ["Paying for training (Spanish)", join(OUT, "es", "paying-for-training", "index.html")],
   ].filter(([, file]) => file && existsSync(file));
 
   if (targets.length === 0) {

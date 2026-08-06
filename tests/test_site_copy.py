@@ -73,7 +73,17 @@ def _block(source: str, *, spanish: bool) -> str:
 
 
 def _published_strings() -> dict[str, str]:
-    """Every sentence the program page publishes, keyed by where it comes from."""
+    """Every sentence the site publishes, keyed by where it comes from.
+
+    Every *step*, not only the subset a program page carries. This checked
+    ``steps_for_program_page()`` while `/paying-for-training/` rendered all of them, so the
+    three steps that a program page does not print -- ``expect_an_interview``,
+    ``what_the_center_decides`` and ``other_funding_first`` -- were outside it. They had no
+    entry in the web app's copy table either, so the guide fell back to the module's English
+    and shipped them untranslated: a Spanish reader got six steps in Spanish and three in
+    English, on the page about who pays and who decides. Neither half of that was visible to
+    a test, because each half was looking at a different set of steps.
+    """
     guidance = funding_guidance()
     # The one string carrying a date. The web app interpolates the snapshot with a template
     # literal, so the module is asked for the same sentence with the same hole in it.
@@ -81,7 +91,7 @@ def _published_strings() -> dict[str, str]:
         "etpl_listing_note": etpl_listing_note("${date}"),
         "who_decides": guidance.who_decides,
     }
-    for step in guidance.steps_for_program_page():
+    for step in guidance.steps:
         strings[f"step.{step.step_id}.heading"] = step.heading
         strings[f"step.{step.step_id}.detail"] = step.detail
     for question in guidance.questions:

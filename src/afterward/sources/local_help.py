@@ -902,6 +902,23 @@ STEPS: Final[tuple[Step, ...]] = (
         citations=(CFR_ITA, CFR_ELIGIBLE_PROVIDER, EDD_ETPL),
     ),
     Step(
+        step_id="ask_before_you_enroll",
+        on_program_page=True,
+        heading="Ask before you enroll, not after",
+        detail=(
+            "The order the rules set out starts at the center rather than at the school. "
+            "Before a center can find somebody eligible for training services it has to "
+            "gather enough to decide, at a minimum through an interview, evaluation or "
+            "assessment and career planning. Referring a person to the provider they have "
+            "chosen and setting up the account both come after that, and both are the "
+            "center's to do — the account is a payment agreement with the training "
+            "provider, and it is the provider that is paid through it. So the call belongs "
+            "before enrolling and before paying. Anyone who has already done either should "
+            "still ask, and ask what it means for them."
+        ),
+        citations=(CFR_CAREER_SERVICES_FIRST, CFR_CONSUMER_CHOICE, CFR_ITA),
+    ),
+    Step(
         step_id="where_to_ask",
         on_program_page=True,
         heading="The place to ask is an America's Job Center of California",

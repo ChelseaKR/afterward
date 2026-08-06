@@ -644,12 +644,20 @@ areaNote: (unplaced: number, total: number) =>
     `This program was on California's Eligible Training Provider List when the state last reported it to the U.S. Department of Labor (${date}). Programs on that list can be paid for through an Individual Training Account. Listings are renewed periodically and can lapse, so a program listed when the state last reported may not be listed today. Ask before you rely on it.`,
   fundingHeading: "Someone else may be able to pay for this",
   fundingIta: "Federal training money under the Workforce Innovation and Opportunity Act is paid through an Individual Training Account: an agreement between a local workforce board and a training provider, set up on behalf of one person. That money can only go to a provider on the state's Eligible Training Provider List, which is the list every program on this site comes from.",
+  fundingBeforeHeading: "Ask before you enroll, not after",
+  fundingBefore: "The order the rules set out starts at the center rather than at the school. Before a center can find somebody eligible for training services it has to gather enough to decide, at a minimum through an interview, evaluation or assessment and career planning. Referring a person to the provider they have chosen and setting up the account both come after that, and both are the center's to do — the account is a payment agreement with the training provider, and it is the provider that is paid through it. So the call belongs before enrolling and before paying. Anyone who has already done either should still ask, and ask what it means for them.",
   fundingCentersHeading: "The place to ask is an America's Job Center of California",
   fundingCenters: "A comprehensive center is where all the required partner programs can be reached; an affiliate site offers some of them. California's Employment Development Department directs people to CareerOneStop's finder to locate one. Contacting a center before traveling is worth it — the state notes that its own staff are not physically present at every location.",
   fundingWhoCanBeServedHeading: "Who can be served at all",
   fundingWhoCanBeServed: "California states the general criteria as three things: age, Selective Service registration where it applies, and authorization to work in the United States. Work authorization is checked when someone moves into a service that needs it, not at the door — career assessments, an employment plan, case management, basic skills and English instruction, help finishing work-authorization paperwork, and referrals for transport, childcare, food and housing are all listed as services a local area may deliver without verifying it first.",
+  fundingInterviewHeading: "Expect an interview, not a form",
+  fundingInterview: "Before anyone can be found eligible for training services they must receive an interview, evaluation or assessment and career planning, or something else that gives the center enough information to decide. There is no federally required waiting period, but there is no way to skip the conversation either — which is why this site cannot tell anyone whether they qualify.",
+  fundingDecidesHeading: "What the center is deciding",
+  fundingDecides: "Training services may be made available to adults and dislocated workers whom the center determines are unlikely or unable to obtain employment leading to self-sufficiency through career services alone, need training to get there, and have the skills and qualifications to succeed in it. The program also has to be linked to employment opportunities in the local area, or somewhere the person is willing to commute or move to.",
   fundingPriorityHeading: "Say if you receive public assistance, are low income, or need basic skills help",
   fundingPriority: "For the adult funding stream, federal law requires priority to be given to recipients of public assistance, other low-income individuals, and individuals who are basic skills deficient. California instructs job center staff to work an explicit order: veterans and eligible spouses who are also in one of those groups, then the groups themselves, then other veterans and eligible spouses, then any populations the Governor or the local board has added, then everyone else. Priority does not exclude anyone else, and it does not apply to the dislocated worker stream. It only operates if the center is told, and California fixes a person's priority status at the moment eligibility is determined — so it is the first appointment that counts.",
+  fundingOtherFundingHeading: "Bring what you already have — this money fills a gap",
+  fundingOtherFunding: "WIOA training funding is limited to people who cannot get grant assistance from other sources, or who need help beyond what those sources cover. Centers must consider Pell Grants, state training funds and assistance for needy families first. Someone can enrol while a Pell application is still pending, if the center arranges it with the provider in advance.",
   fundingSupportHeading: "Ask what else can be covered while you train",
   fundingSupport: "Supportive services — help with transport, child care and dependent care, and others — may be provided to people taking part in career or training services who cannot obtain them elsewhere. Adults who are unemployed, do not qualify for unemployment compensation, and are enrolled in training may be eligible for needs-related payments as well.",
   fundingLocalHeading: "The answer depends on the local area, and on the year",
@@ -688,12 +696,36 @@ areaNote: (unplaced: number, total: number) =>
   // rather than what a rule says. Not from the module, because they are claims about this
   // dataset — what it looked for, what it found, and what it never checked.
   fundingCentersNone: (miles: number) =>
-    `No America's Job Center is within about ${miles} miles of this program's city. There is ` +
-    `one further away — the finder below searches the whole state.`,
+    `No America's Job Center is within about ${miles} miles of this program's city. The ` +
+    `finder below searches the whole state.`,
+  /**
+   * Said above the offices on the 32 program pages with none inside the radius, so a reader
+   * is not left to infer from a number that this site calls 27 miles nearby. What it
+   * replaced was a link to a statewide finder — a search box rather than an office — on the
+   * pages whose readers have the furthest to go.
+   */
+  fundingCentersBeyondIntro: (miles: number) =>
+    `No America's Job Center is within about ${miles} miles of this program's city. These ` +
+    `are the nearest ones anyway — further out, and worth a phone call before a journey:`,
   fundingCentersNotChecked:
     "This site has not established which offices are nearest to this program. The finder below searches the whole state.",
   fundingDistanceNote:
     "Distances are straight-line, so the drive is longer. Call before you travel: opening hours here are as the federal directory published them, and the state notes its own staff are not present at every location.",
+  /**
+   * The two labels on the office cards are federal terms of art, and on this page they had
+   * nothing next to them saying what they mean. The claim and the regulations behind it are
+   * `where_to_ask` in `local_help`, which the guide page prints in full with its citations.
+   */
+  fundingCenterTypes:
+    "At a comprehensive center all the required partner programs can be reached; an affiliate site offers some of them.",
+  /**
+   * The accessible name of a phone link. Three offices on one page publish three bare
+   * numbers, and a screen reader announcing "link, 619-319-9675" three times says nothing
+   * about which office is being called. WCAG 2.2 AAA 2.4.9 asks that a link's purpose be
+   * clear from the link alone. The visible number stays inside the name, so the spoken label
+   * still contains the written one.
+   */
+  fundingCallLabel: (center: string, phone: string) => `Call ${center} at ${phone}`,
   fundingFindersIntro: "Find a center anywhere in California, and check what is on the list today:",
   fundingEnglishSources:
     "The rules cited here, and the state and federal sites linked to, are published in English.",
@@ -1294,16 +1326,28 @@ areaNote: (unplaced, total) =>
   fundingHeading: "Puede que alguien más pague este programa",
   fundingIta:
     "El dinero federal para capacitación de la Ley de Innovación y Oportunidad en la Fuerza Laboral (WIOA) se paga mediante una Cuenta Individual de Capacitación: un acuerdo entre una junta local de desarrollo laboral y una institución de capacitación, que se establece en nombre de una sola persona. Ese dinero solo puede ir a una institución que esté en la Lista de Instituciones de Capacitación Elegibles del estado, que es la lista de la que sale cada programa de este sitio.",
+  fundingBeforeHeading: "Pregunte antes de inscribirse, no después",
+  fundingBefore:
+    "El orden que fijan las reglas empieza en el centro, no en la escuela. Antes de que un centro pueda determinar que alguien es elegible para servicios de capacitación, tiene que reunir lo suficiente para decidir: como mínimo, mediante una entrevista, evaluación o valoración y la planificación de carrera. Remitir a la persona a la institución que eligió y abrir la cuenta vienen después, y las dos cosas le corresponden al centro: la cuenta es un acuerdo de pago con la institución de capacitación, y es la institución la que cobra a través de ella. Por eso la llamada va antes de inscribirse y antes de pagar. A quien ya haya hecho una de las dos cosas le conviene preguntar igualmente, y preguntar qué significa eso en su caso.",
   fundingCentersHeading: "El lugar donde preguntar es un America's Job Center of California",
   fundingCenters:
     "En un centro integral (comprehensive center) se puede acceder a los programas de todos los socios obligatorios; un sitio afiliado (affiliate site) ofrece algunos de ellos. El Departamento de Desarrollo del Empleo de California remite a la gente al buscador de CareerOneStop para encontrar uno. Conviene comunicarse con un centro antes de ir: el estado advierte que su propio personal no está físicamente en todas las oficinas.",
   fundingWhoCanBeServedHeading: "A quién se puede atender",
   fundingWhoCanBeServed:
     "California resume los criterios generales en tres puntos: la edad, el registro en el Servicio Selectivo cuando corresponde y la autorización para trabajar en Estados Unidos. La autorización de trabajo se verifica cuando la persona pasa a un servicio que la requiere, no en la puerta: las evaluaciones de carrera, un plan de empleo, el manejo del caso, la enseñanza de destrezas básicas y de inglés, la ayuda para completar los trámites de la autorización de trabajo y las referencias para transporte, cuidado infantil, alimentos y vivienda figuran todas como servicios que un área local puede brindar sin verificarla primero.",
+  fundingInterviewHeading: "Espere una entrevista, no un formulario",
+  fundingInterview:
+    "Antes de que se pueda determinar que alguien es elegible para servicios de capacitación, esa persona debe recibir una entrevista, evaluación o valoración y planificación de carrera, o algo más que le dé al centro información suficiente para decidir. No hay un tiempo mínimo de espera fijado a nivel federal, pero tampoco hay manera de saltarse la conversación, y por eso este sitio no le puede decir a nadie si cumple los requisitos.",
+  fundingDecidesHeading: "Qué es lo que decide el centro",
+  fundingDecides:
+    "Los servicios de capacitación se pueden poner a disposición de personas adultas y de trabajadores desplazados cuando el centro determina que es poco probable o imposible que consigan, solo con los servicios de carrera, un empleo que lleve a la autosuficiencia; que necesitan capacitarse para llegar ahí; y que tienen las destrezas y los requisitos para completar la capacitación con éxito. El programa además tiene que estar ligado a oportunidades de empleo en el área local, o en algún lugar al que la persona esté dispuesta a trasladarse o mudarse.",
   fundingPriorityHeading:
     "Diga si recibe asistencia pública, tiene bajos ingresos o necesita reforzar destrezas básicas",
   fundingPriority:
     "En la vía de financiamiento para adultos, la ley federal exige dar prioridad a quienes reciben asistencia pública, a otras personas de bajos ingresos y a quienes tienen deficiencias en destrezas básicas. California le indica al personal de los centros que siga un orden explícito: primero las personas veteranas y sus cónyuges elegibles que además están en uno de esos grupos; luego esos grupos; luego las demás personas veteranas y cónyuges elegibles; luego las poblaciones que el Gobernador o la junta local hayan agregado; y al final todas las demás. La prioridad no excluye a nadie y no se aplica a la vía de trabajadores desplazados. Solo funciona si usted se lo dice al centro, y California fija la prioridad de cada persona en el momento en que se determina su elegibilidad: por eso lo que cuenta es la primera cita.",
+  fundingOtherFundingHeading: "Lleve lo que ya tiene: este dinero cubre un faltante",
+  fundingOtherFunding:
+    "El financiamiento de WIOA para capacitación es solo para quienes no pueden conseguir ayuda de otras subvenciones, o para quienes necesitan más de lo que esas fuentes cubren. Los centros deben considerar primero las Becas Pell, los fondos estatales de capacitación y la asistencia para familias necesitadas. Una persona se puede inscribir mientras su solicitud de Beca Pell sigue pendiente, si el centro lo acuerda de antemano con la institución.",
   fundingSupportHeading: "Pregunte qué más se puede cubrir mientras se capacita",
   fundingSupport:
     "Los servicios de apoyo —ayuda con el transporte, con el cuidado de niños y de otras personas dependientes, y otros— podrían brindarse a quienes participan en servicios de carrera o de capacitación y no pueden conseguirlos por otro lado. Las personas adultas que están desempleadas, no califican para el seguro de desempleo y están inscritas en una capacitación también podrían ser elegibles para pagos por necesidad (needs-related payments).",
@@ -1364,11 +1408,18 @@ areaNote: (unplaced, total) =>
 
   fundingCentersNone: (miles: number) =>
     `No hay ningún America's Job Center a menos de unas ${miles} millas de la ciudad de este ` +
-    `programa. Sí hay alguno más lejos: el buscador de abajo busca en todo el estado.`,
+    `programa. El buscador de abajo busca en todo el estado.`,
+  fundingCentersBeyondIntro: (miles: number) =>
+    `No hay ningún America's Job Center a menos de unas ${miles} millas de la ciudad de este ` +
+    `programa. Aun así, estas son las oficinas más cercanas: quedan más lejos, y conviene ` +
+    `llamar antes de hacer el viaje:`,
   fundingCentersNotChecked:
     "Este sitio no estableció cuáles son las oficinas más cercanas a este programa. El buscador de abajo busca en todo el estado.",
   fundingDistanceNote:
     "Las distancias son en línea recta, así que el trayecto es más largo. Llame antes de ir: los horarios que aparecen aquí son los que publicó el directorio federal, y el estado advierte que su propio personal no está en todas las oficinas.",
+  fundingCenterTypes:
+    "En un centro integral (comprehensive center) se puede acceder a los programas de todos los socios obligatorios; un sitio afiliado (affiliate site) ofrece algunos de ellos.",
+  fundingCallLabel: (center: string, phone: string) => `Llamar a ${center} al ${phone}`,
   fundingFindersIntro:
     "Encuentre un centro en cualquier parte de California y consulte qué hay hoy en la lista:",
   fundingEnglishSources:

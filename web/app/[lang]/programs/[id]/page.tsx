@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { CENTERS_STEP, LEAD_STEP, stepCopy } from "@/components/funding";
+import { CENTERS_STEP, LEAD_STEP, SEQUENCE_STEP, stepCopy } from "@/components/funding";
 import { Measure } from "@/components/Measure";
 import { WageRangeChart } from "@/components/WageRangeChart";
 import { programCount, programCountsBySoc } from "@/lib/browse";
+import { nearestCenters, phoneParts } from "@/lib/centers";
 import {
   allProgramIds,
   getCoverage,
@@ -933,17 +934,39 @@ function Attainment({
  * ========================================================================================== */
 
 /**
- * A dialable form of a published phone number, or null.
+ * The published phone field, with the numbers inside it dialable and the rest left as words.
  *
- * Only digits and a leading `+` reach the href: the number is a third-party string arriving from
- * a federal API, and a `tel:` URL is somewhere a stray character does not belong. Ten digits are
- * assumed to be North American and given a country code so the link works from a mobile abroad;
- * anything else is passed through as digits rather than guessed at.
+ * This used to strip every non-digit from the whole field and call the result a phone number.
+ * For 163 of the 183 centres that is right, because the field holds one ten-digit number. For
+ * the other 20 it is not: "619-319-9675 and 619-266-4253" became a `tel:` link for a twenty-digit
+ * number, "916-746-7722 Ext. 102" one for a thirteen-digit number, and so on down to a field
+ * carrying a switchboard and an EDD line. 778 of the 3,234 program pages that name an office
+ * carried at least one of them, in both languages, and every one of those links dialled nothing.
+ *
+ * `phoneParts` finds the numbers rather than assuming the field is one; see `lib/centers.ts` for
+ * what it declines to parse and why.
+ *
+ * The accessible name says which office is being called. Three offices on a page publish three
+ * bare numbers, and "link, 619-319-9675" spoken three times identifies none of them — WCAG 2.2
+ * AAA 2.4.9 asks that a link's purpose be clear from the link alone. The visible number stays
+ * inside the spoken name, so the name still contains the label.
  */
-function telHref(phone: string): string | null {
-  const digits = phone.replace(/[^0-9]/g, "");
-  if (digits.length === 0) return null;
-  return digits.length === 10 ? `tel:+1${digits}` : `tel:${digits}`;
+function CenterPhone({ center, t }: { center: AmericanJobCenter; t: Copy }) {
+  if (center.phone === null) return null;
+  return (
+    <p className="center-phone">
+      <span>{t.fundingPhone}: </span>
+      {phoneParts(center.phone).map((part, index) =>
+        part.tel === null ? (
+          <span key={index}>{part.text}</span>
+        ) : (
+          <a key={index} href={part.tel} aria-label={t.fundingCallLabel(center.name, part.text)}>
+            {part.text}
+          </a>
+        ),
+      )}
+    </p>
+  );
 }
 
 /**
@@ -969,7 +992,6 @@ function CenterCard({
   lang: Lang;
 }) {
   const t = dict(lang);
-  const tel = center.phone === null ? null : telHref(center.phone);
   const place = [center.city, center.state].filter((part) => part !== null).join(", ");
   const label =
     center.is_comprehensive === true
@@ -985,12 +1007,7 @@ function CenterCard({
         {label !== null && <span className="center-type">{label}</span>}
       </p>
 
-      {center.phone !== null && (
-        <p className="center-phone">
-          <span>{t.fundingPhone}: </span>
-          {tel === null ? center.phone : <a href={tel}>{center.phone}</a>}
-        </p>
-      )}
+      <CenterPhone center={center} t={t} />
 
       <p className="center-address">
         {center.address.map((line) => (
@@ -1041,14 +1058,36 @@ function centersById(centers: AmericanJobCenter[]): Map<string, AmericanJobCente
 }
 
 /**
+ * How far out to look on the pages where the pipeline found nothing, and how many to show.
+ *
+ * 50 miles because that is the measured band in which every one of the 227 cities this dataset
+ * publishes a program in has a centre. Beyond it there is nothing left to find, and an office
+ * 120 miles away offered as "the nearest one" would be worse than the finder.
+ *
+ * Two rather than three: at this distance a second option is worth having and a third is a
+ * directory. Measured against the current data, the three cities affected get two offices, two
+ * offices and one — Lemoore's nearest are 26.7 and 27.0 miles, Coalinga's 38.7 and 39.0, and
+ * South Lake Tahoe has one at 36.5 and nothing else inside 50.
+ */
+const BEYOND_RADIUS_MILES = 50;
+const BEYOND_RADIUS_SHOWN = 2;
+
+/**
  * The offices nearest this program, or an honest account of why there are none listed.
  *
  * Three states, and they are not two. A null list means nothing was established — no directory
  * was read, or this program's record carries no coordinates to search from. An empty list means
  * the search ran and there is no centre within the published radius, which is true of 32 of
- * California's 3,266 programs and is a real finding those pages should state rather than swallow.
- * A populated list is the nearest three. The statewide finder is offered in all three cases,
- * because it is the answer that is always true.
+ * California's 3,266 programs. A populated list is the nearest three.
+ *
+ * Those 32 pages used to end at "no centre within 25 miles" and a link to a statewide finder,
+ * which is a search box rather than an office — offered to the readers with the furthest to go
+ * and, for someone on a phone with no car, the least able to use one. Nothing further was
+ * fetched to fix it: `coverage.json` already publishes all 183 centres with their coordinates
+ * and this program's record already carries its own, so the nearest office beyond the radius is
+ * arithmetic over data the page has in hand. It is shown with its distance and with the plain
+ * statement that it is further out than this site calls nearby, because the point is to let a
+ * reader judge the journey rather than to make 27 miles sound close.
  */
 function NearestCenters({
   program,
@@ -1073,16 +1112,40 @@ function NearestCenters({
             Boolean(row.center),
           );
 
+  /*
+   * Only reached when the pipeline searched and found nothing inside its radius, and only
+   * useful where both the directory and this program's own coordinates exist. Distances are
+   * rounded to a tenth for display for the same reason the pipeline rounds its own: this is a
+   * great-circle figure offered to somebody deciding whether to travel, and more precision
+   * would be a claim about roads nobody has measured.
+   */
+  const { lat, lon } = program.location;
+  const searchBeyond =
+    found !== null &&
+    found.length === 0 &&
+    localHelp.centers !== null &&
+    lat !== null &&
+    lon !== null;
+  const beyond = searchBeyond
+    ? nearestCenters(localHelp.centers ?? [], lat, lon, {
+        limit: BEYOND_RADIUS_SHOWN,
+        withinMiles: BEYOND_RADIUS_MILES,
+      }).map((row) => ({ center: row.center, miles: Math.round(row.miles * 10) / 10 }))
+    : [];
+
+  const listed = found !== null && found.length > 0 ? found : beyond;
+
   return (
     <>
       {found === null ? (
         <p>{t.fundingCentersNotChecked}</p>
-      ) : found.length === 0 ? (
+      ) : found.length === 0 && beyond.length === 0 ? (
         <p>{t.fundingCentersNone(radius)}</p>
       ) : (
         <>
+          {found.length === 0 && <p>{t.fundingCentersBeyondIntro(radius)}</p>}
           <ul className="center-list">
-            {found.map((row) => (
+            {listed.map((row) => (
               <CenterCard
                 key={row.center.id}
                 center={row.center}
@@ -1091,7 +1154,14 @@ function NearestCenters({
               />
             ))}
           </ul>
-          <p className="compare-note">{t.fundingDistanceNote}</p>
+          {/*
+            The two labels on the cards above are federal terms of art, and until now they sat
+            on the page with nothing saying what they mean. One clause is what that costs; the
+            regulations behind it are on the guide this block links to.
+          */}
+          <p className="compare-note">
+            {t.fundingCenterTypes} {t.fundingDistanceNote}
+          </p>
         </>
       )}
 
@@ -1129,7 +1199,22 @@ function FundingBlock({
   const lead = steps.find((step) => step.id === LEAD_STEP);
   const rest = steps.filter((step) => step.id !== LEAD_STEP);
   const centersStep = rest.find((step) => step.id === CENTERS_STEP);
-  const others = rest.filter((step) => step.id !== CENTERS_STEP);
+  const sequenceStep = rest.find((step) => step.id === SEQUENCE_STEP);
+  /*
+   * Falls back to the dictionary rather than to silence, the same way the heading above falls
+   * back when `lead` is missing. `guidance` is baked into `coverage.json` by a pipeline run,
+   * so a dataset built before this claim existed does not carry it — and this is the one
+   * sentence in the block whose value is entirely in arriving before the reader enrols. A page
+   * that waits for a data refresh to say it has said it too late.
+   *
+   * Not a second copy of the copy: `fundingBefore` is asserted byte for byte against
+   * `local_help.STEPS` by `tests/test_site_copy.py`, so both branches render the sentence that
+   * sits beside its citations and under the wording check.
+   */
+  const sequence =
+    sequenceStep === undefined
+      ? { heading: t.fundingBeforeHeading, detail: t.fundingBefore }
+      : stepCopy(sequenceStep, t);
 
   return (
     <section className="funding">
@@ -1149,6 +1234,27 @@ function FundingBlock({
         * not, and listings lapse.
         */}
       <p className="funding-lede">{t.fundingLede(snapshot)}</p>
+
+      {/*
+        The one rule on this block that stops being useful if it is read late.
+
+        Everything else here can be read after enrolling and still be worth something. This
+        cannot: 20 CFR 680.220 puts the interview or assessment before the eligibility finding
+        and 680.340 puts the referral and the account after it, so the order runs centre first
+        and school second — and the reader this block is written for is someone who has just
+        decided they want a program and is about to go and sign up for it. It is the second
+        thing in the block for that reason, above the offices rather than behind the link to
+        the guide, and it stays a plain paragraph: a disclosure is where a sentence goes when
+        its timing does not matter.
+
+        It says what the order is. It does not say what happens to somebody who has already
+        paid, because no regulation read for this feature says, and the honest instruction is
+        the one in the sentence itself — ask.
+      */}
+      <section className="funding-step funding-sequence">
+        <h3>{sequence.heading}</h3>
+        <p>{sequence.detail}</p>
+      </section>
 
       {/*
         The offices come before the explanation of them.

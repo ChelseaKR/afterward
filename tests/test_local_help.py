@@ -613,6 +613,30 @@ class TestClaimIdentity:
         ids = {step.step_id for step in published}
         assert "who_can_be_served" in ids
         assert "supportive_services" in ids
+        # And the one that is time-critical rather than merely useful. Everything else on
+        # this block can be read after enrolling and still be worth something; this one
+        # cannot, because the order the rules set out starts before the enrolment does.
+        assert "ask_before_you_enroll" in ids
+
+    def test_the_sequence_step_puts_the_center_before_the_enrolment(self) -> None:
+        """The claim is about order, and it is the order that makes it worth publishing.
+
+        A reader who has just decided they want a program is about to enrol in it. If the
+        page tells them only that money exists, it has told them something they can act on
+        too late. 20 CFR 680.220 puts the interview or assessment before the eligibility
+        finding; 680.340 puts the referral and the account after it; 680.300 makes the
+        account an agreement the provider is paid under. None of that is a claim about what
+        happens to somebody who has already paid, and this must not grow into one.
+        """
+        step = next(s for s in STEPS if s.step_id == "ask_before_you_enroll")
+        assert "before enrolling and before paying" in step.detail
+        # Not "you have forfeited it" and not "you can still be reimbursed": neither is in
+        # the regulations, and the honest instruction is to ask.
+        assert "should still ask" in step.detail
+        cited = {citation.url for citation in step.citations}
+        assert any("680.220" in url for url in cited)
+        assert any("680.340" in url for url in cited)
+        assert any("680.300" in url for url in cited)
 
 
 class TestFinders:

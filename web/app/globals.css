@@ -1060,6 +1060,15 @@ td.num {
 }
 
 /*
+ * The order: talk to a centre before enrolling. Spacing only, and no colour of its own — the
+ * contrast audit's list of pairings on this block is meant to stay the whole list. What sets
+ * it apart is that it is a heading a reader can jump to and that it is not behind a disclosure.
+ */
+.funding-sequence > h3:first-child {
+  margin-top: 1.25rem;
+}
+
+/*
  * The rule a claim rests on. Small, because it is for the reader who wants to check rather
  * than the reader who wants to act — but a real link with its real title, since "20 CFR
  * 680.410" as bare text is not checkable by anyone who does not already know where to look.

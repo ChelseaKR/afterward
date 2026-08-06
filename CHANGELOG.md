@@ -35,8 +35,39 @@ All notable changes to this project are documented here. The format follows
   not publish (not yet wired into the pipeline).
 - A CareerOneStop client for occupation descriptions, O*NET skill ratings and O*NET related
   occupations. Optional: the build runs unchanged without credentials.
+- The funding block says what order to do things in. Every program page now carries "Ask
+  before you enroll, not after": under 20 CFR 680.220 a centre has to interview or assess
+  somebody before it can find them eligible, and under 680.340 the referral and the account
+  come after that — so the call belongs before the enrolment, and someone who has already
+  enrolled or paid is told to ask rather than told what will happen, which no regulation read
+  for this says. It is a plain paragraph above the offices, not behind the link to the guide.
+  The claim and its citations are a new step in `local_help`; `/paying-for-training/` renders
+  it, with the regulations beside it, from the next dataset refresh onward.
+- `/paying-for-training/` is in the accessibility gate, in both languages. Every one of the
+  3,266 program pages links to it and nothing had ever audited it.
+- The 32 program pages with no America's Job Center inside the published 25-mile radius name
+  the nearest offices anyway, with distance, phone and hours, instead of offering a statewide
+  search box. Lemoore's two nearest are 26.7 and 27.0 miles, Coalinga's 38.7 and 39.0, and
+  South Lake Tahoe's one at 36.5. Nothing new is fetched: `coverage.json` already publishes
+  all 183 centres with coordinates and each program carries its own.
+- The comprehensive/affiliate label on an office card is explained in one clause, so a
+  federal term of art on the page means something to the reader looking at it.
 
 ### Fixed
+
+- Phone numbers on office cards dial what they say. 20 of the 183 centres publish a field
+  that is not one ten-digit number — two numbers, a number and an extension, a switchboard
+  and an EDD line — and stripping non-digits from the whole field produced `tel:` links for
+  twenty- and thirteen-digit numbers that dial nothing, on 778 of the 3,234 program pages
+  that name an office, in both languages. Each real number inside the published string is now
+  its own link, and what cannot be parsed stays as readable text.
+- Three of the nine steps on `/es/paying-for-training/` shipped in English —
+  `expect_an_interview`, `what_the_center_decides` and `other_funding_first` — on the page
+  about who pays and who decides. The Python tripwire compared the module against the site's
+  copy over the program-page subset only, while the guide rendered all nine, so neither half
+  of the gap was visible to a test. The check now walks every step.
+- Phone links say which office they call. Three offices on one page published three bare
+  numbers, and a screen reader announced each as its digits alone (WCAG 2.2 AAA 2.4.9).
 
 - Programs summarise across every occupation they feed, not just the first. The count of
   programs training for declining occupations was understated by more than half (219 against
