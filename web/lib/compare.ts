@@ -46,6 +46,39 @@ export function ownCohortOnly(
   return (entry) => (isOwnCohort(entry) ? read(entry) : null);
 }
 
+/**
+ * Upper bound in weeks of each length band; anything past the last bound is its own band.
+ *
+ * Not invented for this file. These are the site's own length vocabulary — the four caps the
+ * length filter offers, "About a month or less" through "About a year or less" (`LENGTH_GLOSS`
+ * in i18n.ts) — and the segmentation the project already publishes its completion medians
+ * against, on the About page and in `filterLengthNote`. Choosing a different cut here would
+ * leave the site giving two incompatible answers to "when are two completion rates on the same
+ * scale", and a reader auditing one against the other would be right to distrust both.
+ */
+export const LENGTH_BAND_BOUNDS: readonly number[] = [4, 12, 26, 52];
+
+/**
+ * Which length band a program sits in, or null when its length was never established.
+ *
+ * 12 of California's 3,266 programs report no length at all. A missing length is read the way
+ * a missing cohort flag is — as "not established", never as "near enough" — so a program that
+ * never said how long it takes cannot be placed on a scale beside one that did.
+ */
+export function lengthBand(weeks: number | null): number | null {
+  // `Number.isFinite` as well as the null test: an index built before `w` existed arrives with
+  // the key absent rather than null, and undefined has to reach "no band" too.
+  if (weeks === null || !Number.isFinite(weeks)) return null;
+  const index = LENGTH_BAND_BOUNDS.findIndex((bound) => weeks <= bound);
+  return index === -1 ? LENGTH_BAND_BOUNDS.length : index;
+}
+
+/** Whether every one of these programs reported a length, and all of them land in one band. */
+export function oneLengthBand(entries: SearchEntry[]): boolean {
+  const bands = entries.map((entry) => lengthBand(entry.w));
+  return bands.every((band) => band !== null) && new Set(bands).size <= 1;
+}
+
 /*
  * TODO(i18n): `cohortNotOwn` and `cohortNotOwnNote` belong in `web/lib/i18n.ts` under those
  * names. They live here because that file was owned by a concurrent change when this landed,
@@ -99,6 +132,80 @@ export function bestOf(
 
   if (reported.filter((candidate) => candidate.value === winner.value).length > 1) return null;
   return winner.index;
+}
+
+/** What the completion row may mark, and whether length is why it may mark nothing. */
+export interface CompletionMark {
+  /** Index of the cell to mark, or null when marking one would mislead. */
+  best: number | null;
+  /**
+   * True only when there was a mark and length took it away. The table says "these are not
+   * the same length" exactly when that is the reason, and never over a row nobody reported —
+   * an explanation offered for an absence it does not explain is its own small lie.
+   */
+  withheldForLength: boolean;
+}
+
+/**
+ * The completion row's mark, withheld when the programs being compared are not the same length.
+ *
+ * `bestOf` marked the highest completion rate in this row whatever the programs' lengths, and
+ * completion is the one measure on this table that length largely decides. Measured on the
+ * shipped index over the 1,947 programs that report both a completion rate and a length and
+ * whose figures describe that program alone, the median share who finished falls at every step
+ * up in length: 97% at four weeks or less (n=153), 91% at 5-12 (n=396), 85% at 13-26 (n=596),
+ * 80% at 27-52 (n=588), 78% beyond a year (n=214). So a four-week certificate at 97% beside a
+ * 72-week pathway at 80% is two programs sitting exactly on their own medians, and the mark
+ * told the reader the first one had won something.
+ *
+ * It goes further than flattering the short program. Elite Permanent Makeup & Cosmetology
+ * College's three-week "Permanent Makeup Triple Certificate Course" (81%) and Cosmetica Beauty
+ * and Barbering Academy's 60-week "Cosmetology" (80%) both train for Hairdressers,
+ * Hairstylists, and Cosmetologists, so they are a comparison someone really makes. The table
+ * marked the three-week course. It finishes 16 points below the median for programs its
+ * length; the 60-week course finishes 2 points above. The mark was pointed at the weaker of
+ * the two.
+ *
+ * How often, measured: grade every program against a smoothed expectation for its own length
+ * (the median of its 200 nearest neighbours by weeks) and rank every pair. Where both programs
+ * share a band the mark lands on the weaker-for-its-length one 2.63% of the time, which is the
+ * residual these deliberately wide bands leave. Where they do not share a band, 10.22%. Length
+ * adds 7.59 points of error, and adds it in a direction: across bands, the marked program is
+ * the shorter one 60.9% of the time.
+ *
+ * This is the confounding the project has already withdrawn a claim over once. "Better than
+ * typical" came off program pages because the median it judged against pooled every length
+ * (the block comment in `Measure.tsx` carries that measurement), and this table went on making
+ * the same claim two programs at a time.
+ *
+ * Completion only, deliberately. The same measurement over the other two cohort rows puts
+ * employment at 1.27% within a band against 4.53% across (+3.26) and earnings at 2.89% against
+ * 5.85% (+2.96) — well under half of completion's excess — and neither is directional. Their
+ * band medians do not fall with length (employment 76/71/69/65/69.5%; earnings
+ * $10,220/$10,500/$11,042/$10,725/$13,290), and the marked program is the shorter one 53.2%
+ * and 46.2% of the time, either side of chance. There is no length advantage being handed
+ * out, so withholding those marks would cost a reader a working signal to answer a problem
+ * those rows do not have. Cost and length keep their marks for the older reason: they are
+ * properties of the course, and what a course costs is not a claim about a cohort.
+ *
+ * The rule refuses more than it strictly must, and that is the direction to err in. Bands are
+ * coarse, so a 26-week and a 27-week program are held incomparable — 1.76% of realistic
+ * comparison sets (two to four programs sharing a SOC code and a city), 2.9% of the refusals.
+ * A ratio test would catch those, but at 1.5x it keeps 27.4% of pairs at 2.64% error against
+ * these bands' 24.5% at 2.63%: the data does not tell the two rules apart, and only one of
+ * them is already published.
+ */
+export function completionMark(entries: SearchEntry[]): CompletionMark {
+  const read = ownCohortOnly((entry) => entry.cr);
+  const best = bestOf(entries, read, "high");
+  if (best === null) return { best: null, withheldForLength: false };
+
+  // Only the programs that could actually have won it. One disqualified by `ownCohortOnly` is
+  // already out of the ranking, and letting its length veto the comparison between the two
+  // still standing would withhold a mark on account of a program that was never in the running.
+  const candidates = entries.filter((entry) => read(entry) !== null);
+  if (oneLengthBand(candidates)) return { best, withheldForLength: false };
+  return { best: null, withheldForLength: true };
 }
 
 /**

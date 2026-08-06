@@ -9,6 +9,7 @@ import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import type { Program, SearchEntry } from "@/lib/types";
 import {
   bestOf,
+  completionMark,
   isOwnCohort,
   occupationFigures,
   ownCohortOnly,
@@ -321,6 +322,7 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
   const t = dict(lang);
   const copy = OCCUPATION_COPY[lang];
   const records = useProgramRecords(entries.map((entry) => entry.i));
+  const completion = completionMark(entries);
 
   return (
     <section className="compare-panel" aria-label={t.compareTitle}>
@@ -330,6 +332,17 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
       {/* Only when it applies to something on screen, and in full words rather than a badge. */}
       {entries.some((entry) => entry.r && !isOwnCohort(entry)) && (
         <p className="compare-note">{COHORT_NOT_OWN[lang].note}</p>
+      )}
+      {/*
+        * Up here with the other notes rather than beside the row it governs, for the same
+        * reason the cohort note is: it is one fact about this particular set of programs, and
+        * the alternative — a full-width cell spliced into the table body — puts prose inside a
+        * grid of figures where a screen reader announces it as a row of data. The condition is
+        * the narrow one: a mark existed and length removed it. A completion row that nobody
+        * reported is silent, because length is not why that one is blank.
+        */}
+      {completion.withheldForLength && (
+        <p className="compare-note">{t.compareCompletionLength}</p>
       )}
 
       <div className="table-scroll">
@@ -377,12 +390,18 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
               * and stay comparable however the provider filed its outcome rows; these three
               * are properties of the cohort, so a program whose cohort is a whole college's
               * is withheld from the ranking — not from the table.
+              *
+              * Completion carries a second disqualification the other two do not, because it
+              * is the row length decides: its median falls 97% → 78% across the length bands
+              * the filter above already uses, so marking a winner across lengths marks the
+              * shorter program. `completionMark` holds that measurement and the reason the
+              * rule stops at this row.
               */}
             <Row
               label={t.completionRate}
               lang={lang}
               values={entries.map((e) => percent(e.cr, lang))}
-              best={bestOf(entries, ownCohortOnly((e) => e.cr), "high")}
+              best={completion.best}
             />
             <Row
               label={t.employmentRate}
