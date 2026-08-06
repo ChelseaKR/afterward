@@ -413,6 +413,16 @@ body {
 /* The caution shown under outcome figures the provider filed against a wider cohort than
    the program named. Matches the inline treatment the search cards have used, as a class so
    the occupation page's program list and the search results stay in step. */
+/* The dagger marking a table row whose outcome figures cover more than that program.
+   `abbr` carries the explanation for pointer and screen-reader users alike; the border the
+   design system puts under abbr is removed because the mark is the affordance, not the text. */
+.cohort-marker {
+  text-decoration: none;
+  border-bottom: 0;
+  cursor: help;
+  font-weight: 700;
+}
+
 .cohort-note {
   margin: 0.875rem 0 0;
   font-size: 0.875rem;
