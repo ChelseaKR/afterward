@@ -69,28 +69,6 @@ const COPY: Record<Lang, AboutCopy> = {
   },
 };
 
-/*
- * TODO(i18n): replaces `aboutComparisonsSecond` in the Spanish dictionary, which is stale in a
- * way that matters. The English paragraph records that this site withdrew its "better than
- * typical" / "worse than typical" verdicts and why; the Spanish one still explains what
- * "Mejor que lo típico" means, so the Spanish methodology page currently documents a feature
- * that no longer exists anywhere on the site — and documents it as a live judgement about
- * named businesses. The English text is read straight from the dictionary and is untouched.
- *
- * Delete this constant and the branch below once the Spanish key is corrected in i18n.ts.
- */
-const COMPARISONS_SECOND_ES =
-  "Este sitio llegó a etiquetar programas como «mejores» o «peores» que lo típico frente a " +
-  "esa mediana. Ya no lo hace. La mediana juntaba a todos los programas que reportan, sin " +
-  "importar su duración, y un certificado de cuatro semanas y una carrera de dos años no son " +
-  "comparables en finalización: medidos contra programas de su misma duración, ese rótulo " +
-  "estaba sencillamente invertido en alrededor de uno de cada diez programas. Las cifras y la " +
-  "mediana se siguen mostrando; la conclusión la saca usted, porque la comparación no podía " +
-  "sostenerla. Cuando dos programas se ponen lado a lado, la celda marcada es simplemente la " +
-  "cifra reportada más fuerte de esa fila; una fila donde menos de dos programas reportaron " +
-  "algo se queda sin marcar, porque ser el único que presentó un número no es lo mismo que " +
-  "ser el mejor.";
-
 /**
  * A count of records, formatted for prose.
  *
@@ -289,7 +267,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
 
       <h2 id="comparisons">{t.aboutComparisonsHeading}</h2>
       <p>{t.aboutComparisonsBody}</p>
-      <p>{lang === "es" ? COMPARISONS_SECOND_ES : t.aboutComparisonsSecond}</p>
+      <p>{t.aboutComparisonsSecond}</p>
       <p>{t.aboutComparisonsThird}</p>
 
       <h2 id="wider-occupation">{t.aboutAggregateHeading}</h2>
