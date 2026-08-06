@@ -392,6 +392,15 @@ areaNote: (unplaced: number, total: number) =>
   // about it. These strings say it, in the reader's own terms: the numbers are real, they are
   // California's, and they are about more jobs than the one this program teaches.
   aggregateHeading: "These figures describe a wider group of jobs",
+  // A table puts one program's outcome figures directly beside another's, which is exactly
+  // the reading the cohort flag exists to prevent for the rows that did not file their own.
+  // Marked per row, because which rows are affected is the whole point, and explained once
+  // beneath the table rather than repeated down thirty-two of thirty-five rows.
+  cohortMarkerLabel: "Covers more than this program",
+  cohortTableNote:
+    "Rows marked \u2020 carry figures the provider filed against more than the program named \u2014 " +
+    "several of its programs, or the whole institution. They are shown because they are real. " +
+    "They cannot be read against the rows beside them, because they do not describe one course.",
   aggregateBroadGroup: (group: string, codes: string) =>
     `California publishes no separate pay or openings figures for the occupation this program trains for (${codes}). It reports that work only inside ${group}, the larger category the occupation classification files it under, so the pay, openings and projected change below belong to that whole category. Read them as the range this job sits inside, not as a figure for the job itself.`,
   aggregateHybrid: (group: string, codes: string) =>
@@ -1048,6 +1057,11 @@ areaNote: (unplaced, total) =>
 
   // ---- Figures borrowed from a wider occupation ----
   aggregateHeading: "Estas cifras describen un grupo de ocupaciones más amplio",
+  cohortMarkerLabel: "Abarca más que este programa",
+  cohortTableNote:
+    "Las filas marcadas con \u2020 llevan cifras que el proveedor presentó por un grupo más amplio " +
+    "que el programa nombrado: varios de sus programas, o toda la institución. Se muestran porque " +
+    "son reales. No pueden compararse con las filas contiguas, porque no describen un solo curso.",
   aggregateBroadGroup: (group: string, codes: string) =>
     `California no publica cifras de pago ni de vacantes por separado para la ocupación que enseña este programa (${codes}). Solo reporta ese trabajo dentro de ${group}, la categoría más amplia en la que lo coloca la clasificación ocupacional, así que el pago, las vacantes y el cambio proyectado que aparecen abajo son los de esa categoría completa. Léalos como el rango en el que cae esta ocupación, no como una cifra de la ocupación misma.`,
   aggregateHybrid: (group: string, codes: string) =>

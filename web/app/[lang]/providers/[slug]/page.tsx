@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Measure } from "@/components/Measure";
 import { getSearchIndex } from "@/lib/data";
+import { isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang } from "@/lib/i18n";
 import { findProvider, groupByProvider } from "@/lib/providers";
@@ -180,10 +181,23 @@ export default async function ProviderPage({
             </tr>
           </thead>
           <tbody>
-            {programs.map((program) => (
+            {programs.map((program) => {
+              // The dagger marks a row whose outcome figures the provider filed against more
+              // than this program. It is the one thing this table cannot leave unsaid: 32 of
+              // De Anza's 35 rows are such rows, and a table exists to be read across.
+              const widerCohort = program.r === true && !isOwnCohort(program);
+              return (
               <tr key={program.i}>
                 <th scope="row" style={{ fontWeight: 400 }}>
                   <Link href={`/${lang}/programs/${program.i}/`}>{program.n ?? "—"}</Link>
+                  {widerCohort && (
+                    <>
+                      {" "}
+                      <abbr className="cohort-marker" title={t.cohortMarkerLabel}>
+                        †
+                      </abbr>
+                    </>
+                  )}
                 </th>
                 <td className="num">
                   {money(program.$, lang) ?? <span className="unreported" title={t.notReportedLong}>{t.notReported}</span>}
@@ -214,10 +228,19 @@ export default async function ProviderPage({
                   )}
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
+      {/*
+        Once, beneath the table it qualifies, rather than on every affected row. Rendered only
+        when such a row is present, so a provider that filed every cohort honestly is not given
+        a caution about something that is not on its page.
+      */}
+      {programs.some((program) => program.r === true && !isOwnCohort(program)) && (
+        <p className="cohort-note">{t.cohortTableNote}</p>
+      )}
     </div>
   );
 }
