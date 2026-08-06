@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Measure } from "@/components/Measure";
+import { Fact, Measure } from "@/components/Measure";
 import {
   allOccupationCodes,
   getOccupation,
   occupationTitleIn,
   programsForOccupation,
 } from "@/lib/data";
-import { count, money, signedPercent, tidyName } from "@/lib/format";
+import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
+import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, isLang } from "@/lib/i18n";
 import type { OccupationSkill, RelatedSource } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
@@ -506,11 +507,37 @@ export default async function OccupationPage({
                 <h3>
                   <Link href={`/${lang}/programs/${entry.i}/`}>{entry.n ?? "—"}</Link>
                 </h3>
-                <p className="card-provider" style={{ marginBottom: 0 }}>
+                <p className="card-provider">
                   {tidyName(entry.p)}
                   {entry.c ? ` · ${entry.c}` : ""}
                   {entry.$ !== null ? ` · ${money(entry.$, lang)}` : ""}
                 </p>
+                {/*
+                  * The site's premise is what happened to the people who took a program, and
+                  * this is the screen where someone picks among the programs for one job. It
+                  * listed name, provider, city and cost, so the reader had to open each of
+                  * eighteen tabs to reach the figures the search results already show on the
+                  * card. Same index, same fields, so this is the search card's treatment
+                  * brought to the page where the choice is actually made.
+                  */}
+                <dl className="facts">
+                  <Fact
+                    label={t.employmentRate}
+                    value={percent(entry.er, lang)}
+                    lang={lang}
+                  />
+                  <Fact label={t.medianEarnings} value={money(entry.me, lang)} lang={lang} />
+                </dl>
+                {/*
+                  * Gated on `r` as well as the cohort flag: a caution about figures that are
+                  * not on screen reads as a puzzle rather than a warning.
+                  */}
+                {entry.r && !isOwnCohort(entry) && (
+                  <p className="cohort-note">
+                    <span className="badge badge-small">{COHORT_NOT_OWN[lang].badge}</span>{" "}
+                    {COHORT_NOT_OWN[lang].note}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

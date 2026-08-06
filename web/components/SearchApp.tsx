@@ -1252,7 +1252,7 @@ function ResultCard({
         * warning.
         */}
       {entry.r && !isOwnCohort(entry) && (
-        <p style={{ margin: "0.875rem 0 0", fontSize: "0.875rem", lineHeight: 1.45 }}>
+        <p className="cohort-note">
           <span className="badge badge-small">{COHORT_NOT_OWN[lang].badge}</span>{" "}
           {COHORT_NOT_OWN[lang].note}
         </p>
