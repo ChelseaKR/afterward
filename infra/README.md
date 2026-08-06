@@ -148,5 +148,5 @@ would only be a way to miss something.
 
 ```bash
 # Manual fallback, if Actions is unavailable. Everything above still applies.
-aws cloudfront create-invalidation --distribution-id E166CPAG407D0L --paths "/*"
+aws cloudfront create-invalidation --distribution-id E2WV13UCB2U1MF --paths "/*"
 ```

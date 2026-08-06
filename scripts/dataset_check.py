@@ -38,6 +38,30 @@ def counts() -> dict[str, int | str | None]:
     }
 
 
+def problems(
+    actual: dict[str, int | str | None], expected: dict[str, int | str | None]
+) -> list[str]:
+    """Every way ``actual`` fails to look like the dataset ``expected`` describes.
+
+    Split out of :func:`main` to keep that function under the complexity limit, and
+    because the comparison is the part worth reading on its own: it is what decides
+    whether a backup is allowed to overwrite the last good copy.
+    """
+    found: list[str] = []
+
+    # A shortfall is corruption. A surplus is a refresh, which is fine and expected, so only
+    # the downward direction fails: a real refresh should never lose most of the dataset.
+    for key in ("programs", "occupations"):
+        if actual[key] < expected[key] * 0.9:
+            found.append(f"{key}: {actual[key]}, manifest says {expected[key]}")
+
+    for key in ("occupations_with_spanish", "occupations_with_wage_spread"):
+        if actual[key] == 0 and expected[key] > 0:
+            found.append(f"{key}: 0, manifest says {expected[key]} — enrichment lost")
+
+    return found
+
+
 def main(argv: list[str]) -> int:
     if not DATA.exists():
         print(f"dataset-check: no dataset at {DATA}")
@@ -50,30 +74,24 @@ def main(argv: list[str]) -> int:
 
     if "--write" in argv:
         MANIFEST.write_text(json.dumps(actual, indent=2) + "\n")
-        print(f"dataset-check: manifest written — {actual['programs']} programs, "
-              f"{actual['occupations']} occupations")
+        print(
+            f"dataset-check: manifest written — {actual['programs']} programs, "
+            f"{actual['occupations']} occupations"
+        )
         return 0
 
     if not MANIFEST.exists():
-        print("dataset-check: no manifest; run `make dataset-manifest` once the dataset is known good")
+        print(
+            "dataset-check: no manifest; run `make dataset-manifest` once the dataset is known good"
+        )
         return 1
 
     expected = json.loads(MANIFEST.read_text())
-    problems = []
+    found = problems(actual, expected)
 
-    # A shortfall is corruption. A surplus is a refresh, which is fine and expected, so only
-    # the downward direction fails: a real refresh should never lose most of the dataset.
-    for key in ("programs", "occupations"):
-        if actual[key] < expected[key] * 0.9:
-            problems.append(f"{key}: {actual[key]}, manifest says {expected[key]}")
-
-    for key in ("occupations_with_spanish", "occupations_with_wage_spread"):
-        if actual[key] == 0 and expected[key] > 0:
-            problems.append(f"{key}: 0, manifest says {expected[key]} — enrichment lost")
-
-    if problems:
+    if found:
         print("dataset-check: REFUSING — the working dataset does not look like the real one")
-        for p in problems:
+        for p in found:
             print(f"  {p}")
         print("  Restore from the backup before copying over it or publishing it.")
         return 1
