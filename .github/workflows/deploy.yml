@@ -61,7 +61,7 @@ concurrency:
 env:
   SITE_URL: https://afterward.chelseakr.com
   SITE_BUCKET: afterward.chelseakr.com
-  CLOUDFRONT_DISTRIBUTION_ID: E166CPAG407D0L
+  CLOUDFRONT_DISTRIBUTION_ID: E2WV13UCB2U1MF
   # Floor for a believable production dataset. The real one is 3,266 programs; the CI
   # fixture is 60. Anything under this is a fixture, a truncated download, or a source
   # that has quietly started returning almost nothing -- none of which should reach users.

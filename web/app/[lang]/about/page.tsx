@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 }
 
 /** Where a reader can read the sources for themselves, and where a provider can object. */
-const REPO = "https://github.com/ChelseaKR/camino";
+const REPO = "https://github.com/ChelseaKR/afterward";
 const PROVENANCE_URL = `${REPO}/blob/main/PROVENANCE.md`;
 const ISSUES_URL = `${REPO}/issues`;
 
