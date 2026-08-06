@@ -154,8 +154,9 @@ backup-data: dataset-check
 # Ask every provider URL in the current dataset whether it still goes anywhere, and leave a
 # report for the next `make data` to read.
 #
-# Deliberately NOT part of `data`, and never part of `verify`. It spends ~1,500 HTTP requests
-# on small colleges and adult schools, so it belongs to a person who decided to spend them --
+# Deliberately NOT part of `data`, and never part of `verify`. It spends one HTTP request per
+# provider address -- roughly 1,100 -- on small colleges and adult schools, so it belongs to
+# a person who decided to spend them --
 # quarterly, alongside a data refresh, not on every build. Results are cached per URL under
 # data/raw/link-cache (alive 30 days, dead 7, indeterminate 1), so a re-run asks only about
 # what has expired. A build that finds no report publishes every link exactly as filed.

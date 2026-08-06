@@ -1386,14 +1386,23 @@ class TestCheckProviderLinks:
         run, server = self._run(tmp_path, monkeypatch)
         assert run.front_pages_checked == 1
         assert run.by_verdict == {"alive": 1, "dead": 1}
-        assert ("HEAD", B_ROOT) in server.requests
+        assert ("GET", B_ROOT) in server.requests
 
-    def test_nothing_negative_is_believed_on_a_head_alone(
+    def test_every_provider_is_knocked_on_once(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
+        """Two dataset URLs and one front page, one GET each and nothing repeated.
+
+        The pass used to spend a HEAD and then a confirming GET on anything negative. Asking
+        the way a reader asks answers the same question in one request and makes the page's
+        own title readable, so a provider is knocked on once per address per run.
+        """
         _, server = self._run(tmp_path, monkeypatch)
-        assert ("HEAD", MISSING) in server.requests
-        assert ("GET", MISSING) in server.requests
+        assert server.requests == [
+            ("GET", GOOD),
+            ("GET", MISSING),
+            ("GET", B_ROOT),
+        ]
 
     def test_the_report_drives_the_next_builds_decision(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -1403,6 +1412,73 @@ class TestCheckProviderLinks:
         link = _payload(MISSING, checks)["provider_link"]
         assert link["href"] == B_ROOT
         assert link["substitution"] == SUBSTITUTION_FRONT_PAGE
+
+    def test_a_page_that_answers_200_and_says_it_is_missing_reaches_the_record(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The whole path, end to end, for the 23 pages that motivated the body read.
+
+        Butte College served exactly this on 2026-08-05: HTTP 200, ``<title>404 Error</title>``,
+        at a URL three program pages published as "Provider's website". Its front door is
+        fine, so what the reader gets is a working link to it and a dated sentence saying
+        why -- not a confident link into a "page not found" screen.
+        """
+
+        def site(request: httpx.Request) -> httpx.Response:
+            if str(request.url) == B_ROOT:
+                return httpx.Response(200, html="<title>Butte College</title>")
+            return httpx.Response(200, html="<title>404 Error</title>")
+
+        monkeypatch.setattr(
+            link_check,
+            "build_client",
+            lambda *a, **k: httpx.Client(transport=httpx.MockTransport(site)),
+        )
+        check_provider_links(
+            self._dataset(tmp_path),
+            output_path=tmp_path / "link-checks.json",
+            cache_dir=None,
+            max_workers=2,
+            sleep=lambda _: None,
+        )
+        checks = load_link_checks(tmp_path / "link-checks.json")
+        link = _payload(MISSING, checks)["provider_link"]
+        assert link["verdict"] == "dead"
+        assert link["reason"] == "soft_not_found"
+        assert link["href"] == B_ROOT
+        assert link["substitution"] == SUBSTITUTION_FRONT_PAGE
+        assert link["notice"] == "page_unreachable"
+        assert link["url"] == MISSING, "the federal record's own value survives"
+
+    def test_an_address_that_is_for_sale_reaches_the_record_unlinked(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No front page is asked for and none is offered: the whole address is merchandise.
+
+        The reader gets the URL as plain text and a sentence that does not pretend we failed
+        to reach it, because we did not -- an advertisement answered.
+        """
+
+        def parked(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, html="<title>Example.com is for sale | HugeDomains</title>")
+
+        monkeypatch.setattr(
+            link_check,
+            "build_client",
+            lambda *a, **k: httpx.Client(transport=httpx.MockTransport(parked)),
+        )
+        run = check_provider_links(
+            self._dataset(tmp_path),
+            output_path=tmp_path / "link-checks.json",
+            cache_dir=None,
+            max_workers=2,
+            sleep=lambda _: None,
+        )
+        assert run.front_pages_checked == 0
+        link = _payload(MISSING, load_link_checks(tmp_path / "link-checks.json"))["provider_link"]
+        assert link["linked"] is False
+        assert link["href"] is None
+        assert link["notice"] == "domain_for_sale"
 
     def test_a_warm_cache_asks_nobody_anything(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch

@@ -212,6 +212,11 @@ areaNote: (unplaced: number, total: number) =>
   linkUnreachable: (date: string) => `We could not reach this page when we checked on ${date}.`,
   linkSubstituted: (date: string) =>
     `We could not reach the page in the federal record when we checked on ${date}, so this links to the provider's home page instead.`,
+  // A lapsed domain is not a closed school — the adult centres behind the largest dead domain
+  // in this dataset are open and teaching at a different address. So this says what the
+  // address did, tells the reader the one thing that actually helps, and accuses nobody.
+  linkForSale: (date: string) =>
+    `When we checked on ${date}, this web address served a page offering the domain for sale rather than the provider's site. Searching for the provider by name, or telephoning it, is more likely to reach it.`,
   backToSearch: "Back to search",
   coverageNote: (pct: number) =>
     `${pct}% of California programs report at least one outcome. The rest are listed with what is known.`,
@@ -908,6 +913,8 @@ areaNote: (unplaced, total) =>
     `No pudimos abrir esta página cuando la revisamos el ${date}.`,
   linkSubstituted: (date: string) =>
     `No pudimos abrir la página que aparece en el registro federal cuando la revisamos el ${date}, así que este enlace lleva a la página principal de la institución.`,
+  linkForSale: (date: string) =>
+    `Cuando la revisamos el ${date}, esta dirección web mostraba una página que ofrece el dominio a la venta, no el sitio de la institución. Buscar la institución por su nombre, o llamarla por teléfono, tiene más probabilidades de encontrarla.`,
   backToSearch: "Volver a la búsqueda",
   coverageNote: (pct: number) =>
     `${pct}% de los programas de California reportan al menos un resultado. Los demás se muestran con lo que se sabe.`,

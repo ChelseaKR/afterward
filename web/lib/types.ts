@@ -391,7 +391,21 @@ export interface ProviderLink {
   reason: string | null;
   /** ISO date of our observation. Null when never checked. */
   checked_on: string | null;
-  notice: "page_unreachable" | null;
+  /**
+   * What has to be said, or null when there is nothing to say.
+   *
+   * `page_unreachable` covers every way the filed page was not there: nothing answered, the
+   * server said 404, or — since the August 2026 body audit — the page answered 200 and its
+   * own title said it was a "page not found" screen. The reader's situation is the same in
+   * all three, so the wording is.
+   *
+   * `domain_for_sale` is not that. The address answered, and what answered was a listing
+   * offering the domain for sale: 10 URLs on 12 program pages in that audit, every one of
+   * them published as a working "Provider's website" link into a domain auction. Saying "we
+   * could not reach it" there would be false and would send someone back to retry an address
+   * that is never coming back.
+   */
+  notice: "page_unreachable" | "domain_for_sale" | null;
   substitution: "https_upgrade" | "provider_front_page" | null;
 }
 

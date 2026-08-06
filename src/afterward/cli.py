@@ -169,8 +169,9 @@ def check_links_command(
 ) -> None:
     """Ask each provider URL in the dataset whether it still goes anywhere.
 
-    Deliberately separate from `build`, and deliberately not run by it. This spends roughly
-    1,500 HTTP requests on small colleges and adult schools, so it belongs to a person who
+    Deliberately separate from `build`, and deliberately not run by it. This spends one
+    request per provider address -- roughly 1,100 -- on small colleges and adult schools,
+    each of them serving at most the front of one page, so it belongs to a person who
     decided to spend them -- on a quarterly refresh cadence, not on every build. Results are
     cached per URL, so a re-run asks only about what has expired.
 

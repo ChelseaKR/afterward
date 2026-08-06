@@ -27,19 +27,30 @@ checked". A URL nobody checked simply has no :class:`LinkCheck`, and :func:`verd
 :func:`is_dead` return ``None`` for it rather than a default. An unchecked URL is not a dead
 URL, and the types are not allowed to blur that.
 
-What this cannot do: a soft 404 -- a "page not found" served with HTTP 200 -- is
-indistinguishable from a real page without fetching and interpreting the body, so it is
-reported ``alive`` here. One cheap relative of it *is* caught: a request for a deep path
-that ends up redirected to the site root almost always means the specific page is gone even
-though the provider is fine, and that is flagged as ``redirected_to_site_root``.
+A status code alone does not settle it. Measured on the August 2026 corpus, 20 of the 767
+URLs that answered 2xx were not pages at all: 10 were the provider's own "page not found"
+screen served with HTTP 200, and 10 were domain-sale listings on hosts that had bought the
+lapsed address. Every one of those 23 program pages published a confident
+"Provider's website" link into nothing. So a 2xx is also asked what it *says* it is, from
+its ``<title>`` and no further, and :data:`SOFT_NOT_FOUND_TITLES` and
+:data:`DOMAIN_FOR_SALE_TITLES` are the two things it can say that this module treats as
+evidence.
 
-Manners, since every host here is a small college or an adult school rather than a CDN:
-HEAD before GET, GET streamed so a provider is not billed for a body nobody reads, one
-request at a time per site with a pause between them, bounded concurrency across sites,
-retries only for what is plausibly transient, ``Retry-After`` honoured, and the honest
+Manners, since every host here is a small college or an adult school rather than a CDN: one
+GET per URL, its body read only as far as ``</title>`` and never past
+:data:`BODY_READ_CAP` (median 529 characters on the real corpus), one request at a time per
+site with a pause between them, bounded concurrency across sites, retries only for what is
+plausibly transient, ``Retry-After`` honoured, and the honest
 :data:`~afterward.sources.dol_etp.USER_AGENT` this project uses everywhere else. No browser
 impersonation: a host that wants to refuse this client is entitled to recognise it and do so,
 which is exactly why a refusal is classified ``indeterminate`` instead of ``dead``.
+
+There was a HEAD before that GET until the body became part of the question. Dropping it
+costs nothing and removes a measured defect: the prior audit found 33 of 769 live URLs whose
+HEAD disagreed with their GET -- 8 of them answering HEAD with 404 -- and the HEAD-then-GET
+second opinion existed only to survive that. Asking with the method a reader's browser uses,
+once, makes the disagreement unreachable rather than survivable, and spends fewer requests
+than confirming a bad HEAD ever did.
 
 Results are cached on disk by URL so a rebuild does not re-ask 1,000 providers whether they
 still exist.
@@ -54,7 +65,9 @@ of this existed.
 from __future__ import annotations
 
 import hashlib
+import html
 import json
+import re
 import socket
 import ssl
 import threading
@@ -88,24 +101,119 @@ REQUEST_TIMEOUT: Final = 25.0
 """Generous on purpose. A small college on shared hosting is slow, not gone."""
 
 MAX_ATTEMPTS: Final = 3
-"""Tries per method. Worst case for one URL is 3 HEADs then 3 GETs, spread over a few
-seconds of backoff -- less than a reader hammering reload on a broken page."""
+"""Tries for one URL, spread over a few seconds of backoff -- less than a reader hammering
+reload on a broken page."""
 
 HTTPS_PROBE_ATTEMPTS: Final = 1
 """The https probe answers "is there a free upgrade?", not "is this record's link good", so
 it gets one try. Missing an upgrade costs nothing; a second round of traffic does."""
+
+NO_HTTPS_PROBE_REASONS: Final[frozenset[str]] = frozenset({"dns_failure", "domain_for_sale"})
+"""Findings about the *address* rather than about one page, for which asking the https
+variant is a request spent on a foregone answer. A name DNS has never heard of does not
+exist over TLS either, and a domain being advertised for sale is advertised for sale on both
+schemes -- three of the corpus's for-sale URLs are plain http, and a parking host is the
+last host worth knocking on twice."""
 
 MAX_WORKERS: Final = 8
 """Sites checked at once. Never two requests to the same site concurrently -- see
 :func:`check_urls`, which hands each site to one worker as a unit."""
 
 PAUSE_BETWEEN_SAME_HOST: Final = 1.0
-"""Seconds between consecutive requests to one site, including HEAD then GET."""
+"""Seconds between consecutive requests to one site, including a URL and the https probe of
+the same address."""
 
 REQUEST_HEADERS: Final[Mapping[str, str]] = {
     "User-Agent": USER_AGENT,
     "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
 }
+
+BODY_READ_CAP: Final = 65_536
+"""Characters of body read before giving up on finding a ``<title>``.
+
+Reading stops at ``</title>`` rather than at this cap, which on the August 2026 corpus meant
+a median of 529 characters and under 1 KB for more than half of the 755 HTML responses. The
+cap is the backstop for the rest: 32 of those 755 push ``</title>`` past 64 KB, and the
+furthest reached 170 KB. Truncating one of those is safe in the only direction that matters
+-- a title nobody read is a title nobody matched, so the page stays ``alive``. The cap can
+only cost a detection, never manufacture one.
+"""
+
+TITLE_PATTERN: Final = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
+
+_MARKUP: Final = re.compile(r"<[^>]+>")
+_WHITESPACE: Final = re.compile(r"\s+")
+
+_TITLE_SEGMENTS: Final = re.compile(
+    # Pipe, en dash, em dash, middle dot, bullet; then hyphen or Unicode hyphen, but only
+    # when spaced. Escaped rather than typed because a literal en dash and a literal hyphen
+    # are indistinguishable in most editors, and this is a file where the difference decides
+    # whether a title splits.
+    "\\s*[|\u2013\u2014\u00b7\u2022]\\s*|\\s+[-\u2010]\\s+"
+)
+"""How providers separate a page's own name from their institution's.
+
+Split on these and ``404 - Elk Grove Unified School District`` yields the segment ``404``,
+which is the school district saying this page is not there. A plain hyphen only separates
+when it is spaced, so a hyphenated page name stays in one piece.
+"""
+
+HTML_CONTENT_TYPES: Final[tuple[str, ...]] = ("text/html", "application/xhtml+xml")
+"""What is worth reading a body from. The corpus also holds 10 PDFs and 2 ``text/plain``
+responses; a PDF has no ``<title>`` element and reading 64 KB of one to discover that would
+be traffic spent on a provider for nothing."""
+
+SOFT_NOT_FOUND_TITLES: Final = re.compile(
+    r"""^(?:
+        (?:oops[!.]?\s*)?(?:error\s*)?404
+            (?:\s*[-:]?\s*(?:error|not\s+found|page\s+not\s+found|file\s+not\s+found))?
+      | (?:page|file|document)\s+not\s+found
+      | not\s+found
+      | (?:oops[!.]?\s*)?(?:this\s+)?page\s+(?:does\s+not|doesn'?t)\s+exist[.!]?
+      | we\s+(?:could\s+not|couldn'?t)\s+find\s+that\s+page
+      | (?:the\s+)?page\s+(?:you\s+requested\s+)?(?:could\s+not|cannot|can'?t)\s+be\s+found
+    )$""",
+    re.IGNORECASE | re.VERBOSE,
+)
+"""Titles that are the page stating it does not exist.
+
+Every branch is a string a real California provider served with HTTP 200 on 2026-08-05:
+``404 Error`` and ``Oops! 404 Error`` (butte.edu, 3 pages), ``404`` as the first segment
+(egace.egusd.net, 4 pages), ``Not Found`` (springboard.com, 2 pages),
+``Page Not Found`` (maiquelascosmetology.net, 2 pages). Nothing here was invented.
+
+The pattern is anchored to a whole title segment, not searched for inside one, because that
+is the difference between a page announcing itself as missing and a page that mentions the
+word. Matched against all 755 HTML titles in the corpus it fired 10 times and every one was a
+genuine "page not found" screen -- no false positives. The residual risk is a bare ``404``
+segment belonging to a real page, which would need a title like ``404 | Welding``; course
+codes in these titles carry their subject prefix (``MATH 104``), which keeps them out of a
+segment of their own. That risk is accepted, and the direction of the error is worth stating
+plainly: it would hide a working provider, so if it ever fires wrongly the fix is to narrow
+this pattern, not to widen it.
+"""
+
+DOMAIN_FOR_SALE_TITLES: Final = re.compile(
+    r"""^(?:
+        \S{1,60}\s+is\s+for\s+sale
+      | buy\s+this\s+(?:expired\s+)?domain
+      | (?:this\s+)?domain(?:\s+name)?\s+is\s+for\s+sale
+    )$""",
+    re.IGNORECASE | re.VERBOSE,
+)
+"""Titles that are a listing offering the address itself for sale.
+
+``AselBeauty.com is for sale`` (HugeDomains) and ``Buy this expired domain``
+(expireddomains.com) between them account for 10 URLs on 12 program pages in the corpus,
+every one of them published today as a working "Provider's website" link. The single-token
+requirement in the first branch is what keeps ``<something>.com is for sale`` from reaching
+a sentence about property.
+
+This is deliberately *not* a list of marketplace hostnames. A hostname list is a guess about
+who is in that business and rots the day a new one opens; a page saying it is selling the
+address is that page's own statement about itself, which is the only kind of evidence the
+rest of this module accepts.
+"""
 
 Verdict = Literal["alive", "dead", "indeterminate"]
 """What the check established. Note what is missing: there is no "unchecked"."""
@@ -120,6 +228,8 @@ Reason = Literal[
     "connection_failed",
     "not_found",
     "gone",
+    "soft_not_found",
+    "domain_for_sale",
     # indeterminate
     "forbidden",
     "method_not_allowed",
@@ -137,11 +247,16 @@ VERDICT_BY_REASON: Final[Mapping[Reason, Verdict]] = {
     "ok": "alive",
     "redirected_to_site_root": "alive",
     "redirected_offsite": "alive",
-    # Dead. Two kinds of evidence qualify, and only two: the name does not exist anywhere in
-    # DNS, or the server itself states the page is not there.
+    # Dead. Every one of these is the far end saying so itself: DNS has never heard of the
+    # name, the server states the page is not there in its status line, or -- for the two
+    # added after the August 2026 audit found 23 program pages linking into them -- the page
+    # that answered says in its own title that it is not a page, or that the address is for
+    # sale. A 200 is not a page; it is only a promise of one.
     "dns_failure": "dead",
     "not_found": "dead",
     "gone": "dead",
+    "soft_not_found": "dead",
+    "domain_for_sale": "dead",
     # Indeterminate. Every one of these is a host that is plainly *there*, or a failure this
     # client cannot prove belongs to the provider rather than to itself.
     "connection_failed": "indeterminate",
@@ -353,6 +468,76 @@ def _reason_for_success(requested: httpx.URL, final: httpx.URL) -> Reason:
     return "ok"
 
 
+def _is_html(content_type: str | None) -> bool:
+    """Whether a response is the kind of thing that has a ``<title>`` to read."""
+    if not content_type:
+        # No Content-Type at all. Reading the body would be guessing at its format, and this
+        # module does not read anything it cannot say it understood.
+        return False
+    kind = content_type.split(";", 1)[0].strip().lower()
+    return kind in HTML_CONTENT_TYPES
+
+
+def read_title(response: httpx.Response) -> str | None:
+    """The page's own name, taken from the front of the body and no further.
+
+    Streams until ``</title>`` arrives or :data:`BODY_READ_CAP` characters have gone by,
+    whichever is first, then stops reading and lets the caller close the response. On the
+    real corpus that is a median of 529 characters per provider -- the title is the first
+    thing a page says about itself, so almost nothing has to be transferred to hear it.
+
+    ``None`` for a response with no title, an unreadable one, or a body that is not HTML.
+    ``None`` means "the page did not tell us", never "the page is fine".
+    """
+    if not _is_html(response.headers.get("content-type")):
+        return None
+    buffer = ""
+    try:
+        for chunk in response.iter_text():
+            buffer += chunk
+            if len(buffer) >= BODY_READ_CAP or "</title" in buffer.lower():
+                break
+    except httpx.HTTPError:
+        # The body stopped arriving partway through. Whatever we have is all there is; a
+        # truncated read is not a finding, and the partial buffer is still worth matching.
+        pass
+    match = TITLE_PATTERN.search(buffer[:BODY_READ_CAP])
+    return None if match is None else _plain_text(match.group(1))
+
+
+def _plain_text(markup: str) -> str:
+    """A title as a reader would see it: no tags, no entities, no run-on whitespace."""
+    return _WHITESPACE.sub(" ", html.unescape(_MARKUP.sub(" ", markup))).strip()
+
+
+def _title_segments(title: str) -> list[str]:
+    """The whole title, plus each part providers separate with ``|``, ``-`` or a dash.
+
+    Both, because a title is a not-found statement either way it is written: ``Not Found``
+    entire, or ``Page Not Found`` in front of the school's name.
+    """
+    return [title, *(part.strip() for part in _TITLE_SEGMENTS.split(title) if part.strip())]
+
+
+def _reason_for_title(title: str | None) -> Reason | None:
+    """What the page says it is, when what it says settles the question.
+
+    ``None`` for every ordinary title, which is nearly all of them: this only ever answers
+    when a page has announced itself as missing or as merchandise. Anything less than that
+    is not evidence, and a page that merely looks empty or unhelpful is not judged here --
+    the SiteGround bot-check interstitials in this corpus are byte-for-byte as bare as a
+    parking stub, and 16 working providers sit behind them.
+    """
+    if title is None:
+        return None
+    for segment in _title_segments(title):
+        if SOFT_NOT_FOUND_TITLES.match(segment):
+            return "soft_not_found"
+        if DOMAIN_FOR_SALE_TITLES.match(segment):
+            return "domain_for_sale"
+    return None
+
+
 @dataclass(frozen=True)
 class _Outcome:
     """One request sequence, reduced to plain data so no live response escapes."""
@@ -362,6 +547,8 @@ class _Outcome:
     transport_reason: Reason | None
     detail: str | None
     attempts: int
+    title: str | None = None
+    """What the page called itself, when it answered and had a name to give."""
 
     @property
     def succeeded(self) -> bool:
@@ -389,13 +576,16 @@ def _read_status(
 ) -> tuple[_Outcome, float | None]:
     """One request, reduced to an outcome plus how long to wait before retrying it.
 
-    The response is streamed and closed without its body being read: this only needs the
-    status line and the final URL, and a provider should not pay to serve a page nobody
-    looks at. ``Retry-After`` is read here, while the response is still in scope.
+    The response is streamed, and read only as far as its ``<title>`` -- and only when it
+    answered 2xx and is HTML, because a title is the one part of a page that says whether it
+    is a page at all. Everything else is closed unread: a provider should not pay to serve a
+    body nobody looks at, and there is nothing to learn from the body of a 404.
+    ``Retry-After`` is read here, while the response is still in scope.
     """
     with client.stream(method, url, headers=REQUEST_HEADERS, follow_redirects=True) as response:
         status = response.status_code
-        outcome = _Outcome(status, str(response.url), None, None, attempt)
+        title = read_title(response) if 200 <= status < 300 else None
+        outcome = _Outcome(status, str(response.url), None, None, attempt, title)
         if status not in RETRYABLE_STATUS:
             return outcome, None
         wait = _retry_delay(response, attempt)
@@ -450,11 +640,19 @@ def _to_check(url: str, outcome: _Outcome, *, now: datetime, attempts_before: in
             attempts=attempts,
         )
     final = httpx.URL(outcome.final_url or url)
-    reason = (
-        _reason_for_success(httpx.URL(url), final)
-        if outcome.succeeded
-        else _reason_for_status(outcome.status_code)
-    )
+    detail = outcome.detail
+    if outcome.succeeded:
+        # What the page says about itself outranks the fact that it answered. A 200 whose
+        # title is "Page Not Found" is the server disagreeing with its own status line, and
+        # the title is the half a reader would act on.
+        spoken = _reason_for_title(outcome.title)
+        reason = spoken or _reason_for_success(httpx.URL(url), final)
+        if spoken is not None:
+            # The evidence itself, kept in the report so the verdict can be argued with
+            # rather than taken on trust.
+            detail = f"page title: {outcome.title}"[:200]
+    else:
+        reason = _reason_for_status(outcome.status_code)
     return LinkCheck(
         url=url,
         verdict=VERDICT_BY_REASON[reason],
@@ -462,7 +660,7 @@ def _to_check(url: str, outcome: _Outcome, *, now: datetime, attempts_before: in
         status_code=outcome.status_code,
         final_url=str(final),
         https_alternative=None,
-        detail=outcome.detail,
+        detail=detail,
         checked_at=now,
         attempts=attempts,
     )
@@ -474,23 +672,21 @@ def _probe(
     client: httpx.Client,
     max_attempts: int,
     sleep: Callable[[float], None],
-    pause: float,
     now: datetime,
 ) -> LinkCheck:
-    """Read one URL: HEAD first, then GET for a second opinion on anything else.
+    """Read one URL, with the method a reader's browser would use.
 
-    HEAD is the method servers implement worst -- plenty of hosts answer it 403, 405 or even
-    404 for pages that GET perfectly well. Since a wrong "dead" is the expensive mistake
-    here, nothing negative is believed until GET has said the same thing.
+    GET, once. This module used to ask HEAD first and confirm anything negative with a GET,
+    because HEAD is the method servers implement worst -- the prior audit measured 33 of 769
+    live URLs whose HEAD disagreed with their GET, 8 of them answering HEAD with 404 for a
+    page that GETs perfectly well. That second opinion was the right fix for the wrong
+    question. Asking the way a reader asks removes the disagreement instead of surviving it,
+    it is what makes the page's own title available to judge, and it costs fewer requests
+    than confirming a bad HEAD did.
     """
-    head = _request(client, "HEAD", url, max_attempts=max_attempts, sleep=sleep)
-    if head.succeeded or head.transport_reason == "dns_failure":
-        # A name that does not resolve will not resolve for GET either, and asking again
-        # would be noise.
-        return _to_check(url, head, now=now)
-    sleep(pause)
-    body = _request(client, "GET", url, max_attempts=max_attempts, sleep=sleep)
-    return _to_check(url, body, now=now, attempts_before=head.attempts)
+    return _to_check(
+        url, _request(client, "GET", url, max_attempts=max_attempts, sleep=sleep), now=now
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -531,8 +727,7 @@ def _upgrade(
         and _same_site(check.url, check.final_url)
     ):
         return replace(check, https_alternative=check.final_url)
-    if check.reason == "dns_failure":
-        # The name does not exist. It does not exist over TLS either.
+    if check.reason in NO_HTTPS_PROBE_REASONS:
         return check
     sleep(pause)
     probed = _probe(
@@ -540,7 +735,6 @@ def _upgrade(
         client=client,
         max_attempts=min(max_attempts, HTTPS_PROBE_ATTEMPTS),
         sleep=sleep,
-        pause=pause,
         now=now,
     )
     # Only a working answer *on the provider's own site* is an upgrade. An https URL that
@@ -653,9 +847,7 @@ def check_url(
         return cached
 
     moment = now()
-    check = _probe(
-        url, client=client, max_attempts=max_attempts, sleep=sleep, pause=pause, now=moment
-    )
+    check = _probe(url, client=client, max_attempts=max_attempts, sleep=sleep, now=moment)
     if probe_https:
         check = _upgrade(
             check,
@@ -762,13 +954,21 @@ def upgrade_for(checks: Mapping[str, LinkCheck], url: str | None) -> str | None:
 # The provider's front page
 # --------------------------------------------------------------------------------------
 
-FRONT_PAGE_REASONS: Final[frozenset[str]] = frozenset({"not_found", "gone"})
+FRONT_PAGE_REASONS: Final[frozenset[str]] = frozenset({"not_found", "gone", "soft_not_found"})
 """The dead reasons for which a front page is worth asking about.
 
 A 404 is the server saying *this page* is not there while plainly still being there itself,
-so the provider's own front door is a real alternative destination. ``dns_failure`` is not in
-this set: the name does not exist, so neither does anything under it, and there is nothing to
-offer instead.
+so the provider's own front door is a real alternative destination. ``soft_not_found`` is
+the same server saying the same thing in its title instead of its status line, and it pays
+off at the same rate: all four of the corpus's soft-404 hosts answer normally at their root
+-- Elk Grove Adult and Community Education, Butte College, Springboard and Maiquela's
+Cosmetology Academy -- so every one of those 11 program pages gains a working destination
+rather than losing a broken one.
+
+``dns_failure`` and ``domain_for_sale`` are not in this set, for the same reason as each
+other: neither is a finding about one page. The name does not exist, or the whole address is
+merchandise, and in both cases there is nothing under it to offer instead. Asking a parking
+host for its front page would only produce a second sales listing.
 """
 
 FRONT_PAGE_ACCEPTED_REASONS: Final[frozenset[str]] = frozenset({"ok", "redirected_to_site_root"})
@@ -837,9 +1037,20 @@ def front_page_for(checks: Mapping[str, LinkCheck], url: str | None) -> str | No
 LinkLabel = Literal["program_page", "provider_home_page"]
 """What the link reaches, which is not always what the record said it would."""
 
-LinkNotice = Literal["page_unreachable"]
-"""What must be said. One value, because there is exactly one thing this module has ever
-established that is worth printing beside a link."""
+LinkNotice = Literal["page_unreachable", "domain_for_sale"]
+"""What must be said about a link, in the site's own voice.
+
+Two values, because there are two situations a reader does something different about. A page
+that is not there is a page that is not there, whether the server said so in its status line
+or in its title -- so a soft 404 carries ``page_unreachable`` like any other, rather than
+multiplying wording over a distinction the reader cannot act on.
+
+An address that is for sale is not that. "We could not reach this page" would send someone
+back to retry a URL that is never coming back, and would be false besides: we reached it
+perfectly well, and what answered was an advertisement. That is worth its own sentence, and
+it is worth it because of what it tells a reader to do instead -- look the school up by
+name, or telephone it.
+"""
 
 LinkSubstitution = Literal["https_upgrade", "provider_front_page"]
 """Why the published destination differs from the recorded one."""
@@ -862,6 +1073,15 @@ SUBSTITUTION_FRONT_PAGE: Final[LinkSubstitution] = "provider_front_page"
 NOTICE_UNREACHABLE: Final[LinkNotice] = "page_unreachable"
 """Something must be said about the recorded URL, and it is a statement about *our* reading
 of it on a date -- never about the provider. See :attr:`LinkDecision.checked_on`."""
+
+NOTICE_FOR_SALE: Final[LinkNotice] = "domain_for_sale"
+"""The recorded address answered with a listing offering the domain for sale.
+
+Also a statement about our reading on a date, and deliberately not one about the school. A
+lapsed domain does not mean a closed school: the LAUSD adult centres behind the corpus's
+largest dead domain are open and teaching, at a different address. What is gone is the
+address, and that is the only thing this notice claims.
+"""
 
 
 @dataclass(frozen=True)
@@ -943,12 +1163,16 @@ def decide(checks: Mapping[str, LinkCheck], url: str | None) -> LinkDecision | N
       figures would be a false claim about a named organisation.
     * **dead** -- do not link the dead path. Where the same host's front page answers, link
       *that*, labelled as the provider's home page. Where it does not, publish no link and
-      keep the URL as plain text.
+      keep the URL as plain text. A page that answered 200 while saying in its own title
+      that it is not there is dead on exactly these terms: the reader's situation is
+      identical, so the treatment is too.
 
-    A ``dead`` decision always carries :data:`NOTICE_UNREACHABLE` and a date, whether or not
-    a front page was substituted: silently rerouting a reader to a different page, or
-    silently dropping a URL the federal record contains, would each be a quiet lie of its
-    own kind.
+    A ``dead`` decision always carries a notice and a date, whether or not a front page was
+    substituted: silently rerouting a reader to a different page, or silently dropping a URL
+    the federal record contains, would each be a quiet lie of its own kind. The notice is
+    :data:`NOTICE_FOR_SALE` when the address turned out to be merchandise and
+    :data:`NOTICE_UNREACHABLE` otherwise, because those want different sentences and only
+    one of them is true of a page we could not reach.
     """
     if url is None:
         return None
@@ -999,7 +1223,7 @@ def decide(checks: Mapping[str, LinkCheck], url: str | None) -> LinkDecision | N
         verdict=check.verdict,
         reason=check.reason,
         checked_on=checked_on,
-        notice=NOTICE_UNREACHABLE,
+        notice=NOTICE_FOR_SALE if check.reason == "domain_for_sale" else NOTICE_UNREACHABLE,
         substitution=SUBSTITUTION_FRONT_PAGE if front is not None else None,
     )
 
