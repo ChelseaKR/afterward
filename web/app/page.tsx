@@ -55,7 +55,11 @@ export default function Index() {
               return (
                 <li key={lang} lang={lang}>
                   <h2>
-                    <Link href={`/${lang}/`} hrefLang={lang}>
+                    {/* Unprefetched, and this page is the strongest case for it: both
+                        entries are on screen at once, so prefetching would fetch the search
+                        index twice over — 459 KB, English and Spanish — to save one click of
+                        a choice only one of which will be taken. See app/[lang]/layout.tsx. */}
+                    <Link href={`/${lang}/`} hrefLang={lang} prefetch={false}>
                       {LANG_NAME[lang]}
                     </Link>
                   </h2>

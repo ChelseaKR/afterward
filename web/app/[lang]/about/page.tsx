@@ -208,7 +208,12 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
   return (
     <div className="shell detail about">
       <p>
-        <Link href={`/${lang}/`}>← {t.backToSearch}</Link>
+        {/* Unprefetched. This sits at the top of every page in the site, and the route it
+            points at carries the whole search index, so prefetching it costs 229 KB of a
+            reader's data on the chance they press it. Reasoning in app/[lang]/layout.tsx. */}
+        <Link href={`/${lang}/`} prefetch={false}>
+          ← {t.backToSearch}
+        </Link>
       </p>
 
       <h1>{t.aboutTitle}</h1>

@@ -55,9 +55,26 @@ All notable changes to this project are documented here. The format follows
   all 183 centres with coordinates and each program carries its own.
 - The comprehensive/affiliate label on an office card is explained in one clause, so a
   federal term of art on the page means something to the reader looking at it.
+- A first-visit transfer budget in the build. `size-report.mjs` measured the export on disk,
+  which is a hosting bill and not what any reader pays; it now also reports the brotli
+  transfer of one page of each shape and fails the build over 420 KiB per route. Alongside
+  it, `npm run transfer` drives a real Chromium at the built site and reports what a browser
+  actually fetches, prefetches included — the only way to see traffic that no built file
+  records.
 
 ### Fixed
 
+- The site no longer spends ~400 KiB of every visitor's data on pages they did not ask for.
+  The masthead links and the "back to search" link at the top of every page were prefetched
+  as soon as they scrolled into view, and they point at the four heaviest routes on the site
+  — including the search page, which carries the whole 3,266-program index inline. A visitor
+  opening `/en/about/`, whose own document is 7.7 KiB compressed, was pulling 538 KiB; on the
+  search page itself the wordmark fetched a second complete copy of the index the browser had
+  just parsed. First visits now cost 145.8 KiB for `/en/about/` (was 538.3), 153.2 KiB for a
+  program page (was 545.7) and 330.6 KiB for the search page (was 571.6), all brotli, cold
+  cache, measured in Chromium. Result cards still prefetch: those are ~8 KiB and are what the
+  reader came to open. Measurements and the options considered are in
+  `docs/payload-audit-2026-08-05.md`.
 - Phone numbers on office cards dial what they say. 20 of the 183 centres publish a field
   that is not one ten-digit number — two numbers, a number and an extension, a switchboard
   and an EDD line — and stripping non-digits from the whole field produced `tel:` links for
@@ -71,7 +88,6 @@ All notable changes to this project are documented here. The format follows
   of the gap was visible to a test. The check now walks every step.
 - Phone links say which office they call. Three offices on one page published three bare
   numbers, and a screen reader announced each as its digits alone (WCAG 2.2 AAA 2.4.9).
-
 - Programs summarise across every occupation they feed, not just the first. The count of
   programs training for declining occupations was understated by more than half (on the
   current snapshot, 229 against 538), and hundreds of detail pages named the wrong job.

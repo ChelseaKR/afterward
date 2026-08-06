@@ -166,7 +166,38 @@ export default async function LangLayout({
           <div className="masthead">
             <div className="shell masthead-row">
               <div>
-                <Link href={`/${lang}/`} className="wordmark">
+                {/*
+                  `prefetch={false}` here and on the three nav links below, and it is the
+                  single largest thing this site does to a phone. See the block comment above
+                  `CHROME_ROUTES` in scripts/size-report.mjs for the measurements.
+
+                  Next prefetches a `<Link>` when it scrolls into view. These four are in the
+                  masthead of all ~9,000 pages, so they are in view immediately on every one
+                  of them, and they happen to point at four of the five heaviest routes the
+                  site has. Measured in Chromium against the built export, a visitor landing
+                  on `/en/about/` — a page whose own document is 7.7 KB compressed — pulled
+                  551 KB, of which 401 KB was these four routes being fetched in the
+                  background: their documents, their RSC segment payloads, and their JS.
+                  `npm run transfer` reproduces the measurement.
+
+                  The wordmark is the worst of them on its own. It points at the search page,
+                  whose document carries the whole 3,266-program index inline, so it costs
+                  229 KB to prefetch — and on the search page itself the wordmark points at
+                  the page already open, so that 229 KB is spent fetching a second copy of an
+                  index the browser has already parsed.
+
+                  None of it is a click anyone made. This site is for people deciding whether
+                  to spend a year and several thousand dollars on training, a fair number of
+                  whom arrive on a phone, on a metered connection, or on library wifi;
+                  spending their data speculatively on the chance they might press "home" is
+                  not a trade we get to make for them. A prefetch is a guess, and the cost of
+                  guessing wrong here is measured in megabytes per session.
+
+                  Deliberately not `prefetch={false}` everywhere. Search result cards still
+                  prefetch, because someone reading a list of programs is being shown exactly
+                  the thing they came to open, and those pages are ~8 KB each rather than 229.
+                */}
+                <Link href={`/${lang}/`} className="wordmark" prefetch={false}>
                   Afterward<span> · CA</span>
                 </Link>
                 <p className="tagline">{t.tagline}</p>
@@ -206,17 +237,26 @@ export default async function LangLayout({
             */}
             <nav className="shell site-nav" aria-label={t.navLabel}>
               <ul>
+                {/* All three unprefetched, for the reason set out on the wordmark above:
+                    they are in the viewport on every page in the site, and the two browse
+                    indexes are 65 KB and 55 KB to fetch. */}
                 <li>
-                  <Link href={`/${lang}/occupations/`}>{t.navOccupations}</Link>
+                  <Link href={`/${lang}/occupations/`} prefetch={false}>
+                    {t.navOccupations}
+                  </Link>
                 </li>
                 <li>
-                  <Link href={`/${lang}/providers/`}>{t.navProviders}</Link>
+                  <Link href={`/${lang}/providers/`} prefetch={false}>
+                    {t.navProviders}
+                  </Link>
                 </li>
                 <li>
                   {/* Reachable without first finding a program: someone who wants to know
                       whether any of this can be paid for should not have to pick a course
                       before the answer is offered to them. */}
-                  <Link href={`/${lang}/paying-for-training/`}>{t.navPaying}</Link>
+                  <Link href={`/${lang}/paying-for-training/`} prefetch={false}>
+                    {t.navPaying}
+                  </Link>
                 </li>
               </ul>
             </nav>
