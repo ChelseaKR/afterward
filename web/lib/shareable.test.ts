@@ -56,6 +56,8 @@ describe("round trip", () => {
     ["only reported", filters({ onlyReported: true })],
     ["an outlook", filters({ outlook: "shrinking" })],
     ["a sort", filters({ sort: "cost" })],
+    ["a length cap", filters({ maxWeeks: 26 })],
+    ["the shortest-first sort", filters({ sort: "length" })],
     [
       "everything at once",
       filters({
@@ -64,6 +66,7 @@ describe("round trip", () => {
         outlook: "growing",
         sort: "earnings",
         maxCost: 10000,
+        maxWeeks: 52,
         city: "Clovis",
         area: { kind: "area", name: "Fresno MSA" },
       }),
@@ -96,6 +99,20 @@ describe("decoding a link that is stale, hand-edited, or hostile", () => {
 
   it("accepts a genuine cost", () => {
     expect(parse("cost=5000").maxCost).toBe(5000);
+  });
+
+  it("refuses a length that is not a positive number", () => {
+    // Same failure as the cost cap: a zero or unreadable cap empties the result set while
+    // looking like something the reader chose.
+    for (const bad of ["", "abc", "0", "-4", "NaN", "Infinity"]) {
+      expect(parse(`weeks=${bad}`).maxWeeks).toBeNull();
+    }
+  });
+
+  it("accepts a length the option list does not offer", () => {
+    // The caps in the interface are four editorial choices, not the definition of a valid
+    // link. A hand-edited or older link asking for 18 weeks is answerable, so it is answered.
+    expect(parse("weeks=18").maxWeeks).toBe(18);
   });
 
   it("rejects an unknown outlook rather than guessing a neighbour", () => {

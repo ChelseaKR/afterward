@@ -16,6 +16,33 @@ export function isLang(value: string): value is Lang {
   return (LANGUAGES as readonly string[]).includes(value);
 }
 
+/**
+ * How each length cap reads to someone planning around it, in each language.
+ *
+ * Months lead and weeks follow in brackets, because nobody budgets rent, childcare or an
+ * unemployment claim in weeks, and weeks are what the state publishes. Both have to be on the
+ * option: dropping the weeks would put a number on screen this dataset did not measure, and
+ * dropping the months would make the reader do the arithmetic that decides whether they can
+ * afford the program at all.
+ *
+ * A cap with no gloss falls back to a plain weeks phrase in `lengthAtMost`, so a link carrying
+ * `weeks=18` still labels itself rather than rendering an empty option.
+ */
+const LENGTH_GLOSS: Record<Lang, Record<number, string>> = {
+  en: {
+    4: "About a month or less",
+    12: "About 3 months or less",
+    26: "About 6 months or less",
+    52: "About a year or less",
+  },
+  es: {
+    4: "Un mes o menos",
+    12: "Unos 3 meses o menos",
+    26: "Unos 6 meses o menos",
+    52: "Un año o menos",
+  },
+};
+
 const en = {
   siteName: "Afterward",
   tagline: "California training programs, and what happened to the people who took them",
@@ -44,10 +71,47 @@ const en = {
   filterAnyCity: "Anywhere in California",
   filterMaxCost: "Maximum out-of-pocket cost",
   filterAnyCost: "Any cost",
+
+  /* ---- How long you can give it ----
+   *
+   * The other half of what a person out of work is spending, and until now the half the
+   * interface never asked about. These programs run from one week to 260, and the difference
+   * between a 12-week course and a 72-week pathway is the difference between two decisions.
+   */
+  filterLength: "Longest you can spend on it",
+  filterAnyLength: "Any length",
+  lengthAtMost: (weeks: number): string => {
+    const gloss = LENGTH_GLOSS.en[weeks];
+    return gloss ? `${gloss} (${fmt(weeks)} weeks)` : `${fmt(weeks)} weeks or less`;
+  },
+  filterLengthNote:
+    "Weeks as the provider reported them. Length is also what makes two completion rates " +
+    "comparable: among California programs whose figures describe that program alone, the " +
+    "median share who finished is 97% at four weeks or less, and falls at every step up in " +
+    "length to 78% beyond a year. A long program and a short one are not being measured on " +
+    "the same scale.",
+  filterLengthUnmeasured: (n: number): string =>
+    n === 1
+      ? "This filter also leaves out 1 program that matches the rest of your search: its " +
+        "provider reported no length, so there is nothing here for the filter to test. A " +
+        "program that never said how long it takes is not a program that takes no time."
+      : `This filter also leaves out ${fmt(n)} of the programs that match the rest of your ` +
+        `search: their providers reported no length, so there is nothing here for the ` +
+        `filter to test. A program that never said how long it takes is not a program that ` +
+        `takes no time.`,
+  /**
+   * The length cap named as something a sentence can remove, for the empty state's list of
+   * filters worth dropping. Belongs with the `nameQuery`/`nameCost` family that `SearchApp`
+   * still holds in its local `COPY` block under a standing TODO to move here; new strings go
+   * to the documented home rather than growing the block that is on its way out.
+   */
+  filterNameLength: (label: string): string => `the time limit “${label}”`,
+
   sortBy: "Sort by",
   sortRelevance: "Best match",
   sortEarnings: "Highest reported earnings",
   sortCost: "Lowest cost",
+  sortLength: "Shortest first",
   sortOpenings: "Most job openings",
 
   cost: "Cost",
@@ -713,10 +777,35 @@ const es: Dictionary = {
   filterAnyCity: "Cualquier lugar de California",
   filterMaxCost: "Costo máximo de su bolsillo",
   filterAnyCost: "Cualquier costo",
+
+  filterLength: "Lo máximo que puede dedicarle",
+  filterAnyLength: "Cualquier duración",
+  lengthAtMost: (weeks: number): string => {
+    const gloss = LENGTH_GLOSS.es[weeks];
+    return gloss ? `${gloss} (${fmt(weeks)} semanas)` : `${fmt(weeks)} semanas o menos`;
+  },
+  filterLengthNote:
+    "Las semanas tal como las reportó la institución. La duración también es lo que hace " +
+    "comparables dos tasas de finalización: entre los programas de California cuyas cifras " +
+    "describen solo ese programa, la mediana de quienes terminaron es del 97% en los de " +
+    "cuatro semanas o menos, y baja en cada escalón de duración hasta el 78% en los de más " +
+    "de un año. Un programa largo y uno corto no se están midiendo con la misma vara.",
+  filterLengthUnmeasured: (n: number): string =>
+    n === 1
+      ? "Este filtro también deja fuera 1 programa que coincide con el resto de su búsqueda: " +
+        "su institución no reportó la duración, así que el filtro no tiene nada que evaluar. " +
+        "Que un programa nunca haya dicho cuánto dura no significa que no dure nada."
+      : `Este filtro también deja fuera ${fmt(n)} de los programas que coinciden con el resto ` +
+        `de su búsqueda: sus instituciones no reportaron la duración, así que el filtro no ` +
+        `tiene nada que evaluar. Que un programa nunca haya dicho cuánto dura no significa ` +
+        `que no dure nada.`,
+  filterNameLength: (label: string): string => `el límite de tiempo «${label}»`,
+
   sortBy: "Ordenar por",
   sortRelevance: "Más relevante",
   sortEarnings: "Mayores ingresos reportados",
   sortCost: "Menor costo",
+  sortLength: "Más corto primero",
   sortOpenings: "Más vacantes",
 
   cost: "Costo",

@@ -20,6 +20,7 @@ import {
   score,
   summarise,
   terms,
+  unmeasuredLength,
   unplacedMatches,
   type AreaFilter,
   type Filters,
@@ -30,7 +31,7 @@ import type { SearchEntry } from "@/lib/types";
 import { Fact } from "./Measure";
 import { CompareTable, CompareTray, MAX_COMPARE } from "./Compare";
 import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
-import { filtersToQueryString } from "@/lib/shareable";
+import { filtersFromParams, filtersToQueryString } from "@/lib/shareable";
 import {
   SHORTLIST_PARAM,
   shortlistIds,
@@ -46,6 +47,19 @@ import {
 import { slugify } from "@/lib/providers";
 
 const COST_CAPS = [2000, 5000, 10000, 20000];
+
+/*
+ * Length caps, in weeks.
+ *
+ * The same four bands this project already segments completion by — see the note beside the
+ * withdrawn "better than typical" verdict in `Measure` — so the control a reader narrows with
+ * and the evidence that narrowing matters are the same cut of the data rather than two
+ * different ones. They also land where the dataset does: 239 programs finish inside four
+ * weeks, 846 inside twelve, 1,740 inside twenty-six and 2,732 inside a year, so every option
+ * meaningfully divides the list instead of returning almost all of it or almost none.
+ */
+const LENGTH_CAPS = [4, 12, 26, 52];
+
 const PAGE_SIZE = 25;
 
 /** Matches the private helper in lib/i18n.ts: grouped digits, the same in both languages. */
@@ -325,6 +339,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const [onlyReported, setOnlyReported] = useState(false);
   const [outlook, setOutlook] = useState<Outlook>("any");
   const [maxCost, setMaxCost] = useState<number | null>(null);
+  const [maxWeeks, setMaxWeeks] = useState<number | null>(null);
   const [area, setArea] = useState<AreaFilter>(ANY_AREA);
   const [city, setCity] = useState<string | null>(null);
   const [sort, setSort] = useState<Sort>("relevance");
@@ -333,15 +348,58 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const deferredQuery = useDeferredValue(query);
 
   const filters = useMemo<Filters>(
-    () => ({ query: deferredQuery, onlyReported, outlook, maxCost, area, city, sort }),
-    [deferredQuery, onlyReported, outlook, maxCost, area, city, sort],
+    () => ({ query: deferredQuery, onlyReported, outlook, maxCost, maxWeeks, area, city, sort }),
+    [deferredQuery, onlyReported, outlook, maxCost, maxWeeks, area, city, sort],
   );
+
+  /*
+    The search carried in the URL, put back on the controls.
+
+    `filtersFromParams` has existed and been tested since the share link shipped, and nothing
+    called it. Only the writing half was wired up, so "Copy link to this search" handed
+    somebody a link that opened on all 3,266 programs — the recipient saw a different screen
+    from the sender, and neither of them could tell. The same gap emptied the search on the
+    way back from a program page, which is the movement someone actually makes while working
+    through a result list: open one, read it, return, open the next.
+
+    Read after mount rather than during render, for the reason the shortlist below is: these
+    pages are statically exported and prerendered where there is no location to read, so
+    reading during render would make the server and client disagree and React would throw the
+    markup away. `restored` gates the writer beneath, which must not run against default state
+    before the incoming link has been read — that would erase the very parameters it is about
+    to restore.
+  */
+  const [restored, setRestored] = useState(false);
+
+  useEffect(() => {
+    const incoming = filtersFromParams(new URLSearchParams(window.location.search));
+    setQuery(incoming.query);
+    setOnlyReported(incoming.onlyReported);
+    setOutlook(incoming.outlook);
+    setMaxCost(incoming.maxCost);
+    setMaxWeeks(incoming.maxWeeks);
+    setArea(incoming.area);
+    setCity(incoming.city);
+    setSort(incoming.sort);
+    setRestored(true);
+  }, []);
 
   const results = useMemo(() => runSearch(programs, filters), [programs, filters]);
 
   const stats = useMemo(() => summarise(programs), [programs]);
   const areaOptions = useMemo(() => areas(programs), [programs]);
   const unreported = stats.total - stats.reported;
+
+  /*
+    Programs the length filter removes for never having reported a length at all.
+
+    Exactly the disclosure the outlook filter makes below, for exactly the same reason: "26
+    weeks or less" reads as a claim about every program it leaves out, and for these it is not
+    one. Twelve of California's 3,266 filed no length, so the number is small and often zero —
+    but a control that silently drops a program on the grounds that nobody said how long it
+    takes has told the reader it is too long, which is a thing the data does not say.
+  */
+  const hiddenNoLength = useMemo(() => unmeasuredLength(programs, filters), [programs, filters]);
 
   /*
     Region and city, and why both survive.
@@ -461,6 +519,14 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         apply: () => setMaxCost(null),
       });
     }
+    if (maxWeeks !== null) {
+      options.push({
+        key: "length",
+        label: t.filterNameLength(t.lengthAtMost(maxWeeks)),
+        count: found({ maxWeeks: null }),
+        apply: () => setMaxWeeks(null),
+      });
+    }
     if (area.kind !== "any") {
       // The unplaced selection is a real choice with a real name, so removing it is named
       // after what it selects rather than after the absence of a region.
@@ -488,7 +554,20 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     }
 
     return options.filter((option) => option.count > 0).sort((a, b) => b.count - a.count);
-  }, [results.length, programs, filters, copy, t, lang, onlyReported, outlook, maxCost, area, city]);
+  }, [
+    results.length,
+    programs,
+    filters,
+    copy,
+    t,
+    lang,
+    onlyReported,
+    outlook,
+    maxCost,
+    maxWeeks,
+    area,
+    city,
+  ]);
 
   // Comparison selection, kept as ids so it survives filtering: picking two programs and
   // then narrowing the search should not silently discard the choice.
@@ -549,11 +628,10 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const droppedFromShare = sharedIds.length - sharedPrograms.length;
   const viewingShared = sharedIds.length > 0;
 
+  // Just the state change. The effect below owns the address bar, and two writers racing over
+  // one URL is how a shared list ends up half-removed.
   function exitShared() {
     setSharedIds([]);
-    const url = new URL(window.location.href);
-    url.searchParams.delete(SHORTLIST_PARAM);
-    window.history.replaceState(null, "", url.pathname + url.search);
   }
 
   function onToggleSave(id: string) {
@@ -597,21 +675,58 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
    * The current search, as a query string. Encoding the state in the URL makes the search
    * shareable, bookmarkable and back-button-correct, and it is what turns "show someone" into
    * a link rather than a feature that needs an account behind it.
+   *
+   * Built from `filters` rather than from the raw controls, so the link and the results on
+   * screen are the same search: `filters` carries the deferred query the visible list was
+   * computed from, and a link that promised a query the page had not run yet would be a
+   * quieter version of the bug this whole block fixes.
    */
-  const search = filtersToQueryString({
-    query,
-    onlyReported,
-    outlook,
-    maxCost,
-    area,
-    city,
-    sort,
-  });
+  const search = filtersToQueryString(filters);
+
+  /*
+   * The address bar, kept equal to the search.
+   *
+   * `replaceState`, never `pushState`. Pushing would put a history entry behind every
+   * keystroke, so Back from a program page would walk a reader through "weldin", "weldi",
+   * "weld" one press at a time instead of returning them to their search. Replacing means the
+   * one entry for this page always describes what is on it, which is what makes the browser's
+   * own Back button restore the results — no navigation code involved.
+   *
+   * The shared-shortlist parameter is carried through rather than rebuilt. It belongs to a
+   * different feature and this writer does not encode it, so composing it back in is what
+   * stops a link someone was sent from being stripped by the first render that follows it.
+   */
+  useEffect(() => {
+    if (!restored) return;
+    /*
+      Nothing is written while the rendered search is behind the box. `search` is built from
+      the deferred query, so the render that first sees a new keystroke still carries the old
+      one — and on arrival from a link that is the render that would write `/en/` over the
+      `?q=welding` it had just restored. Waiting for the two to agree also means the address
+      bar is updated once per settled search rather than once per character, which keeps a
+      long query well clear of the browsers that throttle history writes.
+    */
+    if (deferredQuery !== query) return;
+
+    const params = new URLSearchParams(search);
+    if (sharedIds.length > 0) params.set(SHORTLIST_PARAM, idsToParam(sharedIds));
+    const encoded = params.toString();
+    const next = `${window.location.pathname}${encoded ? `?${encoded}` : ""}${window.location.hash}`;
+
+    if (next === `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      return;
+    }
+    // The existing state object is passed back so Next's router keeps whatever it stored for
+    // this entry; only the URL is ours to change.
+    window.history.replaceState(window.history.state, "", next);
+  }, [restored, search, sharedIds, deferredQuery, query]);
+
   const anyFilterActive =
     filters.query.trim() !== "" ||
     onlyReported ||
     outlook !== "any" ||
     maxCost !== null ||
+    maxWeeks !== null ||
     area.kind !== "any" ||
     city !== null;
 
@@ -620,6 +735,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     setOnlyReported(false);
     setOutlook("any");
     setMaxCost(null);
+    setMaxWeeks(null);
     setArea(ANY_AREA);
     setCity(null);
     setSort("relevance");
@@ -844,12 +960,67 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
           </p>
         </div>
 
+        {/*
+          The other half of what the reader is spending, directly beneath the money.
+
+          Cost has had a control since the first release and time has not, though the index
+          has carried a length all along and shows it on every card. Someone choosing between
+          a 12-week certificate and a 72-week pathway is making two different decisions about
+          their year, and until now the only way to act on that was to read 3,266 cards.
+
+          The note does the second job: it says what the filter cannot test, and it says why
+          narrowing here is worth doing before reading anyone's completion rate. Those medians
+          are this project's own measurement — the same one that retired the "better than
+          typical" verdict from the program page — and they are stated so a reader can see
+          that a short program and a long one are not on one scale.
+        */}
+        <div className="field">
+          <label htmlFor="length">{t.filterLength}</label>
+          <select
+            id="length"
+            value={maxWeeks ?? ""}
+            aria-describedby={
+              hiddenNoLength > 0 ? "length-note length-unmeasured" : "length-note"
+            }
+            onChange={(e) => {
+              setMaxWeeks(e.target.value === "" ? null : Number(e.target.value));
+              setLimit(PAGE_SIZE);
+            }}
+          >
+            <option value="">{t.filterAnyLength}</option>
+            {LENGTH_CAPS.map((cap) => (
+              <option key={cap} value={cap}>
+                {t.lengthAtMost(cap)}
+              </option>
+            ))}
+          </select>
+          <p id="length-note" style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}>
+            {t.filterLengthNote}
+          </p>
+          {hiddenNoLength > 0 && (
+            <p
+              id="length-unmeasured"
+              style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}
+            >
+              {t.filterLengthUnmeasured(hiddenNoLength)}
+            </p>
+          )}
+        </div>
+
         <div className="field">
           <label htmlFor="sort">{t.sortBy}</label>
           <select id="sort" value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
             <option value="relevance">{t.sortRelevance}</option>
             <option value="earnings">{copy.sortEarnings}</option>
             <option value="cost">{t.sortCost}</option>
+            {/*
+              Ordering on length is safe in a way ordering on completion or earnings is not.
+              Length is a property of the course, so it stays comparable however the provider
+              filed its outcome rows — the distinction `ownCohortOnly` in lib/compare.ts is
+              built on, and the reason `sortEarnings` above has to exclude the 98 programs
+              whose figures describe a whole institution while this does not.
+            */}
+            <option value="length">{t.sortLength}</option>
             <option value="openings">{copy.sortOpenings}</option>
           </select>
         </div>

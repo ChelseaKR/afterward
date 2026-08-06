@@ -16,6 +16,7 @@ import {
   score,
   summarise,
   terms,
+  unmeasuredLength,
   unplacedMatches,
   unplacedTotal,
 } from "./search";
@@ -126,6 +127,50 @@ describe("matchesFilters", () => {
   it("maxCost is inclusive at the boundary", () => {
     expect(matchesFilters(entry({ $: 5000 }), { ...DEFAULT_FILTERS, maxCost: 5000 })).toBe(true);
   });
+
+  it("maxWeeks excludes programs that reported no length", () => {
+    // The case the comparison alone gets wrong: `null > 12` is false in JavaScript, so a
+    // length nobody reported would pass every cap and be presented as fitting inside a month.
+    const filters = { ...DEFAULT_FILTERS, maxWeeks: 12 };
+    expect(matchesFilters(entry({ w: 8 }), filters)).toBe(true);
+    expect(matchesFilters(entry({ w: 40 }), filters)).toBe(false);
+    expect(matchesFilters(entry({ w: null }), filters)).toBe(false);
+  });
+
+  it("maxWeeks is inclusive at the boundary", () => {
+    expect(matchesFilters(entry({ w: 12 }), { ...DEFAULT_FILTERS, maxWeeks: 12 })).toBe(true);
+  });
+
+  it("leaves every length alone when no cap is set", () => {
+    expect(matchesFilters(entry({ w: null }), DEFAULT_FILTERS)).toBe(true);
+    expect(matchesFilters(entry({ w: 260 }), DEFAULT_FILTERS)).toBe(true);
+  });
+});
+
+describe("unmeasuredLength", () => {
+  it("counts what the length cap alone is excluding", () => {
+    const programs = [
+      entry({ i: "short", w: 4 }),
+      entry({ i: "long", w: 80 }),
+      entry({ i: "unsaid", w: null }),
+    ];
+    expect(unmeasuredLength(programs, { ...DEFAULT_FILTERS, maxWeeks: 12 })).toBe(1);
+  });
+
+  it("is zero when no cap is set, because nothing is being excluded for its length", () => {
+    expect(unmeasuredLength([entry({ w: null })], DEFAULT_FILTERS)).toBe(0);
+  });
+
+  it("respects the rest of the search, so the count is what this search is losing", () => {
+    // A program with no length that the query already excluded is not a cost of the length
+    // filter, and counting it would overstate what the reader gets back by clearing it.
+    const programs = [
+      entry({ i: "match", n: "Welding Technology", w: null }),
+      entry({ i: "other", n: "Medical Assisting", w: null }),
+    ];
+    const filters = { ...DEFAULT_FILTERS, maxWeeks: 12, query: "welding" };
+    expect(unmeasuredLength(programs, filters)).toBe(1);
+  });
 });
 
 describe("runSearch sorting", () => {
@@ -142,6 +187,16 @@ describe("runSearch sorting", () => {
   it("sorts unreported cost last rather than treating it as free", () => {
     const ids = runSearch(all, { ...DEFAULT_FILTERS, sort: "cost" }).map((e) => e.i);
     expect(ids).toEqual(["low", "high", "none"]);
+  });
+
+  it("sorts shortest first, with an unreported length last rather than instant", () => {
+    const lengths = [
+      entry({ i: "none", w: null }),
+      entry({ i: "year", w: 52 }),
+      entry({ i: "month", w: 4 }),
+    ];
+    const ids = runSearch(lengths, { ...DEFAULT_FILTERS, sort: "length" }).map((e) => e.i);
+    expect(ids).toEqual(["month", "year", "none"]);
   });
 
   it("sorts by job openings, not wage", () => {
