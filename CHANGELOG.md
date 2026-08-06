@@ -52,6 +52,15 @@ All notable changes to this project are documented here. The format follows
   programs read as above average.
 - Earnings are labelled as covering a single quarter, so they are not read as a yearly
   salary beside the annual occupation wage.
+- Program descriptions no longer ship the feed's own row id (`6091|Covers understanding…`)
+  on 3,223 of 3,266 records. The site stripped it in one component, so only readers of the
+  page were spared it and every reader of `programs.json` got it.
+- CIP codes that lost their zero padding to a float upstream are restored on 239 of 3,266
+  records — `1.0505` to `01.0505`, `51.071` to `51.0710`. Bare series (`46`) and four-digit
+  families (`12.05`) are widths CIP genuinely publishes and are left exactly as filed.
+- A build refuses to emit a `coverage.json` missing anything the site reads from it. One
+  snapshot without `state_benchmark` had already removed every statewide comparison from
+  2,057 outcome pages with no error, no warning and no visible difference.
 
 ### Known limitations
 

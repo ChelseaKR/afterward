@@ -177,6 +177,75 @@ def clean_text(value: Any) -> str | None:
     return text or None
 
 
+_ROW_ID_PREFIX = re.compile(r"^\d+\|")
+
+
+def clean_description(value: Any) -> str | None:
+    """Drop the source row id the feed prefixes to a program description.
+
+    3,223 of California's 3,266 descriptions arrive as ``"6091|Covers understanding user
+    needs to create products that..."``. The number is unique per record -- 3,223 distinct
+    values across the 3,223 tagged descriptions -- so it is the upstream row's own identifier
+    leaking into a prose field, not anything a reader is being told.
+
+    Stripped here rather than where it is rendered. The site removed it in one component with
+    one regex, which left the artifact in every published copy of ``programs.json``: anybody
+    reading the dataset rather than the page got the raw field, and a second place that
+    rendered a description would have had to remember the same repair.
+
+    The description only. :func:`clean_text` is shared with provider names, program names,
+    cities and ZIPs, and none of those carries the artifact -- 0 of 3,266 on each, measured --
+    so teaching the general cleaner to delete leading digits would be a licence to eat a real
+    value somewhere it means something.
+    """
+    text = clean_text(value)
+    if text is None:
+        return None
+    return clean_text(_ROW_ID_PREFIX.sub("", text, count=1))
+
+
+_CIP_CODE = re.compile(r"^(\d{1,2})(?:\.(\d{1,4}))?$")
+
+
+def clean_cip_code(value: Any) -> str | None:
+    """Restore the zero padding a CIP code lost to being read as a number.
+
+    NCES publishes CIP as fixed-width decimals: a two-digit series (``46``), a four-digit
+    family (``12.05``) and a six-digit code (``51.0710``). 308 of California's 3,266 programs
+    carry one that has been through a float somewhere upstream, and leading and trailing zeros
+    are exactly what that loses -- ``01.0505`` arrives as ``1.0505`` (113 programs) and
+    ``51.0710`` as ``51.071`` (124). Nothing renders the code today, so nobody is misled on a
+    page; it is published in ``programs.json``, where it will not join to anything.
+
+    Both losses are repaired, because both are reversible without deciding anything:
+
+    * A CIP series is two digits. There is no series ``1``, so ``1.0505`` can only be
+      ``01.0505`` -- corroborated by the record it sits on, a "Dog Obedience Instructor
+      Program", against 01.0505 Animal Training.
+    * A CIP detail is two or four digits, never three, so a three-digit one has dropped a
+      trailing zero: ``51.071`` on a "Medical Office Assistant" is 51.0710, Medical Office
+      Assistant/Specialist.
+
+    Everything else is left exactly as filed, including this snapshot's 45 bare series codes
+    (``46``) and 24 four-digit families (``12.05``). Those are widths CIP genuinely publishes,
+    so padding them to ``46.0000`` and ``12.0500`` would not restore a lost zero -- it would
+    swap a family for one particular member of it, which is a reclassification made here that
+    nothing upstream asked for. A one-digit detail is left for the same reason: ``51.7`` has
+    certainly lost trailing zeros, but to ``51.70`` and to ``51.7000`` equally, and this
+    module does not pick between two readings of a code. None occurs in this snapshot.
+    """
+    text = clean_text(value)
+    if text is None:
+        return None
+    match = _CIP_CODE.match(text)
+    if match is None:
+        return text
+    series, detail = match.group(1).zfill(2), match.group(2)
+    if detail is None:
+        return series
+    return f"{series}.{detail}0" if len(detail) == 3 else f"{series}.{detail}"
+
+
 @dataclass(frozen=True)
 class Program:
     """A single training program as reported to DOL under WIOA."""
@@ -263,10 +332,10 @@ def parse_program(hit: dict[str, Any]) -> Program:
         uuid=str(source.get("field_uuid") or hit.get("_id") or ""),
         provider_name=clean_text(source.get("field_etp")),
         program_name=clean_text(source.get("field_program_name")),
-        description=clean_text(source.get("field_program_description")),
+        description=clean_description(source.get("field_program_description")),
         program_format=clean_text(source.get("field_program_format")),
         program_url=clean_url(source.get("field_program_url")),
-        cip_code=clean_text(source.get("field_cip_code")),
+        cip_code=clean_cip_code(source.get("field_cip_code")),
         soc_codes=_soc_codes(source),
         city=clean_text(source.get("field_city")),
         state=clean_text(source.get("field_state")),

@@ -294,6 +294,80 @@ def _median(values: list[float]) -> float | None:
     return (values[middle - 1] + values[middle]) / 2
 
 
+SITE_COVERAGE_KEYS: Final = (
+    "snapshot_date",
+    "state_benchmark",
+    "peer_medians",
+    "total_programs",
+    "programs_with_any_outcome",
+    "programs_with_median_earnings",
+    "programs_with_employment_rate",
+    "programs_with_completion_rate",
+    "programs_matched_to_occupation",
+    "distinct_providers",
+    "distinct_occupations_matched",
+    "outcome_coverage_pct",
+    "occupation_match_pct",
+)
+"""What the site requires ``coverage.json`` to carry. Mirrors ``Coverage`` in web/lib/types.ts.
+
+Kept as an explicit list rather than derived from :class:`CoverageReport`, because the two
+answer different questions. The dataclass is what a build happens to publish; this is what a
+page will silently lose if it goes missing, and it includes keys -- ``peer_medians``,
+``outcome_coverage_pct`` -- that are computed beside the report rather than inside it.
+"""
+
+NULLABLE_COVERAGE_KEYS: Final = frozenset({"state_benchmark"})
+"""Keys the site types as nullable, where a null is a published finding rather than a gap.
+
+Everything else must carry a value. A null ``total_programs`` is not "we counted nothing";
+it is a build that failed to count, rendered as a blank where a number belongs.
+"""
+
+
+def coverage_shape_problems(document: Mapping[str, Any]) -> list[str]:
+    """Every way an emitted coverage document falls short of what the site reads from it."""
+    problems = [
+        f"{key}: {'absent' if key not in document else 'null'}"
+        for key in SITE_COVERAGE_KEYS
+        if key not in document or (document[key] is None and key not in NULLABLE_COVERAGE_KEYS)
+    ]
+    peers = document.get("peer_medians")
+    if isinstance(peers, Mapping):
+        problems += [
+            f"peer_medians.{measure}: absent" for measure in PEER_MEASURES if measure not in peers
+        ]
+    return problems
+
+
+def check_coverage_shape(document: Mapping[str, Any]) -> None:
+    """Refuse to emit a coverage document the site cannot read.
+
+    This exists because of a measured near-miss rather than a hypothetical. A snapshot taken
+    before ``state_benchmark`` was written carried no such key, and the program page reads it
+    with optional chaining -- so every statewide comparison vanished from all 2,057 outcome
+    pages with no error, no warning and no visible difference beyond three absent lines.
+    Nothing checked the shape, so nothing said anything.
+
+    The offline path can reach the same state today. It copies a fixture's coverage document
+    through wholesale and overwrites four keys, so any key the site needs and the fixture
+    predates would go missing exactly that way -- and the committed fixture is already missing
+    four the current build emits (``aggregate_matches``, ``areas``, ``unmapped_cities``,
+    ``programs_with_regional_projection``), none of which the site happens to read. "Happens
+    to" is what this replaces.
+
+    Loud rather than repaired. A default filled in here would publish a number this build did
+    not compute, which is the failure it exists to prevent, one level up.
+    """
+    problems = coverage_shape_problems(document)
+    if problems:
+        raise ValueError(
+            "coverage.json is missing what the site reads from it: "
+            + "; ".join(problems)
+            + ". Pages would render with those comparisons silently absent rather than fail."
+        )
+
+
 def detailed_soc_codes(projections: Iterable[edd_lmi.OccupationProjection]) -> list[str]:
     """The SOC codes this build will publish an occupation record for.
 
@@ -1370,6 +1444,17 @@ def program_payload(
             "credentials_earned": program.total_credential,
             "median_earnings": program.median_earnings,
             "employment_rate_q2": program.q2_employment_percent,
+            # NOT the numerator and denominator of the rate above, however they read sitting
+            # next to it. `completion_rate` does reconcile with completed/exited -- 2,047
+            # agree, 0 disagree -- so the shape of this block invites the same arithmetic on
+            # the employment pair, where it does not hold: of the 1,760 programs publishing a
+            # rate and a Q2 count against a non-zero exit count, the median gap between
+            # employed_q2/total_exited and the published rate is 0.17, 1,177 (66.9%) differ by
+            # more than 10 points, only 165 (9.4%) agree within a rounding step, and 65 report
+            # more people employed than exited at all. DOL computes the rate on an exiter
+            # denominator it does not publish. Both are carried because both are filed and a
+            # reader is entitled to them; neither is derived from the other here, and nothing
+            # downstream may derive one either.
             "employed_q2": program.employed_q2,
             "employed_q4": program.employed_q4,
             "reported": program.has_outcomes,
@@ -1718,6 +1803,11 @@ def build_offline(
         local_help_coverage(payloads, None), None, payloads
     )
     coverage["peer_medians"] = peer_medians(payloads)
+    # The fixture's own coverage block is carried through untouched apart from the keys above,
+    # so a fixture older than a field the site reads would ship a document missing it. Checked
+    # before anything is written, so the failure is a build that stops rather than a site that
+    # quietly renders one section fewer.
+    check_coverage_shape(coverage)
 
     for name, document in (
         ("programs.json", programs_doc),
@@ -1833,27 +1923,22 @@ def build(
         encoding="utf-8",
     )
     emit_site_bundle(payloads, occupations, output_dir=output_dir, snapshot=snapshot, state=state)
-    (output_dir / "coverage.json").write_text(
-        json.dumps(
-            asdict(report)
-            | {
-                "outcome_coverage_pct": report.outcome_coverage_pct,
-                "occupation_match_pct": report.occupation_match_pct,
-                "area_match_pct": report.area_match_pct,
-                "areas": area_coverage(payloads, areas),
-                "unmapped_cities": unmapped_cities(payloads),
-                # The counts, plus the centre directory the program records point into and
-                # the guidance the site publishes with them. Overrides the plain counts
-                # `asdict(report)` already wrote under this key.
-                "local_help": local_help_document(report.local_help, centers, payloads),
-                # DOL's own statewide aggregate. Kept as published context, but NOT used
-                # for per-program comparison: it is computed on a different basis (27%
-                # employed against a 69% median among reporting programs).
-                "state_benchmark": benchmark.as_dict() if benchmark else None,
-                "peer_medians": peer_medians(payloads),
-            },
-            indent=1,
-        ),
-        encoding="utf-8",
-    )
+    coverage = asdict(report) | {
+        "outcome_coverage_pct": report.outcome_coverage_pct,
+        "occupation_match_pct": report.occupation_match_pct,
+        "area_match_pct": report.area_match_pct,
+        "areas": area_coverage(payloads, areas),
+        "unmapped_cities": unmapped_cities(payloads),
+        # The counts, plus the centre directory the program records point into and
+        # the guidance the site publishes with them. Overrides the plain counts
+        # `asdict(report)` already wrote under this key.
+        "local_help": local_help_document(report.local_help, centers, payloads),
+        # DOL's own statewide aggregate. Kept as published context, but NOT used
+        # for per-program comparison: it is computed on a different basis (27%
+        # employed against a 69% median among reporting programs).
+        "state_benchmark": benchmark.as_dict() if benchmark else None,
+        "peer_medians": peer_medians(payloads),
+    }
+    check_coverage_shape(coverage)
+    (output_dir / "coverage.json").write_text(json.dumps(coverage, indent=1), encoding="utf-8")
     return report
