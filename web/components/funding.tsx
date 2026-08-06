@@ -18,10 +18,30 @@ import type { FundingCitation, FundingQuestion, FundingStep } from "@/lib/types"
  */
 const STEP_COPY: Record<string, (t: Copy) => { heading: string; detail: string }> = {
   ita: (t) => ({ heading: t.fundingHeading, detail: t.fundingIta }),
+  ask_before_you_enroll: (t) => ({ heading: t.fundingBeforeHeading, detail: t.fundingBefore }),
   where_to_ask: (t) => ({ heading: t.fundingCentersHeading, detail: t.fundingCenters }),
   who_can_be_served: (t) => ({
     heading: t.fundingWhoCanBeServedHeading,
     detail: t.fundingWhoCanBeServed,
+  }),
+  /*
+   * These three are on `/paying-for-training/` but not on a program page, and that is why
+   * they had no entry here: the Python tripwire compared the module against this file over
+   * the program-page subset only, so three of the nine steps the guide renders fell through
+   * to `stepCopy`'s English fallback. A Spanish reader got six steps in Spanish and three in
+   * English, on the page about who pays. The test now walks every step.
+   */
+  expect_an_interview: (t) => ({
+    heading: t.fundingInterviewHeading,
+    detail: t.fundingInterview,
+  }),
+  what_the_center_decides: (t) => ({
+    heading: t.fundingDecidesHeading,
+    detail: t.fundingDecides,
+  }),
+  other_funding_first: (t) => ({
+    heading: t.fundingOtherFundingHeading,
+    detail: t.fundingOtherFunding,
   }),
   say_your_priority_status: (t) => ({
     heading: t.fundingPriorityHeading,
@@ -59,6 +79,15 @@ export const LEAD_STEP = "ita";
 
 /** The step the offices belong under: it is the one that says what an office is. */
 export const CENTERS_STEP = "where_to_ask";
+
+/**
+ * The step that says the conversation comes before the enrolment.
+ *
+ * Named here rather than matched inline because a program page renders it out of order — above
+ * the offices, not under the link to the guide — and a page picking a claim out of a sequence
+ * by hand should have to say which claim it means.
+ */
+export const SEQUENCE_STEP = "ask_before_you_enroll";
 
 export function stepCopy(step: FundingStep, t: Copy): { heading: string; detail: string } {
   return STEP_COPY[step.id]?.(t) ?? { heading: step.heading, detail: step.detail };
