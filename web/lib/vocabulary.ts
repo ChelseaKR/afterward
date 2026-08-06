@@ -6,8 +6,11 @@
  * state feeds. A Spanish page that reads "Normalmente requiere: Associate's degree" is not
  * a translated page, so these closed lists are translated too.
  *
- * Occupation titles and program descriptions are open-ended and remain in English. That is
- * a known limitation, recorded in the design log rather than hidden.
+ * Occupation titles are no longer part of that limitation. Mi Próximo Paso publishes 600 of
+ * California's 670 occupations in Spanish, and since commits 71c3434 and a8514e3 the Spanish
+ * pages use the Department's own Spanish name and description everywhere they appear; the
+ * other 70 keep the English name. What remains English is the program description, which is
+ * the provider's own text and has no Spanish edition to use.
  */
 
 import type { Lang } from "./i18n";

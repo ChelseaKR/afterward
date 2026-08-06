@@ -100,10 +100,10 @@ export function generateStaticParams() {
  *
  * There was no `generateMetadata` here at all, so every one of them inherited the layout's
  * and shipped under the identical title "Camino — California training programs, and what
- * (the site was called Camino until 2026-08-05)
- * happened to the people who took them". A search engine holding 1,340 pages with one title
- * has 1,340 pages it cannot tell apart, and a person scanning results has no reason to open
- * any of them.
+ * happened to the people who took them" — the site was called Camino until 2026-08-05, and
+ * the same layout title now reads "Afterward — …". A search engine holding 1,340 pages with
+ * one title has 1,340 pages it cannot tell apart, and a person scanning results has no reason
+ * to open any of them.
  *
  * The occupation title is O*NET's own Spanish where Mi Próximo Paso publishes one, and
  * English where it does not. California publishes its titles in English only, which is why

@@ -1,5 +1,5 @@
 /**
- * Shapes emitted by the Python pipeline (see src/camino/build.py).
+ * Shapes emitted by the Python pipeline (see src/afterward/build.py).
  *
  * Every outcome number is `number | null`. Null means the measure was withheld or never
  * reported, which is not the same as zero, and the type system is the first line of defence
@@ -156,9 +156,13 @@ export interface OccupationSkill {
  * English only. A page showing these has to say so rather than let a Spanish reader take the
  * English for a broken translation.
  *
- * The published list repeats itself — 473 of the 581 rated occupations return the same
- * sentence more than once, up to five times — so anything counting or budgeting tasks must
- * work from distinct descriptions rather than array length.
+ * The source feed repeats itself — 3,389 of its 15,466 task rows restate a row already in
+ * the same occupation, identical down to the id and the rating — and `_parse_tasks` now
+ * drops the repeats after ranking, so a dataset built by the current pipeline says each
+ * sentence once. Datasets built before 2026-08-05 do not: the deployed 2026-08-04 snapshot
+ * still returns eight tasks for Registered Nurses that are five distinct sentences, and 473
+ * of its 581 rated occupations repeat at least one. Code that has to read an older snapshot
+ * should still key on distinct descriptions rather than on array length.
  */
 export interface OccupationTask {
   description: string;
@@ -192,6 +196,12 @@ export interface EducationLevelShare {
  * whose "Postsecondary non-degree award" has no counterpart on this scale at all. Subtracting
  * one from the other is only meaningful where the stated category maps onto a level here.
  *
+ * **`distribution` was decided against on 2026-08-05 and is still on the site.**
+ * `docs/education-attainment-not-shipped-2026-08-05.md` is the record of why it should not be
+ * published; `Attainment` in `app/[lang]/programs/[id]/page.tsx` publishes it anyway, on
+ * 3,250 of the 3,266 program pages. The decision was written down and never carried out, so
+ * this field is live while being documented as withdrawn. Do not build anything new on it.
+ *
  * `typical_experience` and `typical_on_the_job_training` are **requirement claims**, and they
  * are the same federal assignment that reaches this dataset a second time as
  * `Occupation.work_experience` and `Occupation.job_training`: across all 670 occupations the
@@ -199,10 +209,16 @@ export interface EducationLevelShare {
  * 12 months on-the-job training" where the other says "Moderate-term on-the-job training"),
  * so there is no scope disagreement to disclose — only a choice of wording.
  *
- * `reported_for_soc` names the occupation BLS measured `distribution` for, which is not
- * always the occupation asking: the twelve aggregates carry their members' shared figures.
- * It is null when the source's code could not be read. Check it at the point of use rather
- * than assuming it matches; that it does for all 670 today is a measurement, not a promise.
+ * `reported_for_soc` is the source's own `MatOccCode` read back as a SOC. It was built as the
+ * check that would confirm the figures describe the occupation they are attached to, and
+ * **it does not work.** 268 of the 670 occupations (40.0%) carry a distribution byte-identical
+ * to another occupation's — 93 groups sized 2 to 24, whose boundaries are the coarser Census
+ * categories the American Community Survey collects — and every one of the 268 reports its
+ * own SOC here. Not one is flagged. The field equals the page's own code on all 670, which is
+ * the appearance of a clean check rather than a clean check: it discloses coarsening only
+ * when the coarser group is itself a code EDD publishes. Do not read it as provenance, and do
+ * not gate a render on it. `docs/education-attainment-not-shipped-2026-08-05.md` has the
+ * measurements.
  */
 export interface OccupationEducation {
   distribution: EducationLevelShare[];

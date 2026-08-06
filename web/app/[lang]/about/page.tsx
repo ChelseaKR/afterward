@@ -113,6 +113,13 @@ function tally(value: number, lang: Lang): string {
  * neither. Deriving them at build time rather than typing them into the copy means the two
  * cannot drift apart, and means a quarterly refresh corrects this page for free.
  *
+ * **`withoutUrl` and the sentence it fills have drifted apart anyway.** It counts programs
+ * that filed no address (1,430). The copy says "no working website link", and 1,612 programs
+ * render no clickable link: the extra 182 filed an address that the link check found dead and
+ * for which no provider home page could be substituted. The counter predates that check
+ * (commit c5d19d2). Reconciling them means choosing which sentence to tell, so it is a copy
+ * decision in two languages rather than a comment fix, and it has not been made.
+ *
  * The cost is ~3,300 file reads. Memoised at module scope so the English and Spanish pages
  * share one pass, and negligible beside an export that already renders roughly nine thousand
  * pages from the same directory.

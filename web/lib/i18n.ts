@@ -629,7 +629,7 @@ areaNote: (unplaced: number, total: number) =>
    * reader who could have had a program paid for had no way to find that out here.
    *
    * The English below is not written here. Every string from `fundingLede` to the last
-   * `fundingWhy…` is copied byte for byte from `camino.sources.local_help`, where each sentence
+   * `fundingWhy…` is copied byte for byte from `afterward.sources.local_help`, where each sentence
    * sits beside the regulation it rests on and is scanned by a test that refuses promissory
    * phrasing — "you qualify", "guarantee", "free training", "at no cost to you". A Python test
    * asserts that what is published here is still what that module says, so editing one of these

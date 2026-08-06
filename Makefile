@@ -96,8 +96,11 @@ data: backup-data
 #
 # Never with --size-only: chunk names are fixed-length hashes, so a page whose only change is
 # which chunk it loads is byte-identical in length and gets skipped.
-# The Afterward distribution. The old camino one (E166CPAG407D0L) still serves
-# camino.chelseakr.com and is republished deliberately, by overriding these two.
+# The Afterward distribution. The old camino one (E166CPAG407D0L) no longer serves the site:
+# as of 2026-08-05 camino.chelseakr.com answers 301 to the matching afterward.chelseakr.com
+# path, from a CloudFront function rather than from anything in this repository. Publishing to
+# it would put a second, diverging copy of the site behind a host that only redirects, so the
+# id is kept here to identify the redirector, not as an override target.
 DISTRIBUTION_ID ?= E2WV13UCB2U1MF
 SITE_BUCKET ?= afterward.chelseakr.com
 publish: publish-preflight

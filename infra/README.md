@@ -120,10 +120,12 @@ Two things measured and deliberately left alone:
 - **`data/**` (32.9 MiB, 3,940 objects).** Only `coverage.json` is used — the smoke test in
   the table above fetches it to prove the live site is serving the snapshot just uploaded.
   The comparison panel fetches `/data/programs/<id>.json` when a reader opens it, so those
-objects are load-bearing and must not be pruned from the bucket.ts` reads `public/data` only during the export. But those URLs answer
-  200 today, and `/data/coverage.json` shows the prefix is published on purpose, so dropping
-  the others is a decision about a public surface rather than a size fix. Worth making
-  deliberately; not worth making silently.
+  objects are load-bearing and must not be pruned from the bucket. The rest is build-time
+  input: the search index is baked into the page, and `web/lib/data.ts` reads `public/data`
+  from disk during the export only. But those URLs answer 200 today, and
+  `/data/coverage.json` shows the prefix is published on purpose, so dropping the others is a
+  decision about a public surface rather than a size fix. Worth making deliberately; not
+  worth making silently.
 - **The three remaining copies of each payload.** `index.html` needs its inline copy to
   hydrate. `index.txt` is what the router fetches when it navigates somewhere it has not
   prefetched — a `router.push`, a link clicked before its prefetch landed, an entry past its

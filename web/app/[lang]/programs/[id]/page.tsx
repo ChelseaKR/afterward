@@ -327,6 +327,9 @@ function pickAlternateTitles(titles: readonly string[], occupationTitle: string 
  * put "Monitor, record, and report symptoms or changes in patients' conditions." on the page
  * three times in a row, which reads as a bug in the site rather than a repeat in the feed.
  * De-duplication happens *after* the sort, so the copy that survives is the highest-rated one.
+ * `_parse_tasks` in the pipeline drops the repeats too, as of 2026-08-05, so a freshly built
+ * dataset arrives clean. This stays because the deployed 2026-08-04 snapshot does not, and a
+ * page that only reads correctly against data newer than itself is a page waiting to break.
  *
  * Second, an unrated task has no place in the order at all. It sorts last, and is never
  * treated as a zero, which would file a task the source never judged below every task it
@@ -801,6 +804,18 @@ function EntryRequirements({ education, lang, first }: { education: OccupationEd
  * false inference the withheld category exists to prevent, with more decimal places. And where
  * California's stated category is not on this scale, the page says that no comparison is
  * possible rather than quietly making one anyway.
+ *
+ * **This block was decided against on 2026-08-05 and is still rendered.**
+ * `docs/education-attainment-not-shipped-2026-08-05.md` concluded that the distribution should
+ * not be published, on the ground that 268 of the 670 occupations are served another group's
+ * figures with nothing in the response to say so. The docstrings were changed; this call site
+ * was not. It runs on 3,250 of the 3,266 program pages, and 1,275 of those show at least one
+ * block built on a shared distribution. The clearest case is a single page: Shasta College's
+ * Early Childhood Education Certificate feeds Preschool Teachers (25-2011) and Kindergarten
+ * Teachers (25-2012), which carry byte-identical seven-level distributions, and this component
+ * prints "33% went less far than Associate's" under one and "45% went less far than
+ * Bachelor's" under the other — one measurement, two answers, adjacent. Removing it is a
+ * behaviour change and belongs in its own commit.
  */
 function Attainment({
   education,
@@ -830,9 +845,14 @@ function Attainment({
   const top = mostCommon(distribution, lang);
 
   /*
-   * `reported_for_soc` is checked rather than trusted. It equals the page's own SOC for all
-   * 670 occupations today — that is a measurement, not a guarantee — and a figure measured for
-   * a different population than the page it appears on has to say whose it is.
+   * `reported_for_soc` was meant to be the check that a figure measured for a different
+   * population than this page says whose it is. **It does not detect that**, and this branch
+   * is therefore dead in the direction it matters: the field equals the page's own SOC on all
+   * 670 occupations, including the 268 that carry a distribution byte-identical to another
+   * occupation's. 1,695 of the 5,514 program-occupation rows below sit on one of those 268
+   * and are labelled as measured for themselves. See lib/types.ts and
+   * docs/education-attainment-not-shipped-2026-08-05.md; the block below is published against
+   * a written decision not to publish it.
    */
   const measuredFor =
     education.reported_for_soc === null ||
@@ -918,7 +938,7 @@ function Attainment({
  * interview and assessment (20 CFR 680.220), priority is fixed at that first appointment, WIOA
  * money is the last money in (680.230), and a local area that has spent its year's training
  * funds is not obliged to refer anybody (680.340(c)). The words that stay on the right side of
- * that line are not written in this file — they come from `camino.sources.local_help` through
+ * that line are not written in this file — they come from `afterward.sources.local_help` through
  * `lib/i18n.ts`, where a test scans them for phrasing that turns a description of a public
  * program into a promise to one reader.
  *

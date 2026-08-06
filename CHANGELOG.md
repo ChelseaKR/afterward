@@ -9,13 +9,14 @@ All notable changes to this project are documented here. The format follows
 ### Added
 
 - Data pipeline joining California's WIOA-reported training programs to the state's
-  long-term occupational employment projections. 3,266 programs from 584 providers, 97.6%
-  matched to an occupation.
+  long-term occupational employment projections. 3,266 programs from 584 providers, 99.5%
+  matched to an occupation (3,250 of 3,266; the SOC aggregation table below lifted this from
+  the 97.6% first reported).
 - Statewide benchmark from the federal scorecard, so a program's rate can be read against
   California's own figures.
 - Bilingual (English/Spanish) static site built with the California Design System: search
   with filters, program detail, and occupation detail.
-- Three-way job outlook filter, surfacing the 518 programs training for occupations the
+- Three-way job outlook filter, surfacing the 538 programs training for occupations the
   state projects will shrink.
 - Coverage reporting as a published artifact rather than a debug log.
 - Accessibility audit over the built pages, failing the build on any axe violation, plus a
@@ -32,7 +33,9 @@ All notable changes to this project are documented here. The format follows
 - A build-time data cache with stamp-based invalidation and deep-frozen records, so pages
   cannot corrupt each other's data.
 - A SOC aggregation table recovering 61 of the 77 programs whose occupation code EDD does
-  not publish (not yet wired into the pipeline).
+  not publish. It is wired into the build: 135 program-occupation matches run through an
+  aggregate, and all 135 have their entry-level education withheld, because the category BLS
+  assigns to an aggregate is not a claim about any one occupation inside it.
 - A CareerOneStop client for occupation descriptions, O*NET skill ratings and O*NET related
   occupations. Optional: the build runs unchanged without credentials.
 - The funding block says what order to do things in. Every program page now carries "Ask
@@ -70,8 +73,8 @@ All notable changes to this project are documented here. The format follows
   numbers, and a screen reader announced each as its digits alone (WCAG 2.2 AAA 2.4.9).
 
 - Programs summarise across every occupation they feed, not just the first. The count of
-  programs training for declining occupations was understated by more than half (219 against
-  518), and hundreds of detail pages named the wrong job.
+  programs training for declining occupations was understated by more than half (on the
+  current snapshot, 229 against 538), and hundreds of detail pages named the wrong job.
 - Statistical aggregates are no longer published as occupations (764 → 670 real ones).
 - Wages of exactly zero are treated as unpublished rather than rendered as "$0 a year".
 - Partial costs render as "At least $X" instead of presenting a floor as the price.
@@ -111,13 +114,34 @@ All notable changes to this project are documented here. The format follows
   same length, and a sentence says why it is absent when they are not. Employment (+3.26
   points of length error, non-directional) and earnings (+2.96, likewise) keep their marks,
   as do cost and length, which are properties of the course rather than the cohort.
+- Documentation that had stopped describing the code. `web/lib/types.ts` told consumers to
+  check `reported_for_soc` at the point of use; the field flags none of the 268 occupations
+  (40.0%) that carry another group's attainment figures, so the advice was to rely on a check
+  that cannot fire. It also told them to de-duplicate CareerOneStop tasks, which the parse now
+  does. `PROVENANCE.md` credited O\*NET for the education-attainment distribution, which is a
+  BLS measurement over ACS categories. Comments pointing at the pre-rename `src/camino/` and
+  `camino.sources.*` now name `src/afterward/`, and the Makefile no longer says the old
+  CloudFront distribution serves camino.chelseakr.com — as of 2026-08-05 that host answers 301
+  to the matching afterward.chelseakr.com path.
 
 ### Known limitations
 
-- Occupation titles and program descriptions render in English on Spanish pages. The
-  controlled vocabularies (education, experience, training type) are translated; the
-  open-ended text is not.
+- The national education-attainment distribution is published on 3,250 of the 3,266 program
+  pages **against a written decision not to publish it**
+  (`docs/education-attainment-not-shipped-2026-08-05.md`). 1,695 of the 5,514
+  program-occupation rows sit on a distribution measured for a broader group than the
+  occupation named, and nothing on the page says so. Withdrawing the block is a behaviour
+  change and has not been made.
+- Program descriptions render in English on Spanish pages, and so do the occupation titles
+  for the 70 of 670 occupations Mi Próximo Paso does not carry. The controlled vocabularies
+  (education, experience, training type) are translated, and the other 600 occupations use
+  the Department of Labor's own Spanish title and description. Nothing is machine-translated.
+  The About page's "known limitations" copy still says all occupation titles are English and
+  contradicts its own sources section forty lines above; correcting user-facing Spanish is
+  not a documentation change and is left to the i18n workstream.
 - Whether California's own ETPL lists programs the federal file omits is unresolved; the
   state publishes no bulk export.
-- 1,430 programs publish no usable website link. Most never filed one; eight filed something
-  that was not a URL, and those are now dropped rather than rendered.
+- 1,430 programs filed no usable website link. Most never filed one; eight filed something
+  that was not a URL, and those are now dropped rather than rendered. 1,612 render no
+  clickable link once the dead ones are excluded, and the About page still reports 1,430
+  under the sentence "no working website link".
