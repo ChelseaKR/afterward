@@ -96,19 +96,23 @@ export default function NotFound() {
                     often reached while looking for a provider or a job, and both of those have
                     a complete index a page away.
                   */}
+                  {/* None of the six prefetch. This page offers three routes per language
+                      and cannot know which one is wanted; prefetching them all would spend
+                      close to 700 KB of a reader's data to speed up one guess. See
+                      app/[lang]/layout.tsx. */}
                   <ul>
                     <li>
-                      <Link href={`/${lang}/`} hrefLang={lang}>
+                      <Link href={`/${lang}/`} hrefLang={lang} prefetch={false}>
                         {t.notFoundSearch}
                       </Link>
                     </li>
                     <li>
-                      <Link href={`/${lang}/providers/`} hrefLang={lang}>
+                      <Link href={`/${lang}/providers/`} hrefLang={lang} prefetch={false}>
                         {t.browseAllProviders}
                       </Link>
                     </li>
                     <li>
-                      <Link href={`/${lang}/occupations/`} hrefLang={lang}>
+                      <Link href={`/${lang}/occupations/`} hrefLang={lang} prefetch={false}>
                         {t.browseAllOccupations}
                       </Link>
                     </li>
