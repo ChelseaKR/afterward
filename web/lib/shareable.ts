@@ -4,7 +4,12 @@
  * Deciding on training is not something people do alone — they do it with a case manager, a
  * partner, or whoever is helping them at a job centre. A shareable URL serves that better
  * than a saved search behind an account would, because the person receiving it does not have
- * to sign up to open it. It also makes the back button work, which today it does not.
+ * to sign up to open it. It also makes the back button work.
+ *
+ * Both halves are wired up in `SearchApp`: `filtersFromParams` restores a search on mount and
+ * `filtersToQueryString` keeps the address bar in step with it. Until that landed only the
+ * writing half was used, so "Copy link to this search" produced a link that opened on all
+ * 3,266 programs — the encoding was right and nothing read it back.
  *
  * Two rules govern the encoding:
  *
@@ -33,6 +38,7 @@ const KEY = {
   city: "city",
   area: "area",
   maxCost: "cost",
+  maxWeeks: "weeks",
   outlook: "outlook",
   sort: "sort",
   onlyReported: "reported",
@@ -42,7 +48,7 @@ const KEY = {
 const UNPLACED_TOKEN = "none";
 
 const OUTLOOKS: readonly Outlook[] = ["any", "growing", "shrinking"];
-const SORTS: readonly Sort[] = ["relevance", "earnings", "cost", "openings"];
+const SORTS: readonly Sort[] = ["relevance", "earnings", "cost", "length", "openings"];
 
 function isOutlook(value: string): value is Outlook {
   return (OUTLOOKS as readonly string[]).includes(value);
@@ -53,13 +59,14 @@ function isSort(value: string): value is Sort {
 }
 
 /**
- * Parse a cost cap. Rejects anything that is not a positive finite number.
+ * Parse a cost or length cap. Rejects anything that is not a positive finite number.
  *
- * `Number("")` is 0 and `Number("abc")` is NaN, and either reaching the filter would silently
- * exclude every program with a reported cost — a filter nobody set, hiding results nobody
- * asked to hide.
+ * `Number("")` is 0 and `Number("abc")` is NaN, and either reaching a filter would silently
+ * exclude every program that reported the measure — a filter nobody set, hiding results
+ * nobody asked to hide. Shared by both caps because both fail the same way: a zero cap on
+ * either one empties the result set while looking like it was chosen.
  */
-function parseCost(raw: string): number | null {
+function parseCap(raw: string): number | null {
   const value = Number(raw);
   return Number.isFinite(value) && value > 0 ? value : null;
 }
@@ -83,6 +90,7 @@ export function filtersToParams(filters: Filters): URLSearchParams {
   if (filters.outlook !== DEFAULT_FILTERS.outlook) params.set(KEY.outlook, filters.outlook);
   if (filters.sort !== DEFAULT_FILTERS.sort) params.set(KEY.sort, filters.sort);
   if (filters.maxCost !== null) params.set(KEY.maxCost, String(filters.maxCost));
+  if (filters.maxWeeks !== null) params.set(KEY.maxWeeks, String(filters.maxWeeks));
   if (filters.city !== null) params.set(KEY.city, filters.city);
 
   if (filters.area.kind === "unplaced") params.set(KEY.area, UNPLACED_TOKEN);
@@ -96,6 +104,7 @@ export function filtersFromParams(params: URLSearchParams): Filters {
   const outlook = params.get(KEY.outlook);
   const sort = params.get(KEY.sort);
   const cost = params.get(KEY.maxCost);
+  const weeks = params.get(KEY.maxWeeks);
   const city = params.get(KEY.city);
   const area = params.get(KEY.area);
 
@@ -105,7 +114,8 @@ export function filtersFromParams(params: URLSearchParams): Filters {
     onlyReported: params.get(KEY.onlyReported) !== null && params.get(KEY.onlyReported) !== "0",
     outlook: outlook !== null && isOutlook(outlook) ? outlook : DEFAULT_FILTERS.outlook,
     sort: sort !== null && isSort(sort) ? sort : DEFAULT_FILTERS.sort,
-    maxCost: cost !== null ? parseCost(cost) : DEFAULT_FILTERS.maxCost,
+    maxCost: cost !== null ? parseCap(cost) : DEFAULT_FILTERS.maxCost,
+    maxWeeks: weeks !== null ? parseCap(weeks) : DEFAULT_FILTERS.maxWeeks,
     city: city !== null && city.trim() !== "" ? city : DEFAULT_FILTERS.city,
     area: area !== null ? parseArea(area) : DEFAULT_FILTERS.area,
   };

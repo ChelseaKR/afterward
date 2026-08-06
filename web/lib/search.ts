@@ -8,7 +8,7 @@
 import type { SearchEntry } from "./types";
 
 
-export type Sort = "relevance" | "earnings" | "cost" | "openings";
+export type Sort = "relevance" | "earnings" | "cost" | "length" | "openings";
 
 /**
  * Three-way rather than a hide/show toggle. "Only shrinking" is the interesting one: it
@@ -44,6 +44,15 @@ export interface Filters {
   onlyReported: boolean;
   outlook: Outlook;
   maxCost: number | null;
+  /**
+   * The longest a program may run, in weeks, or null for no limit.
+   *
+   * The second half of what someone out of work is actually spending. Cost has had a control
+   * since the first release and time has not, although the dataset carries a length for 3,254
+   * of California's 3,266 programs and they run from one week to 260 — so "can I be earning
+   * again by March" was a question the index could answer and the interface could not ask.
+   */
+  maxWeeks: number | null;
   area: AreaFilter;
   city: string | null;
   sort: Sort;
@@ -54,6 +63,7 @@ export const DEFAULT_FILTERS: Filters = {
   onlyReported: false,
   outlook: "any",
   maxCost: null,
+  maxWeeks: null,
   area: ANY_AREA,
   city: null,
   sort: "relevance",
@@ -177,6 +187,14 @@ export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
   if (filters.outlook === "growing" && (entry.g === null || entry.g <= 0)) return false;
 
   if (filters.maxCost !== null && (entry.$ === null || entry.$ > filters.maxCost)) return false;
+
+  // The null test is load-bearing and cannot be folded into the comparison. `null > 12` is
+  // false in JavaScript, so `entry.w > filters.maxWeeks` alone would pass every program whose
+  // provider reported no length — presenting 12 unmeasured programs as ones that fit inside a
+  // month. A length nobody reported is not a length of zero, so it fails the test instead, and
+  // `unmeasuredLength` below exists so the interface can say how many that cost.
+  if (filters.maxWeeks !== null && (entry.w === null || entry.w > filters.maxWeeks)) return false;
+
   if (!matchesArea(entry, filters.area)) return false;
   if (filters.city !== null && entry.c !== filters.city) return false;
   return true;
@@ -200,6 +218,36 @@ export function unplacedMatches(programs: SearchEntry[], filters: Filters): numb
     if (areaOf(entry) !== null) continue;
     if (score(entry, searchTerms) < 0) continue;
     if (!matchesFilters(entry, ignoringGeography)) continue;
+    found += 1;
+  }
+  return found;
+}
+
+/**
+ * Programs this search found that no length limit can ever include.
+ *
+ * The exact counterpart of `unplacedMatches`, for the same reason and against the same
+ * measure: everything else the reader asked for still applies, only the length limit is
+ * lifted. A program whose provider filed no length cannot be shown to fit inside one, so it
+ * is excluded — and a filter that quietly drops programs on the grounds that nobody said how
+ * long they take reads as "these are too long", which is a claim the data does not make.
+ *
+ * Twelve programs are in that state in this snapshot, so the number is usually small and
+ * frequently zero. It is computed against the running search rather than stated as a blanket
+ * 12 for the same reason the geography figure is: what a reader is owed is what *their* search
+ * is losing.
+ */
+export function unmeasuredLength(programs: SearchEntry[], filters: Filters): number {
+  if (filters.maxWeeks === null) return 0;
+
+  const searchTerms = terms(filters.query);
+  const ignoringLength: Filters = { ...filters, maxWeeks: null };
+
+  let found = 0;
+  for (const entry of programs) {
+    if (entry.w !== null) continue;
+    if (score(entry, searchTerms) < 0) continue;
+    if (!matchesFilters(entry, ignoringLength)) continue;
     found += 1;
   }
   return found;
@@ -230,6 +278,12 @@ const COMPARATORS: Record<Sort, (a: Ranked, b: Ranked) => number> = {
   // institution-wide number win a list of programs.
   earnings: (a, b) => ownEarnings(b.entry) - ownEarnings(a.entry),
   cost: (a, b) => (a.entry.$ ?? Infinity) - (b.entry.$ ?? Infinity),
+  // Length is a property of the course, not of the cohort, so unlike the three outcome
+  // measures it stays comparable however the provider filed its outcome rows — the same
+  // distinction `ownCohortOnly` in lib/compare.ts is built on. Infinity for an unreported
+  // length rather than a large number, so "nobody said" trails every real length instead of
+  // landing among the two-year pathways.
+  length: (a, b) => (a.entry.w ?? Infinity) - (b.entry.w ?? Infinity),
   openings: (a, b) => (b.entry.op ?? -1) - (a.entry.op ?? -1),
 };
 
