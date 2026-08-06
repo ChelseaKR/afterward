@@ -16,6 +16,7 @@ import {
   getOccupation,
   getSearchIndex,
   occupationTitleIn,
+  occupationTitleLang,
 } from "@/lib/data";
 import { count, money, signedPercent } from "@/lib/format";
 import { LANGUAGES, type Lang, dict, isLang } from "@/lib/i18n";
@@ -169,7 +170,12 @@ export default async function OccupationsIndexPage({
                   {banded.map((row) => (
                     <tr key={row.soc}>
                       <th scope="row" style={{ fontWeight: 400 }}>
-                        <Link href={`/${lang}/occupations/${row.soc}/`}>{row.title ?? row.soc}</Link>
+                        <Link
+                          href={`/${lang}/occupations/${row.soc}/`}
+                          lang={occupationTitleLang(lang, row.soc)}
+                        >
+                          {row.title ?? row.soc}
+                        </Link>
                       </th>
                       <td className="num">
                         {count(row.openings, lang) ?? <Unreported lang={lang} />}

@@ -144,6 +144,27 @@ export function programsForOccupation(soc: string): SearchIndex["programs"] {
  * Falls back rather than throwing: 70 of California's 670 occupations have no Mi Próximo
  * Paso record, and their pages carry the English name on purpose.
  */
+/**
+ * The `lang` attribute an occupation title needs, or undefined when it needs none.
+ *
+ * `occupationTitleIn` falls back to the English title when O*NET publishes no Spanish one,
+ * which is right -- an untranslated title is better than a missing one, and the English is
+ * what appears on the certificate and every California record. But it leaves English sitting
+ * inside `<html lang="es">` for 70 of the 670 occupations, so a screen reader pronounces
+ * "Pharmacy Technicians" with Spanish phonetics. WCAG 3.1.2 (Language of Parts) is level AA
+ * and this site targets AAA.
+ *
+ * Returns `undefined` rather than the current language when no marking is needed, so it can
+ * be spread straight onto an element without emitting a redundant `lang="es"` on every title.
+ */
+export function occupationTitleLang(
+  lang: string,
+  soc: string | null | undefined,
+): "en" | undefined {
+  if (lang !== "es" || soc === null || soc === undefined) return undefined;
+  return getOccupation(soc)?.spanish?.title ? undefined : "en";
+}
+
 export function occupationTitleIn(
   lang: string,
   soc: string | null | undefined,
