@@ -173,6 +173,18 @@ const en = {
   compareFull: "Comparison is full. Remove one to add another.",
   compareNote:
     "A highlighted cell is the strongest reported figure in that row. Rows where fewer than two programs reported anything are not marked, because being the only one to file a number is not the same as being the best.",
+  /**
+   * Shown only when the completion row had a mark and length took it away — never over a row
+   * nobody reported. The lengths named are the site's own length filter caps, so a reader who
+   * has met one has met the other.
+   */
+  compareCompletionLength:
+    "Completion is not marked here: these programs are not the same length. Among California " +
+    "programs whose figures describe that program alone, the median share who finished falls " +
+    "at every step up in length — 97% at four weeks or less, 91% up to three months, 85% up " +
+    "to six, 80% up to a year, and 78% beyond it. A mark would be reporting which of these is " +
+    "shortest, not which is best. The rates themselves are unchanged, and completion is still " +
+    "marked when the programs being compared run for the same sort of time.",
 
   vsState: "Typical California program",
   vsStateAbove: "Better than typical",
@@ -470,7 +482,7 @@ areaNote: (unplaced: number, total: number) =>
   aboutComparisonsBody:
     "A rate on its own is unreadable: nobody knows whether 45% employed is good. So where a program reports a measure, it is shown against the median California program that reported the same measure. Programs that reported nothing are not in that median, which makes it a comparison among those willing to publish rather than a comparison against the state as a whole.",
   aboutComparisonsSecond:
-    "This site once labelled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is simply the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best.",
+    "This site once labelled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best. Completion is marked only when the programs run for the same sort of time, because the confounding that withdrew the label arrives there two programs at a time: the median share who finished falls from 97% at four weeks or less to 78% beyond a year, so a mark across lengths marks the shorter course.",
   aboutComparisonsThird:
     "No comparison is ever built out of a blank. A program that reported nothing is never called below average, because there is nothing to compare and saying so would be an accusation rather than a fact.",
 
@@ -893,6 +905,13 @@ const es: Dictionary = {
   compareFull: "La comparación está llena. Quite uno para agregar otro.",
   compareNote:
     "La celda resaltada es la cifra reportada más fuerte de esa fila. Las filas donde menos de dos programas reportaron algo no se marcan, porque ser el único que reportó un número no es lo mismo que ser el mejor.",
+  compareCompletionLength:
+    "Aquí no se marca la finalización: estos programas no duran lo mismo. Entre los programas " +
+    "de California cuyas cifras describen solo ese programa, la mediana de quienes terminaron " +
+    "baja en cada escalón de duración — 97% en los de cuatro semanas o menos, 91% hasta tres " +
+    "meses, 85% hasta seis, 80% hasta un año y 78% más allá. Marcar una celda indicaría cuál " +
+    "de estos es más corto, no cuál es mejor. Las tasas no cambian, y la finalización se " +
+    "sigue marcando cuando los programas comparados duran más o menos lo mismo.",
 
   vsState: "Programa típico de California",
   vsStateAbove: "Mejor que lo típico",
@@ -1135,8 +1154,16 @@ areaNote: (unplaced, total) =>
   aboutComparisonsHeading: "Qué afirman las comparaciones y qué no",
   aboutComparisonsBody:
     "Una tasa sola no se puede interpretar: nadie sabe si 45% empleado es bueno. Por eso, cuando un programa reporta una medida, se muestra frente al programa mediano de California que reportó esa misma medida. Los programas que no reportaron nada no entran en esa mediana, así que es una comparación entre quienes sí publican, no una comparación contra el estado entero.",
+  /*
+   * Corrected here, not appended to. This key still described «Mejor que lo típico» as a live
+   * judgement long after the site withdrew it, which is why `about/page.tsx` carries a local
+   * Spanish override and a TODO to delete it "once the Spanish key is corrected in i18n.ts".
+   * Adding a sentence about the completion rule to a paragraph that still advertised the
+   * withdrawn verdict would have left the key wrong in a new way, so it is replaced whole. The
+   * override still wins on the rendered page until that constant goes.
+   */
   aboutComparisonsSecond:
-    "«Mejor que lo típico» quiere decir que un número reportado está por encima de esa mediana. No es un juicio sobre la enseñanza, ni sobre la institución, ni sobre si un programa le conviene a usted, y no toma en cuenta a quién se inscribió, dónde ni en qué año. Cuando dos programas se ponen lado a lado, la celda marcada es simplemente la cifra reportada más fuerte de esa fila; una fila donde menos de dos programas reportaron algo se queda sin marcar, porque ser el único que presentó un número no es lo mismo que ser el mejor.",
+    "Este sitio llegó a etiquetar programas como «mejores» o «peores» que lo típico frente a esa mediana. Ya no lo hace. La mediana juntaba a todos los programas que reportan, sin importar su duración, y un certificado de cuatro semanas y una carrera de dos años no son comparables en finalización: medidos contra programas de su misma duración, ese rótulo estaba sencillamente invertido en alrededor de uno de cada diez programas. Las cifras y la mediana se siguen mostrando; la conclusión la saca usted, porque la comparación no podía sostenerla. Cuando dos programas se ponen lado a lado, la celda marcada es la cifra reportada más fuerte de esa fila; una fila donde menos de dos programas reportaron algo se queda sin marcar, porque ser el único que presentó un número no es lo mismo que ser el mejor. La finalización solo se marca cuando los programas duran más o menos lo mismo, porque ahí la misma distorsión aparece de dos en dos: la mediana de quienes terminaron baja del 97% en los de cuatro semanas o menos al 78% en los de más de un año, así que marcar entre duraciones distintas marca al curso más corto.",
   aboutComparisonsThird:
     "Ninguna comparación se construye a partir de un espacio en blanco. A un programa que no reportó nada nunca se le llama peor que el promedio, porque no hay nada que comparar y decirlo sería una acusación, no un hecho.",
 

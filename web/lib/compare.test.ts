@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { bestOf, isOwnCohort, occupationFigures, ownCohortOnly, programRecordUrl } from "./compare";
+import {
+  bestOf,
+  completionMark,
+  isOwnCohort,
+  lengthBand,
+  occupationFigures,
+  oneLengthBand,
+  ownCohortOnly,
+  programRecordUrl,
+} from "./compare";
 import type { Program, ProgramOccupation, SearchEntry } from "./types";
 
 function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
@@ -278,5 +287,119 @@ describe("ownCohortOnly", () => {
     const stale = { ...entry(), at: undefined } as unknown as SearchEntry;
     expect(isOwnCohort(stale)).toBe(false);
     expect(ownCohortOnly((e) => e.cr)(stale)).toBeNull();
+  });
+});
+
+describe("lengthBand", () => {
+  it("places a program by the caps the length filter already uses", () => {
+    expect([1, 4, 5, 12, 13, 26, 27, 52, 53, 260].map(lengthBand)).toEqual([
+      0, 0, 1, 1, 2, 2, 3, 3, 4, 4,
+    ]);
+  });
+
+  it("gives no band to a program that never said how long it takes", () => {
+    // 12 of California's 3,266. A program with no length is not a short program.
+    expect(lengthBand(null)).toBeNull();
+    expect(lengthBand(undefined as unknown as number)).toBeNull();
+    expect(lengthBand(Number.NaN)).toBeNull();
+  });
+});
+
+describe("oneLengthBand", () => {
+  it("accepts programs on the same scale and rejects programs on different ones", () => {
+    expect(oneLengthBand([entry({ w: 13 }), entry({ w: 26 })])).toBe(true);
+    expect(oneLengthBand([entry({ w: 26 }), entry({ w: 27 })])).toBe(false);
+    expect(oneLengthBand([entry({ w: 4 }), entry({ w: 4 }), entry({ w: 60 })])).toBe(false);
+  });
+
+  it("refuses when any program's length was never established", () => {
+    expect(oneLengthBand([entry({ w: 20 }), entry({ w: null })])).toBe(false);
+  });
+});
+
+/**
+ * Completion is the row length decides. Measured on the shipped index over the 1,947 programs
+ * reporting both a completion rate and a length whose figures describe that program alone, the
+ * median share who finished is 97% at four weeks or less, 91% at 5-12, 85% at 13-26, 80% at
+ * 27-52 and 78% beyond a year. Marking a winner across those lengths marks the shorter course.
+ */
+describe("completionMark", () => {
+  it("marks the strongest rate when the programs are the same length", () => {
+    const entries = [entry({ cr: 0.7, w: 14 }), entry({ cr: 0.9, w: 24 })];
+    expect(completionMark(entries)).toEqual({ best: 1, withheldForLength: false });
+  });
+
+  it("marks nothing when the programs are not the same length, and says length is why", () => {
+    // The real pair: Elite Permanent Makeup & Cosmetology College's three-week course at 81%
+    // and Cosmetica Beauty and Barbering Academy's 60-week Cosmetology at 80%, both training
+    // for Hairdressers, Hairstylists, and Cosmetologists. The three-week course finishes 16
+    // points below the median for its length; the 60-week course finishes 2 points above it.
+    // The table used to mark the three-week course.
+    const entries = [entry({ cr: 0.81, w: 3 }), entry({ cr: 0.8, w: 60 })];
+    expect(completionMark(entries)).toEqual({ best: null, withheldForLength: true });
+  });
+
+  it("blames length only when length is what took the mark away", () => {
+    // Nobody reported, so there was never a mark. Explaining an absence length did not cause
+    // would tell a reader the programs were disqualified when they simply filed nothing.
+    const unreported = [entry({ cr: null, w: 3 }), entry({ cr: null, w: 60 })];
+    expect(completionMark(unreported)).toEqual({ best: null, withheldForLength: false });
+
+    // Same for a tie and for a single reporting program: `bestOf`'s own rules got there first.
+    const tied = [entry({ cr: 0.9, w: 3 }), entry({ cr: 0.9, w: 60 })];
+    expect(completionMark(tied)).toEqual({ best: null, withheldForLength: false });
+
+    const alone = [entry({ cr: 0.9, w: 3 }), entry({ cr: null, w: 60 })];
+    expect(completionMark(alone)).toEqual({ best: null, withheldForLength: false });
+  });
+
+  it("ignores the length of a program that could not have won anyway", () => {
+    // The 60-week program filed a whole institution's cohort, so `ownCohortOnly` already took
+    // it out of the ranking. Letting its length veto the two that remain would withhold a mark
+    // on account of a program that was never in the running.
+    const entries = [
+      entry({ cr: 0.95, w: 60, at: false }),
+      entry({ cr: 0.7, w: 14, at: true }),
+      entry({ cr: 0.9, w: 24, at: true }),
+    ];
+    expect(completionMark(entries)).toEqual({ best: 2, withheldForLength: false });
+  });
+
+  it("withholds when a compared program never reported a length", () => {
+    // Unestablished, not near enough — the same reading a missing cohort flag gets.
+    const entries = [entry({ cr: 0.9, w: null }), entry({ cr: 0.7, w: 20 })];
+    expect(completionMark(entries)).toEqual({ best: null, withheldForLength: true });
+  });
+
+  it("still refuses a program whose cohort is not its own, whatever the lengths", () => {
+    const entries = [
+      entry({ cr: 0.99, w: 20, at: false }),
+      entry({ cr: 0.8, w: 20, at: true }),
+      entry({ cr: 0.7, w: 24, at: true }),
+    ];
+    expect(completionMark(entries)).toEqual({ best: 1, withheldForLength: false });
+  });
+});
+
+/**
+ * The length rule stops at completion on purpose. Measured the same way, employment inverts on
+ * 1.27% of same-band pairs against 4.53% across bands and earnings on 2.89% against 5.85% —
+ * under half of completion's 2.63%/10.22% — and neither is directional: their band medians do
+ * not fall with length, and the marked program is the shorter one 53.2% and 46.2% of the time,
+ * either side of chance. Withholding those marks would remove a working signal.
+ */
+describe("length does not disqualify the rows it does not confound", () => {
+  it("still marks employment and earnings across different lengths", () => {
+    const entries = [entry({ er: 0.6, me: 9000, w: 3 }), entry({ er: 0.8, me: 21000, w: 60 })];
+    expect(bestOf(entries, ownCohortOnly((e) => e.er), "high")).toBe(1);
+    expect(bestOf(entries, ownCohortOnly((e) => e.me), "high")).toBe(1);
+  });
+
+  it("still marks cost and length, which are properties of the course", () => {
+    // What a course costs and how long it runs are not claims about a cohort, so nothing about
+    // whose cohort was filed or how the lengths differ makes them incomparable.
+    const entries = [entry({ $: 9000, w: 3, at: false }), entry({ $: 4000, w: 60, at: true })];
+    expect(bestOf(entries, (e) => e.$, "low")).toBe(1);
+    expect(bestOf(entries, (e) => e.w, "low")).toBe(0);
   });
 });

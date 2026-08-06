@@ -68,6 +68,18 @@ All notable changes to this project are documented here. The format follows
   soft 404s are now treated as the 404s they are — 11 of those pages gain a working link to
   the provider's home page instead — and a for-sale address is published unlinked, with a
   dated sentence saying what it served and suggesting the reader look the school up by name.
+- The side-by-side comparison no longer marks a best completion rate across programs of
+  different lengths. Completion is the row length decides: among the 1,947 programs that
+  report both a rate and a length and whose figures describe that program alone, the median
+  share who finished is 97% at four weeks or less, 91% at 5-12, 85% at 13-26, 80% at 27-52
+  and 78% beyond a year. Graded against a smoothed expectation for its own length, the mark
+  landed on the weaker of the two programs 10.22% of the time across length bands against
+  2.63% within one, and the marked program was the shorter one 60.9% of the time. It is the
+  confounding that took "Better than typical" off program pages, arriving two programs at a
+  time. The rates are still shown, the mark returns whenever the compared programs are the
+  same length, and a sentence says why it is absent when they are not. Employment (+3.26
+  points of length error, non-directional) and earnings (+2.96, likewise) keep their marks,
+  as do cost and length, which are properties of the course rather than the cohort.
 
 ### Known limitations
 
