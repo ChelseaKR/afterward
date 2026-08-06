@@ -226,6 +226,16 @@ areaNote: (unplaced: number, total: number) =>
   browseOccupationsIntro:
     "California publishes a ten-year projection for every occupation it tracks. All of them are here, grouped by whether the state expects the work to grow or shrink and ordered by the openings it projects.",
   occupationsListed: "Occupations listed",
+  // Search runs in the browser, so without JavaScript the box is an affordance that does
+  // nothing: the form has no action, and submitting it reloads the page. Browsing does not
+  // need JavaScript at all -- every one of the 670 occupation pages and 581 provider pages
+  // is a static link in the shipped HTML -- so the honest thing is to say which half works
+  // and point at it, rather than leave a reader poking an inert box.
+  noScriptSearch:
+    "Search needs JavaScript, which is not running here. Browsing does not: every occupation " +
+    "and every provider is a plain link on the pages below.",
+  noScriptBrowseOccupations: "Browse all occupations",
+  noScriptBrowseProviders: "Browse all providers",
   titlesEnglishOnly:
     "Occupation titles use O*NET's published Spanish name where there is one, and stay in " +
     "English where there is not.",
@@ -933,6 +943,11 @@ areaNote: (unplaced, total) =>
   browseOccupationsIntro:
     "California publica una proyección a diez años para cada ocupación que sigue. Aquí están todas, agrupadas según si el estado espera que el trabajo crezca o se reduzca y ordenadas por las vacantes que proyecta.",
   occupationsListed: "Ocupaciones en la lista",
+  noScriptSearch:
+    "La búsqueda necesita JavaScript, que no está funcionando aquí. Navegar no lo necesita: " +
+    "cada ocupación y cada proveedor es un enlace simple en las páginas de abajo.",
+  noScriptBrowseOccupations: "Ver todas las ocupaciones",
+  noScriptBrowseProviders: "Ver todos los proveedores",
   titlesEnglishOnly:
     "Los nombres de las ocupaciones usan el nombre en español que publica O*NET cuando existe, " +
     "y permanecen en inglés cuando no.",
