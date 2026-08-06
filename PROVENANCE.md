@@ -34,16 +34,20 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Statewide annual wage percentiles (10th, 25th, 50th, 75th, 90th) shown as the pay range on occupation pages, 2026 vintage. Fetched separately from a build, not on every one: the published extract is the whole 2009–2026 panel (~112 MB, 580,790 records) because EDD publishes no per-year resource. |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
 | D5 | O\*NET Web Services (USDOL/ETA), including Mi Próximo Paso | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered with O\*NET under the project name "Camino", which is what this site was called until 2026-08-05; the registration is unchanged. Key is per-user and never committed. | Spanish occupation titles and descriptions from Mi Próximo Paso, on the 600 of California's 670 occupations it covers. Nothing is translated by this project: an occupation Mi Próximo Paso does not carry keeps its English name. |
-| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, education attainment distribution, typical experience and on-the-job training, O\*NET related occupations, Bright Outlook |
+| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook. Also national education attainment distribution and typical experience / on-the-job training — **published against a decision not to publish them**; see the note below |
 
 ### Notes on D5 — what is and is not taken from it
 
 O\*NET's `software_skills` table was read, wired in and removed rather than published; the
 measurements and the reasoning are in `docs/onet-technologies-not-shipped-2026-08-04.md`.
 Job zones and work activities are likewise parsed by the client and not displayed. The tasks,
-skill ratings, alternate titles, education distribution and related-occupation lists on this
-site reach it through CareerOneStop (D6), which serves O\*NET-derived data under its own
-terms — so O\*NET is credited for those as well, and the notice below covers both routes.
+skill ratings, alternate titles and related-occupation lists on this site reach it through
+CareerOneStop (D6), which serves O\*NET-derived data under its own terms — so O\*NET is
+credited for those as well, and the notice below covers both routes.
+
+The education-attainment distribution also arrives through D6 and is **not** O\*NET's: it is a
+BLS measurement over the American Community Survey's occupation categories, and O\*NET is not
+credited for it. It was listed here as O\*NET-derived until 2026-08-05.
 
 ### Notes on D5 — required attribution
 
@@ -77,9 +81,29 @@ credentials and builds from the committed fixture.
 Responses are cached under `data/raw/cos-cache/` so a rebuild does not re-ask for data that
 has not changed. One request per occupation, throttled.
 
-The API serves English only. Passing `language=es` returns English, so this does not help
-with the project's known limitation that occupation titles and descriptions are untranslated
-on Spanish pages.
+The API serves English only. Passing `language=es` returns English, so D6 contributes nothing
+to the Spanish pages. The Spanish occupation title and description come from O\*NET's Mi
+Próximo Paso instead (D5), on 600 of the 670 occupations; the remaining 70 keep the English
+name. What is still English on a Spanish page is the program description, which is the
+provider's own filed text.
+
+### Notes on D6 — the education block is published against a decision not to publish it
+
+`docs/education-attainment-not-shipped-2026-08-05.md` decided that the national attainment
+distribution should not be published, because 268 of the 670 occupations (40.0%) receive a
+distribution byte-identical to another occupation's and nothing in the response says so. That
+decision changed the docstrings and did not change the site. Measured 2026-08-05 against the
+deployed snapshot: the seven-level distribution renders on 3,250 of the 3,266 program pages,
+1,695 of the 5,514 program-occupation rows (30.7%) sit on one of the shared 268, and the
+`typical_experience` / `typical_on_the_job_training` pair is the sole source of the "Getting
+in" block — EDD's equivalent `work_experience` and `job_training` are parsed and never
+rendered. So the row above lists them as used, because they are.
+
+Two claims in that note are wrong about the site as it stands and are corrected in a dated
+postscript inside it: "Nothing renders it", and that the distribution is "deliberately not
+published anywhere on the site". Its argument against publishing is unaffected; only its
+description of what was already shipped was wrong. Withdrawing the block is a behaviour
+change and has not been made.
 
 ### Notes on D1
 

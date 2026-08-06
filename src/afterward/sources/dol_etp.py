@@ -211,11 +211,16 @@ def clean_cip_code(value: Any) -> str | None:
     """Restore the zero padding a CIP code lost to being read as a number.
 
     NCES publishes CIP as fixed-width decimals: a two-digit series (``46``), a four-digit
-    family (``12.05``) and a six-digit code (``51.0710``). 308 of California's 3,266 programs
+    family (``12.05``) and a six-digit code (``51.0710``). 239 of California's 3,266 programs
     carry one that has been through a float somewhere upstream, and leading and trailing zeros
-    are exactly what that loses -- ``01.0505`` arrives as ``1.0505`` (113 programs) and
-    ``51.0710`` as ``51.071`` (124). Nothing renders the code today, so nobody is misled on a
-    page; it is published in ``programs.json``, where it will not join to anything.
+    are exactly what that loses -- ``01.0505`` arrives as ``1.0505`` (113 programs), ``51.0710``
+    as ``51.071`` (124), and two more lose a leading zero from a four-digit family. Nothing
+    renders the code today, so nobody is misled on a page; it is published in
+    ``programs.json``, where it will not join to anything.
+
+    308 is the count of every non-canonical width in the snapshot, which is not the same
+    number: it also contains the 69 below that CIP genuinely publishes and this function
+    leaves alone. Only 239 lost a digit.
 
     Both losses are repaired, because both are reversible without deciding anything:
 

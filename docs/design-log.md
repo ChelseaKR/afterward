@@ -4,6 +4,12 @@ Dated record of what was decided, from which inputs, and why. Kept so the projec
 lineage is auditable rather than asserted. See [PROVENANCE.md](../PROVENANCE.md) for the
 clean-room constraint this log supports.
 
+Figures below are as they were measured on the day of the entry. Several have since moved,
+because the join itself was fixed after they were written; the decisions did not change. The
+counts current as of 2026-08-05 are in the postscript at the end of this file. Entries are not
+rewritten to match — a design log that silently updates its own numbers cannot be used to
+check anything.
+
 ---
 
 ## 2026-08-04 — Phase 0: scaffold and data audit
@@ -292,3 +298,27 @@ shrink.** (Originally recorded as 219; see the review entry below — that figur
 each program's first occupation.) Both halves of that sentence are public today and neither is discoverable next to
 the other. It is the clearest single argument for why this join should exist, and it should
 be a first-class view rather than a statistic buried in a report.
+
+---
+
+## 2026-08-05 — Postscript: which figures above have moved
+
+Measured against the deployed snapshot (`web/public/data`, `snapshot_date` 2026-08-04, 3,266
+programs, 670 occupations). Nothing above is rewritten; this is the concordance.
+
+| Recorded above | As of 2026-08-05 | Why it moved |
+| --- | --- | --- |
+| 97.6% matched to an occupation (3,189 of 3,266) | **99.5% (3,250 of 3,266)** | The SOC aggregation table was wired into the build and recovered 61 of the 77 |
+| 77 programs unmatched | **16** | Same |
+| 1,588 programs feed more than one occupation | **1,521** | The feed row id and CIP padding fixes changed which SOC codes resolve |
+| 518 programs train for shrinking occupations | **538** | Same |
+| 219, the first-occupation-only count | **229** | Same |
+| Q2 employment rate reported by 1,766 programs | **1,760** | Same |
+| Median earnings reported by 1,432 programs | **1,384** | Same |
+| Completion rate 2,047; any outcome 2,057; cost 3,266 | **unchanged** | — |
+| 764 "occupations" became 670 | **still 670** | — |
+
+The 518 → 538 figure is the one that matters, because it is the product claim. It appears in
+`CHANGELOG.md` and in the warning comment in `app/[lang]/programs/[id]/page.tsx`, and both now
+say 538. The "still open" question about California's own ETPL is still open, and the federal
+file's 3,266 programs are still the spine.

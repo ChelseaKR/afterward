@@ -1,5 +1,29 @@
 # National education attainment: parsed, recommended, and not shipped
 
+> **Correction, 2026-08-05 (later).** The decision below stands and none of its measurements
+> changed. Its description of what the site was already doing is wrong. This note says
+> "Nothing renders it" and that the distribution is "deliberately not published anywhere on
+> the site"; both were false when written. `Attainment` in
+> `web/app/[lang]/programs/[id]/page.tsx` has rendered the seven-level distribution since
+> commit 99a1382, and it is live now. The scope, re-measured against the deployed snapshot:
+>
+> - 3,250 of the 3,266 program pages render at least one attainment block; all 5,514
+>   program-occupation rows carry a distribution.
+> - 1,695 of those rows (30.7%) sit on one of the shared 268, spread over 1,275 program pages.
+> - The decisive pair is on one page: Shasta College's Early Childhood Education Certificate
+>   feeds Preschool Teachers (25-2011) and Kindergarten Teachers (25-2012). Their
+>   distributions are byte-identical. The page prints "33% of the people doing it went less
+>   far" under Associate's for one and "45%" under Bachelor's for the other, adjacent, from
+>   the same seven numbers. This note argued that case hypothetically; it is shipping.
+> - `typical_experience` and `typical_on_the_job_training` are published too — they are the
+>   only source of the "Getting in" block, and EDD's equivalent `work_experience` and
+>   `job_training` are parsed and never rendered. The section below says they are "not
+>   either", which is wrong for the same reason.
+>
+> So "What was changed in the code" is accurate about what was changed and wrong about what
+> that left: it changed the docstrings and left the render in place. Carrying out the decision
+> is a behaviour change and was not part of this documentation pass.
+
 2026-08-05. `docs/enrichment-expansion-2026-08-04.md` left one thing undecided and named it
 "one judgement call that the pipeline has been waiting on". This is the call, made against.
 

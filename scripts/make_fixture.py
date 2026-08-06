@@ -195,7 +195,7 @@ def main() -> int:
 
     summary = fixture_coverage(programs, occupations, coverage)
     # Across every occupation a program feeds, not just its first — the same bug that once
-    # made the site's headline shrinking count 219 instead of 518.
+    # made the site's headline shrinking count 229 instead of 538.
     shrinking = sum(
         1
         for p in programs

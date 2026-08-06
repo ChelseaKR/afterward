@@ -5,9 +5,11 @@ a plain-language description of what an occupation actually involves, the concre
 work is made of, O*NET skill ratings, O*NET's own related-occupation list, and the alternate
 titles people actually use for the job.
 
-It also parses BLS's distribution of the education workers in an occupation *hold*, which is
-**not published on the site**: docs/education-attainment-not-shipped-2026-08-05.md is the
-record of why, and :class:`EducationProfile` carries the short version.
+It also parses BLS's distribution of the education workers in an occupation *hold*, which
+docs/education-attainment-not-shipped-2026-08-05.md decided should **not** be published and
+which the site publishes anyway, on 3,250 of the 3,266 program pages. That note said "nothing
+renders it" and was wrong about it; the decision was recorded and never carried out.
+:class:`EducationProfile` carries the short version.
 
 Three things shape this module.
 
@@ -207,10 +209,16 @@ class EducationProfile:
     Everything here is national. EDD supplies the California figures this project prefers,
     and EDD does not publish this distribution.
 
-    **``distribution`` is parsed but deliberately not published anywhere on the site**, and
-    ``typical_experience`` and ``typical_on_the_job_training`` are not either, because they
-    are the same assignment EDD already supplies as ``work_experience`` and ``job_training``
-    -- the two agree category for category on all 670 occupations, in plainer wording. The
+    **``distribution`` was decided against and is published anyway.** The decision is in
+    docs/education-attainment-not-shipped-2026-08-05.md; ``Attainment`` in
+    web/app/[lang]/programs/[id]/page.tsx renders it on 3,250 of the 3,266 program pages, and
+    1,695 of the 5,514 program-occupation rows there sit on one of the shared 268. That note
+    changed these docstrings and did not change the render. ``typical_experience`` and
+    ``typical_on_the_job_training`` are published too -- they are the sole source of the
+    "Getting in" block, while EDD's own ``work_experience`` and ``job_training`` are parsed
+    and never rendered, which is the reverse of what that note assumed. The two sets agree
+    category for category on all 670 occupations, so nothing is contradicted by publishing
+    BLS's plainer wording; it is simply not the case that neither is shipped. The
     reasoning against the distribution, and the measurements behind it, are in
     docs/education-attainment-not-shipped-2026-08-05.md; the short version is that 268 of 670
     occupations are served another group's figures with no way to tell from the response, and
@@ -534,9 +542,9 @@ def _aggregate_education(
     What the check cannot see is that the aggregate's own figures may in turn be measured
     over something broader still: 5 of the 10 aggregates reachable from a program page are
     served a distribution byte-identical to some unrelated occupation's. That is why the
-    result is not published -- this function is correct about the step it takes, and the
-    source is coarser than either end of it. See
-    docs/education-attainment-not-shipped-2026-08-05.md.
+    result should not be published -- this function is correct about the step it takes, and
+    the source is coarser than either end of it. It is published all the same: see the
+    correction at the top of docs/education-attainment-not-shipped-2026-08-05.md.
     """
     for member in _AGGREGATE_MEMBERS.get(soc_code, ()):
         payload = _fetch_payload(

@@ -7,6 +7,11 @@
 > pages, measured — and the HEAD-then-GET sequence described under "Manners" is now a single
 > GET, for the reasons Control 4 below already implies. The floor this document warned about
 > is lower than it was, and is still a floor.
+>
+> The Python package was renamed `camino` → `afterward` on 2026-08-05. Code blocks below still
+> import from `camino.sources.…` and will raise `ImportError` as written; substitute
+> `afterward.`. Every other 2026-08-04 note in this directory names `src/camino/` deliverables
+> for the same reason.
 
 Every program record from source D1 may carry a `program_url`, which the site renders as
 **"Provider's website →"**. That link is an assertion this project makes on a reader's

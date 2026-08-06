@@ -1495,10 +1495,10 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     occupations = program["occupations"]
     outcomes = program["outcomes"]
 
-    # A program can feed up to three occupations, and 1,588 of California's 3,266 feed more
+    # A program can feed up to three occupations, and 1,521 of California's 3,266 feed more
     # than one. Reading only the first understated the programs training for declining work
-    # by more than half (219 against 518), because the shrinking occupation is frequently
-    # not the one listed first. Summarise across all of them.
+    # by more than half (229 against 538 on the current snapshot), because the shrinking
+    # occupation is frequently not the one listed first. Summarise across all of them.
     changes = [o["percent_change"] for o in occupations if o.get("percent_change") is not None]
     wages = [
         o["median_annual_wage"] for o in occupations if o.get("median_annual_wage") is not None
