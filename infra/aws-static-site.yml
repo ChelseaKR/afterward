@@ -14,10 +14,29 @@ Parameters:
   SiteBucketName:
     Type: String
     Default: afterward.chelseakr.com
-  GitHubRepository:
+  # The repository half of the OIDC `sub` claim GitHub actually issues, which is NOT
+  # always `owner/name`. This repository was renamed from `camino` to `afterward`, and
+  # GitHub responds to a rename by pinning the subject to immutable numeric ids -- so a
+  # repository re-created under a freed-up name cannot inherit the old one's trust. The
+  # claim for this repository is therefore
+  # `repo:ChelseaKR@3114598/afterward@1323076177:environment:production`, and a policy
+  # written as `repo:ChelseaKR/afterward:...` can never match it.
+  #
+  # That mismatch is why the deploy workflow had never once succeeded: every run failed at
+  # `sts:AssumeRoleWithWebIdentity` with "Not authorized". Confirmed against
+  # `GET /repos/ChelseaKR/afterward/actions/oidc/customization/sub`, whose `sub_claim_prefix`
+  # is the id form here while `nearmiss` and `swelter` -- never renamed -- still report the
+  # plain `owner/name`.
+  #
+  # Pinned rather than derived, because the ids are what make it immutable: rename the
+  # repository again and this keeps working, which is the whole point of the format.
+  GitHubOidcSubjectRepository:
     Type: String
-    Default: ChelseaKR/afterward
-    AllowedPattern: ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$
+    Default: ChelseaKR@3114598/afterward@1323076177
+    Description: >-
+      Repository portion of the GitHub OIDC subject claim, as GitHub issues it. Read it from
+      the repository's OIDC customization endpoint rather than assuming owner/name.
+    AllowedPattern: ^[A-Za-z0-9_.@-]+/[A-Za-z0-9_.@-]+$
   PublishDns:
     Type: String
     Default: "false"
@@ -277,7 +296,7 @@ Resources:
               StringEquals:
                 "token.actions.githubusercontent.com:aud": sts.amazonaws.com
                 "token.actions.githubusercontent.com:sub": !Sub >-
-                  repo:${GitHubRepository}:environment:production
+                  repo:${GitHubOidcSubjectRepository}:environment:production
       Description: Deploy the reviewed Afterward static artifact from the production environment.
       Policies:
         - PolicyName: DeployAfterwardStaticSite
