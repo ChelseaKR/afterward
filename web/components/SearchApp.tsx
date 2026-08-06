@@ -791,6 +791,21 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
         with the search field still inside it hid the one control every visitor needs, which
         is a worse failure than the scrolling it was meant to fix.
       */}
+      {/*
+        * Search is client-side, so with JavaScript off the box below is an affordance that
+        * does nothing -- the form has no action and submitting it just reloads the page.
+        * Browsing needs no JavaScript at all: all 670 occupation pages and 581 provider
+        * pages ship as static links. Say which half works and point at it, rather than
+        * leave someone on a library machine or a locked-down phone poking an inert box.
+        */}
+      <noscript>
+        <p className="lede">
+          {t.noScriptSearch}{" "}
+          <Link href={`/${lang}/occupations/`}>{t.noScriptBrowseOccupations}</Link>
+          {" · "}
+          <Link href={`/${lang}/providers/`}>{t.noScriptBrowseProviders}</Link>
+        </p>
+      </noscript>
       <form
         className="query-form"
         role="search"
