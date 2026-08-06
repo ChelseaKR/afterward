@@ -2,9 +2,12 @@
 
 Source D6 in PROVENANCE.md. Adds what neither the ETP scorecard nor EDD's projections carry:
 a plain-language description of what an occupation actually involves, the concrete tasks the
-work is made of, O*NET skill ratings, O*NET's own related-occupation list, the alternate
-titles people actually use for the job, and BLS's measured distribution of the education
-workers in the occupation *hold*.
+work is made of, O*NET skill ratings, O*NET's own related-occupation list, and the alternate
+titles people actually use for the job.
+
+It also parses BLS's distribution of the education workers in an occupation *hold*, which is
+**not published on the site**: docs/education-attainment-not-shipped-2026-08-05.md is the
+record of why, and :class:`EducationProfile` carries the short version.
 
 Three things shape this module.
 
@@ -119,10 +122,19 @@ def onet_code(soc_code: str) -> str:
 def _soc_from_mat(value: Any) -> str | None:
     """Read BLS's 6-digit matrix occupation code back as ``XX-XXXX``.
 
-    ``MatOccCode`` is the occupation the education figures were actually measured for, which
-    is not always the occupation asked about. Anything that is not six digits returns None
-    rather than a guess, because this code's whole job is to let a caller check the figures
-    describe the population it is about to attach them to.
+    **This does not tell you which population the education figures describe**, and it was
+    once documented here as though it did. Measured over the 1,272 cached responses,
+    ``MatOccCode`` repeats the occupation that was asked about 658 times and differs 12
+    times, and those 12 are exactly the member lookups in :func:`_aggregate_education` --
+    21-1011 answering 21-1018, 31-1121 answering 31-1120. It discloses coarsening only when
+    the coarser group is itself a code EDD publishes. The far commoner coarsening it reports
+    nothing about: 268 of the 670 occupations receive a distribution byte-identical to
+    another occupation's, and every one of them names itself here. See
+    docs/education-attainment-not-shipped-2026-08-05.md.
+
+    So the value is worth recording -- it is the only signal that exists, and it is load
+    bearing for the aggregate lookup -- but it is not a provenance check, and anything that
+    is not six digits returns None rather than a guess.
     """
     digits = str(value).strip() if value is not None else ""
     return f"{digits[:2]}-{digits[2:]}" if len(digits) == 6 and digits.isdigit() else None
@@ -188,13 +200,26 @@ class EducationProfile:
     training decision in a way the credential category does not: "Apprenticeship" or "5 years
     or more" means the classroom certificate on offer is not by itself the route in.
 
-    ``reported_for_soc`` is the occupation BLS measured, taken from ``MatOccCode``. It is not
-    always the occupation that was asked about, and a caller attaching this to a page must
-    check it: these figures are published per BLS matrix occupation, so the detailed O*NET
-    occupations inside an aggregate all return the aggregate's single distribution.
+    ``reported_for_soc`` is ``MatOccCode`` read back as a SOC. It was added as the check that
+    would let a caller confirm the figures describe the page they are going on, and it does
+    not work for that -- see :func:`_soc_from_mat`. Do not treat it as provenance.
 
     Everything here is national. EDD supplies the California figures this project prefers,
     and EDD does not publish this distribution.
+
+    **``distribution`` is parsed but deliberately not published anywhere on the site**, and
+    ``typical_experience`` and ``typical_on_the_job_training`` are not either, because they
+    are the same assignment EDD already supplies as ``work_experience`` and ``job_training``
+    -- the two agree category for category on all 670 occupations, in plainer wording. The
+    reasoning against the distribution, and the measurements behind it, are in
+    docs/education-attainment-not-shipped-2026-08-05.md; the short version is that 268 of 670
+    occupations are served another group's figures with no way to tell from the response, and
+    that a share of incumbents cannot distinguish "the stated requirement is softer than it
+    looks" from "the requirement rose and these people predate it" -- opposite conclusions
+    about whether to buy the course. It stays parsed rather than deleted because
+    :func:`_aggregate_education` is the one place ``MatOccCode`` carries real information, and
+    because the next person to consider shipping it should find the analysis rather than an
+    empty space where the field used to be.
     """
 
     distribution: tuple[EducationLevelShare, ...]
@@ -294,11 +319,27 @@ def _parse_skills(detail: dict[str, Any]) -> tuple[Skill, ...]:
 
 
 def _parse_tasks(detail: dict[str, Any]) -> tuple[Task, ...]:
-    """The concrete work, most important first.
+    """The concrete work, most important first, each sentence said once.
 
-    The API returns tasks in no useful order -- 29-1141's first entry is rated below its
-    third -- so this ranks them. A page cannot show 41 of them, and showing the first eight
+    Two things the API's own list gets wrong for this purpose.
+
+    **The order is not a ranking** -- 29-1141's first entry is rated below its third -- so
+    this sorts by O*NET's rating. A page cannot show 41 tasks, and showing the first eight
     the API happened to list would be an arbitrary sample presented as a summary.
+
+    **The list repeats itself.** 3,389 of the 15,466 task rows in the cache (21.9%) restate
+    a row already present in the same occupation, identical down to the ``TaskId`` and the
+    rating -- all 3,389, with no case where two copies disagree. Kept, they spend the page's
+    eight slots on fewer than eight things: 473 of the 581 occupations with tasks (81.4%)
+    would print a sentence they had already printed, and Natural Sciences Managers would say
+    only three distinct things in eight slots. Registered Nurses would say "Monitor, record,
+    and report symptoms or changes in patients' condition" three times. That does not read as
+    a short list, it reads as a stutter, and it costs the reader the tasks it crowded out.
+    587 of the 592 cached occupations have at least eight *distinct* tasks, so dropping the
+    repeats fills the slots rather than emptying them.
+
+    Deduplication runs after the sort so the copy kept is the highest-rated one, which
+    matters only if the API ever starts rating two copies differently -- today it does not.
     """
     tasks = [
         Task(description=described, importance=_number(entry.get("DataValue")))
@@ -306,7 +347,10 @@ def _parse_tasks(detail: dict[str, Any]) -> tuple[Task, ...]:
         if (described := _text(entry.get("TaskDescription")))
     ]
     tasks.sort(key=lambda t: _rank(t.importance))
-    return tuple(tasks[:TOP_TASKS])
+    distinct: dict[str, Task] = {}
+    for task in tasks:
+        distinct.setdefault(task.description, task)
+    return tuple(list(distinct.values())[:TOP_TASKS])
 
 
 def _parse_alternate_titles(detail: dict[str, Any]) -> tuple[str, ...]:
@@ -486,6 +530,13 @@ def _aggregate_education(
     response is used. Its description, tasks and skills *are* the member's own, and putting
     Home Health Aides' tasks on a Home Health and Personal Care Aides page would be the
     substitution this function is careful not to make.
+
+    What the check cannot see is that the aggregate's own figures may in turn be measured
+    over something broader still: 5 of the 10 aggregates reachable from a program page are
+    served a distribution byte-identical to some unrelated occupation's. That is why the
+    result is not published -- this function is correct about the step it takes, and the
+    source is coarser than either end of it. See
+    docs/education-attainment-not-shipped-2026-08-05.md.
     """
     for member in _AGGREGATE_MEMBERS.get(soc_code, ()):
         payload = _fetch_payload(

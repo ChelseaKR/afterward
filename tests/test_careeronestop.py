@@ -47,9 +47,12 @@ PAYLOAD: dict[str, Any] = {
                 "29-1171.00": "Nurse Practitioners",
             },
             # The API returns tasks in no useful order: the first entry here is rated below
-            # the second, exactly as 29-1141 does live.
+            # the second, exactly as 29-1141 does live. It also repeats rows verbatim, TaskId
+            # and rating included -- 29-1141 sends "Monitor, record, and report symptoms"
+            # three times -- so the third entry here is a duplicate of the second.
             "Tasks": [
                 {"TaskDescription": "Consult with institutions.", "DataValue": "3.85"},
+                {"TaskDescription": "Monitor all aspects of patient care.", "DataValue": "4.44"},
                 {"TaskDescription": "Monitor all aspects of patient care.", "DataValue": "4.44"},
                 {"TaskDescription": "Order diagnostic tests.", "DataValue": "4.41"},
                 {"TaskDescription": "Unrated task.", "DataValue": ""},
@@ -184,6 +187,54 @@ class TestTasks:
         assert parsed is not None
         assert parsed.tasks == ()
 
+    def test_a_repeated_sentence_is_said_once(self) -> None:
+        # 21.9% of the cached task rows restate a row already in the same occupation. Kept,
+        # 473 of 581 occupations would print a sentence twice; Registered Nurses would print
+        # one of them three times.
+        described = [t.description for t in self._tasks()]
+        assert described.count("Monitor all aspects of patient care.") == 1
+
+    def test_deduplicating_frees_the_slot_rather_than_shortening_the_list(self) -> None:
+        # The repeats crowd out real tasks: the point of removing them is that the eighth
+        # slot goes to an eighth distinct thing, not that the list gets shorter.
+        payload = {
+            "OccupationDetail": [
+                {
+                    "Tasks": [
+                        {"TaskDescription": f"Task {n}", "DataValue": str(n)}
+                        for n in range(12)
+                        for _ in range(3)
+                    ]
+                }
+            ]
+        }
+        parsed = parse_occupation("29-1141", payload)
+        assert parsed is not None
+        assert len(parsed.tasks) == TOP_TASKS
+        assert len({t.description for t in parsed.tasks}) == TOP_TASKS
+
+    def test_the_copy_kept_is_the_highest_rated_one(self) -> None:
+        # Today every duplicate agrees with its twin on TaskId and rating -- all 3,389 of
+        # them. This pins the behaviour for the day one does not, so the surviving copy is
+        # the one the ranking would have chosen.
+        payload = {
+            "OccupationDetail": [
+                {
+                    "Tasks": [
+                        {"TaskDescription": "Same sentence.", "DataValue": "2.0"},
+                        {"TaskDescription": "Other.", "DataValue": "3.0"},
+                        {"TaskDescription": "Same sentence.", "DataValue": "4.0"},
+                    ]
+                }
+            ]
+        }
+        parsed = parse_occupation("29-1141", payload)
+        assert parsed is not None
+        assert [(t.description, t.importance) for t in parsed.tasks] == [
+            ("Same sentence.", 4.0),
+            ("Other.", 3.0),
+        ]
+
 
 class TestAlternateTitles:
     def _titles(self) -> tuple[str, ...]:
@@ -248,9 +299,11 @@ class TestEducationDistribution:
         assert self._education().typical_experience == "No work experience"
         assert self._education().typical_on_the_job_training == "No on-the-job training"
 
-    def test_records_the_occupation_the_figures_were_measured_for(self) -> None:
-        # BLS publishes attainment per matrix occupation, which is not always the occupation
-        # asked about. A consumer has to be able to check.
+    def test_records_the_matrix_occupation_the_api_named(self) -> None:
+        # Recorded, not trusted. Across the 1,272 cached responses MatOccCode repeats the
+        # requested SOC 658 times and differs 12, and those 12 are the aggregate lookups --
+        # while 268 of the 670 occupations are served another group's distribution and every
+        # one of them names itself here. It is the aggregate lookup's key, not provenance.
         assert self._education().reported_for_soc == "29-1141"
         assert self._education().reported_for_title == "Registered Nurses"
 
