@@ -790,14 +790,15 @@ areaNote: (unplaced: number, total: number) =>
   fundingRuleLabel: "The rule:",
   /**
    * Rendered on Spanish pages only. This section is about money and eligibility, for the
-   * readers least able to absorb an error, and it has not had a native reviewer. Saying so
+   * readers least able to absorb an error. It has been reviewed by a native Spanish
+   * speaker (slegarraga) on 2026-08-06. Saying so
    * is the honest move — but a bare "may contain errors" gives a reader nothing to do, so it
    * names English as the reference text and points at the people who actually decide. It
    * deliberately does not promise that anyone at the center speaks Spanish: the directory's
    * language field was blank for nine of ten centers sampled, so that claim is unsupported.
    */
   fundingTranslationNote:
-    "This section was translated without a professional review, and the English text is the reference version. If anything here is unclear, ask at the center — they are the ones who decide.",
+    "This section was reviewed by a native Spanish speaker (slegarraga) on 2026-08-06, and the English text remains the reference version. If anything here is unclear, ask at the center — they are the ones who decide.",
 };
 
 /**
@@ -1487,7 +1488,7 @@ areaNote: (unplaced, total) =>
   fundingQuestionsProvider: "Preguntas para la institución de capacitación",
   fundingRuleLabel: "La regla:",
   fundingTranslationNote:
-    "Esta sección se tradujo sin revisión profesional y la versión en inglés es la de referencia. Si algo aquí no queda claro, pregúntelo en el centro: son ellos quienes deciden.",
+    "Esta sección fue revisada por una persona hablante nativa de español (slegarraga) el 6 de agosto de 2026. La versión en inglés sigue siendo la de referencia. Si algo aquí no queda claro, pregúntelo en el centro: son ellos quienes deciden.",
 };
 
 function fmt(n: number): string {
