@@ -12,16 +12,20 @@ import pytest
 
 from afterward.build import (
     MATCH_EXACT,
+    PEER_MEASURES,
     RELATED_SOURCE_ONET,
     RELATED_SOURCE_SOC_SIBLINGS,
+    SITE_COVERAGE_KEYS,
     EnrichmentCoverage,
     LinkCheckRun,
     _attach_local_help,
     aggregate_match_coverage,
     area_coverage,
     build_offline,
+    check_coverage_shape,
     check_provider_links,
     cohort_integrity_coverage,
+    coverage_shape_problems,
     detailed_soc_codes,
     enrichment_coverage,
     fetch_enrichment,
@@ -879,6 +883,74 @@ class TestPeerMedians:
     def test_nothing_is_excluded_when_every_cohort_is_this_programs_own(self) -> None:
         result = peer_medians(self._payloads(0.5, None))
         assert result["median_earnings"]["excluded_not_attributable"] == 0
+
+
+class TestCoverageShape:
+    """A key missing from coverage.json deletes a comparison without deleting anything visible.
+
+    That already happened once: a snapshot built before `state_benchmark` existed removed every
+    statewide comparison from all 2,057 outcome pages, and the only symptom was three fewer
+    lines. These tests are the guard that turns it into a failed build.
+    """
+
+    def _document(self, **overrides: object) -> dict:
+        document = {key: 1 for key in SITE_COVERAGE_KEYS}
+        document["snapshot_date"] = "2026-08-04"
+        document["state_benchmark"] = {"state": "CA"}
+        document["peer_medians"] = {
+            measure: {"median": 0.5, "reporting": 3} for measure in PEER_MEASURES
+        }
+        return document | overrides
+
+    def test_a_complete_document_passes(self) -> None:
+        assert coverage_shape_problems(self._document()) == []
+        check_coverage_shape(self._document())
+
+    def test_an_absent_key_is_reported(self) -> None:
+        document = self._document()
+        del document["peer_medians"]
+        assert coverage_shape_problems(document) == ["peer_medians: absent"]
+
+    def test_a_null_where_the_site_expects_a_number_is_reported(self) -> None:
+        # Not "we counted nothing" — a build that failed to count, rendered as a blank.
+        assert coverage_shape_problems(self._document(total_programs=None)) == [
+            "total_programs: null"
+        ]
+
+    def test_a_null_state_benchmark_is_allowed(self) -> None:
+        """DOL publishing no statewide row is a finding, and the site types it nullable."""
+        assert coverage_shape_problems(self._document(state_benchmark=None)) == []
+
+    def test_a_peer_median_missing_one_measure_is_reported(self) -> None:
+        # The measure with no median silently loses its comparison and keeps the other two,
+        # which is the hardest version of this to notice.
+        document = self._document(peer_medians={"completion_rate": {"median": 0.5, "reporting": 3}})
+        assert coverage_shape_problems(document) == [
+            "peer_medians.employment_rate_q2: absent",
+            "peer_medians.median_earnings: absent",
+        ]
+
+    def test_every_shortfall_is_listed_not_just_the_first(self) -> None:
+        document = self._document()
+        del document["distinct_providers"]
+        del document["outcome_coverage_pct"]
+        assert coverage_shape_problems(document) == [
+            "distinct_providers: absent",
+            "outcome_coverage_pct: absent",
+        ]
+
+    def test_the_build_refuses_rather_than_filling_in_a_default(self) -> None:
+        """A default invented here would publish a number the build did not compute."""
+        document = self._document()
+        del document["state_benchmark"]
+        with pytest.raises(ValueError, match="state_benchmark: absent"):
+            check_coverage_shape(document)
+
+    def test_an_offline_build_emits_a_document_the_site_can_read(self, tmp_path: Path) -> None:
+        """The fixture path copies its coverage block through, so it is checked end to end."""
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        emitted = json.loads((tmp_path / "coverage.json").read_text(encoding="utf-8"))
+        assert coverage_shape_problems(emitted) == []
 
 
 class TestCohortLabellingOnProgramRecords:

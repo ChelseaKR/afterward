@@ -13,6 +13,8 @@ from afterward.sources.dol_etp import (
     OVERSIZED_COHORT_SERVED,
     CohortFiling,
     Program,
+    clean_cip_code,
+    clean_description,
     clean_earnings,
     clean_measure,
     clean_rate,
@@ -204,6 +206,106 @@ class TestCleanUrl:
     def test_drops_empty_and_null(self) -> None:
         assert clean_url(None) is None
         assert clean_url("   ") is None
+
+
+class TestCleanDescription:
+    """The feed prefixes its own row id to 3,223 of California's 3,266 descriptions."""
+
+    def test_strips_the_row_id_prefix(self) -> None:
+        assert clean_description("6091|Covers understanding user needs.") == (
+            "Covers understanding user needs."
+        )
+
+    def test_leaves_an_untagged_description_alone(self) -> None:
+        # 43 of 3,266 arrive without the artifact and must come through unchanged.
+        assert clean_description("A program that focuses on advanced manufacturing.") == (
+            "A program that focuses on advanced manufacturing."
+        )
+
+    def test_strips_only_the_leading_id(self) -> None:
+        # A pipe later in the prose is somebody's punctuation, not a second artifact.
+        assert clean_description("6091|Track A|Track B") == "Track A|Track B"
+
+    def test_does_not_eat_a_number_that_is_part_of_the_sentence(self) -> None:
+        assert clean_description("120 hours of instruction.") == "120 hours of instruction."
+
+    def test_a_description_that_is_only_an_id_is_not_reported(self) -> None:
+        # Stripping to nothing means the field held no description, not an empty one.
+        assert clean_description("6091|") is None
+
+    def test_empty_and_null_stay_none(self) -> None:
+        assert clean_description(None) is None
+        assert clean_description("   ") is None
+
+    def test_the_artifact_never_reaches_a_parsed_program(self) -> None:
+        program = parse_program(
+            {"_source": {"field_uuid": "u", "field_program_description": "6091|Covers needs."}}
+        )
+        assert program.description == "Covers needs."
+
+    def test_other_text_fields_are_not_put_through_it(self) -> None:
+        """No name field carries the artifact (0 of 3,266 each), so none is stripped.
+
+        A provider legitimately named with a leading number would otherwise lose it.
+        """
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_etp": "160|Driving Academy",
+                    "field_program_name": "101|Intro to Welding",
+                }
+            }
+        )
+        assert program.provider_name == "160|Driving Academy"
+        assert program.program_name == "101|Intro to Welding"
+
+
+class TestCleanCipCode:
+    """308 of 3,266 CIP codes have been through a float and lost their zero padding."""
+
+    def test_restores_a_lost_leading_zero(self) -> None:
+        # There is no CIP series 1, so this can only be 01.0505 (Animal Training).
+        assert clean_cip_code("1.0505") == "01.0505"
+
+    def test_restores_a_lost_trailing_zero(self) -> None:
+        # A CIP detail is two or four digits, never three: 51.0710 is Medical Office
+        # Assistant/Specialist.
+        assert clean_cip_code("51.071") == "51.0710"
+
+    def test_restores_both_at_once(self) -> None:
+        assert clean_cip_code("9.096") == "09.0960"
+
+    def test_a_well_formed_code_is_untouched(self) -> None:
+        assert clean_cip_code("51.0710") == "51.0710"
+
+    def test_a_bare_series_is_left_as_filed(self) -> None:
+        """Padding 46 to 46.0000 swaps a series for one member of it. 45 programs file one."""
+        assert clean_cip_code("46") == "46"
+
+    def test_a_four_digit_family_is_left_as_filed(self) -> None:
+        """12.05 is a width CIP publishes, and 12.0500 is a different, narrower claim."""
+        assert clean_cip_code("12.05") == "12.05"
+
+    def test_a_one_digit_series_on_a_family_gains_only_its_zero(self) -> None:
+        # 09.09 is the family; padding on to 09.0900 would pick a member of it.
+        assert clean_cip_code("9.09") == "09.09"
+
+    def test_a_one_digit_detail_is_left_alone(self) -> None:
+        # 51.7 lost trailing zeros to 51.70 and to 51.7000 equally. Neither is chosen here.
+        assert clean_cip_code("51.7") == "51.7"
+
+    def test_anything_that_is_not_a_cip_number_passes_through_unchanged(self) -> None:
+        assert clean_cip_code("51.0710.1") == "51.0710.1"
+        assert clean_cip_code("Welding") == "Welding"
+
+    def test_empty_and_null_stay_none(self) -> None:
+        assert clean_cip_code(None) is None
+        assert clean_cip_code("  ") is None
+
+    def test_a_parsed_program_carries_the_padded_code(self) -> None:
+        program = parse_program({"_source": {"field_uuid": "u", "field_cip_code": "1.0505"}})
+        assert program.cip_code == "01.0505"
 
 
 class TestCleanRate:
