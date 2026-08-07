@@ -1,5 +1,10 @@
 # O\*NET Web Services — assessment, 2026-08-04
 
+> **Archival note.** The Python package was renamed `camino` -> `afterward` on
+> 2026-08-05. Paths and imports below still say `src/camino/` and `camino.sources.…`
+> because this note records what was true on the date in its title; substitute
+> `src/afterward/` and `afterward.` when running anything from it.
+
 Read-only assessment of source **D5, O\*NET Web Services (USDOL/ETA)**, which PROVENANCE.md
 lists as supplying "tasks, technology skills, work activities, job zones, related occupations"
 but which no code has ever read.

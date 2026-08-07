@@ -1,5 +1,10 @@
 # OEWS wage distributions — assessment, 2026-08-04
 
+> **Archival note.** The Python package was renamed `camino` -> `afterward` on
+> 2026-08-05. Paths and imports below still say `src/camino/` and `camino.sources.…`
+> because this note records what was true on the date in its title; substitute
+> `src/afterward/` and `afterward.` when running anything from it.
+
 Read-only assessment of source **D3, CA EDD Occupational Employment and Wage Statistics
 (OEWS)**, which PROVENANCE.md has listed since the first commit as "wage detail (percentiles)
 where projections lack it" but which no code has ever read.

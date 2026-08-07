@@ -1,5 +1,10 @@
 # The next step — 2026-08-04
 
+> **Archival note.** The Python package was renamed `camino` -> `afterward` on
+> 2026-08-05. Paths and imports below still say `src/camino/` and `camino.sources.…`
+> because this note records what was true on the date in its title; substitute
+> `src/afterward/` and `afterward.` when running anything from it.
+
 The site tells a Californian that a program exists, what it costs, and what happened to the
 people who took it. Then it stops. The only onward link is **"Provider's website →"**, and
 for 334 program pages that link is dead

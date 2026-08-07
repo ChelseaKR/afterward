@@ -257,7 +257,7 @@ export function occupationFigures(program: Program): OccupationFigures[] {
  * The pipeline writes a record per program under `public/data/programs/`, the static export
  * copies the directory verbatim, and the deploy uploads it — those URLs already answer 200.
  * The search index deliberately carries only what a card or a filter needs ("Everything else
- * is fetched per-program on demand", `search_entry` in src/camino/build.py), and per-job
+ * is fetched per-program on demand", `search_entry` in src/afterward/build.py), and per-job
  * figures are exactly that: about 4 KB per program, wanted for at most four programs, and
  * only once someone opens the comparison.
  *

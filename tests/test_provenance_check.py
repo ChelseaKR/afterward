@@ -37,7 +37,7 @@ class TestPatterns:
     def test_does_not_match_ordinary_text(self) -> None:
         for text in (
             "California training programs",
-            "the project name is camino",
+            "the project name is afterward",
             "adjacency scoring for occupations",
             "New Mexico and New York are unrelated",
             "injects a dependency",

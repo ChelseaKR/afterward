@@ -1,5 +1,10 @@
 # Data quality audit — 2026-08-04
 
+> **Archival note.** The Python package was renamed `camino` -> `afterward` on
+> 2026-08-05. Paths and imports below still say `src/camino/` and `camino.sources.…`
+> because this note records what was true on the date in its title; substitute
+> `src/afterward/` and `afterward.` when running anything from it.
+
 Read-only audit of the full California snapshot in `data/processed/` (3,266 programs, 764
 occupation rows, 3,266 search-index rows, snapshot date 2026-08-04), read against the
 pipeline in `src/camino/` and the rendering code in `web/`.

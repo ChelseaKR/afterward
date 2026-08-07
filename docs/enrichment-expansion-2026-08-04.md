@@ -1,5 +1,10 @@
 # Widening the CareerOneStop request — 2026-08-04
 
+> **Archival note.** The Python package was renamed `camino` -> `afterward` on
+> 2026-08-05. Paths and imports below still say `src/camino/` and `camino.sources.…`
+> because this note records what was true on the date in its title; substitute
+> `src/afterward/` and `afterward.` when running anything from it.
+
 `src/camino/sources/careeronestop.py` asked source D6 for two things: `relatedOnetTitles`
 and `skills`. The endpoint returns considerably more. This is the record of what was taken,
 what was refused, what it measures out at across all 670 California occupations, and one

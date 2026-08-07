@@ -219,7 +219,7 @@ dataset-verify:
 dataset-package: dataset-verify
 	@mkdir -p $(DIST_DIR)
 	@snapshot=$$(uv run python -c 'import json;print(json.load(open("$(DATASET_DIR)/coverage.json"))["snapshot_date"])'); \
-	tarball=camino-dataset-$$snapshot.tar.gz; \
+	tarball=afterward-dataset-$$snapshot.tar.gz; \
 	COPYFILE_DISABLE=1 tar -czf $(DIST_DIR)/$$tarball -C $(DATASET_DIR) .; \
 	( cd $(DIST_DIR) && if command -v sha256sum >/dev/null 2>&1; then \
 		sha256sum $$tarball > $$tarball.sha256; else shasum -a 256 $$tarball > $$tarball.sha256; fi ); \
@@ -229,7 +229,7 @@ dataset-package: dataset-verify
 # date, so every deploy names exactly which dataset it published.
 dataset-publish: dataset-package
 	@set -- $$(uv run python -c 'import json;d=json.load(open("$(DATASET_DIR)/coverage.json"));print(d["snapshot_date"], d["total_programs"])'); \
-	tarball=camino-dataset-$$1.tar.gz; \
+	tarball=afterward-dataset-$$1.tar.gz; \
 	gh release create dataset-$$1 $(DIST_DIR)/$$tarball $(DIST_DIR)/$$tarball.sha256 \
 		--title "Dataset $$1" \
 		--notes "Site dataset built from the live sources on $$1: $$2 programs."; \
