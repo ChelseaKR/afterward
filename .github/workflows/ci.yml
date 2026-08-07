@@ -61,6 +61,13 @@ jobs:
           make install
           make web-install
 
+      - name: Install Playwright's browser
+        # `npm ci` installs the playwright package, not the browser binary it drives.
+        # `a11y:rendered` (and `a11y:browser`) need Chromium actually present, which is
+        # this runner's job to fetch -- it is not restored by the npm cache above.
+        run: npx playwright install --with-deps chromium
+        working-directory: web
+
       - name: Build dataset from fixture
         run: make data-offline
 
