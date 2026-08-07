@@ -520,7 +520,7 @@ areaNote: (unplaced: number, total: number) =>
   aboutLimitsBody:
     "These are the things this site gets wrong or cannot yet do. They are listed here rather than discovered later.",
   aboutLimitTranslation:
-    "Occupation titles and program descriptions appear in English on Spanish pages. The interface and the controlled vocabularies are translated; the open-ended text from the federal and state feeds is not, because it is published in English only.",
+    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing on this site is machine-translated.",
   aboutLimitEtpl:
     "The programs here are the ones California filed federally. Whether the state's own eligible training provider list carries programs the federal file omits is unresolved, because California publishes no bulk export of it. A program missing from this site is not necessarily a program that does not exist.",
   aboutLimitUnmatched: (unmatched: string) =>
@@ -1245,7 +1245,7 @@ areaNote: (unplaced, total) =>
   aboutLimitsBody:
     "Esto es lo que este sitio hace mal o todavía no puede hacer. Se enumera aquí en vez de dejar que se descubra después.",
   aboutLimitTranslation:
-    "Los nombres de las ocupaciones y las descripciones de los programas aparecen en inglés en las páginas en español. La interfaz y los vocabularios controlados sí están traducidos; el texto libre que viene de las fuentes federales y estatales no, porque solo se publica en inglés.",
+    "Los nombres de los programas, las descripciones y los nombres de los proveedores aparecen en inglés en las páginas en español, porque las fuentes federales y estatales publican ese texto solo en inglés. Los títulos de las ocupaciones son distintos: el Departamento publica un nombre en español para 600 de las 670 ocupaciones de California, y la página en español lo usa; las otras 70 mantienen el título en inglés. Nada en este sitio está traducido automáticamente.",
   aboutLimitEtpl:
     "Los programas que aparecen aquí son los que California presentó al gobierno federal. Queda sin resolver si la lista estatal de instituciones elegibles incluye programas que el archivo federal omite, porque California no publica una descarga masiva de esa lista. Un programa ausente de este sitio no es necesariamente un programa que no existe.",
   aboutLimitUnmatched: (unmatched: string) =>

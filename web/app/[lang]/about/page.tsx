@@ -91,12 +91,13 @@ function tally(value: number, lang: Lang): string {
  * neither. Deriving them at build time rather than typing them into the copy means the two
  * cannot drift apart, and means a quarterly refresh corrects this page for free.
  *
- * **`withoutUrl` and the sentence it fills have drifted apart anyway.** It counts programs
- * that filed no address (1,430). The copy says "no working website link", and 1,612 programs
- * render no clickable link: the extra 182 filed an address that the link check found dead and
- * for which no provider home page could be substituted. The counter predates that check
- * (commit c5d19d2). Reconciling them means choosing which sentence to tell, so it is a copy
- * decision in two languages rather than a comment fix, and it has not been made.
+ * `withoutUrl` counts what the page actually renders — no clickable link — rather than what
+ * the feed supplied. Those differ by 182: programs that filed an address the link check found
+ * dead, and for which no provider home page could be substituted, render exactly like a
+ * program that never filed one. Counting the feed's `program_url` alone (the counter's
+ * original definition, predating the link check in commit c5d19d2) undercounted the copy's own
+ * claim — "no working website link" — by that many, and would silently undercount it again the
+ * next time link handling changes, since it does not read the same field the page renders.
  *
  * The cost is ~3,300 file reads. Memoised at module scope so the English and Spanish pages
  * share one pass, and negligible beside an export that already renders roughly nine thousand
@@ -107,7 +108,7 @@ interface CorpusFacts {
   aggregateMatched: number;
   /** Programs whose city is not one of the areas EDD names, so no regional figure is shown. */
   withoutArea: number;
-  /** Programs that filed no usable website address. */
+  /** Programs whose page renders no clickable provider link, filed or not, dead or not. */
   withoutUrl: number;
 }
 
@@ -127,7 +128,13 @@ function corpusFacts(): CorpusFacts {
       aggregateMatched += 1;
     }
     if (program.region === null) withoutArea += 1;
-    if (program.program_url === null) withoutUrl += 1;
+    // Mirrors the fallback in the program page: a missing `provider_link` block falls back to
+    // `program_url` and renders a link whenever one was filed, so only a block that is present
+    // and dead — or the absence of both — renders no link.
+    const renders = program.provider_link
+      ? program.provider_link.linked && program.provider_link.href !== null
+      : program.program_url !== null;
+    if (!renders) withoutUrl += 1;
   }
 
   cachedFacts = { aggregateMatched, withoutArea, withoutUrl };
