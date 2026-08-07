@@ -622,42 +622,6 @@ areaNote: (unplaced: number, total: number) =>
 
   // ---- What people in this job actually studied ----
   //
-  // The single "Usually needs" category is the federal judgement of what a person typically
-  // needs to enter. It is not what people have: on 60 California occupations it names a
-  // credential most people doing the job do not hold, and on 135 program pages it is withheld
-  // outright because it was assigned to a whole group of occupations. The distribution is the
-  // second fact, and it is published as a second fact — never in the row the category vacated.
-  attainmentHeading: "What people in this job actually studied",
-  // The seven Census attainment levels, shortened for a list a reader scans rather than
-  // reads. Deliberately not borrowed from the education vocabulary the "Usually needs" row
-  // uses: these are a different scale answering a different question, and wording them
-  // identically would invite exactly the subtraction the note underneath rules out. One of
-  // the seven — "Less than high school diploma" — has no entry in that vocabulary at all.
-  eduLevelNoHs: "No high school diploma",
-  eduLevelHs: "High school diploma",
-  eduLevelSomeCollege: "Started college, no degree",
-  eduLevelAssociate: "Two-year degree",
-  eduLevelBachelor: "Four-year degree",
-  eduLevelMaster: "Master's degree",
-  eduLevelDoctorate: "Doctorate or professional degree",
-  attainmentTop: (level: string, share: string) =>
-    `Most common: ${level} — ${share} of the people doing this work.`,
-  attainmentBelow: (level: string, share: string) =>
-    `California says this job usually needs: ${level}. ${share} of the people doing it went less far than that.`,
-  // 1,274 of the program-to-occupation attachments here state "Postsecondary non-degree
-  // award", which is not a step on the attainment scale at all. Counting who "meets" it is
-  // not possible, and a number invented for the sentence would look exactly like a real one.
-  attainmentNoCompare: (level: string) =>
-    `California says this job usually needs: ${level}. That is not one of the steps below, so there is no way to count how many people meet it.`,
-  attainmentNational:
-    "This counts people already doing this job, across the whole United States. Every other figure on this page is California's, and the federal government publishes no state version of this one.",
-  attainmentNotRule:
-    "It is what people happen to have, not a rule about who gets hired. A small row does not mean you would be turned away, and a large one is not a promise of a job.",
-  attainmentScale:
-    "It is also measured on a different scale from “Usually needs” above, so the two cannot be subtracted from one another.",
-  attainmentMeasuredFor: (title: string) =>
-    `Measured for ${title}, the wider group this job is counted inside.`,
-
   /* ---- Someone else may be able to pay for this ------------------------------------------
    *
    * Every program on this site was on California's Eligible Training Provider List when the
@@ -1326,30 +1290,6 @@ areaNote: (unplaced, total) =>
     "No se pide experiencia previa y a quienes entran no los someten a una capacitación larga. Para un trabajo así, un programa suele ser la puerta de entrada.",
   entrySource:
     "Son las respuestas del gobierno federal sobre la ocupación, no reglas que ponga esta institución. California publica las mismas dos respuestas para cada uno de estos trabajos.",
-
-  // ---- Qué estudiaron en realidad las personas que tienen este trabajo ----
-  attainmentHeading: "Qué estudió en realidad la gente que tiene este trabajo",
-  eduLevelNoHs: "Sin diploma de preparatoria",
-  eduLevelHs: "Diploma de preparatoria",
-  eduLevelSomeCollege: "Empezó la universidad, sin título",
-  eduLevelAssociate: "Título de dos años",
-  eduLevelBachelor: "Título de cuatro años",
-  eduLevelMaster: "Maestría",
-  eduLevelDoctorate: "Doctorado o título profesional",
-  attainmentTop: (level: string, share: string) =>
-    `Lo más común: ${level} — el ${share} de quienes hacen este trabajo.`,
-  attainmentBelow: (level: string, share: string) =>
-    `California dice que este trabajo suele requerir: ${level}. El ${share} de quienes lo hacen llegó menos lejos que eso.`,
-  attainmentNoCompare: (level: string) =>
-    `California dice que este trabajo suele requerir: ${level}. Eso no es uno de los niveles de abajo, así que no hay manera de contar cuánta gente lo cumple.`,
-  attainmentNational:
-    "Aquí se cuenta a personas que ya tienen este trabajo, en todo Estados Unidos. Todas las demás cifras de esta página son de California, y el gobierno federal no publica una versión estatal de esta.",
-  attainmentNotRule:
-    "Es lo que la gente tiene, no una regla sobre a quién contratan. Una fila pequeña no significa que a usted lo rechazarían, y una grande no es promesa de empleo.",
-  attainmentScale:
-    "Además se mide en una escala distinta de la de «Suele requerir» arriba, así que no se pueden restar una de otra.",
-  attainmentMeasuredFor: (title: string) =>
-    `Medido para ${title}, el grupo más amplio dentro del cual se cuenta este trabajo.`,
 
   /* ---- Puede que alguien más pague este programa ------------------------------------------
    *

@@ -187,22 +187,14 @@ All notable changes to this project are documented here. The format follows
 
 ### Known limitations
 
-- The national education-attainment distribution is published on 3,250 of the 3,266 program
-  pages **against a written decision not to publish it**
-  (`docs/education-attainment-not-shipped-2026-08-05.md`). 1,695 of the 5,514
-  program-occupation rows sit on a distribution measured for a broader group than the
-  occupation named, and nothing on the page says so. Withdrawing the block is a behaviour
-  change and has not been made.
-- Program descriptions render in English on Spanish pages, and so do the occupation titles
+- Program descriptions and program and provider names render in English on Spanish pages —
+  the feed publishes no Spanish counterpart for any of them — and so do the occupation titles
   for the 70 of 670 occupations Mi Próximo Paso does not carry. The controlled vocabularies
   (education, experience, training type) are translated, and the other 600 occupations use
   the Department of Labor's own Spanish title and description. Nothing is machine-translated.
-  The About page's "known limitations" copy still says all occupation titles are English and
-  contradicts its own sources section forty lines above; correcting user-facing Spanish is
-  not a documentation change and is left to the i18n workstream.
 - Whether California's own ETPL lists programs the federal file omits is unresolved; the
   state publishes no bulk export.
-- 1,430 programs filed no usable website link. Most never filed one; eight filed something
-  that was not a URL, and those are now dropped rather than rendered. 1,612 render no
-  clickable link once the dead ones are excluded, and the About page still reports 1,430
-  under the sentence "no working website link".
+- The national education-attainment distribution (`OccupationEducation.distribution`) stays
+  in the dataset, parsed and typed, but nothing renders it as of #20
+  (`docs/education-attainment-not-shipped-2026-08-05.md`): 268 of the 670 occupations carry a
+  distribution byte-identical to another's, with no field that flags which.

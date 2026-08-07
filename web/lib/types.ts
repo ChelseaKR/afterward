@@ -196,11 +196,13 @@ export interface EducationLevelShare {
  * whose "Postsecondary non-degree award" has no counterpart on this scale at all. Subtracting
  * one from the other is only meaningful where the stated category maps onto a level here.
  *
- * **`distribution` was decided against on 2026-08-05 and is still on the site.**
- * `docs/education-attainment-not-shipped-2026-08-05.md` is the record of why it should not be
- * published; `Attainment` in `app/[lang]/programs/[id]/page.tsx` publishes it anyway, on
- * 3,250 of the 3,266 program pages. The decision was written down and never carried out, so
- * this field is live while being documented as withdrawn. Do not build anything new on it.
+ * **`distribution` is withdrawn from the program page as of 2026-08-07 (#20) and stays in the
+ * dataset unrendered.** `docs/education-attainment-not-shipped-2026-08-05.md` is the record of
+ * why: 268 of the 670 occupations (40.0%) carry a distribution byte-identical to another
+ * occupation's, with no field that flags which. The field remains here because the underlying
+ * measurement is real and a future render could be built with the caveat the withdrawn one
+ * lacked; do not build one without also solving that problem, and do not build anything new on
+ * `reported_for_soc` regardless — see below.
  *
  * `typical_experience` and `typical_on_the_job_training` are **requirement claims**, and they
  * are the same federal assignment that reaches this dataset a second time as

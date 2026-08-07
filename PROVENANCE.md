@@ -34,7 +34,7 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Statewide annual wage percentiles (10th, 25th, 50th, 75th, 90th) shown as the pay range on occupation pages, 2026 vintage. Fetched separately from a build, not on every one: the published extract is the whole 2009–2026 panel (~112 MB, 580,790 records) because EDD publishes no per-year resource. |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
 | D5 | O\*NET Web Services (USDOL/ETA), including Mi Próximo Paso | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered with O\*NET under the project name "Camino", which is what this site was called until 2026-08-05; the registration is unchanged. Key is per-user and never committed. | Spanish occupation titles and descriptions from Mi Próximo Paso, on the 600 of California's 670 occupations it covers. Nothing is translated by this project: an occupation Mi Próximo Paso does not carry keeps its English name. |
-| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook. Also national education attainment distribution and typical experience / on-the-job training — **published against a decision not to publish them**; see the note below |
+| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook, and typical experience / on-the-job training. Also carries the national education attainment distribution, which is parsed and typed but **not rendered anywhere on the site**; see the note below |
 | D7 | Credential Engine — CTDL schema, JSON-LD context and term definitions (credreg.net) | `https://credreg.net/ctdl/schema/context/json`, `https://credreg.net/ctdl/terms/<Term>/json` | 2026-08-06 | Credential Engine publishes CTDL openly for exactly this use. Schema definitions only; **no registry data is read, and nothing is published to any registry.** | The vocabulary for the demonstration CTDL export (`make ctdl-export`): the context is vendored at `src/afterward/ctdl/ctdl-context.json` with retrieval provenance beside it, and every emitted class and property was checked against the fetched term definitions |
 
 ### Notes on D5 — what is and is not taken from it
@@ -100,11 +100,13 @@ deployed snapshot: the seven-level distribution renders on 3,250 of the 3,266 pr
 in" block — EDD's equivalent `work_experience` and `job_training` are parsed and never
 rendered. So the row above lists them as used, because they are.
 
-Two claims in that note are wrong about the site as it stands and are corrected in a dated
+Two claims in that note were wrong about the site as it stood and are corrected in a dated
 postscript inside it: "Nothing renders it", and that the distribution is "deliberately not
-published anywhere on the site". Its argument against publishing is unaffected; only its
-description of what was already shipped was wrong. Withdrawing the block is a behaviour
-change and has not been made.
+published anywhere on the site". Its argument against publishing was unaffected; only its
+description of what was already shipped was wrong. **Withdrawing the block is now done (#20,
+2026-08-07)** — a second postscript in the same file records it. `distribution` stays in the
+dataset and in `web/lib/types.ts`, typed and unrendered, because the underlying BLS
+measurement is real and the field EDD publishes no version of; nothing on the site renders it.
 
 ### Notes on D1
 
