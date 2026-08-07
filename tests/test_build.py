@@ -18,6 +18,7 @@ from afterward.build import (
     SITE_COVERAGE_KEYS,
     EnrichmentCoverage,
     LinkCheckRun,
+    SpanishCoverage,
     _attach_local_help,
     aggregate_match_coverage,
     area_coverage,
@@ -45,6 +46,7 @@ from afterward.build import (
     provider_link_coverage,
     provider_link_pages,
     search_entry,
+    spanish_coverage,
     unmapped_cities,
 )
 from afterward.sources import link_check
@@ -63,6 +65,8 @@ from afterward.sources.link_check import (
     checks_document,
 )
 from afterward.sources.local_help import COMPREHENSIVE, WHO_DECIDES, AmericanJobCenter
+from afterward.sources.onet import API_KEY_ENV as ONET_API_KEY_ENV
+from afterward.sources.onet import SpanishOccupation
 
 FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "data"
 
@@ -550,6 +554,52 @@ class TestEnrichmentCoverage:
         assert report.related_from_onet == 0
         assert report.related_from_soc_siblings == 3
         assert report.without_related == 1
+
+
+class TestSpanishCoverage:
+    """A separate credential from CareerOneStop's, so its own coverage and its own tests.
+
+    ``onet_configured`` is what makes a build ``make data`` ran with no ``ONET_API_KEY``
+    (a complete, publishable build carrying no Spanish titles) distinguishable from one that
+    had a key and still came back empty (a build that should not be published as-is) -- the
+    silent version of this gap is what let a stale key reach `make dataset-publish` with
+    nothing telling the operator why the Spanish count was zero.
+    """
+
+    def _report(
+        self, spanish: dict, *, api_key: str | None, monkeypatch: pytest.MonkeyPatch
+    ) -> SpanishCoverage:
+        if api_key is None:
+            monkeypatch.delenv(ONET_API_KEY_ENV, raising=False)
+        else:
+            monkeypatch.setenv(ONET_API_KEY_ENV, api_key)
+        rows = list(parse_projections(TestRelatedOccupations.CSV))
+        return spanish_coverage(index_occupations(rows, spanish=spanish))
+
+    def test_counts_department_titles_from_the_records(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        record = SpanishOccupation(title="Enfermeras", description=None, also_called=())
+        report = self._report({"29-1141": record}, api_key="abc123", monkeypatch=monkeypatch)
+        assert report.occupations == 4
+        assert report.onet_configured is True
+        assert report.with_spanish == 1
+
+    def test_no_key_reports_zero_and_says_it_was_not_configured(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        report = self._report({}, api_key=None, monkeypatch=monkeypatch)
+        assert report.onet_configured is False
+        assert report.with_spanish == 0
+
+    def test_a_configured_key_with_no_titles_is_still_marked_configured(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # The case this exists for: a key is set, O*NET answered nothing, and the report has
+        # to say that plainly rather than looking identical to "no key at all".
+        report = self._report({}, api_key="abc123", monkeypatch=monkeypatch)
+        assert report.onet_configured is True
+        assert report.with_spanish == 0
 
 
 class TestDetailedSocCodes:

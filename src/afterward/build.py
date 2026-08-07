@@ -66,6 +66,26 @@ class EnrichmentCoverage:
 
 
 @dataclass(frozen=True)
+class SpanishCoverage:
+    """How much of the occupation index carries a Department Spanish title (O*NET D5).
+
+    A separate credential from CareerOneStop's (D6) and a separate dataclass from
+    :class:`EnrichmentCoverage`, because they are different sources on different terms and
+    conflating them would hide which one a broken build is actually missing.
+
+    ``onet_configured`` is the same True/False-vs-count distinction :class:`LocalHelpCoverage`
+    makes with ``centers_loaded``: with no key, ``with_spanish`` is legitimately 0 and that is
+    a complete, publishable build -- it must not be read as "O*NET stopped covering these
+    occupations". A key that *is* configured and still returns 0 is a different, much louder
+    problem, and only this flag tells the two apart.
+    """
+
+    occupations: int
+    onet_configured: bool
+    with_spanish: int
+
+
+@dataclass(frozen=True)
 class AggregateMatchCoverage:
     """How much of the program-to-occupation join runs through a published aggregate.
 
@@ -221,6 +241,9 @@ class CoverageReport:
     # Occupation-side coverage from CareerOneStop (D6). Zeroed, not absent, when the build
     # ran without credentials.
     enrichment: EnrichmentCoverage
+    # Department Spanish titles from O*NET's Mi Próximo Paso (D5) -- a different credential
+    # from CareerOneStop's, so its own field rather than folded into `enrichment` above.
+    spanish: SpanishCoverage
     # What became of the provider links. All-unchecked, not absent, when the build read no
     # link report -- which is the CI case and a complete build.
     provider_links: ProviderLinkCoverage
@@ -1323,6 +1346,22 @@ def enrichment_coverage(occupations: Mapping[str, dict[str, Any]]) -> Enrichment
     )
 
 
+def spanish_coverage(occupations: Mapping[str, dict[str, Any]]) -> SpanishCoverage:
+    """Count Department Spanish titles from the emitted records, same discipline as above.
+
+    ``onet_configured`` is read here rather than threaded through from the fetch, because
+    this function already runs after the key would have been used and the emitted records are
+    the single source this whole report is built from -- one more parameter to thread through
+    every caller was not worth avoiding one call to `onet.api_key()`.
+    """
+    records = list(occupations.values())
+    return SpanishCoverage(
+        occupations=len(records),
+        onet_configured=onet.api_key() is not None,
+        with_spanish=sum(1 for record in records if record["spanish"] is not None),
+    )
+
+
 def _is_enriched(record: Mapping[str, Any]) -> bool:
     return (
         record["description"] is not None
@@ -2104,6 +2143,7 @@ def build(
         ),
         cohort_integrity=cohort_integrity_coverage(payloads),
         enrichment=enrichment_coverage(occupations),
+        spanish=spanish_coverage(occupations),
         provider_links=provider_link_coverage(payloads),
         local_help=local_help_coverage(payloads, centers),
     )

@@ -78,6 +78,19 @@ def build_command(
     if not enrichment.enriched:
         typer.echo("  (no CareerOneStop credentials configured; enrichment skipped)")
 
+    # Department Spanish titles (O*NET Mi Próximo Paso). A separate credential from
+    # CareerOneStop's above, so it gets its own line rather than silently returning nothing
+    # with no message at all -- which is what happened before this line existed.
+    spanish = report.spanish
+    typer.echo(f"  with a Spanish title       {spanish.with_spanish:>6}")
+    if not spanish.onet_configured:
+        typer.echo("  (no ONET_API_KEY configured; Spanish titles skipped)")
+    elif spanish.with_spanish == 0:
+        typer.echo(
+            "  (ONET_API_KEY is set but returned no Spanish titles at all -- "
+            "check the key and the O*NET service status before publishing this dataset)"
+        )
+
     _echo_provider_links(report.provider_links, link_checks)
     _echo_local_help(report.local_help)
 
