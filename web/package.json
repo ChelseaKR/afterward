@@ -31,7 +31,7 @@
     "@types/react-dom": "^19.2.4",
     "@vitest/coverage-v8": "^4.1.10",
     "axe-core": "^4.12.1",
-    "eslint": "^9.39.5",
+    "eslint": "^10.8.0",
     "eslint-config-next": "^16.3.0",
     "jsdom": "^30.0.1",
     "playwright": "^1.62.1",
