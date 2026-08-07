@@ -31,16 +31,38 @@ publishes at credreg.net, fetched 2026-08-06 from
   ``ceterms:currency``. Emitted only when the source's cost total is complete: when a
   component was suppressed the total is a floor, and a floor published as "the price" would
   drop the caveat the dataset carries.
-* ``ceterms:aggregateData`` -- range ``ceterms:AggregateDataProfile``, which is the only
-  place core CTDL accepts summary outcome statistics (``ceterms:medianEarnings``,
-  ``ceterms:numberAwarded``, ``ceterms:jobsObtained``). Note recorded for the record: as
-  fetched, ``ceterms:aggregateData`` lists ``ceterms:LearningOpportunityProfile`` in its
-  domain and ``ceterms:LearningProgram`` is a subclass of it, but credreg.net's generated
-  per-class property list for LearningProgram does not include ``aggregateData``. This
-  export relies on the subclass relation. Completion and employment *rates*, which the
-  source reports, have no AggregateDataProfile property at all and would need the QData
-  layer (``qdata:DataSetProfile``); they are deliberately not projected, and the coverage
-  statement says so rather than leaving them to be presumed absent from the source.
+* Outcome statistics use the QData layer: one ``qdata:DataSetProfile`` per program with
+  reported outcomes, carrying ``qdata:Metric`` / ``qdata:Observation`` pairs, linked from
+  the program by ``qdata:relevantDataSet`` and back by ``qdata:relevantDataSetFor``. This
+  replaced ``ceterms:aggregateData`` on 2026-08-07 following Credential Engine's guidance
+  on Schema-Development issue #1080 (filed from this project): the Credential Registry no
+  longer accepts ``aggregateData`` for publishing, and the maintainers named
+  DataSetProfile-with-Metrics-and-Observations as the supported pattern. Every QData term
+  was checked against the schema encoding fetched 2026-08-07 from
+  ``https://credreg.net/qdata/schema/encoding/json``:
+
+  - ``qdata:relevantDataSet`` -- "Data Set on which earnings or employment data is based";
+    its ``schema:domainIncludes`` names ``ceterms:LearningProgram`` explicitly (no reliance
+    on a subclass relation, the gap #1080 was about), and ``qdata:relevantDataSetFor``
+    names it in range.
+  - ``qdata:Metric`` -- "What is being measured and the method of measurement"; carries
+    name, description, and ``qdata:metricType`` drawn from the ``qdata:MetricCategory``
+    concept scheme, whose 66 concepts ship as machine-readable data in the same schema
+    encoding (unlike core CTDL's HTML-only schemes, so emitting them honors the
+    fetchable-as-data rule below).
+  - ``qdata:Observation`` -- "Numeric value or category observed for a metric", linked to
+    its Metric by ``qdata:isObservationOf``. Headcounts ride ``schema:value``; median
+    earnings ride ``qdata:median`` with ``schema:currency`` USD; rates ride
+    ``qdata:percentage``. The source's completion and employment rates -- unprojectable
+    under AggregateDataProfile, which has no rate property -- are therefore now projected.
+    The source validates rates as 0-1 fractions (``clean_rate``); ``qdata:percentage`` is
+    "expressed as a percentage", so the projection multiplies by 100 (see
+    :func:`_as_percentage`) -- a unit conversion, applied identically by the export and
+    the round-trip guard, never a value judgement.
+  - ``qdata:DataSetTimeFrame`` is deliberately NOT emitted: the source carries no explicit
+    reporting-period start or end dates, and inventing them would violate the no-inference
+    rule. The measure descriptions carry the temporal semantics the source does state
+    ("second quarter after exit").
 
 The honesty rules of the rest of this codebase transfer whole:
 
@@ -118,30 +140,97 @@ EMITTED_CLASSES: Final = frozenset(
         "ceterms:CredentialOrganization",
         "ceterms:CredentialAlignmentObject",
         "ceterms:CostProfile",
-        "ceterms:AggregateDataProfile",
-        "schema:QuantitativeValue",
+        "qdata:DataSetProfile",
+        "qdata:Metric",
+        "qdata:Observation",
     }
 )
 """Every ``@type`` this export may write. Each one was verified against its credreg.net
 term definition (URLs in the module docstring); :func:`unknown_term_problems` refuses any
 other."""
 
-AGGREGATE_MEASURES: Final = (
-    ("ceterms:medianEarnings", "median_earnings"),
-    ("ceterms:numberAwarded", "credentials_earned"),
-    ("ceterms:jobsObtained", "employed_q2"),
+METRICCAT_BASE: Final = "https://credreg.net/qdata/vocabs/metricCat/"
+"""IRI base of the ``qdata:MetricCategory`` concept scheme, from the QData context fetched
+2026-08-07 (``https://credreg.net/qdata/schema/context/json``). Values are emitted as full
+IRIs because the vendored CTDL context does not declare the ``metricCat:`` prefix."""
+
+
+@dataclass(frozen=True)
+class Measure:
+    """One source outcome field and the Metric/Observation pair that projects it.
+
+    ``kind`` selects the Observation's value property, per the term definitions:
+    ``count`` -> ``schema:value`` (whole headcounts, integer-checked), ``median_usd`` ->
+    ``qdata:median`` + ``schema:currency`` USD, ``percentage`` -> ``qdata:percentage``
+    (source fraction x 100, see :func:`_as_percentage`).
+    """
+
+    field: str
+    slug: str
+    kind: str
+    metric_category: str
+    name: str
+    description: str
+
+
+MEASURES: Final = (
+    Measure(
+        field="median_earnings",
+        slug="median-earnings-q2",
+        kind="median_usd",
+        metric_category="Earnings",
+        name="Median earnings, second quarter after exit",
+        description=(
+            "Median quarterly earnings of program exiters in the second quarter after "
+            "exit, in U.S. dollars, as reported under WIOA to the U.S. Department of "
+            "Labor's Eligible Training Provider scorecard."
+        ),
+    ),
+    Measure(
+        field="credentials_earned",
+        slug="credentials-earned",
+        kind="count",
+        metric_category="CredentialAttainment",
+        name="Credentials earned",
+        description=(
+            "Program exiters who earned a recognized credential, as reported under WIOA."
+        ),
+    ),
+    Measure(
+        field="employed_q2",
+        slug="employed-q2",
+        kind="count",
+        metric_category="Employment",
+        name="Employed in the second quarter after exit",
+        description=JOBS_OBTAINED_DESCRIPTION,
+    ),
+    Measure(
+        field="completion_rate",
+        slug="completion-rate",
+        kind="percentage",
+        metric_category="Completion",
+        name="Program completion rate",
+        description=(
+            "Share of program participants who completed the program, as reported under "
+            "WIOA. The source reports a 0-1 fraction; projected as a percentage."
+        ),
+    ),
+    Measure(
+        field="employment_rate_q2",
+        slug="employment-rate-q2",
+        kind="percentage",
+        metric_category="Employment",
+        name="Employment rate, second quarter after exit",
+        description=(
+            "Share of program exiters employed in the second quarter after exit, as "
+            "reported under WIOA. The source reports a 0-1 fraction; projected as a "
+            "percentage."
+        ),
+    ),
 )
-"""CTDL property on the AggregateDataProfile -> source outcome field it projects."""
-
-COUNT_MEASURES: Final = frozenset({"credentials_earned", "employed_q2"})
-"""Source measures that are headcounts and must be emitted as integers
-(``ceterms:numberAwarded`` is typed ``xsd:integer`` in the context)."""
-
-RATE_MEASURES_NOT_PROJECTED: Final = ("completion_rate", "employment_rate_q2")
-"""Reported by the source, not projectable into core CTDL. AggregateDataProfile has no
-rate property; expressing these would need ``qdata:DataSetProfile``, which is out of scope
-for a demonstration export. Counted in the coverage statement so their absence reads as a
-mapping limit, not as missing source data."""
+"""Every outcome measure the source reports, in publication order. All five are now
+projected: the QData move made the two rates expressible (``qdata:percentage``), so the
+old not-projected carve-out is gone."""
 
 
 def load_vendored_context() -> dict[str, Any]:
@@ -203,6 +292,20 @@ def _as_count(value: float, field: str, where: str) -> int:
     if value != int(value):
         raise ValueError(f"{where}.{field}: {value!r} is not a whole count; refusing to round")
     return int(value)
+
+
+def _as_percentage(fraction: float) -> float:
+    """A source 0-1 fraction as the 0-100 figure ``qdata:percentage`` is defined to carry.
+
+    A unit conversion, not a value change: the source validates rates as fractions
+    (``clean_rate`` in :mod:`afterward.sources.dol_etp`), and the QData term is "quotient
+    of two values ... expressed as a percentage". The rounding exists only to strip binary
+    float noise (``0.64 * 100`` is not exactly ``64.0``); ten decimal places is far beyond
+    any precision the source asserts. :func:`projection_problems` applies this SAME
+    function to the source value when checking the round trip, so the conversion can never
+    drift from its own guard.
+    """
+    return round(fraction * 100, 10)
 
 
 def project_organization(provider_name: str) -> dict[str, Any]:
@@ -276,40 +379,83 @@ def _cost_profiles(payload: Mapping[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
-def _aggregate_data(payload: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """The ``ceterms:aggregateData`` value, or nothing.
+def dataset_profile_ctid(source_uuid: str) -> str:
+    return entity_ctid("dataset-profile", source_uuid)
 
-    One profile, carrying only the measures the source reported. All three suppressed means
-    no profile at all: an empty statistics block would read as "measured, and empty".
+
+def _metric_id(profile_iri: str, measure: Measure) -> str:
+    """The Metric's ``@id``: a fragment on its DataSetProfile's own IRI.
+
+    Deterministic by construction, obviously non-registry, and it keeps each Metric
+    resolvable relative to the one document that defines it -- ``qdata:isObservationOf``
+    on the Observations references exactly this string.
+    """
+    return f"{profile_iri}#metric-{measure.slug}"
+
+
+def _observation(measure: Measure, value: float, profile_iri: str, where: str) -> dict[str, Any]:
+    """One ``qdata:Observation``, valued per the measure's kind (see :class:`Measure`)."""
+    observation: dict[str, Any] = {
+        "@type": "qdata:Observation",
+        "qdata:isObservationOf": _metric_id(profile_iri, measure),
+    }
+    if measure.kind == "count":
+        observation["schema:value"] = _as_count(value, measure.field, where)
+    elif measure.kind == "median_usd":
+        observation["qdata:median"] = value
+        # Dollar figures filed with a U.S. federal scorecard, by the source's own terms.
+        observation["schema:currency"] = "USD"
+    elif measure.kind == "percentage":
+        observation["qdata:percentage"] = _as_percentage(value)
+    else:  # pragma: no cover - Measure kinds are a closed set defined above
+        raise ValueError(f"unknown measure kind: {measure.kind!r}")
+    return observation
+
+
+def dataset_profile(payload: Mapping[str, Any]) -> dict[str, Any] | None:
+    """The program's ``qdata:DataSetProfile`` entity, or None.
+
+    One profile per program with at least one reported outcome, carrying one
+    ``qdata:Metric`` / ``qdata:Observation`` pair per reported measure. All measures
+    suppressed means no profile at all: an empty statistics entity would read as
+    "measured, and empty". The back-link ``qdata:relevantDataSetFor`` names the program;
+    the program's forward ``qdata:relevantDataSet`` is written by :func:`project_program`
+    and the pair is verified by :func:`projection_problems`.
     """
     outcomes = payload["outcomes"]
     where = str(payload.get("uuid", "<no uuid>"))
-    profile: dict[str, Any] = {
-        "@type": "ceterms:AggregateDataProfile",
+    reported = [m for m in MEASURES if outcomes.get(m.field) is not None]
+    if not reported:
+        return None
+    ctid = dataset_profile_ctid(str(payload["uuid"]))
+    profile_iri = RESOURCE_BASE + ctid
+    program_iri = RESOURCE_BASE + program_ctid(str(payload["uuid"]))
+    metrics = [
+        {
+            "@type": "qdata:Metric",
+            "@id": _metric_id(profile_iri, m),
+            "ceterms:name": _lang(m.name),
+            "ceterms:description": _lang(m.description),
+            "qdata:metricType": METRICCAT_BASE + m.metric_category,
+        }
+        for m in reported
+    ]
+    observations = [
+        _observation(m, outcomes[m.field], profile_iri, where) for m in reported
+    ]
+    return {
+        "@type": "qdata:DataSetProfile",
+        "@id": profile_iri,
+        "ceterms:ctid": ctid,
+        "ceterms:name": _lang(
+            f"WIOA Eligible Training Provider outcomes: {payload['program_name']}"
+        ),
         "ceterms:description": _lang(OUTCOME_DESCRIPTION),
         "ceterms:source": ETP_SOURCE_URL,
+        "qdata:relevantDataSetFor": [program_iri],
+        "qdata:hasMetric": metrics,
+        "qdata:hasObservation": observations,
     }
-    reported = False
-    for term, field in AGGREGATE_MEASURES:
-        value = outcomes.get(field)
-        if value is None:
-            continue
-        reported = True
-        if field in COUNT_MEASURES:
-            value = _as_count(value, field, where)
-        if term == "ceterms:jobsObtained":
-            # Range is schema:QuantitativeValue, and the wrapper is where the number says
-            # exactly what it counts.
-            profile[term] = [
-                {
-                    "@type": "schema:QuantitativeValue",
-                    "schema:description": _lang(JOBS_OBTAINED_DESCRIPTION),
-                    "schema:value": value,
-                }
-            ]
-        else:
-            profile[term] = value
-    return [profile] if reported else []
 
 
 def project_program(payload: Mapping[str, Any]) -> dict[str, Any]:
@@ -340,9 +486,9 @@ def project_program(payload: Mapping[str, Any]) -> dict[str, Any]:
     costs = _cost_profiles(payload)
     if costs:
         entity["ceterms:estimatedCost"] = costs
-    aggregate = _aggregate_data(payload)
-    if aggregate:
-        entity["ceterms:aggregateData"] = aggregate
+    profile = dataset_profile(payload)
+    if profile is not None:
+        entity["qdata:relevantDataSet"] = [str(profile["@id"])]
     return entity
 
 
@@ -358,6 +504,7 @@ def project_graph(payloads: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         for p in payloads
     }
     programs: dict[str, dict[str, Any]] = {}
+    profiles: dict[str, dict[str, Any]] = {}
     for payload in payloads:
         entity = project_program(payload)
         ctid = str(entity["ceterms:ctid"])
@@ -367,8 +514,12 @@ def project_graph(payloads: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 "the stable identity this export assumes"
             )
         programs[ctid] = entity
+        profile = dataset_profile(payload)
+        if profile is not None:
+            profiles[str(profile["ceterms:ctid"])] = profile
     graph = [organizations[k] for k in sorted(organizations)]
     graph += [programs[k] for k in sorted(programs)]
+    graph += [profiles[k] for k in sorted(profiles)]
     return {"@context": CTDL_CONTEXT_URL, "@graph": graph}
 
 
@@ -425,25 +576,85 @@ def check_ctdl_terms(document: Mapping[str, Any], context: Mapping[str, Any]) ->
         )
 
 
+def _observation_value(measure: Measure, observation: Mapping[str, Any]) -> Any:
+    if measure.kind == "count":
+        return observation.get("schema:value")
+    if measure.kind == "median_usd":
+        return observation.get("qdata:median")
+    return observation.get("qdata:percentage")
+
+
+def _expected_value(measure: Measure, source: float) -> Any:
+    if measure.kind == "count":
+        return int(source)
+    if measure.kind == "percentage":
+        return _as_percentage(source)
+    return source
+
+
 def _measure_problems(
-    where: str, outcomes: Mapping[str, Any], profiles: Sequence[Mapping[str, Any]]
+    where: str, outcomes: Mapping[str, Any], profile: Mapping[str, Any] | None
 ) -> list[str]:
-    """How one program's emitted statistics diverge from its source outcomes."""
+    """How one program's emitted observations diverge from its source outcomes.
+
+    An observation exists if and only if the source reported the measure, valued exactly as
+    the projection defines it (counts as integers, medians verbatim, rates through the same
+    :func:`_as_percentage` the export used -- so the unit conversion is checked by its own
+    definition, not re-derived).
+    """
     problems: list[str] = []
-    profile = profiles[0] if profiles else {}
-    for term, field in AGGREGATE_MEASURES:
-        source = outcomes.get(field)
-        if term == "ceterms:jobsObtained":
-            wrappers = profile.get(term)
-            emitted = wrappers[0].get("schema:value") if wrappers else None
-        else:
-            emitted = profile.get(term)
+    profile = profile or {}
+    profile_iri = str(profile.get("@id", ""))
+    observations = {
+        str(o.get("qdata:isObservationOf", "")): o
+        for o in profile.get("qdata:hasObservation", [])
+    }
+    for measure in MEASURES:
+        source = outcomes.get(measure.field)
+        observation = observations.get(_metric_id(profile_iri, measure)) if profile_iri else None
+        emitted = _observation_value(measure, observation) if observation else None
         if source is None and emitted is not None:
-            problems.append(f"{where}: {term} is {emitted!r} where the source reports nothing")
+            problems.append(
+                f"{where}: {measure.slug} observes {emitted!r} where the source reports nothing"
+            )
         elif source is not None and emitted is None:
-            problems.append(f"{where}: {term} is absent where the source reports {source!r}")
-        elif source is not None and emitted != source:
-            problems.append(f"{where}: {term} is {emitted!r}, the source says {source!r}")
+            problems.append(
+                f"{where}: {measure.slug} has no observation where the source reports {source!r}"
+            )
+        elif source is not None and emitted != _expected_value(measure, source):
+            problems.append(
+                f"{where}: {measure.slug} observes {emitted!r}, the source says {source!r} "
+                f"(expected {_expected_value(measure, source)!r})"
+            )
+    return problems
+
+
+def _link_problems(
+    where: str,
+    program: Mapping[str, Any],
+    profile: Mapping[str, Any] | None,
+) -> list[str]:
+    """Both halves of the program <-> DataSetProfile link, or neither."""
+    problems: list[str] = []
+    forward = program.get("qdata:relevantDataSet")
+    if profile is None:
+        if forward is not None:
+            problems.append(
+                f"{where}: program links qdata:relevantDataSet {forward!r} "
+                "but the graph carries no DataSetProfile for it"
+            )
+        return problems
+    profile_iri = str(profile.get("@id", ""))
+    program_iri = str(program.get("@id", ""))
+    if forward != [profile_iri]:
+        problems.append(
+            f"{where}: qdata:relevantDataSet is {forward!r}, expected [{profile_iri!r}]"
+        )
+    if profile.get("qdata:relevantDataSetFor") != [program_iri]:
+        problems.append(
+            f"{where}: qdata:relevantDataSetFor is "
+            f"{profile.get('qdata:relevantDataSetFor')!r}, expected [{program_iri!r}]"
+        )
     return problems
 
 
@@ -463,7 +674,13 @@ def projection_problems(
         for e in document.get("@graph", [])
         if e.get("@type") == "ceterms:LearningProgram"
     }
+    profiles = {
+        e["ceterms:ctid"]: e
+        for e in document.get("@graph", [])
+        if e.get("@type") == "qdata:DataSetProfile"
+    }
     problems: list[str] = []
+    expected_profiles = 0
     for payload in payloads:
         ctid = program_ctid(str(payload["uuid"]))
         where = str(payload["uuid"])
@@ -471,13 +688,20 @@ def projection_problems(
         if entity is None:
             problems.append(f"{where}: no LearningProgram entity in the graph")
             continue
-        problems += _measure_problems(
-            where, payload["outcomes"], entity.get("ceterms:aggregateData", [])
-        )
+        profile = profiles.get(dataset_profile_ctid(str(payload["uuid"])))
+        if profile is not None:
+            expected_profiles += 1
+        problems += _measure_problems(where, payload["outcomes"], profile)
+        problems += _link_problems(where, entity, profile)
     if len(entities) != len(payloads):
         problems.append(
             f"graph carries {len(entities)} LearningProgram entities "
             f"for {len(payloads)} source programs"
+        )
+    if len(profiles) != expected_profiles:
+        problems.append(
+            f"graph carries {len(profiles)} DataSetProfile entities where the source "
+            f"outcomes call for {expected_profiles}"
         )
     return problems
 
@@ -500,7 +724,7 @@ PROGRAM_PROPERTIES: Final = (
     "ceterms:offeredBy",
     "ceterms:occupationType",
     "ceterms:estimatedCost",
-    "ceterms:aggregateData",
+    "qdata:relevantDataSet",
 )
 """LearningProgram properties the coverage statement counts, in publication order."""
 
@@ -521,7 +745,19 @@ def ctdl_coverage(
     graph: list[Mapping[str, Any]] = list(document.get("@graph", []))
     programs = [e for e in graph if e.get("@type") == "ceterms:LearningProgram"]
     organizations = [e for e in graph if e.get("@type") == "ceterms:CredentialOrganization"]
-    profiles = [p for e in programs for p in e.get("ceterms:aggregateData", [])]
+    profiles = [e for e in graph if e.get("@type") == "qdata:DataSetProfile"]
+    observations = [o for e in profiles for o in e.get("qdata:hasObservation", [])]
+    metric_tails = {
+        f"#metric-{m.slug}": m.field for m in MEASURES
+    }
+
+    def _observed_field(observation: Mapping[str, Any]) -> str | None:
+        target = str(observation.get("qdata:isObservationOf", ""))
+        for tail, field in metric_tails.items():
+            if target.endswith(tail):
+                return field
+        return None
+
     incomplete_costs = sum(
         1
         for p in payloads
@@ -539,27 +775,16 @@ def ctdl_coverage(
         "entities": {
             "ceterms:LearningProgram": len(programs),
             "ceterms:CredentialOrganization": len(organizations),
+            "qdata:DataSetProfile": len(profiles),
         },
         "learning_program_properties": {
             term: sum(1 for e in programs if term in e) for term in PROGRAM_PROPERTIES
         },
-        "aggregate_data_properties": {
-            term: sum(1 for p in profiles if term in p) for term, _ in AGGREGATE_MEASURES
+        "observation_measures": {
+            m.field: sum(1 for o in observations if _observed_field(o) == m.field)
+            for m in MEASURES
         },
         "not_projected": {
-            field: {
-                "reported_in_source": sum(
-                    1 for p in payloads if p["outcomes"].get(field) is not None
-                ),
-                "reason": (
-                    "core CTDL's AggregateDataProfile has no property for a rate; "
-                    "expressing this would need qdata:DataSetProfile, which this "
-                    "demonstration does not use"
-                ),
-            }
-            for field in RATE_MEASURES_NOT_PROJECTED
-        }
-        | {
             "cost_total_incomplete": {
                 "reported_in_source": incomplete_costs,
                 "reason": (
@@ -583,7 +808,7 @@ def ctdl_coverage_problems(
         "source_programs",
         "entities",
         "learning_program_properties",
-        "aggregate_data_properties",
+        "observation_measures",
         "not_projected",
     ):
         if coverage.get(key) != expected[key]:

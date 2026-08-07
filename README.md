@@ -111,7 +111,9 @@ Full source list, licensing, access dates, and this project's provenance constra
 [CTDL](https://credreg.net/) JSON-LD into `dist/ctdl/`: one `ceterms:LearningProgram` per
 program the site publishes and one `ceterms:CredentialOrganization` per distinct provider
 name, with occupation alignments (`ceterms:occupationType` carrying 2018 SOC codes), cost
-(`ceterms:estimatedCost`) and reported outcome statistics (`ceterms:aggregateData`). It is a
+(`ceterms:estimatedCost`) and reported outcome statistics as one `qdata:DataSetProfile` per
+program carrying `qdata:Metric`/`qdata:Observation` pairs, linked to the program both ways
+(`qdata:relevantDataSet` / `qdata:relevantDataSetFor`). It is a
 projection of the already-built dataset — the same `programs.json` the site serves — so it
 can never disagree with the site about what the data says, and it is deliberately not part
 of `make data`, `make build`, or `make verify`.
@@ -134,16 +136,20 @@ one. Every emitted term is checked against a vendored copy of the CTDL context
 (`src/afterward/ctdl/ctdl-context.json`, retrieval provenance beside it) and the export
 refuses to write a term the schema does not define. A coverage statement
 (`ctdl-coverage.json`) is counted from the emitted graph at export time — including what
-the source reports that the export deliberately does not carry, with reasons: completion
-and employment *rates* have no property on `ceterms:AggregateDataProfile` and would need
-the QData layer (`qdata:DataSetProfile`), which this demonstration does not use.
+the source reports that the export deliberately does not carry, with reasons.
 
-One schema wrinkle, recorded here because it is easy to trip over: as fetched on
-2026-08-06, `ceterms:aggregateData` lists `ceterms:LearningOpportunityProfile` in its
-domain, and `ceterms:LearningProgram` is a subclass of it — but credreg.net's generated
-per-class property list for LearningProgram does not include `aggregateData`. This export
-attaches outcome statistics to programs relying on the subclass relation; a validator that
-checks the per-class list instead may disagree.
+Outcome statistics originally used `ceterms:aggregateData`, which surfaced a schema gap —
+`ceterms:LearningProgram` missing from that property's per-class enumeration — filed as
+[Schema-Development #1080](https://github.com/CredentialEngine/Schema-Development/issues/1080).
+The maintainers' answer settled the design: the Credential Registry no longer accepts
+`aggregateData` for publishing, and the supported pattern is the QData layer this export
+now uses. The move also made the source's completion and employment *rates* projectable
+(`qdata:percentage`, source fraction × 100 — a documented unit conversion the round-trip
+guard applies identically), where `AggregateDataProfile` had no rate property at all. Every
+QData term was verified against the schema encoding fetched 2026-08-07 from credreg.net;
+`qdata:metricType` concepts come from the machine-readable `qdata:MetricCategory` scheme in
+that same file. `qdata:DataSetTimeFrame` is deliberately not emitted: the source states no
+reporting-period dates, and the export does not invent them.
 
 ## Development
 

@@ -24,6 +24,8 @@ from afterward.ctdl.export import (
     check_projection,
     ctdl_coverage,
     ctdl_coverage_problems,
+    dataset_profile,
+    dataset_profile_ctid,
     entity_ctid,
     export_ctdl,
     load_vendored_context,
@@ -196,18 +198,31 @@ class TestProgramProjection:
             project_program(payload)
 
 
+def observations_by_slug(profile: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Metric slug -> its Observation, resolved through qdata:isObservationOf."""
+    metric_slugs = {
+        str(m["@id"]): str(m["@id"]).rsplit("#metric-", 1)[1]
+        for m in profile.get("qdata:hasMetric", [])
+    }
+    return {
+        metric_slugs[str(o["qdata:isObservationOf"])]: o
+        for o in profile.get("qdata:hasObservation", [])
+    }
+
+
 class TestSuppressionTransfers:
     """The dataset's core honesty rule survives projection: null is absent, never zero."""
 
-    def test_a_suppressed_measure_is_absent_from_the_profile(self) -> None:
+    def test_a_suppressed_measure_has_no_metric_and_no_observation(self) -> None:
         payload = make_payload(outcomes=make_payload()["outcomes"] | {"median_earnings": None})
-        profile = project_program(payload)["ceterms:aggregateData"][0]
-        assert "ceterms:medianEarnings" not in profile
-        assert 0 not in profile.values()
+        profile = dataset_profile(payload)
+        assert profile is not None
+        observed = observations_by_slug(profile)
+        assert "median-earnings-q2" not in observed
         # The reported measures still project.
-        assert profile["ceterms:numberAwarded"] == 12
+        assert observed["credentials-earned"]["schema:value"] == 12
 
-    def test_fully_suppressed_outcomes_mean_no_statistics_block_at_all(self) -> None:
+    def test_fully_suppressed_outcomes_mean_no_dataset_profile_at_all(self) -> None:
         payload = make_payload(
             outcomes={
                 "median_earnings": None,
@@ -218,24 +233,60 @@ class TestSuppressionTransfers:
                 "reported": False,
             }
         )
-        assert "ceterms:aggregateData" not in project_program(payload)
+        assert dataset_profile(payload) is None
+        assert "qdata:relevantDataSet" not in project_program(payload)
+
+    def test_rates_project_as_percentages_of_the_source_fraction(self) -> None:
+        profile = dataset_profile(make_payload())
+        assert profile is not None
+        observed = observations_by_slug(profile)
+        assert observed["completion-rate"]["qdata:percentage"] == 80.0
+        assert observed["employment-rate-q2"]["qdata:percentage"] == 75.0
+        assert observed["median-earnings-q2"]["qdata:median"] == 41000.0
+        assert observed["median-earnings-q2"]["schema:currency"] == "USD"
+
+    def test_program_and_profile_link_both_ways(self) -> None:
+        payload = make_payload()
+        document = project_graph([payload])
+        program = next(e for e in document["@graph"] if e["@type"] == "ceterms:LearningProgram")
+        profile = next(e for e in document["@graph"] if e["@type"] == "qdata:DataSetProfile")
+        assert program["qdata:relevantDataSet"] == [profile["@id"]]
+        assert profile["qdata:relevantDataSetFor"] == [program["@id"]]
 
     def test_projection_guard_catches_a_zero_where_the_source_is_silent(self) -> None:
         payload = make_payload(outcomes=make_payload()["outcomes"] | {"median_earnings": None})
         document = project_graph([payload])
-        program = next(e for e in document["@graph"] if e["@type"] == "ceterms:LearningProgram")
-        program["ceterms:aggregateData"][0]["ceterms:medianEarnings"] = 0
+        profile = next(e for e in document["@graph"] if e["@type"] == "qdata:DataSetProfile")
+        profile["qdata:hasObservation"].append(
+            {
+                "@type": "qdata:Observation",
+                "qdata:isObservationOf": profile["@id"] + "#metric-median-earnings-q2",
+                "qdata:median": 0,
+            }
+        )
         problems = projection_problems([payload], document)
         assert any("source reports nothing" in p for p in problems)
         with pytest.raises(ValueError, match="diverges from the source"):
             check_projection([payload], document)
 
-    def test_projection_guard_catches_a_dropped_measure(self) -> None:
+    def test_projection_guard_catches_a_dropped_observation(self) -> None:
         payload = make_payload()
         document = project_graph([payload])
-        program = next(e for e in document["@graph"] if e["@type"] == "ceterms:LearningProgram")
-        del program["ceterms:aggregateData"][0]["ceterms:medianEarnings"]
-        with pytest.raises(ValueError, match="absent where the source reports"):
+        profile = next(e for e in document["@graph"] if e["@type"] == "qdata:DataSetProfile")
+        profile["qdata:hasObservation"] = [
+            o
+            for o in profile["qdata:hasObservation"]
+            if not str(o["qdata:isObservationOf"]).endswith("#metric-median-earnings-q2")
+        ]
+        with pytest.raises(ValueError, match="no observation where the source reports"):
+            check_projection([payload], document)
+
+    def test_projection_guard_catches_a_broken_back_link(self) -> None:
+        payload = make_payload()
+        document = project_graph([payload])
+        profile = next(e for e in document["@graph"] if e["@type"] == "qdata:DataSetProfile")
+        profile["qdata:relevantDataSetFor"] = ["https://example.org/not-the-program"]
+        with pytest.raises(ValueError, match="diverges from the source"):
             check_projection([payload], document)
 
     def test_fixture_export_carries_no_zero_outcome_value(self, tmp_path: Path) -> None:
@@ -244,28 +295,29 @@ class TestSuppressionTransfers:
         export_ctdl(FIXTURE_DIR, tmp_path)
         document = json.loads((tmp_path / GRAPH_FILENAME).read_text(encoding="utf-8"))
         for entity in document["@graph"]:
-            for profile in entity.get("ceterms:aggregateData", []):
-                for term in ("ceterms:medianEarnings", "ceterms:numberAwarded"):
-                    assert profile.get(term) != 0
-                for wrapper in profile.get("ceterms:jobsObtained", []):
-                    assert wrapper["schema:value"] != 0
+            if entity.get("@type") != "qdata:DataSetProfile":
+                continue
+            for observation in entity.get("qdata:hasObservation", []):
+                for term in ("schema:value", "qdata:median", "qdata:percentage"):
+                    assert observation.get(term) != 0
 
     def test_fixture_suppressed_earnings_stay_absent(self, tmp_path: Path) -> None:
         # The committed fixture carries programs that report an outcome while earnings are
-        # suppressed; each must yield a profile without the earnings property.
+        # suppressed; each must yield a DataSetProfile without an earnings observation.
         payloads = json.loads((FIXTURE_DIR / "programs.json").read_text(encoding="utf-8"))[
             "programs"
         ]
         suppressed = {
-            program_ctid(p["uuid"]) for p in payloads if p["outcomes"]["median_earnings"] is None
+            dataset_profile_ctid(p["uuid"])
+            for p in payloads
+            if p["outcomes"]["median_earnings"] is None
         }
         assert suppressed, "fixture no longer covers the suppressed-earnings case"
         export_ctdl(FIXTURE_DIR, tmp_path)
         document = json.loads((tmp_path / GRAPH_FILENAME).read_text(encoding="utf-8"))
         for entity in document["@graph"]:
             if entity.get("ceterms:ctid") in suppressed:
-                for profile in entity.get("ceterms:aggregateData", []):
-                    assert "ceterms:medianEarnings" not in profile
+                assert "median-earnings-q2" not in observations_by_slug(entity)
 
 
 class TestTermGuard:
@@ -305,15 +357,21 @@ class TestCoverageStatement:
         payloads = [make_payload()]
         document = project_graph(payloads)
         coverage = ctdl_coverage(document, payloads, "2026-08-04")
-        coverage["learning_program_properties"]["ceterms:aggregateData"] += 1
+        coverage["learning_program_properties"]["qdata:relevantDataSet"] += 1
         with pytest.raises(ValueError, match="does not describe the export"):
             check_ctdl_coverage(coverage, document, payloads)
 
-    def test_rates_are_declared_not_projected_with_source_counts(self) -> None:
+    def test_every_reported_measure_is_counted_as_an_observation(self) -> None:
         payloads = [make_payload()]
         coverage = ctdl_coverage(project_graph(payloads), payloads, "2026-08-04")
-        assert coverage["not_projected"]["completion_rate"]["reported_in_source"] == 1
-        assert coverage["not_projected"]["employment_rate_q2"]["reported_in_source"] == 1
+        assert coverage["observation_measures"] == {
+            "median_earnings": 1,
+            "credentials_earned": 1,
+            "employed_q2": 1,
+            "completion_rate": 1,
+            "employment_rate_q2": 1,
+        }
+        assert coverage["entities"]["qdata:DataSetProfile"] == 1
 
     def test_the_note_claims_nothing_about_a_registry_holding_these(self, tmp_path: Path) -> None:
         export_ctdl(FIXTURE_DIR, tmp_path)
