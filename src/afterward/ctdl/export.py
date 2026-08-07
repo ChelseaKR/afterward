@@ -192,9 +192,7 @@ MEASURES: Final = (
         kind="count",
         metric_category="CredentialAttainment",
         name="Credentials earned",
-        description=(
-            "Program exiters who earned a recognized credential, as reported under WIOA."
-        ),
+        description=("Program exiters who earned a recognized credential, as reported under WIOA."),
     ),
     Measure(
         field="employed_q2",
@@ -440,9 +438,7 @@ def dataset_profile(payload: Mapping[str, Any]) -> dict[str, Any] | None:
         }
         for m in reported
     ]
-    observations = [
-        _observation(m, outcomes[m.field], profile_iri, where) for m in reported
-    ]
+    observations = [_observation(m, outcomes[m.field], profile_iri, where) for m in reported]
     return {
         "@type": "qdata:DataSetProfile",
         "@id": profile_iri,
@@ -606,8 +602,7 @@ def _measure_problems(
     profile = profile or {}
     profile_iri = str(profile.get("@id", ""))
     observations = {
-        str(o.get("qdata:isObservationOf", "")): o
-        for o in profile.get("qdata:hasObservation", [])
+        str(o.get("qdata:isObservationOf", "")): o for o in profile.get("qdata:hasObservation", [])
     }
     for measure in MEASURES:
         source = outcomes.get(measure.field)
@@ -747,9 +742,7 @@ def ctdl_coverage(
     organizations = [e for e in graph if e.get("@type") == "ceterms:CredentialOrganization"]
     profiles = [e for e in graph if e.get("@type") == "qdata:DataSetProfile"]
     observations = [o for e in profiles for o in e.get("qdata:hasObservation", [])]
-    metric_tails = {
-        f"#metric-{m.slug}": m.field for m in MEASURES
-    }
+    metric_tails = {f"#metric-{m.slug}": m.field for m in MEASURES}
 
     def _observed_field(observation: Mapping[str, Any]) -> str | None:
         target = str(observation.get("qdata:isObservationOf", ""))
@@ -781,8 +774,7 @@ def ctdl_coverage(
             term: sum(1 for e in programs if term in e) for term in PROGRAM_PROPERTIES
         },
         "observation_measures": {
-            m.field: sum(1 for o in observations if _observed_field(o) == m.field)
-            for m in MEASURES
+            m.field: sum(1 for o in observations if _observed_field(o) == m.field) for m in MEASURES
         },
         "not_projected": {
             "cost_total_incomplete": {
