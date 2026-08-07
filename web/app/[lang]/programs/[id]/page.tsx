@@ -1242,9 +1242,9 @@ function FundingBlock({
 
       {/*
         Spanish only, and above everything rather than under it. This section is about money
-        and eligibility, its readers are the ones an error hurts most, and it has not had a
-        native reviewer. A reader is entitled to know that before they read it, not after.
-        The English page needs no such note because English is the text being referred to.
+        and eligibility, its readers are the ones an error hurts most. The Spanish was reviewed
+        by a native speaker (slegarraga) on 2026-08-06. The English page needs no such note
+        because English is the text being referred to.
       */}
       {lang === "es" && <p className="funding-translation-note">{t.fundingTranslationNote}</p>}
 

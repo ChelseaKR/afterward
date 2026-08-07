@@ -55,8 +55,8 @@ export default async function PayingForTraining({
 
       {/*
         Spanish only, and above everything rather than under it. This page is about money and
-        eligibility, its readers are the ones an error hurts most, and it has not had a native
-        reviewer. A reader is entitled to know that before they read it, not after.
+        eligibility, its readers are the ones an error hurts most. The Spanish was reviewed by
+        a native speaker (slegarraga) on 2026-08-06.
       */}
       {lang === "es" && <p className="funding-translation-note">{t.fundingTranslationNote}</p>}
 
