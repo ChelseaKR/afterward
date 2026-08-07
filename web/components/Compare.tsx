@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
-import { dict, type Lang } from "@/lib/i18n";
+import { dict, feedTextLang, type Lang } from "@/lib/i18n";
 import { isShrinking } from "@/lib/search";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import type { Program, SearchEntry } from "@/lib/types";
@@ -115,7 +115,7 @@ export function CompareTray({
         <ul className="compare-chips">
           {selected.map((entry) => (
             <li key={entry.i}>
-              <span>{entry.n ?? "—"}</span>
+              <span lang={feedTextLang(lang)}>{entry.n ?? "—"}</span>
               <button
                 type="button"
                 onClick={() => onRemove(entry.i)}
@@ -375,8 +375,10 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
               </th>
               {entries.map((entry) => (
                 <th key={entry.i} scope="col">
-                  <Link href={`/${lang}/programs/${entry.i}/`}>{entry.n ?? "—"}</Link>
-                  <small>{tidyName(entry.p)}</small>
+                  <Link href={`/${lang}/programs/${entry.i}/`} lang={feedTextLang(lang)}>
+                    {entry.n ?? "—"}
+                  </Link>
+                  <small lang={feedTextLang(lang)}>{tidyName(entry.p)}</small>
                   {/*
                     * Said at the top of the column rather than on each affected figure: it is
                     * one fact about how this provider filed, and it governs all three cohort

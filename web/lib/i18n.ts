@@ -17,6 +17,19 @@ export function isLang(value: string): value is Lang {
 }
 
 /**
+ * `lang` for text the federal and state feeds publish in English only, unconditionally.
+ *
+ * Unlike `occupationTitleLang` in `data.ts`, which checks a per-occupation Spanish name
+ * because O*NET publishes one for 600 of 670, this has nothing to check: `program_name`,
+ * `description` and `provider_name` have no Spanish counterpart in the feed at all, for any
+ * program. Returns `undefined` on an English page so the attribute is never emitted where it
+ * would be redundant.
+ */
+export function feedTextLang(lang: Lang): "en" | undefined {
+  return lang === "es" ? "en" : undefined;
+}
+
+/**
  * How each length cap reads to someone planning around it, in each language.
  *
  * Months lead and weeks follow in brackets, because nobody budgets rent, childcare or an

@@ -1,6 +1,6 @@
 # WCAG 2.2 AAA: what is automated, and what cannot be
 
-Updated 2026-08-05. This site targets **WCAG 2.2 level AAA**. This note records what the
+Updated 2026-08-07. This site targets **WCAG 2.2 level AAA**. This note records what the
 automated gates actually prove, and — more usefully — what they cannot.
 
 ## The three gates
@@ -55,6 +55,20 @@ rather than a gap nobody noticed.
   `meta-refresh-no-exceptions` is enabled and passes.
 - **1.2.6 Sign Language / 1.2.8 Media Alternative** — no audio or video exists on this site.
 - **2.3.2 Three Flashes** — nothing animates.
+- **3.1.2 Language of Parts** (level AA, below this site's AAA bar, and still worth recording
+  here) — axe ships `valid-lang`, which checks that a `lang` attribute's *value* is real. No
+  rule, in axe or anywhere else, detects that an attribute is *missing*, so `npm run a11y`
+  reported zero violations while every Spanish program page carried an unmarked English `<h1>`
+  and an unmarked English description paragraph — the two longest, most consequential passages
+  on the page, read to a Spanish-set synthesiser as English words in Spanish phonemes. Found by
+  reading rendered output rather than by any gate (issue #27). `program_name`, `description`
+  and `provider_name` have no Spanish counterpart in the feed at all, for any program, and are
+  now wrapped in `lang="en"` at every render site — program and provider pages, an occupation's
+  program list, search results, and the comparison table — via `feedTextLang()` in
+  `web/lib/i18n.ts`. Occupation titles were already handled per-occupation by
+  `occupationTitleLang()`, which checks the 70 of 670 with no published Spanish name. A source-
+  scan test (`web/lib/englishFeedText.test.ts`) asserts every known render site of the first
+  three fields carries the guard, which is the part 3.1.2 itself cannot be made to check.
 
 ## Known limits of the coverage
 

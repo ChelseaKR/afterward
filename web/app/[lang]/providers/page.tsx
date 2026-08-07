@@ -12,7 +12,7 @@ import {
 import { getSearchIndex } from "@/lib/data";
 import { count, tidyName } from "@/lib/format";
 import { TableFilter } from "@/components/TableFilter";
-import { LANGUAGES, type Lang, dict, isLang } from "@/lib/i18n";
+import { LANGUAGES, type Lang, dict, feedTextLang, isLang } from "@/lib/i18n";
 import { groupByProvider } from "@/lib/providers";
 
 export function generateStaticParams() {
@@ -135,7 +135,7 @@ export default async function ProvidersIndexPage({
                   return (
                     <tr key={provider.slug}>
                       <th scope="row" style={{ fontWeight: 400 }}>
-                        <Link href={`/${lang}/providers/${provider.slug}/`}>
+                        <Link href={`/${lang}/providers/${provider.slug}/`} lang={feedTextLang(lang)}>
                           {tidyName(provider.name)}
                         </Link>
                       </th>

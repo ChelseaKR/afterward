@@ -17,7 +17,7 @@ import {
   occupationTitleLang,
 } from "@/lib/data";
 import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
-import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
+import { LANGUAGES, dict, feedTextLang, isLang, type Lang } from "@/lib/i18n";
 import { linkNotice } from "@/lib/links";
 import type {
   AmericanJobCenter,
@@ -1494,10 +1494,10 @@ export default async function ProgramPage({
         </Link>
       </p>
 
-      <h1>{program.program_name}</h1>
+      <h1 lang={feedTextLang(lang)}>{program.program_name}</h1>
       <p style={{ color: "var(--gray-90)", fontSize: "1.0625rem" }}>
         {program.provider_name ? (
-          <Link href={`/${lang}/providers/${slugify(program.provider_name)}/`}>
+          <Link href={`/${lang}/providers/${slugify(program.provider_name)}/`} lang={feedTextLang(lang)}>
             {tidyName(program.provider_name)}
           </Link>
         ) : null}
@@ -1938,7 +1938,7 @@ export default async function ProgramPage({
         <>
           <h2>{t.viewProgram}</h2>
           {format !== null && <p>{format}</p>}
-          <p>{program.description.replace(/^\d+\|/, "")}</p>
+          <p lang={feedTextLang(lang)}>{program.description}</p>
         </>
       )}
 

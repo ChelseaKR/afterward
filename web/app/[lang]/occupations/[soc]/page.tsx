@@ -12,7 +12,7 @@ import {
 } from "@/lib/data";
 import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
-import { LANGUAGES, dict, isLang } from "@/lib/i18n";
+import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
 import type { OccupationSkill, RelatedSource } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 
@@ -518,10 +518,12 @@ export default async function OccupationPage({
             {programs.slice(0, 40).map((entry) => (
               <li key={entry.i} className={`card${entry.r ? "" : " is-unreported"}`}>
                 <h3>
-                  <Link href={`/${lang}/programs/${entry.i}/`}>{entry.n ?? "—"}</Link>
+                  <Link href={`/${lang}/programs/${entry.i}/`} lang={feedTextLang(lang)}>
+                    {entry.n ?? "—"}
+                  </Link>
                 </h3>
                 <p className="card-provider">
-                  {tidyName(entry.p)}
+                  <span lang={feedTextLang(lang)}>{tidyName(entry.p)}</span>
                   {entry.c ? ` · ${entry.c}` : ""}
                   {entry.$ !== null ? ` · ${money(entry.$, lang)}` : ""}
                 </p>

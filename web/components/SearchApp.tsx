@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
-import { dict, type Lang } from "@/lib/i18n";
+import { dict, feedTextLang, type Lang } from "@/lib/i18n";
 import { money, percent, signedPercent, tidyName } from "@/lib/format";
 import {
   ANY_AREA,
@@ -1374,7 +1374,9 @@ function ResultCard({
     <li className={`card${entry.r ? "" : " is-unreported"}${shrinking ? " is-shrinking" : ""}`}>
       <div className="card-head">
         <h3>
-          <Link href={`/${lang}/programs/${entry.i}/`}>{entry.n ?? "—"}</Link>
+          <Link href={`/${lang}/programs/${entry.i}/`} lang={feedTextLang(lang)}>
+            {entry.n ?? "—"}
+          </Link>
         </h3>
         <label className="compare-check" title={atLimit ? t.compareFull : undefined}>
           <input
@@ -1404,7 +1406,9 @@ function ResultCard({
       </div>
       <p className="card-provider">
         {entry.p ? (
-          <Link href={`/${lang}/providers/${slugify(entry.p)}/`}>{tidyName(entry.p)}</Link>
+          <Link href={`/${lang}/providers/${slugify(entry.p)}/`} lang={feedTextLang(lang)}>
+            {tidyName(entry.p)}
+          </Link>
         ) : null}
         {entry.c ? ` · ${entry.c}` : ""}
         {region === null ? "" : ` · ${region}`}
