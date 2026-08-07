@@ -31,6 +31,10 @@ make web-dev       # http://localhost:3000
 `make data` fetches the real dataset from the U.S. DOL and California EDD. You only need it
 if you are changing the pipeline; everything else works from the fixture.
 
+Optional: `uv run pre-commit install` wires fast local hooks (ruff, gitleaks, whitespace)
+that catch the common CI failures before a commit leaves your machine. CI remains the gate
+of record either way.
+
 ## Before opening a pull request
 
 ```bash

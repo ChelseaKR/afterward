@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use Afterward or its dataset joins, please cite it as below."
+title: "Afterward: California training programs, their reported outcomes, and where they lead"
+abstract: >-
+  A public, bilingual (English/Spanish), no-account static site joining every
+  California training program reported under WIOA to the state's own ten-year
+  occupational projections, with suppressed and unreported outcome measures kept
+  distinct from zeros and coverage published as a first-class artifact.
+type: software
+authors:
+  - given-names: Chelsea
+    family-names: Kelly-Reif
+license: Apache-2.0
+repository-code: "https://github.com/ChelseaKR/afterward"
+url: "https://afterward.chelseakr.com"
+version: "0.1.0"
+keywords:
+  - california
+  - workforce
+  - wioa
+  - training-programs
+  - labor-market
+  - open-data
+  - civic-tech
