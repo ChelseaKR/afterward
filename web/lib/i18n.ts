@@ -176,6 +176,14 @@ const en = {
   region: "Region",
 
   compareTitle: "Side by side",
+  /**
+   * Accessible name for the sticky tray, distinct from `compareTitle`. Both used to say
+   * "Side by side" — the tray as `role="region"`, the table's `<section>` the same, through
+   * `aria-label` — which gave two landmarks on the same page the same accessible name and
+   * failed axe's `landmark-unique` once the tray was actually in the DOM to audit (#29; nothing
+   * before that rendered the tray and the table together).
+   */
+  compareTrayLabel: "Programs selected to compare",
   compareMeasure: "Measure",
   compareAdd: "Compare",
   compareCount: (n: number, max: number) => `${n} of ${max} selected to compare`,
@@ -928,6 +936,7 @@ const es: Dictionary = {
   region: "Región",
 
   compareTitle: "Lado a lado",
+  compareTrayLabel: "Programas seleccionados para comparar",
   compareMeasure: "Medida",
   compareAdd: "Comparar",
   compareCount: (n: number, max: number) => `${n} de ${max} seleccionados para comparar`,

@@ -3,11 +3,12 @@
 Updated 2026-08-07. This site targets **WCAG 2.2 level AAA**. This note records what the
 automated gates actually prove, and — more usefully — what they cannot.
 
-## The three gates
+## The four gates
 
 | Gate | Covers | Where it runs |
 | --- | --- | --- |
 | `npm run a11y` | Every axe-core rule, including the sixteen axe disables by default | jsdom, 16 pages, both languages |
+| `npm run a11y:rendered` | Every axe-core rule, against the DOM `a11y` cannot see | Chromium, search results + comparison table, both languages |
 | `npm run a11y:browser` | `color-contrast-enhanced` (1.4.6 AAA) and `target-size` (2.5.8 AA) | Chromium, light **and** dark |
 | `npm run contrast` | 1.4.6 analytically, from the design system's own tokens | Node, both schemes |
 
@@ -16,6 +17,15 @@ and computes exact ratios, but only for pairings someone thought to list — it 
 36 real elements failed, because none of them were on its list. The browser one checks every
 rendered element and catches what the list forgot, but only on the pages it loads. Neither
 alone is coverage.
+
+`npm run a11y` reads the static export, which on `/en/` and `/es/` is the chrome around an
+empty result list — everything `SearchApp.tsx` shows is fetched from `search-index.json` and
+rendered after hydration, so it was never in the document jsdom parses, and neither was the
+comparison table, which does not exist until a reader selects two programs and opens it
+(#29). `npm run a11y:rendered` (`scripts/a11y-rendered.mjs`) serves the built `out/` itself on
+a free port, waits for the result list to actually populate, audits it with every axe rule,
+then selects two programs, opens the comparison, and audits again with the table in the DOM.
+Because it serves itself it needs no separately-started server and runs as part of `verify`.
 
 `npm run a11y` now enables every rule axe ships. Running axe unconfigured is **not** "all the
 checks": sixteen rules are off unless asked for, including `color-contrast-enhanced` (AAA
@@ -36,6 +46,14 @@ Raising the bar from AA to AAA on 2026-08-05 surfaced real defects, not paperwor
   same colour reaches on white. Those are the links a reader uses to check a claim about
   someone else's money against the actual rule.
 - The not-reported grey was 6.63:1. It is the most repeated string on the site.
+- The first run of `npm run a11y:rendered` (#29) found two defects in a region no gate had
+  ever rendered before: the design system's own `:is(button, a.button):where(:hover)` rule
+  outranks `.compare-open`'s un-hovered background on specificity, so hovering or focusing
+  "Compare these" (which is also the state a click leaves it in) swapped in a teal background
+  under text still fixed dark, failing `color-contrast`. And the sticky selection tray and
+  the comparison table both used "Side by side" as their region's accessible name, failing
+  `landmark-unique` — invisible before because nothing rendered both regions in the same
+  document to compare them against each other.
 
 ## What no tool can check, and what was done instead
 
@@ -74,6 +92,11 @@ rather than a gap nobody noticed.
 
 - The gates run against a sample of pages, not all 49,000. The templates are shared, so a
   template fault appears on the sampled page; a data-dependent one might not.
-- `npm run a11y:browser` needs the built site served locally, so it is not part of `verify`
-  and must be run deliberately after a build.
-- Neither gate tests with an actual screen reader, and no automated tool does.
+- `npm run a11y:browser` needs a separately-started server, so it is not part of `verify` and
+  must be run deliberately after a build. `npm run a11y:rendered` does not share this limit —
+  it serves `out/` itself — and is part of `verify`.
+- `a11y:rendered` covers the result list and the comparison table with two programs selected.
+  It does not cover: the "no results" empty state, a card in its saved (`aria-pressed`) state,
+  the shortlist bar that appears on first save, or the comparison with more than two programs
+  selected. Each is a real state a reader reaches; none has been in an audited document yet.
+- No gate tests with an actual screen reader, and no automated tool does.

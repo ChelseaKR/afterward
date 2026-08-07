@@ -333,6 +333,22 @@ body {
   cursor: pointer;
 }
 
+/*
+ * The design system's own `:is(button, a.button):where(:hover) { background:
+ * var(--hover-color) }` outranks the rule above on specificity -- `:is()` counts its most
+ * specific branch (`a.button`, one class) even though this is a bare `<button>`, and
+ * `:where()` zeroes the pseudo-class but not that. Left alone, hovering or focusing this
+ * button (which is also what a click leaves it in) swaps in `--hover-color` under text still
+ * fixed at `--gray-120`, and the pairing fails color-contrast -- caught by
+ * `a11y-rendered.mjs` (#29), invisible to every other gate because none of them render this
+ * button in an interactive state.
+ */
+.compare-open:hover,
+.compare-open:focus-visible {
+  background: var(--gray-10);
+  color: var(--gray-120);
+}
+
 .compare-open:disabled {
   opacity: 0.5;
   cursor: not-allowed;

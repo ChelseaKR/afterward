@@ -93,7 +93,7 @@ export function CompareTray({
   if (selected.length === 0) return null;
 
   return (
-    <div className="compare-tray" role="region" aria-label={t.compareTitle}>
+    <div className="compare-tray" role="region" aria-label={t.compareTrayLabel}>
       <div className="shell compare-tray-inner">
         <p className="compare-tray-count">
           {t.compareCount(selected.length, MAX_COMPARE)}

@@ -12,10 +12,11 @@
     "lint": "next lint",
     "test": "vitest run",
     "a11y": "node scripts/a11y-audit.mjs out",
-    "verify": "npm run typecheck && npm run test && npm run contrast && npm run build && npm run a11y",
+    "verify": "npm run typecheck && npm run test && npm run contrast && npm run build && npm run a11y && npm run a11y:rendered",
     "contrast": "node scripts/contrast-audit.mjs",
     "size-report": "node scripts/size-report.mjs out",
     "a11y:browser": "node scripts/a11y-browser.mjs",
+    "a11y:rendered": "node scripts/a11y-rendered.mjs out",
     "transfer": "node scripts/transfer-audit.mjs out"
   },
   "dependencies": {
