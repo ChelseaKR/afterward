@@ -667,7 +667,6 @@ export interface SearchEntry {
   s: string[];
   o: string[];
   g: number | null;
-  wage: number | null;
   op: number | null;
   cr: number | null;
   er: number | null;

@@ -26,7 +26,6 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     s: [],
     o: ["Occupation"],
     g: 10,
-    wage: 45000,
     op: 500,
     cr: 0.8,
     er: 0.7,

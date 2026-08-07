@@ -44,7 +44,6 @@ function entry(partial: Partial<SearchEntry> & { i: string }): SearchEntry {
     s: [],
     o: [],
     g: null,
-    wage: null,
     op: null,
     cr: null,
     er: null,

@@ -1680,9 +1680,6 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     # by more than half (229 against 538 on the current snapshot), because the shrinking
     # occupation is frequently not the one listed first. Summarise across all of them.
     changes = [o["percent_change"] for o in occupations if o.get("percent_change") is not None]
-    wages = [
-        o["median_annual_wage"] for o in occupations if o.get("median_annual_wage") is not None
-    ]
     openings = [
         o["total_job_openings"] for o in occupations if o.get("total_job_openings") is not None
     ]
@@ -1707,8 +1704,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         # Worst projected outlook across those occupations, so "trains for a shrinking job"
         # is filterable without a second fetch. None stays None: unknown is not flat.
         "g": worst_change,
-        # Best wage and most openings available down any of its paths.
-        "wage": max(wages) if wages else None,
+        # Most openings available down any of its paths.
         "op": max(openings) if openings else None,
         # Headline outcomes, null-preserving.
         "cr": outcomes["completion_rate"],
