@@ -372,7 +372,25 @@ export interface ProgramOutcomes {
   completion_rate: number | null;
   credentials_earned: number | null;
   median_earnings: number | null;
+  /**
+   * DOL's published rate. **Not** `employed_q2 / total_exited`, and never derive it that way —
+   * see `employed_q2` below. `completion_rate`, by contrast, does reconcile exactly against
+   * `total_completed / total_exited` (2,047 of 2,047 checked), because that pair shares a
+   * denominator this feed publishes and this pair does not.
+   */
   employment_rate_q2: number | null;
+  /**
+   * NOT the numerator of `employment_rate_q2`, despite sitting beside it. Of 1,760 programs
+   * publishing both against a non-zero exit count, 66.9% differ from `employed_q2 /
+   * total_exited` by more than 10 points, and 65 report more employed than exited.
+   *
+   * Confirmed against the ETA-9171 form's own data element definitions: `total_exited` is
+   * DE121, "in the reporting period"; the rate's actual denominator is DE129, "who were in
+   * the 2nd quarter after exit within the reporting period" — a cohort shaped by the
+   * reporting lag every quarter-after-exit measure carries, not `total_exited` under another
+   * name. DE129 is not published in this feed, so the rate cannot be reconstructed from what
+   * is. See `PROVENANCE.md` "Notes on D1" for the citation and the exact defining language.
+   */
   employed_q2: number | null;
   employed_q4: number | null;
   reported: boolean;

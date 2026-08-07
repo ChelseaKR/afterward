@@ -1632,10 +1632,18 @@ def program_payload(
             # rate and a Q2 count against a non-zero exit count, the median gap between
             # employed_q2/total_exited and the published rate is 0.17, 1,177 (66.9%) differ by
             # more than 10 points, only 165 (9.4%) agree within a rounding step, and 65 report
-            # more people employed than exited at all. DOL computes the rate on an exiter
-            # denominator it does not publish. Both are carried because both are filed and a
-            # reader is entitled to them; neither is derived from the other here, and nothing
-            # downstream may derive one either.
+            # more people employed than exited at all.
+            #
+            # Confirmed against the ETA-9171 form's own data element definitions (#25;
+            # PROVENANCE.md "Notes on D1" has the citation and the exact language): DOL
+            # publishes total_exited (DE121, "in the reporting period") but not the rate's
+            # actual denominator, DE129 ("who were in the 2nd quarter after exit within the
+            # reporting period") -- a cohort shaped by the reporting lag every quarter-after-
+            # exit measure carries, not the same population as total_exited under another
+            # name. employed_q2/total_exited is therefore not the calculation DOL performs,
+            # and cannot be reconstructed from what this feed publishes. Both fields are
+            # carried because both are filed and a reader is entitled to them; neither is
+            # derived from the other here, and nothing downstream may derive one either.
             "employed_q2": program.employed_q2,
             "employed_q4": program.employed_q4,
             "reported": program.has_outcomes,

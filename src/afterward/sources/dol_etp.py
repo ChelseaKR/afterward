@@ -281,6 +281,10 @@ class Program:
     completed_percent: float | None
     total_credential: float | None
     median_earnings: float | None
+    # employed_q2 is NOT q2_employment_percent's numerator, despite the names. The rate's
+    # actual denominator (ETA-9171 DE129) is a differently-scoped exiter cohort than
+    # total_exited (DE121), not the same population under another name. See build.py's
+    # search_entry / program_payload and PROVENANCE.md "Notes on D1" (#25).
     q2_employment_percent: float | None
     employed_q2: float | None
     employed_q4: float | None

@@ -121,6 +121,41 @@ Sentinel value: `-1` in a `field_c_*` or `field_total_*` column means "not repor
 suppressed", **not** zero. The pipeline maps it to null and the UI must render it as
 "not reported" — never as a zero or a low score.
 
+### Notes on D1 — `employed_q2` is not the numerator of `employment_rate_q2` (#25)
+
+Both fields ship (`employed_q2`, `employment_rate_q2` in `programs.json`). A consumer joining
+them, or computing `employed_q2 / total_exited`, gets a different answer from the published
+rate on 66.9% of the 1,760 programs where both are present, by more than 10 points — and 65
+programs report more people employed than exited. This is not noise in the feed. The
+[ETA-9171 form's own data element definitions](https://www.dol.gov/sites/dolgov/files/ETA/Performance/pdfs/ICR/ETA_9171%20PY21+.pdf)
+(PY21+, OMB 1205-0526; the live URL 403s automated fetches including this project's, so this
+was read via the Wayback Machine's 2024 capture) name three distinct elements:
+
+- **DE121** (`total_exited`) — "the total number of students who completed, withdrew, or
+  transferred from this program of study **in the reporting period**."
+- **DE123** (`employed_q2`) — explicitly labelled "**(Numerator)**" — "the total number of
+  ... exiters who were in the 2nd quarter after exit and have been determined to be in
+  unsubsidized employment ... within the reporting period."
+- **DE129**, the rate's actual denominator (`c_q2_employment_percent` = DE123/DE129, per the
+  [TrainingProviderResults.gov data dictionary](https://www.trainingproviderresults.gov/assets/ETP_Data_Dictionary.pdf))
+  — "the total number of ... exiters (completed, withdrew, or transferred) **who were in the
+  2nd quarter after exit** within the reporting period."
+
+DE121 and DE129 read almost identically and are not the same population. DE121 is every
+exiter in the current reporting period, including someone who exited last month and whose 2nd
+quarter after exit has not happened yet. DE129 is restricted to exiters whose 2nd-quarter
+outcome could actually be determined by the time of reporting — a cohort shaped by the measurement lag every quarter-after-exit
+indicator carries, not by the reporting period's exit window. `total_exited` (DE121) is
+published; DE129 is not, in this feed. So `employed_q2 / total_exited` is not the calculation
+DOL performs, and cannot be — the pieces are genuinely denominated differently, not loosely
+related. `completion_rate` has no such gap: DE122/DE121 uses the same denominator the site
+already publishes, which is exactly why it reconciles exactly across all 2,047 programs where
+this project checked, while the employment pair does not.
+
+Both fields stay published, unreconciled, and undocumented as the same quantity by anything
+downstream of the parse — `build.py`'s `search_entry` and the emitted `outcomes` block carry
+a comment recording this finding beside both fields.
+
 ## Design inputs
 
 | # | Input | Date | What it informed |
@@ -130,3 +165,4 @@ suppressed", **not** zero. The pipeline maps it to null and the UI must render i
 | I3 | Newsom Master Plan for Career Education (Dec 2024 framework) | 2026-08-04 | Audience framing: pathways with or without a four-year degree |
 | I4 | U.S. DOL TrainingProviderResults.gov public site | 2026-08-04 | Confirmed what federal outcome measures exist and are publishable |
 | I5 | WIOA §116 / TEGL 03-18 ETP reporting guidance | 2026-08-04 | Understanding of measure definitions (Q2/Q4 employment, credential attainment, median earnings) |
+| I6 | ETA-9171 form data element definitions, PY21+ (OMB 1205-0526), read via the Wayback Machine's 2024 capture — the live DOL URL 403s automated fetches | 2026-08-07 | Confirmed DE121 (`total_exited`) and DE129 (the published employment rate's actual denominator) are differently-scoped exiter cohorts, not the same population under two names; see "Notes on D1" |
