@@ -174,6 +174,30 @@ const en = {
   compareNote:
     "A highlighted cell is the strongest reported figure in that row. Rows where fewer than two programs reported anything are not marked, because being the only one to file a number is not the same as being the best.",
   /**
+   * Text alternatives for the `.is-best` mark, read alongside the cell's value rather than
+   * relying on font weight and a rule that never reach a screen reader. One per row, because
+   * what "best" means differs by row: cost and length compare every program that reported;
+   * completion, employment and earnings compare only programs whose outcomes describe
+   * themselves, and completion further restricts to programs of comparable length.
+   */
+  compareBestCost: "Lowest reported cost in this comparison",
+  compareBestLength: "Shortest reported length in this comparison",
+  compareBestCompletion:
+    "Highest reported completion rate in this comparison, among programs of comparable " +
+    "length whose outcomes describe themselves",
+  compareBestEmployment:
+    "Highest reported employment rate in this comparison, among programs whose outcomes " +
+    "describe themselves",
+  compareBestEarnings:
+    "Highest reported earnings in this comparison, among programs whose outcomes describe " +
+    "themselves",
+  /**
+   * Said in the row header when real figures are on screen but none is marked — a tie, or
+   * every reporting program disqualified from the ranking. Silence here reads the same as
+   * "nobody won"; this says the actual reason is "nothing here stood out."
+   */
+  compareNoStandout: "No figure in this row stands out as the strongest reported one",
+  /**
    * Shown only when the completion row had a mark and length took it away — never over a row
    * nobody reported. The lengths named are the site's own length filter caps, so a reader who
    * has met one has met the other.
@@ -937,6 +961,18 @@ const es: Dictionary = {
   compareFull: "La comparación está llena. Quite uno para agregar otro.",
   compareNote:
     "La celda resaltada es la cifra reportada más fuerte de esa fila. Las filas donde menos de dos programas reportaron algo no se marcan, porque ser el único que reportó un número no es lo mismo que ser el mejor.",
+  compareBestCost: "El costo reportado más bajo de esta comparación",
+  compareBestLength: "La duración reportada más corta de esta comparación",
+  compareBestCompletion:
+    "La tasa de finalización reportada más alta de esta comparación, entre programas de " +
+    "duración comparable cuyos resultados describen solo ese programa",
+  compareBestEmployment:
+    "La tasa de empleo reportada más alta de esta comparación, entre programas cuyos " +
+    "resultados describen solo ese programa",
+  compareBestEarnings:
+    "Los ingresos reportados más altos de esta comparación, entre programas cuyos " +
+    "resultados describen solo ese programa",
+  compareNoStandout: "Ninguna cifra de esta fila se destaca como la más fuerte reportada",
   compareCompletionLength:
     "Aquí no se marca la finalización: estos programas no duran lo mismo. Entre los programas " +
     "de California cuyas cifras describen solo ese programa, la mediana de quienes terminaron " +

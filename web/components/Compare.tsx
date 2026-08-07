@@ -151,23 +151,44 @@ function Row({
   values,
   lang,
   best,
+  bestNote,
 }: {
   label: string;
   values: (string | null)[];
   lang: Lang;
   /** Index of the strongest reported value, or null when no comparison is meaningful. */
   best: number | null;
+  /**
+   * What the mark on `best` means, said aloud next to that cell's value. Font weight and an
+   * inset rule are how the mark reaches a sighted reader; neither reaches a screen reader, so
+   * this is the only place the mark exists for one.
+   */
+  bestNote: string;
 }) {
   const t = dict(lang);
+  const reportedCount = values.filter((value) => value !== null).length;
+  // Real figures are on screen, in numbers a reader could compare themselves, and none is
+  // marked — a tie, or every reporter disqualified from the ranking. Silence here reads the
+  // same as "nobody won"; a row with fewer than two figures at all doesn't need this, because
+  // the "Not reported" cells already say why there is nothing to compare.
+  const noStandout = best === null && reportedCount >= 2;
   return (
     <tr>
-      <th scope="row">{label}</th>
+      <th scope="row">
+        {label}
+        {noStandout && <span className="visually-hidden"> — {t.compareNoStandout}</span>}
+      </th>
       {values.map((value, index) => (
         <td key={index} className={best === index ? "is-best" : undefined}>
           {value === null ? (
             <span className="unreported" title={t.notReportedLong}>
               {t.notReported}
             </span>
+          ) : best === index ? (
+            <>
+              {value}
+              <span className="visually-hidden"> ({bestNote})</span>
+            </>
           ) : (
             value
           )}
@@ -378,12 +399,14 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
               lang={lang}
               values={entries.map((e) => money(e.$, lang))}
               best={bestOf(entries, (e) => e.$, "low")}
+              bestNote={t.compareBestCost}
             />
             <Row
               label={t.length}
               lang={lang}
               values={entries.map((e) => (e.w === null ? null : t.weeks(e.w)))}
               best={bestOf(entries, (e) => e.w, "low")}
+              bestNote={t.compareBestLength}
             />
             {/*
               * The three cohort measures. Cost and length above are properties of the course
@@ -402,18 +425,21 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
               lang={lang}
               values={entries.map((e) => percent(e.cr, lang))}
               best={completion.best}
+              bestNote={t.compareBestCompletion}
             />
             <Row
               label={t.employmentRate}
               lang={lang}
               values={entries.map((e) => percent(e.er, lang))}
               best={bestOf(entries, ownCohortOnly((e) => e.er), "high")}
+              bestNote={t.compareBestEmployment}
             />
             <Row
               label={t.medianEarnings}
               lang={lang}
               values={entries.map((e) => money(e.me, lang))}
               best={bestOf(entries, ownCohortOnly((e) => e.me), "high")}
+              bestNote={t.compareBestEarnings}
             />
             {/*
               * One row, grouped by job, in place of four that were grouped by measure.
