@@ -48,7 +48,9 @@ export default async function PayingForTraining({
   return (
     <div className="shell detail">
       <p>
-        <Link href={`/${lang}/`}>← {t.backToSearch}</Link>
+        <Link href={`/${lang}/`} prefetch={false}>
+          ← {t.backToSearch}
+        </Link>
       </p>
 
       <h1>{t.fundingGuideTitle}</h1>
