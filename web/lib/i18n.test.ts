@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { LANGUAGES, OTHER_LANG, dict, isLang } from "./i18n";
+import { LANGUAGES, OTHER_LANG, dict, feedTextLang, isLang } from "./i18n";
 
 const en = dict("en");
 const es = dict("es");
@@ -92,5 +92,15 @@ describe("the non-affiliation notice", () => {
   it("names California in both languages so the denial is unambiguous", () => {
     expect(en.notAffiliated).toMatch(/California/);
     expect(es.notAffiliated).toMatch(/California/);
+  });
+});
+
+describe("feedTextLang", () => {
+  it("marks feed text as English only on a Spanish page", () => {
+    expect(feedTextLang("es")).toBe("en");
+  });
+
+  it("emits no attribute on an English page, where it would be redundant", () => {
+    expect(feedTextLang("en")).toBeUndefined();
   });
 });

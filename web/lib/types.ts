@@ -196,11 +196,13 @@ export interface EducationLevelShare {
  * whose "Postsecondary non-degree award" has no counterpart on this scale at all. Subtracting
  * one from the other is only meaningful where the stated category maps onto a level here.
  *
- * **`distribution` was decided against on 2026-08-05 and is still on the site.**
- * `docs/education-attainment-not-shipped-2026-08-05.md` is the record of why it should not be
- * published; `Attainment` in `app/[lang]/programs/[id]/page.tsx` publishes it anyway, on
- * 3,250 of the 3,266 program pages. The decision was written down and never carried out, so
- * this field is live while being documented as withdrawn. Do not build anything new on it.
+ * **`distribution` is withdrawn from the program page as of 2026-08-07 (#20) and stays in the
+ * dataset unrendered.** `docs/education-attainment-not-shipped-2026-08-05.md` is the record of
+ * why: 268 of the 670 occupations (40.0%) carry a distribution byte-identical to another
+ * occupation's, with no field that flags which. The field remains here because the underlying
+ * measurement is real and a future render could be built with the caveat the withdrawn one
+ * lacked; do not build one without also solving that problem, and do not build anything new on
+ * `reported_for_soc` regardless — see below.
  *
  * `typical_experience` and `typical_on_the_job_training` are **requirement claims**, and they
  * are the same federal assignment that reaches this dataset a second time as
@@ -370,7 +372,25 @@ export interface ProgramOutcomes {
   completion_rate: number | null;
   credentials_earned: number | null;
   median_earnings: number | null;
+  /**
+   * DOL's published rate. **Not** `employed_q2 / total_exited`, and never derive it that way —
+   * see `employed_q2` below. `completion_rate`, by contrast, does reconcile exactly against
+   * `total_completed / total_exited` (2,047 of 2,047 checked), because that pair shares a
+   * denominator this feed publishes and this pair does not.
+   */
   employment_rate_q2: number | null;
+  /**
+   * NOT the numerator of `employment_rate_q2`, despite sitting beside it. Of 1,760 programs
+   * publishing both against a non-zero exit count, 66.9% differ from `employed_q2 /
+   * total_exited` by more than 10 points, and 65 report more employed than exited.
+   *
+   * Confirmed against the ETA-9171 form's own data element definitions: `total_exited` is
+   * DE121, "in the reporting period"; the rate's actual denominator is DE129, "who were in
+   * the 2nd quarter after exit within the reporting period" — a cohort shaped by the
+   * reporting lag every quarter-after-exit measure carries, not `total_exited` under another
+   * name. DE129 is not published in this feed, so the rate cannot be reconstructed from what
+   * is. See `PROVENANCE.md` "Notes on D1" for the citation and the exact defining language.
+   */
   employed_q2: number | null;
   employed_q4: number | null;
   reported: boolean;
@@ -667,7 +687,6 @@ export interface SearchEntry {
   s: string[];
   o: string[];
   g: number | null;
-  wage: number | null;
   op: number | null;
   cr: number | null;
   er: number | null;

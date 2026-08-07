@@ -64,6 +64,36 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- A build can no longer publish coverage figures that the dataset it ships contradicts.
+  `check_coverage_shape` asked whether `coverage.json` carried the keys the site reads; it
+  never asked whether the numbers in them were true of the programs being written out beside
+  it. Nothing did. `build_offline` copies the fixture's coverage document through wholesale
+  and recomputes only four blocks, so `total_programs`, the three per-measure counts,
+  `programs_with_any_outcome` and `outcome_coverage_pct` were carried over untouched —
+  regenerating the fixture's programs without regenerating its coverage would have shipped one
+  dataset and published another's arithmetic, silently. `check_coverage_counts` now recomputes
+  all six from the emitted payloads and refuses the build on any disagreement, naming each one.
+  The real build is checked by the same function: its counts come from the parsed
+  `Program` objects while the site is served the payloads built from them, and nothing had
+  ever asserted that those two describe the same set. Verified to fire — dropping five
+  programs from the fixture without touching its coverage now stops the build instead of
+  publishing 55 programs under a claim of 60. These are the figures in the footer of all
+  ~9,000 pages and the ones quoted where nobody can check them against the data, so a wrong
+  one is a false public claim about how much of California's training system reports
+  anything, not a rendering bug.
+- The suppression sentinel can no longer reach a page. `-1` is how the ETP scorecard says
+  "withheld", `clean_measure` maps it to `None` where it enters, and that has always been well
+  tested at the source boundary — but nothing checked the other end, the end that publishes.
+  `check_outcome_integrity` now runs over every emitted record before anything is written and
+  refuses a build carrying a `-1`, a completion or employment rate outside [0, 1], a negative
+  headcount, or a negative median earning. It also checks each record's `reported` flag
+  against its own three measures: that flag is what the site keys "no outcome data was
+  reported" off and what `programs_with_any_outcome` counts, so a record whose flag disagrees
+  with its data either hides three published measures behind a "not reported" notice or shows
+  that notice's absence over three blanks. Loud rather than clamped: a value corrected here
+  would be one this build chose rather than measured. The current 3,266-program dataset passes
+  clean, and a genuine reported zero is explicitly not a problem — it is a fact about a real
+  cohort, and telling it apart from a suppressed cell is the whole point.
 - The site no longer spends ~400 KiB of every visitor's data on pages they did not ask for.
   The masthead links and the "back to search" link at the top of every page were prefetched
   as soon as they scrolled into view, and they point at the four heaviest routes on the site
@@ -139,25 +169,32 @@ All notable changes to this project are documented here. The format follows
   `camino.sources.*` now name `src/afterward/`, and the Makefile no longer says the old
   CloudFront distribution serves camino.chelseakr.com — as of 2026-08-05 that host answers 301
   to the matching afterward.chelseakr.com path.
+- The last of the pre-rename names that were still shipping. The Python package credited
+  "Camino contributors", the npm package was `camino-web` described as the front end for
+  Camino, `make dataset-package` wrote `camino-dataset-<date>.tar.gz` onto every GitHub
+  release, `deploy_check` identified itself to CloudFront as `camino-deploy-check`, and a
+  comment in `web/lib/compare.ts` pointed at `src/camino/build.py`, a path that no longer
+  exists. The release tarball rename is safe because `deploy.yml` matches `*.tar.gz` rather
+  than the name.
+  `STORAGE_KEY` in `web/lib/shortlist.ts` deliberately stays `camino.shortlist.v1`: it names
+  data on the reader's own device, and renaming it would not migrate anything — it would make
+  every shortlist saved before the rename unreadable, with no error and no way back. The
+  historical references are also deliberate and stay: PROVENANCE.md records that the O\*NET
+  registration is still under "Camino", and the Makefile, `infra/aws-static-site.yml` and the
+  occupation-page comment explain what the old name was and what happened to it. The dated
+  research notes in `docs/` are archival and still name `src/camino/` deliverables, as the
+  banner in `docs/dead-provider-links-2026-08-04.md` says.
 
 ### Known limitations
 
-- The national education-attainment distribution is published on 3,250 of the 3,266 program
-  pages **against a written decision not to publish it**
-  (`docs/education-attainment-not-shipped-2026-08-05.md`). 1,695 of the 5,514
-  program-occupation rows sit on a distribution measured for a broader group than the
-  occupation named, and nothing on the page says so. Withdrawing the block is a behaviour
-  change and has not been made.
-- Program descriptions render in English on Spanish pages, and so do the occupation titles
+- Program descriptions and program and provider names render in English on Spanish pages —
+  the feed publishes no Spanish counterpart for any of them — and so do the occupation titles
   for the 70 of 670 occupations Mi Próximo Paso does not carry. The controlled vocabularies
   (education, experience, training type) are translated, and the other 600 occupations use
   the Department of Labor's own Spanish title and description. Nothing is machine-translated.
-  The About page's "known limitations" copy still says all occupation titles are English and
-  contradicts its own sources section forty lines above; correcting user-facing Spanish is
-  not a documentation change and is left to the i18n workstream.
 - Whether California's own ETPL lists programs the federal file omits is unresolved; the
   state publishes no bulk export.
-- 1,430 programs filed no usable website link. Most never filed one; eight filed something
-  that was not a URL, and those are now dropped rather than rendered. 1,612 render no
-  clickable link once the dead ones are excluded, and the About page still reports 1,430
-  under the sentence "no working website link".
+- The national education-attainment distribution (`OccupationEducation.distribution`) stays
+  in the dataset, parsed and typed, but nothing renders it as of #20
+  (`docs/education-attainment-not-shipped-2026-08-05.md`): 268 of the 670 occupations carry a
+  distribution byte-identical to another's, with no field that flags which.

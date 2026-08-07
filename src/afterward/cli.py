@@ -16,6 +16,7 @@ from afterward.build import (
     build_offline,
     check_provider_links,
 )
+from afterward.ctdl.export import export_ctdl
 from afterward.sources import link_check
 
 app = typer.Typer(
@@ -225,6 +226,35 @@ def build_offline_command(
     """Emit the site dataset from the committed fixture, without touching the network."""
     count = build_offline(fixture_dir, output_dir=output_dir)
     typer.echo(f"Built {count} fixture programs from {fixture_dir} -> {output_dir}")
+
+
+@app.command("export-ctdl")
+def export_ctdl_command(
+    dataset_dir: Path = typer.Option(
+        Path("web/public/data"),
+        "--dataset-dir",
+        help="Emitted dataset to project; the same files the site serves.",
+    ),
+    output_dir: Path = typer.Option(
+        Path("dist/ctdl"), "--output-dir", help="Where to write the JSON-LD and its coverage."
+    ),
+) -> None:
+    """Project the emitted dataset into CTDL JSON-LD (a demonstration export).
+
+    Reads the dataset the site serves and writes a CTDL JSON-LD graph beside a coverage
+    statement counted from that graph. Nothing is published to any registry, and the CTIDs
+    are derived locally rather than Registry-assigned. Deterministic: the same dataset
+    always produces byte-identical output.
+    """
+    report = export_ctdl(dataset_dir, output_dir)
+    typer.echo(f"Snapshot {report.snapshot_date} -> {report.document_path}")
+    typer.echo(f"  ceterms:LearningProgram          {report.programs:>6}")
+    typer.echo(f"  ceterms:CredentialOrganization   {report.organizations:>6}")
+    typer.echo("  programs carrying")
+    for term, count in report.property_counts.items():
+        typer.echo(f"    {term:<30}{count:>6}")
+    typer.echo(f"  coverage statement -> {report.coverage_path}")
+    typer.echo("\nDemonstration export: not published to any registry; CTIDs are locally derived.")
 
 
 def main() -> None:

@@ -6,7 +6,7 @@ import { Measure } from "@/components/Measure";
 import { getSearchIndex } from "@/lib/data";
 import { isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
-import { LANGUAGES, dict, isLang } from "@/lib/i18n";
+import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
 import { findProvider, groupByProvider } from "@/lib/providers";
 import { isShrinking } from "@/lib/search";
 
@@ -106,7 +106,7 @@ export default async function ProviderPage({
         </Link>
       </p>
 
-      <h1>{tidyName(provider.name)}</h1>
+      <h1 lang={feedTextLang(lang)}>{tidyName(provider.name)}</h1>
       <p style={{ color: "var(--gray-90)" }}>{provider.cities.join(" · ")}</p>
 
       <dl className="measure-grid panel">

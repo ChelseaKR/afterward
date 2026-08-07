@@ -17,6 +17,19 @@ export function isLang(value: string): value is Lang {
 }
 
 /**
+ * `lang` for text the federal and state feeds publish in English only, unconditionally.
+ *
+ * Unlike `occupationTitleLang` in `data.ts`, which checks a per-occupation Spanish name
+ * because O*NET publishes one for 600 of 670, this has nothing to check: `program_name`,
+ * `description` and `provider_name` have no Spanish counterpart in the feed at all, for any
+ * program. Returns `undefined` on an English page so the attribute is never emitted where it
+ * would be redundant.
+ */
+export function feedTextLang(lang: Lang): "en" | undefined {
+  return lang === "es" ? "en" : undefined;
+}
+
+/**
  * How each length cap reads to someone planning around it, in each language.
  *
  * Months lead and weeks follow in brackets, because nobody budgets rent, childcare or an
@@ -163,6 +176,14 @@ const en = {
   region: "Region",
 
   compareTitle: "Side by side",
+  /**
+   * Accessible name for the sticky tray, distinct from `compareTitle`. Both used to say
+   * "Side by side" — the tray as `role="region"`, the table's `<section>` the same, through
+   * `aria-label` — which gave two landmarks on the same page the same accessible name and
+   * failed axe's `landmark-unique` once the tray was actually in the DOM to audit (#29; nothing
+   * before that rendered the tray and the table together).
+   */
+  compareTrayLabel: "Programs selected to compare",
   compareMeasure: "Measure",
   compareAdd: "Compare",
   compareCount: (n: number, max: number) => `${n} of ${max} selected to compare`,
@@ -173,6 +194,30 @@ const en = {
   compareFull: "Comparison is full. Remove one to add another.",
   compareNote:
     "A highlighted cell is the strongest reported figure in that row. Rows where fewer than two programs reported anything are not marked, because being the only one to file a number is not the same as being the best.",
+  /**
+   * Text alternatives for the `.is-best` mark, read alongside the cell's value rather than
+   * relying on font weight and a rule that never reach a screen reader. One per row, because
+   * what "best" means differs by row: cost and length compare every program that reported;
+   * completion, employment and earnings compare only programs whose outcomes describe
+   * themselves, and completion further restricts to programs of comparable length.
+   */
+  compareBestCost: "Lowest reported cost in this comparison",
+  compareBestLength: "Shortest reported length in this comparison",
+  compareBestCompletion:
+    "Highest reported completion rate in this comparison, among programs of comparable " +
+    "length whose outcomes describe themselves",
+  compareBestEmployment:
+    "Highest reported employment rate in this comparison, among programs whose outcomes " +
+    "describe themselves",
+  compareBestEarnings:
+    "Highest reported earnings in this comparison, among programs whose outcomes describe " +
+    "themselves",
+  /**
+   * Said in the row header when real figures are on screen but none is marked — a tie, or
+   * every reporting program disqualified from the ranking. Silence here reads the same as
+   * "nobody won"; this says the actual reason is "nothing here stood out."
+   */
+  compareNoStandout: "No figure in this row stands out as the strongest reported one",
   /**
    * Shown only when the completion row had a mark and length took it away — never over a row
    * nobody reported. The lengths named are the site's own length filter caps, so a reader who
@@ -496,7 +541,7 @@ areaNote: (unplaced: number, total: number) =>
   aboutLimitsBody:
     "These are the things this site gets wrong or cannot yet do. They are listed here rather than discovered later.",
   aboutLimitTranslation:
-    "Occupation titles and program descriptions appear in English on Spanish pages. The interface and the controlled vocabularies are translated; the open-ended text from the federal and state feeds is not, because it is published in English only.",
+    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing on this site is machine-translated.",
   aboutLimitEtpl:
     "The programs here are the ones California filed federally. Whether the state's own eligible training provider list carries programs the federal file omits is unresolved, because California publishes no bulk export of it. A program missing from this site is not necessarily a program that does not exist.",
   aboutLimitUnmatched: (unmatched: string) =>
@@ -585,42 +630,6 @@ areaNote: (unplaced: number, total: number) =>
 
   // ---- What people in this job actually studied ----
   //
-  // The single "Usually needs" category is the federal judgement of what a person typically
-  // needs to enter. It is not what people have: on 60 California occupations it names a
-  // credential most people doing the job do not hold, and on 135 program pages it is withheld
-  // outright because it was assigned to a whole group of occupations. The distribution is the
-  // second fact, and it is published as a second fact — never in the row the category vacated.
-  attainmentHeading: "What people in this job actually studied",
-  // The seven Census attainment levels, shortened for a list a reader scans rather than
-  // reads. Deliberately not borrowed from the education vocabulary the "Usually needs" row
-  // uses: these are a different scale answering a different question, and wording them
-  // identically would invite exactly the subtraction the note underneath rules out. One of
-  // the seven — "Less than high school diploma" — has no entry in that vocabulary at all.
-  eduLevelNoHs: "No high school diploma",
-  eduLevelHs: "High school diploma",
-  eduLevelSomeCollege: "Started college, no degree",
-  eduLevelAssociate: "Two-year degree",
-  eduLevelBachelor: "Four-year degree",
-  eduLevelMaster: "Master's degree",
-  eduLevelDoctorate: "Doctorate or professional degree",
-  attainmentTop: (level: string, share: string) =>
-    `Most common: ${level} — ${share} of the people doing this work.`,
-  attainmentBelow: (level: string, share: string) =>
-    `California says this job usually needs: ${level}. ${share} of the people doing it went less far than that.`,
-  // 1,274 of the program-to-occupation attachments here state "Postsecondary non-degree
-  // award", which is not a step on the attainment scale at all. Counting who "meets" it is
-  // not possible, and a number invented for the sentence would look exactly like a real one.
-  attainmentNoCompare: (level: string) =>
-    `California says this job usually needs: ${level}. That is not one of the steps below, so there is no way to count how many people meet it.`,
-  attainmentNational:
-    "This counts people already doing this job, across the whole United States. Every other figure on this page is California's, and the federal government publishes no state version of this one.",
-  attainmentNotRule:
-    "It is what people happen to have, not a rule about who gets hired. A small row does not mean you would be turned away, and a large one is not a promise of a job.",
-  attainmentScale:
-    "It is also measured on a different scale from “Usually needs” above, so the two cannot be subtracted from one another.",
-  attainmentMeasuredFor: (title: string) =>
-    `Measured for ${title}, the wider group this job is counted inside.`,
-
   /* ---- Someone else may be able to pay for this ------------------------------------------
    *
    * Every program on this site was on California's Eligible Training Provider List when the
@@ -928,6 +937,7 @@ const es: Dictionary = {
   region: "Región",
 
   compareTitle: "Lado a lado",
+  compareTrayLabel: "Programas seleccionados para comparar",
   compareMeasure: "Medida",
   compareAdd: "Comparar",
   compareCount: (n: number, max: number) => `${n} de ${max} seleccionados para comparar`,
@@ -938,6 +948,18 @@ const es: Dictionary = {
   compareFull: "La comparación está llena. Quite uno para agregar otro.",
   compareNote:
     "La celda resaltada es la cifra reportada más fuerte de esa fila. Las filas donde menos de dos programas reportaron algo no se marcan, porque ser el único que reportó un número no es lo mismo que ser el mejor.",
+  compareBestCost: "El costo reportado más bajo de esta comparación",
+  compareBestLength: "La duración reportada más corta de esta comparación",
+  compareBestCompletion:
+    "La tasa de finalización reportada más alta de esta comparación, entre programas de " +
+    "duración comparable cuyos resultados describen solo ese programa",
+  compareBestEmployment:
+    "La tasa de empleo reportada más alta de esta comparación, entre programas cuyos " +
+    "resultados describen solo ese programa",
+  compareBestEarnings:
+    "Los ingresos reportados más altos de esta comparación, entre programas cuyos " +
+    "resultados describen solo ese programa",
+  compareNoStandout: "Ninguna cifra de esta fila se destaca como la más fuerte reportada",
   compareCompletionLength:
     "Aquí no se marca la finalización: estos programas no duran lo mismo. Entre los programas " +
     "de California cuyas cifras describen solo ese programa, la mediana de quienes terminaron " +
@@ -1210,7 +1232,7 @@ areaNote: (unplaced, total) =>
   aboutLimitsBody:
     "Esto es lo que este sitio hace mal o todavía no puede hacer. Se enumera aquí en vez de dejar que se descubra después.",
   aboutLimitTranslation:
-    "Los nombres de las ocupaciones y las descripciones de los programas aparecen en inglés en las páginas en español. La interfaz y los vocabularios controlados sí están traducidos; el texto libre que viene de las fuentes federales y estatales no, porque solo se publica en inglés.",
+    "Los nombres de los programas, las descripciones y los nombres de los proveedores aparecen en inglés en las páginas en español, porque las fuentes federales y estatales publican ese texto solo en inglés. Los títulos de las ocupaciones son distintos: el Departamento publica un nombre en español para 600 de las 670 ocupaciones de California, y la página en español lo usa; las otras 70 mantienen el título en inglés. Nada en este sitio está traducido automáticamente.",
   aboutLimitEtpl:
     "Los programas que aparecen aquí son los que California presentó al gobierno federal. Queda sin resolver si la lista estatal de instituciones elegibles incluye programas que el archivo federal omite, porque California no publica una descarga masiva de esa lista. Un programa ausente de este sitio no es necesariamente un programa que no existe.",
   aboutLimitUnmatched: (unmatched: string) =>
@@ -1278,30 +1300,6 @@ areaNote: (unplaced, total) =>
     "No se pide experiencia previa y a quienes entran no los someten a una capacitación larga. Para un trabajo así, un programa suele ser la puerta de entrada.",
   entrySource:
     "Son las respuestas del gobierno federal sobre la ocupación, no reglas que ponga esta institución. California publica las mismas dos respuestas para cada uno de estos trabajos.",
-
-  // ---- Qué estudiaron en realidad las personas que tienen este trabajo ----
-  attainmentHeading: "Qué estudió en realidad la gente que tiene este trabajo",
-  eduLevelNoHs: "Sin diploma de preparatoria",
-  eduLevelHs: "Diploma de preparatoria",
-  eduLevelSomeCollege: "Empezó la universidad, sin título",
-  eduLevelAssociate: "Título de dos años",
-  eduLevelBachelor: "Título de cuatro años",
-  eduLevelMaster: "Maestría",
-  eduLevelDoctorate: "Doctorado o título profesional",
-  attainmentTop: (level: string, share: string) =>
-    `Lo más común: ${level} — el ${share} de quienes hacen este trabajo.`,
-  attainmentBelow: (level: string, share: string) =>
-    `California dice que este trabajo suele requerir: ${level}. El ${share} de quienes lo hacen llegó menos lejos que eso.`,
-  attainmentNoCompare: (level: string) =>
-    `California dice que este trabajo suele requerir: ${level}. Eso no es uno de los niveles de abajo, así que no hay manera de contar cuánta gente lo cumple.`,
-  attainmentNational:
-    "Aquí se cuenta a personas que ya tienen este trabajo, en todo Estados Unidos. Todas las demás cifras de esta página son de California, y el gobierno federal no publica una versión estatal de esta.",
-  attainmentNotRule:
-    "Es lo que la gente tiene, no una regla sobre a quién contratan. Una fila pequeña no significa que a usted lo rechazarían, y una grande no es promesa de empleo.",
-  attainmentScale:
-    "Además se mide en una escala distinta de la de «Suele requerir» arriba, así que no se pueden restar una de otra.",
-  attainmentMeasuredFor: (title: string) =>
-    `Medido para ${title}, el grupo más amplio dentro del cual se cuenta este trabajo.`,
 
   /* ---- Puede que alguien más pague este programa ------------------------------------------
    *

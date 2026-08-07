@@ -2,7 +2,7 @@
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
-	publish-preflight publish dataset-check dataset-manifest
+	publish-preflight publish dataset-check dataset-manifest ctdl-export
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -195,8 +195,10 @@ fixture:
 # and published as an immutable release asset that .github/workflows/deploy.yml consumes by
 # tag. Run `make data` first, then `make dataset-publish`.
 
-# Refuse to package anything that looks like the fixture, a truncated build, or a source
-# that has quietly started returning almost nothing.
+# Refuse to package anything that looks like the fixture, a truncated build, a source that has
+# quietly started returning almost nothing, or a dataset built by a pipeline older than the
+# code that describes it (#28: `clean_description` shipped, but nothing had rebuilt the
+# dataset it was written to fix).
 dataset-verify:
 	@test -f $(DATASET_DIR)/coverage.json || { \
 		echo "No $(DATASET_DIR)/coverage.json. Run 'make data' first." >&2; exit 1; }
@@ -213,13 +215,18 @@ dataset-verify:
 		echo "REFUSING: $$files program files on disk, coverage.json claims $$2." >&2; exit 1; \
 	fi; \
 	echo "dataset ok: $$2 programs in $$files files, snapshot $$3"
+	@leaked=$$(uv run python -c 'import json, re; d = json.load(open("$(DATASET_DIR)/programs.json")); print(sum(1 for p in d["programs"] if p.get("description") and re.match(r"^\d+\|", p["description"])))'); \
+	if [ "$$leaked" -ne 0 ]; then \
+		echo "REFUSING: $$leaked descriptions still carry the feed row id (match ^N|)." >&2; \
+		echo "This dataset was built by a pipeline older than commit ec25f6d. Run 'make data' again." >&2; exit 1; \
+	fi
 
 # Tarball plus checksum, into dist/ (gitignored). COPYFILE_DISABLE keeps macOS from
 # packing ._* companions, which would otherwise arrive as bogus programs/*.json.
 dataset-package: dataset-verify
 	@mkdir -p $(DIST_DIR)
 	@snapshot=$$(uv run python -c 'import json;print(json.load(open("$(DATASET_DIR)/coverage.json"))["snapshot_date"])'); \
-	tarball=camino-dataset-$$snapshot.tar.gz; \
+	tarball=afterward-dataset-$$snapshot.tar.gz; \
 	COPYFILE_DISABLE=1 tar -czf $(DIST_DIR)/$$tarball -C $(DATASET_DIR) .; \
 	( cd $(DIST_DIR) && if command -v sha256sum >/dev/null 2>&1; then \
 		sha256sum $$tarball > $$tarball.sha256; else shasum -a 256 $$tarball > $$tarball.sha256; fi ); \
@@ -229,12 +236,21 @@ dataset-package: dataset-verify
 # date, so every deploy names exactly which dataset it published.
 dataset-publish: dataset-package
 	@set -- $$(uv run python -c 'import json;d=json.load(open("$(DATASET_DIR)/coverage.json"));print(d["snapshot_date"], d["total_programs"])'); \
-	tarball=camino-dataset-$$1.tar.gz; \
+	tarball=afterward-dataset-$$1.tar.gz; \
 	gh release create dataset-$$1 $(DIST_DIR)/$$tarball $(DIST_DIR)/$$tarball.sha256 \
 		--title "Dataset $$1" \
 		--notes "Site dataset built from the live sources on $$1: $$2 programs."; \
 	echo; \
 	echo "Now run the Deploy workflow with dataset_tag=dataset-$$1"
+
+# Demonstration CTDL JSON-LD export of the working dataset, into dist/ (gitignored).
+#
+# Deliberately its own target: not part of `data`, `build`, or `verify`, so it can never
+# slow or break the main pipeline. Deterministic -- same dataset, byte-identical output --
+# and it refuses to write anything that contradicts the dataset beside it. Nothing it
+# produces is published to any registry; see the README section on the CTDL export.
+ctdl-export:
+	uv run afterward export-ctdl --dataset-dir $(DATASET_DIR) --output-dir $(DIST_DIR)/ctdl
 
 web-install:
 	cd web && npm ci

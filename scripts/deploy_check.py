@@ -36,7 +36,7 @@ def fetch(url: str) -> tuple[int, str]:
         print(f"  refusing non-https URL: {url}")
         return 0, ""
     request = urllib.request.Request(  # noqa: S310 - scheme pinned to https above
-        url, headers={"User-Agent": "camino-deploy-check"}
+        url, headers={"User-Agent": "afterward-deploy-check"}
     )
     try:
         with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310 - same

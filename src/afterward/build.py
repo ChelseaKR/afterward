@@ -368,6 +368,186 @@ def check_coverage_shape(document: Mapping[str, Any]) -> None:
         )
 
 
+HEADLINE_MEASURES: Final = {
+    "programs_with_median_earnings": "median_earnings",
+    "programs_with_employment_rate": "employment_rate_q2",
+    "programs_with_completion_rate": "completion_rate",
+}
+"""Coverage counts that are answerable from the emitted payloads alone.
+
+The keys are what ``coverage.json`` publishes; the values are the field on each program
+record the count is a count *of*. Recomputing one from the other is what
+:func:`coverage_count_problems` does.
+"""
+
+
+def outcome_is_reported(outcomes: Mapping[str, Any]) -> bool:
+    """Whether an emitted record reports at least one headline measure.
+
+    The payload-side twin of :attr:`afterward.sources.dol_etp.Program.has_outcomes`, over the
+    same three measures. Kept here so the coverage counts can be checked against the records
+    the site actually ships rather than against the objects they were built from.
+    """
+    return any(outcomes.get(field) is not None for field in HEADLINE_MEASURES.values())
+
+
+def coverage_count_problems(
+    document: Mapping[str, Any], payloads: Sequence[Mapping[str, Any]]
+) -> list[str]:
+    """Every headline count in a coverage document that the emitted programs contradict."""
+    problems: list[str] = []
+    total = len(payloads)
+
+    def disagrees(key: str, actual: int) -> None:
+        claimed = document.get(key)
+        if claimed != actual:
+            problems.append(f"{key}: says {claimed!r}, emitted programs give {actual}")
+
+    disagrees("total_programs", total)
+    with_any = sum(1 for p in payloads if outcome_is_reported(p["outcomes"]))
+    disagrees("programs_with_any_outcome", with_any)
+    for key, field in HEADLINE_MEASURES.items():
+        disagrees(key, sum(1 for p in payloads if p["outcomes"].get(field) is not None))
+
+    # Recomputed exactly as CoverageReport._pct does, so a mismatch means the counts and the
+    # percentage came from different builds -- not that the two round differently.
+    expected_pct = round(100.0 * with_any / total, 1) if total else 0.0
+    claimed_pct = document.get("outcome_coverage_pct")
+    if claimed_pct != expected_pct:
+        problems.append(
+            f"outcome_coverage_pct: says {claimed_pct!r}, "
+            f"{with_any} of {total} emitted programs give {expected_pct}"
+        )
+    return problems
+
+
+def check_coverage_counts(
+    document: Mapping[str, Any], payloads: Sequence[Mapping[str, Any]]
+) -> None:
+    """Refuse to publish coverage figures that do not describe the dataset beside them.
+
+    :func:`check_coverage_shape` asks whether the numbers are *present*. This asks whether
+    they are *true of the programs being written out in the same breath*, which is a
+    different question and the one that matters once the figures leave the repository.
+
+    The gap is not hypothetical. ``build_offline`` copies the fixture's coverage document
+    through wholesale and recomputes only four blocks; ``total_programs``,
+    ``programs_with_any_outcome``, the three per-measure counts and ``outcome_coverage_pct``
+    are carried over untouched. Regenerating the fixture's programs without regenerating its
+    coverage -- or hand-editing either file -- produces a build that ships one dataset and
+    publishes another dataset's arithmetic, with nothing to say so.
+
+    The real build is not exempt, and is checked with the same function. Its counts are taken
+    from the :class:`afterward.sources.dol_etp.Program` objects while the site is served the
+    payloads built from them; the two agree today because nothing sits between them, and this
+    is what notices if something ever does.
+
+    These are the figures the site puts in the footer of every page -- "63.0% of programs
+    report an outcome" -- and the ones quoted outside the site, where nobody can check them
+    against the data. A wrong one is not a rendering bug; it is a false public claim about
+    how much of California's training system reports anything. So: loud, and never repaired
+    in place, because a number corrected here would be a number this build did not compute.
+    """
+    problems = coverage_count_problems(document, payloads)
+    if problems:
+        raise ValueError(
+            "coverage.json does not describe the programs being emitted with it: "
+            + "; ".join(problems)
+            + ". Publishing this would state a coverage figure the dataset contradicts."
+        )
+
+
+OUTCOME_RATES: Final = ("completion_rate", "employment_rate_q2")
+"""Emitted outcome fields that are proportions, and must lie in [0, 1]."""
+
+OUTCOME_COUNTS: Final = (
+    "total_served",
+    "total_exited",
+    "total_completed",
+    "credentials_earned",
+    "employed_q2",
+    "employed_q4",
+)
+"""Emitted outcome fields that are headcounts, and cannot be negative."""
+
+
+def outcome_integrity_problems(payloads: Sequence[Mapping[str, Any]]) -> list[str]:
+    """Every emitted outcome value that is not a fact about a real cohort.
+
+    Three ways a record can be wrong, all of which mean the same thing to a reader: a number
+    on the page that nobody measured.
+    """
+    problems: list[str] = []
+    for payload in payloads:
+        outcomes = payload["outcomes"]
+        where = payload.get("uuid", "<no uuid>")
+
+        # Reported first, and the fields it names are then left alone: a -1 is out of range
+        # for every measure it can appear in, and saying so twice about one value buries the
+        # fact that says what actually happened.
+        sentinels = {
+            field
+            for field, value in outcomes.items()
+            # `isinstance` before the comparison because `True` equals 1, not -1, but the
+            # booleans in this block have no business being range-checked either way.
+            if isinstance(value, int | float)
+            and not isinstance(value, bool)
+            and value == dol_etp.SUPPRESSED
+        }
+        problems += [
+            f"{where}.{field}: the {dol_etp.SUPPRESSED} sentinel reached output"
+            for field in sorted(sentinels)
+        ]
+
+        for field in OUTCOME_RATES:
+            value = outcomes.get(field)
+            if field not in sentinels and value is not None and not 0.0 <= value <= 1.0:
+                problems.append(f"{where}.{field}: {value!r} is not a proportion")
+        for field in OUTCOME_COUNTS:
+            value = outcomes.get(field)
+            if field not in sentinels and value is not None and value < 0:
+                problems.append(f"{where}.{field}: {value!r} is a negative headcount")
+        earnings = outcomes.get("median_earnings")
+        if "median_earnings" not in sentinels and earnings is not None and earnings < 0:
+            problems.append(f"{where}.median_earnings: {earnings!r} is negative")
+
+        if outcomes.get("reported") != outcome_is_reported(outcomes):
+            problems.append(
+                f"{where}.reported: says {outcomes.get('reported')!r}, "
+                "which its own measures contradict"
+            )
+    return problems
+
+
+def check_outcome_integrity(payloads: Sequence[Mapping[str, Any]]) -> None:
+    """Refuse to emit an outcome that would be read as a measurement and is not one.
+
+    ``-1`` is how the ETP scorecard says "withheld or not reported", and the whole point of
+    :func:`afterward.sources.dol_etp.clean_measure` is that it never reaches a page. If it
+    ever does, it renders as a number: a -1% completion rate is absurd enough to spot, but
+    ``-1`` earnings beside a real cohort count reads as a finding about a real school. The
+    cleaning happens at the source boundary and is well tested there; this is the check at
+    the other end, which is the end that publishes.
+
+    The ``reported`` flag is checked against the record's own measures for the same reason.
+    It is what the site keys "no outcome data was reported" off, and it is what
+    ``programs_with_any_outcome`` counts -- so a record whose flag disagrees with its data
+    either hides three published measures behind a "not reported" notice, or shows that
+    notice's absence over three blanks.
+
+    A rate outside [0, 1] and a negative headcount are impossible rather than merely
+    suspicious, so they stop the build rather than being clamped. Clamping would publish a
+    number chosen here instead of measured there, which is the failure this exists to catch.
+    """
+    problems = outcome_integrity_problems(payloads)
+    if problems:
+        shown = problems[:10]
+        more = f" (and {len(problems) - len(shown)} more)" if len(problems) > len(shown) else ""
+        raise ValueError(
+            "emitted outcomes carry values nobody measured: " + "; ".join(shown) + more
+        )
+
+
 def detailed_soc_codes(projections: Iterable[edd_lmi.OccupationProjection]) -> list[str]:
     """The SOC codes this build will publish an occupation record for.
 
@@ -1452,10 +1632,18 @@ def program_payload(
             # rate and a Q2 count against a non-zero exit count, the median gap between
             # employed_q2/total_exited and the published rate is 0.17, 1,177 (66.9%) differ by
             # more than 10 points, only 165 (9.4%) agree within a rounding step, and 65 report
-            # more people employed than exited at all. DOL computes the rate on an exiter
-            # denominator it does not publish. Both are carried because both are filed and a
-            # reader is entitled to them; neither is derived from the other here, and nothing
-            # downstream may derive one either.
+            # more people employed than exited at all.
+            #
+            # Confirmed against the ETA-9171 form's own data element definitions (#25;
+            # PROVENANCE.md "Notes on D1" has the citation and the exact language): DOL
+            # publishes total_exited (DE121, "in the reporting period") but not the rate's
+            # actual denominator, DE129 ("who were in the 2nd quarter after exit within the
+            # reporting period") -- a cohort shaped by the reporting lag every quarter-after-
+            # exit measure carries, not the same population as total_exited under another
+            # name. employed_q2/total_exited is therefore not the calculation DOL performs,
+            # and cannot be reconstructed from what this feed publishes. Both fields are
+            # carried because both are filed and a reader is entitled to them; neither is
+            # derived from the other here, and nothing downstream may derive one either.
             "employed_q2": program.employed_q2,
             "employed_q4": program.employed_q4,
             "reported": program.has_outcomes,
@@ -1500,9 +1688,6 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     # by more than half (229 against 538 on the current snapshot), because the shrinking
     # occupation is frequently not the one listed first. Summarise across all of them.
     changes = [o["percent_change"] for o in occupations if o.get("percent_change") is not None]
-    wages = [
-        o["median_annual_wage"] for o in occupations if o.get("median_annual_wage") is not None
-    ]
     openings = [
         o["total_job_openings"] for o in occupations if o.get("total_job_openings") is not None
     ]
@@ -1527,8 +1712,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         # Worst projected outlook across those occupations, so "trains for a shrinking job"
         # is filterable without a second fetch. None stays None: unknown is not flat.
         "g": worst_change,
-        # Best wage and most openings available down any of its paths.
-        "wage": max(wages) if wages else None,
+        # Most openings available down any of its paths.
         "op": max(openings) if openings else None,
         # Headline outcomes, null-preserving.
         "cr": outcomes["completion_rate"],
@@ -1809,6 +1993,11 @@ def build_offline(
     # before anything is written, so the failure is a build that stops rather than a site that
     # quietly renders one section fewer.
     check_coverage_shape(coverage)
+    # And the headline counts it carried through are checked against the programs actually
+    # being written here, because "carried through untouched" is exactly how they would come
+    # to describe some other dataset. See check_coverage_counts.
+    check_coverage_counts(coverage, payloads)
+    check_outcome_integrity(payloads)
 
     for name, document in (
         ("programs.json", programs_doc),
@@ -1882,6 +2071,10 @@ def build(
         )
         for p, c in zip(programs, integrity, strict=True)
     ]
+    # Before anything is written, because a record carrying a -1 where a measurement belongs
+    # should stop the build rather than land in programs.json and the per-program shards for
+    # the coverage check at the end of this function to fail behind it.
+    check_outcome_integrity(payloads)
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
     # aggregation those are no longer the same set, and the emitted records are the ones a
     # reader can check.
@@ -1941,5 +2134,8 @@ def build(
         "peer_medians": peer_medians(payloads),
     }
     check_coverage_shape(coverage)
+    # The report counted `programs`; the site is served `payloads`. Nothing sits between the
+    # two today, and this is what says so out loud if anything ever does.
+    check_coverage_counts(coverage, payloads)
     (output_dir / "coverage.json").write_text(json.dumps(coverage, indent=1), encoding="utf-8")
     return report

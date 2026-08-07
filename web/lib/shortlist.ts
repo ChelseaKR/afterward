@@ -17,6 +17,18 @@
  * it is what a last-write-wins merge would need, and it costs nothing to record now.
  */
 
+/**
+ * Deliberately still `camino.` after the 2026-08-05 rename, and not a leftover.
+ *
+ * This key names data that belongs to the reader and lives only on their device. Renaming it
+ * would not migrate anything — it would make every shortlist saved before the rename
+ * unreadable, and the site would show those readers an empty list with no error and no way to
+ * get the programs back. A cosmetic rename is not worth silently discarding the four programs
+ * somebody spent an evening choosing between.
+ *
+ * If it is ever worth changing, it is a versioned migration — read the old key, write the new
+ * one, delete the old — not an edit to this string.
+ */
 export const STORAGE_KEY = "camino.shortlist.v1";
 
 /** Deliberately small. A shortlist is for deciding between a few, not for collecting. */

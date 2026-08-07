@@ -1,5 +1,15 @@
 # National education attainment: parsed, recommended, and not shipped
 
+> **Correction, 2026-08-07.** The gap the note below describes is closed. `Attainment` in
+> `web/app/[lang]/programs/[id]/page.tsx` — the component the 2026-08-05 correction found
+> still rendering the distribution — has been deleted (#20), along with the helper functions
+> and translated strings it alone used. No program page renders the seven-level distribution
+> as of this commit. `distribution` stays in the shipped dataset and in `web/lib/types.ts`,
+> documented and unrendered, because the underlying BLS measurement is real and the field
+> that would fix its provenance problem (see "What would change the answer" below) might
+> exist someday; nothing renders it in the meantime. The decision this note reached — not
+> shipped — now matches the code, for the first time since commit 99a1382.
+
 > **Correction, 2026-08-05 (later).** The decision below stands and none of its measurements
 > changed. Its description of what the site was already doing is wrong. This note says
 > "Nothing renders it" and that the distribution is "deliberately not published anywhere on

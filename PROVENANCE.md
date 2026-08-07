@@ -34,7 +34,8 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Statewide annual wage percentiles (10th, 25th, 50th, 75th, 90th) shown as the pay range on occupation pages, 2026 vintage. Fetched separately from a build, not on every one: the published extract is the whole 2009–2026 panel (~112 MB, 580,790 records) because EDD publishes no per-year resource. |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
 | D5 | O\*NET Web Services (USDOL/ETA), including Mi Próximo Paso | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered with O\*NET under the project name "Camino", which is what this site was called until 2026-08-05; the registration is unchanged. Key is per-user and never committed. | Spanish occupation titles and descriptions from Mi Próximo Paso, on the 600 of California's 670 occupations it covers. Nothing is translated by this project: an occupation Mi Próximo Paso does not carry keeps its English name. |
-| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook. Also national education attainment distribution and typical experience / on-the-job training — **published against a decision not to publish them**; see the note below |
+| D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook, and typical experience / on-the-job training. Also carries the national education attainment distribution, which is parsed and typed but **not rendered anywhere on the site**; see the note below |
+| D7 | Credential Engine — CTDL schema, JSON-LD context and term definitions (credreg.net) | `https://credreg.net/ctdl/schema/context/json`, `https://credreg.net/ctdl/terms/<Term>/json` | 2026-08-06 | Credential Engine publishes CTDL openly for exactly this use. Schema definitions only; **no registry data is read, and nothing is published to any registry.** | The vocabulary for the demonstration CTDL export (`make ctdl-export`): the context is vendored at `src/afterward/ctdl/ctdl-context.json` with retrieval provenance beside it, and every emitted class and property was checked against the fetched term definitions |
 
 ### Notes on D5 — what is and is not taken from it
 
@@ -99,11 +100,13 @@ deployed snapshot: the seven-level distribution renders on 3,250 of the 3,266 pr
 in" block — EDD's equivalent `work_experience` and `job_training` are parsed and never
 rendered. So the row above lists them as used, because they are.
 
-Two claims in that note are wrong about the site as it stands and are corrected in a dated
+Two claims in that note were wrong about the site as it stood and are corrected in a dated
 postscript inside it: "Nothing renders it", and that the distribution is "deliberately not
-published anywhere on the site". Its argument against publishing is unaffected; only its
-description of what was already shipped was wrong. Withdrawing the block is a behaviour
-change and has not been made.
+published anywhere on the site". Its argument against publishing was unaffected; only its
+description of what was already shipped was wrong. **Withdrawing the block is now done (#20,
+2026-08-07)** — a second postscript in the same file records it. `distribution` stays in the
+dataset and in `web/lib/types.ts`, typed and unrendered, because the underlying BLS
+measurement is real and the field EDD publishes no version of; nothing on the site renders it.
 
 ### Notes on D1
 
@@ -118,6 +121,41 @@ Sentinel value: `-1` in a `field_c_*` or `field_total_*` column means "not repor
 suppressed", **not** zero. The pipeline maps it to null and the UI must render it as
 "not reported" — never as a zero or a low score.
 
+### Notes on D1 — `employed_q2` is not the numerator of `employment_rate_q2` (#25)
+
+Both fields ship (`employed_q2`, `employment_rate_q2` in `programs.json`). A consumer joining
+them, or computing `employed_q2 / total_exited`, gets a different answer from the published
+rate on 66.9% of the 1,760 programs where both are present, by more than 10 points — and 65
+programs report more people employed than exited. This is not noise in the feed. The
+[ETA-9171 form's own data element definitions](https://www.dol.gov/sites/dolgov/files/ETA/Performance/pdfs/ICR/ETA_9171%20PY21+.pdf)
+(PY21+, OMB 1205-0526; the live URL 403s automated fetches including this project's, so this
+was read via the Wayback Machine's 2024 capture) name three distinct elements:
+
+- **DE121** (`total_exited`) — "the total number of students who completed, withdrew, or
+  transferred from this program of study **in the reporting period**."
+- **DE123** (`employed_q2`) — explicitly labelled "**(Numerator)**" — "the total number of
+  ... exiters who were in the 2nd quarter after exit and have been determined to be in
+  unsubsidized employment ... within the reporting period."
+- **DE129**, the rate's actual denominator (`c_q2_employment_percent` = DE123/DE129, per the
+  [TrainingProviderResults.gov data dictionary](https://www.trainingproviderresults.gov/assets/ETP_Data_Dictionary.pdf))
+  — "the total number of ... exiters (completed, withdrew, or transferred) **who were in the
+  2nd quarter after exit** within the reporting period."
+
+DE121 and DE129 read almost identically and are not the same population. DE121 is every
+exiter in the current reporting period, including someone who exited last month and whose 2nd
+quarter after exit has not happened yet. DE129 is restricted to exiters whose 2nd-quarter
+outcome could actually be determined by the time of reporting — a cohort shaped by the measurement lag every quarter-after-exit
+indicator carries, not by the reporting period's exit window. `total_exited` (DE121) is
+published; DE129 is not, in this feed. So `employed_q2 / total_exited` is not the calculation
+DOL performs, and cannot be — the pieces are genuinely denominated differently, not loosely
+related. `completion_rate` has no such gap: DE122/DE121 uses the same denominator the site
+already publishes, which is exactly why it reconciles exactly across all 2,047 programs where
+this project checked, while the employment pair does not.
+
+Both fields stay published, unreconciled, and undocumented as the same quantity by anything
+downstream of the parse — `build.py`'s `search_entry` and the emitted `outcomes` block carry
+a comment recording this finding beside both fields.
+
 ## Design inputs
 
 | # | Input | Date | What it informed |
@@ -127,3 +165,4 @@ suppressed", **not** zero. The pipeline maps it to null and the UI must render i
 | I3 | Newsom Master Plan for Career Education (Dec 2024 framework) | 2026-08-04 | Audience framing: pathways with or without a four-year degree |
 | I4 | U.S. DOL TrainingProviderResults.gov public site | 2026-08-04 | Confirmed what federal outcome measures exist and are publishable |
 | I5 | WIOA §116 / TEGL 03-18 ETP reporting guidance | 2026-08-04 | Understanding of measure definitions (Q2/Q4 employment, credential attainment, median earnings) |
+| I6 | ETA-9171 form data element definitions, PY21+ (OMB 1205-0526), read via the Wayback Machine's 2024 capture — the live DOL URL 403s automated fetches | 2026-08-07 | Confirmed DE121 (`total_exited`) and DE129 (the published employment rate's actual denominator) are differently-scoped exiter cohorts, not the same population under two names; see "Notes on D1" |

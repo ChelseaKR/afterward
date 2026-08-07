@@ -333,6 +333,22 @@ body {
   cursor: pointer;
 }
 
+/*
+ * The design system's own `:is(button, a.button):where(:hover) { background:
+ * var(--hover-color) }` outranks the rule above on specificity -- `:is()` counts its most
+ * specific branch (`a.button`, one class) even though this is a bare `<button>`, and
+ * `:where()` zeroes the pseudo-class but not that. Left alone, hovering or focusing this
+ * button (which is also what a click leaves it in) swaps in `--hover-color` under text still
+ * fixed at `--gray-120`, and the pairing fails color-contrast -- caught by
+ * `a11y-rendered.mjs` (#29), invisible to every other gate because none of them render this
+ * button in an interactive state.
+ */
+.compare-open:hover,
+.compare-open:focus-visible {
+  background: var(--gray-10);
+  color: var(--gray-120);
+}
+
 .compare-open:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -930,80 +946,6 @@ td.num {
   font-size: 1.0625rem;
   font-weight: 700;
   line-height: 1.3;
-}
-
-/* ---------- What people in this job actually studied ---------- */
-
-/*
- * Read as text first, seen as a shape second.
- *
- * The percentage is written out beside every level, so the spread is readable without the
- * bars at all — which matters because this is the figure that tells someone the four-year
- * degree in the row above is not what most people doing the job actually hold, and it has to
- * survive a screen reader, a printout, and a phone. The bar is `aria-hidden` decoration in
- * --primary-60 on --gray-40, both non-text, so it adds no pairing to the contrast audit.
- *
- * A genuine 0.0% draws no bar and says "0%". That is the measurement — the source counted
- * nobody at that level — and it must not look like an absence.
- */
-.attainment {
-  margin: 0;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.attainment-row {
-  display: grid;
-  grid-template-columns: minmax(9rem, 13rem) 1fr;
-  gap: 0.25rem 1rem;
-  align-items: center;
-}
-
-.attainment-row dt {
-  font-size: 0.9375rem;
-  color: var(--gray-120);
-}
-
-.attainment-row dd {
-  margin: 0;
-  display: grid;
-  grid-template-columns: 1fr 3.25rem;
-  gap: 0.75rem;
-  align-items: center;
-  font-size: 0.9375rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.attainment-bar {
-  display: block;
-  height: 0.75rem;
-  border-radius: var(--border-radius-sm);
-  background: var(--gray-40);
-}
-
-.attainment-bar > span {
-  display: block;
-  height: 100%;
-  border-radius: var(--border-radius-sm);
-  background: var(--primary-60);
-}
-
-.attainment-share {
-  text-align: right;
-  font-weight: 700;
-}
-
-/* A withheld cell is not a zero-length bar. It says so in words and draws no track at all. */
-.attainment-row dd.unreported {
-  grid-template-columns: 1fr;
-  font-weight: 400;
-}
-
-/* Below roughly a phone width the label needs the whole line, and the bar the next one. */
-@media (max-width: 32rem) {
-  .attainment-row {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

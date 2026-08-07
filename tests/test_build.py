@@ -22,9 +22,12 @@ from afterward.build import (
     aggregate_match_coverage,
     area_coverage,
     build_offline,
+    check_coverage_counts,
     check_coverage_shape,
+    check_outcome_integrity,
     check_provider_links,
     cohort_integrity_coverage,
+    coverage_count_problems,
     coverage_shape_problems,
     detailed_soc_codes,
     enrichment_coverage,
@@ -36,6 +39,7 @@ from afterward.build import (
     local_help_coverage,
     local_help_document,
     match_occupations,
+    outcome_integrity_problems,
     peer_medians,
     program_payload,
     provider_link_coverage,
@@ -951,6 +955,182 @@ class TestCoverageShape:
         build_offline(FIXTURE_DIR, output_dir=tmp_path)
         emitted = json.loads((tmp_path / "coverage.json").read_text(encoding="utf-8"))
         assert coverage_shape_problems(emitted) == []
+
+
+_MEASURES = ("median_earnings", "employment_rate_q2", "completion_rate")
+"""The three headline measures `programs_with_any_outcome` is a count of."""
+
+
+def _outcomes(**overrides: object) -> dict:
+    """One emitted outcomes block, reporting all three headline measures."""
+    return {
+        "total_served": 20.0,
+        "total_exited": 18.0,
+        "total_completed": 15.0,
+        "completion_rate": 0.83,
+        "credentials_earned": 12.0,
+        "median_earnings": 9500.0,
+        "employment_rate_q2": 0.72,
+        "employed_q2": 13.0,
+        "employed_q4": 12.0,
+        "reported": True,
+    } | overrides
+
+
+def _outcome_payload(uuid: str = "p1", **overrides: object) -> dict:
+    return {"uuid": uuid, "outcomes": _outcomes(**overrides)}
+
+
+def _no_outcome_payload(uuid: str = "p2") -> dict:
+    """A program whose three headline measures were all withheld or never filed."""
+    return _outcome_payload(uuid, reported=False, **dict.fromkeys(_MEASURES))
+
+
+class TestCoverageCounts:
+    """A coverage figure that does not describe the dataset published beside it.
+
+    `check_coverage_shape` asks whether the numbers are there. These ask whether they are true
+    of the programs being written out in the same breath, which is the question that survives
+    the figures being quoted somewhere nobody can check them against the data.
+    """
+
+    def _document(self, payloads: list[dict], **overrides: object) -> dict:
+        total = len(payloads)
+        with_any = sum(
+            1 for p in payloads if any(p["outcomes"][measure] is not None for measure in _MEASURES)
+        )
+        document = {
+            "total_programs": total,
+            "programs_with_any_outcome": with_any,
+            "programs_with_median_earnings": sum(
+                1 for p in payloads if p["outcomes"]["median_earnings"] is not None
+            ),
+            "programs_with_employment_rate": sum(
+                1 for p in payloads if p["outcomes"]["employment_rate_q2"] is not None
+            ),
+            "programs_with_completion_rate": sum(
+                1 for p in payloads if p["outcomes"]["completion_rate"] is not None
+            ),
+            "outcome_coverage_pct": round(100.0 * with_any / total, 1) if total else 0.0,
+        }
+        return document | overrides
+
+    def test_a_document_that_matches_its_payloads_passes(self) -> None:
+        payloads = [_outcome_payload("a"), _outcome_payload("b")]
+        assert coverage_count_problems(self._document(payloads), payloads) == []
+        check_coverage_counts(self._document(payloads), payloads)
+
+    def test_a_stale_total_is_caught(self) -> None:
+        """The fixture path carries this key through untouched; this is what notices."""
+        payloads = [_outcome_payload("a")]
+        problems = coverage_count_problems(self._document(payloads, total_programs=3266), payloads)
+        assert problems == ["total_programs: says 3266, emitted programs give 1"]
+
+    def test_a_stale_outcome_count_is_caught(self) -> None:
+        payloads = [_outcome_payload("a"), _outcome_payload("b", median_earnings=None)]
+        problems = coverage_count_problems(
+            self._document(payloads, programs_with_median_earnings=2), payloads
+        )
+        assert problems == ["programs_with_median_earnings: says 2, emitted programs give 1"]
+
+    def test_a_percentage_that_disagrees_with_its_own_counts_is_caught(self) -> None:
+        """The number in the footer of every page, checked against the programs behind it."""
+        payloads = [_outcome_payload("a"), _no_outcome_payload("b")]
+        problems = coverage_count_problems(
+            self._document(payloads, outcome_coverage_pct=63.0), payloads
+        )
+        assert problems == ["outcome_coverage_pct: says 63.0, 1 of 2 emitted programs give 50.0"]
+
+    def test_a_program_reporting_nothing_is_counted_as_such(self) -> None:
+        payloads = [_outcome_payload("a"), _no_outcome_payload("b")]
+        assert coverage_count_problems(self._document(payloads), payloads) == []
+
+    def test_every_disagreement_is_listed_not_just_the_first(self) -> None:
+        payloads = [_outcome_payload("a")]
+        problems = coverage_count_problems(
+            self._document(payloads, total_programs=9, programs_with_completion_rate=9), payloads
+        )
+        assert problems == [
+            "total_programs: says 9, emitted programs give 1",
+            "programs_with_completion_rate: says 9, emitted programs give 1",
+        ]
+
+    def test_the_build_refuses_rather_than_correcting_the_number(self) -> None:
+        payloads = [_outcome_payload("a")]
+        with pytest.raises(ValueError, match="total_programs: says 3266"):
+            check_coverage_counts(self._document(payloads, total_programs=3266), payloads)
+
+    def test_an_empty_dataset_does_not_divide_by_zero(self) -> None:
+        assert coverage_count_problems(self._document([]), []) == []
+
+    def test_an_offline_build_publishes_counts_its_own_programs_support(
+        self, tmp_path: Path
+    ) -> None:
+        """End to end on the path that carries the fixture's arithmetic through."""
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        emitted = json.loads((tmp_path / "coverage.json").read_text(encoding="utf-8"))
+        payloads = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        assert coverage_count_problems(emitted, payloads) == []
+
+
+class TestOutcomeIntegrity:
+    """A number on the page that nobody measured.
+
+    `-1` is how the ETP scorecard says "withheld". It is mapped to None where it enters, and
+    these are the check at the end that publishes, because that is where it would be read as a
+    finding about a real school rather than as a sentinel.
+    """
+
+    def test_a_clean_record_passes(self) -> None:
+        assert outcome_integrity_problems([_outcome_payload()]) == []
+        check_outcome_integrity([_outcome_payload()])
+
+    def test_a_record_reporting_nothing_passes(self) -> None:
+        assert outcome_integrity_problems([_no_outcome_payload("p1")]) == []
+
+    def test_the_suppression_sentinel_reaching_output_is_caught(self) -> None:
+        problems = outcome_integrity_problems([_outcome_payload(median_earnings=-1)])
+        assert problems == ["p1.median_earnings: the -1 sentinel reached output"]
+
+    def test_a_rate_above_one_is_caught(self) -> None:
+        problems = outcome_integrity_problems([_outcome_payload(completion_rate=1.4)])
+        assert problems == ["p1.completion_rate: 1.4 is not a proportion"]
+
+    def test_a_negative_headcount_is_caught(self) -> None:
+        problems = outcome_integrity_problems([_outcome_payload(employed_q2=-4.0)])
+        assert problems == ["p1.employed_q2: -4.0 is a negative headcount"]
+
+    def test_a_genuine_zero_is_not_a_problem(self) -> None:
+        """A reported zero is a fact about a real cohort, and is not a suppressed cell."""
+        assert (
+            outcome_integrity_problems([_outcome_payload(employment_rate_q2=0.0, employed_q2=0.0)])
+            == []
+        )
+
+    def test_a_reported_flag_that_hides_published_measures_is_caught(self) -> None:
+        """False over three real numbers renders a "not reported" notice over reported data."""
+        problems = outcome_integrity_problems([_outcome_payload(reported=False)])
+        assert problems == ["p1.reported: says False, which its own measures contradict"]
+
+    def test_a_reported_flag_claiming_measures_that_are_absent_is_caught(self) -> None:
+        payload = _outcome_payload(**dict.fromkeys(_MEASURES))
+        assert outcome_integrity_problems([payload]) == [
+            "p1.reported: says True, which its own measures contradict"
+        ]
+
+    def test_the_build_refuses_rather_than_clamping(self) -> None:
+        with pytest.raises(ValueError, match="sentinel reached output"):
+            check_outcome_integrity([_outcome_payload(median_earnings=-1)])
+
+    def test_the_message_names_the_program_and_caps_the_list(self) -> None:
+        payloads = [_outcome_payload(f"p{i}", completion_rate=2.0) for i in range(14)]
+        with pytest.raises(ValueError, match=r"and 4 more"):
+            check_outcome_integrity(payloads)
+
+    def test_an_offline_build_emits_no_unmeasured_outcome(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        payloads = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        assert outcome_integrity_problems(payloads) == []
 
 
 class TestCohortLabellingOnProgramRecords:
