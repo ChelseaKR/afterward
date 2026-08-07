@@ -1,0 +1,8 @@
+{
+  "file": "ctdl-context.json",
+  "source_url": "https://credreg.net/ctdl/schema/context/json",
+  "retrieved": "2026-08-06",
+  "sha256": "ddb6b4586c38df5fa43aa5f6a558de407dd7acdec9bc1329ce790e164bf40db5",
+  "publisher": "Credential Engine (credreg.net), Credential Transparency Description Language",
+  "purpose": "Vendored copy of the CTDL JSON-LD context, used by afterward.ctdl.export to refuse to emit any term the schema does not define. The exported documents reference the canonical context URL, not this copy; this copy exists so the check works offline and so the exact context the export was written against is on the record."
+}

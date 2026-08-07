@@ -2,7 +2,7 @@
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
-	publish-preflight publish dataset-check dataset-manifest
+	publish-preflight publish dataset-check dataset-manifest ctdl-export
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -235,6 +235,15 @@ dataset-publish: dataset-package
 		--notes "Site dataset built from the live sources on $$1: $$2 programs."; \
 	echo; \
 	echo "Now run the Deploy workflow with dataset_tag=dataset-$$1"
+
+# Demonstration CTDL JSON-LD export of the working dataset, into dist/ (gitignored).
+#
+# Deliberately its own target: not part of `data`, `build`, or `verify`, so it can never
+# slow or break the main pipeline. Deterministic -- same dataset, byte-identical output --
+# and it refuses to write anything that contradicts the dataset beside it. Nothing it
+# produces is published to any registry; see the README section on the CTDL export.
+ctdl-export:
+	uv run afterward export-ctdl --dataset-dir $(DATASET_DIR) --output-dir $(DIST_DIR)/ctdl
 
 web-install:
 	cd web && npm ci

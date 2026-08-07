@@ -105,6 +105,46 @@ in code:
 Full source list, licensing, access dates, and this project's provenance constraints are in
 [PROVENANCE.md](PROVENANCE.md).
 
+## CTDL export (demonstration)
+
+`make ctdl-export` writes a demonstration export of California ETPL-derived program data as
+[CTDL](https://credreg.net/) JSON-LD into `dist/ctdl/`: one `ceterms:LearningProgram` per
+program the site publishes and one `ceterms:CredentialOrganization` per distinct provider
+name, with occupation alignments (`ceterms:occupationType` carrying 2018 SOC codes), cost
+(`ceterms:estimatedCost`) and reported outcome statistics (`ceterms:aggregateData`). It is a
+projection of the already-built dataset — the same `programs.json` the site serves — so it
+can never disagree with the site about what the data says, and it is deliberately not part
+of `make data`, `make build`, or `make verify`.
+
+What it is not: nothing here is published to, drawn from, or claimed about any registry.
+The CTIDs are derived locally — `ce-` plus a UUIDv5 over a fixed namespace and the source's
+stable program identifier, so re-export is idempotent — and are **not Registry-assigned**;
+real CTIDs exist only where a registry assigns them. Known limit, on the record: credreg's
+CTID grammar says "a standard UUID v4 prefixed with ce-", and v4 means random — the one
+thing a deterministic re-export cannot be. This export chooses v5 so identity survives
+re-export, and says so rather than pretending the tension away. The `@id` URIs live under
+this project's own host for the same reason.
+
+The dataset's honesty rules transfer whole. A suppressed or unreported measure is absent
+from the CTDL entity, never zero. No property is emitted on inference: no cost when a
+suppressed component makes the total a floor, no organization address (the location on a
+record is the program's), no occupation title on an aggregation match (it names a broader
+group than the filed code), and a program page link only where the site itself publishes
+one. Every emitted term is checked against a vendored copy of the CTDL context
+(`src/afterward/ctdl/ctdl-context.json`, retrieval provenance beside it) and the export
+refuses to write a term the schema does not define. A coverage statement
+(`ctdl-coverage.json`) is counted from the emitted graph at export time — including what
+the source reports that the export deliberately does not carry, with reasons: completion
+and employment *rates* have no property on `ceterms:AggregateDataProfile` and would need
+the QData layer (`qdata:DataSetProfile`), which this demonstration does not use.
+
+One schema wrinkle, recorded here because it is easy to trip over: as fetched on
+2026-08-06, `ceterms:aggregateData` lists `ceterms:LearningOpportunityProfile` in its
+domain, and `ceterms:LearningProgram` is a subclass of it — but credreg.net's generated
+per-class property list for LearningProgram does not include `aggregateData`. This export
+attaches outcome statistics to programs relying on the subclass relation; a validator that
+checks the per-class list instead may disagree.
+
 ## Development
 
 ```bash
