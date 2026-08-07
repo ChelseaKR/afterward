@@ -1,0 +1,20 @@
+# Dependency update PRs for all three ecosystems this repo actually has:
+# the Python pipeline (uv/pyproject), the Next.js front end (web/), and the
+# GitHub Actions the workflows pin by commit SHA (Dependabot bumps the SHA and
+# keeps the version comment current).
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"

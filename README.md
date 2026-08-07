@@ -158,6 +158,35 @@ make install
 make verify    # provenance-check, lint, typecheck, test, security, audit
 ```
 
+## Development disclosure
+
+Built AI-assisted (Claude Code). The honesty rules above bind the tooling as much as the
+author: every figure the site publishes is produced by the pipeline from the sources
+recorded in [PROVENANCE.md](PROVENANCE.md), the null-versus-zero rule is enforced by tests
+rather than by intention, and nothing ships that the data does not support. There is no AI
+in the product itself: no model runs at build time or runtime, and nothing on the site is
+generated, summarized, or ranked by one. Decisions and their reasons are recorded as they
+were made, in [docs/design-log.md](docs/design-log.md) and [docs/adr/](docs/adr/).
+
+## Standards Conformance
+
+Per the portfolio standards set. N/A rows carry their reason and an ADR; nothing is skipped
+silently.
+
+| Standard | State |
+|----------|-------|
+| Responsible-Tech Framework | Applies (honest record: [docs/RESPONSIBLE-TECH-AUDITS.md](docs/RESPONSIBLE-TECH-AUDITS.md)) |
+| Code Quality | Applies (ruff, mypy --strict, pytest with an 85% coverage floor at 92% measured, uv.lock, pre-commit) |
+| Security & Supply-Chain | Applies (SHA-pinned actions, gitleaks, bandit, pip-audit, Dependabot, OIDC-only deploy with no static keys) |
+| CI/CD | Applies (`make verify` and `make web-verify` run identically in CI; deploys are dispatch-only and refuse to run without CI green on the exact commit) |
+| Observability | Applies (static-site tier: deploy-time guards, live-site smoke tests, quarterly upstream freshness checks; declared in [docs/ROADMAP.md](docs/ROADMAP.md)) |
+| Accessibility | Applies (WCAG 2.2 AAA target; axe and contrast gates block the build; what automation proves and what it cannot: [docs/wcag-2.2-aaa-conformance.md](docs/wcag-2.2-aaa-conformance.md)) |
+| Internationalization | Applies (EN/ES ship together; typed modules instead of catalogs: [docs/I18N.md](docs/I18N.md), ADR 0002) |
+| AI Evaluation | N/A (no model, prompt, retrieval, or generation surface anywhere in the product; declared in [docs/ROADMAP.md](docs/ROADMAP.md)) |
+| Documentation | Applies (README, CHANGELOG, CONTRIBUTING, SECURITY, DISCLAIMER, PROVENANCE, design log, ADRs) |
+| Quality & Metrics | Applies (metrics ledger: [docs/ROADMAP.md](docs/ROADMAP.md)) |
+| Release & Versioning | N/A (not consumed downstream: ADR [docs/adr/0001-release-and-versioning-na.md](docs/adr/0001-release-and-versioning-na.md); dataset snapshots are date-tagged releases consumed only by the deploy workflow) |
+
 ## License
 
 Apache 2.0. Source data is U.S. Government work (public domain) and California open data;
