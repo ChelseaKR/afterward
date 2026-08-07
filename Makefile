@@ -195,8 +195,10 @@ fixture:
 # and published as an immutable release asset that .github/workflows/deploy.yml consumes by
 # tag. Run `make data` first, then `make dataset-publish`.
 
-# Refuse to package anything that looks like the fixture, a truncated build, or a source
-# that has quietly started returning almost nothing.
+# Refuse to package anything that looks like the fixture, a truncated build, a source that has
+# quietly started returning almost nothing, or a dataset built by a pipeline older than the
+# code that describes it (#28: `clean_description` shipped, but nothing had rebuilt the
+# dataset it was written to fix).
 dataset-verify:
 	@test -f $(DATASET_DIR)/coverage.json || { \
 		echo "No $(DATASET_DIR)/coverage.json. Run 'make data' first." >&2; exit 1; }
@@ -213,6 +215,11 @@ dataset-verify:
 		echo "REFUSING: $$files program files on disk, coverage.json claims $$2." >&2; exit 1; \
 	fi; \
 	echo "dataset ok: $$2 programs in $$files files, snapshot $$3"
+	@leaked=$$(uv run python -c 'import json, re; d = json.load(open("$(DATASET_DIR)/programs.json")); print(sum(1 for p in d["programs"] if p.get("description") and re.match(r"^\d+\|", p["description"])))'); \
+	if [ "$$leaked" -ne 0 ]; then \
+		echo "REFUSING: $$leaked descriptions still carry the feed row id (match ^N|)." >&2; \
+		echo "This dataset was built by a pipeline older than commit ec25f6d. Run 'make data' again." >&2; exit 1; \
+	fi
 
 # Tarball plus checksum, into dist/ (gitignored). COPYFILE_DISABLE keeps macOS from
 # packing ._* companions, which would otherwise arrive as bogus programs/*.json.
