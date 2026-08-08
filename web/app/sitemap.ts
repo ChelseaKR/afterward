@@ -39,6 +39,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // one page those pages link to. A crawler that never reaches it would see 6,532 links
       // pointing at a page absent from the sitemap.
       { path: `/${lang}/paying-for-training/`, priority: 0.8 },
+      // The coverage page is meant to be cited, by people who will find it through a search
+      // rather than by walking the site. It is the only page here that answers a question
+      // about California's training data as a whole rather than about one program, so a
+      // crawler that cannot reach it is the difference between the page existing and the
+      // page being useful.
+      { path: `/${lang}/outcomes-coverage/`, priority: 0.8 },
     ]),
     ...LANGUAGES.flatMap((lang) =>
       allOccupationCodes().map((soc) => ({

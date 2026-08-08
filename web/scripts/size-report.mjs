@@ -238,6 +238,7 @@ const ROUTES = [
   { label: "/en/providers/", path: "en/providers" },
   { label: "/en/paying-for-training/", path: "en/paying-for-training" },
   { label: "/en/about/", path: "en/about" },
+  { label: "/en/outcomes-coverage/", path: "en/outcomes-coverage" },
   { label: "/en/programs/<id>/", sample: "en/programs" },
   { label: "/en/occupations/<soc>/", sample: "en/occupations" },
 ];

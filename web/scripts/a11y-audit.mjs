@@ -139,6 +139,12 @@ if (SINGLE) {
     // structure nothing else here uses — and it had no coverage at all.
     ["Paying for training (English)", join(OUT, "en", "paying-for-training", "index.html")],
     ["Paying for training (Spanish)", join(OUT, "es", "paying-for-training", "index.html")],
+    // Four data tables stacked one after another, each with row headers and a mix of counts
+    // and explicitly-not-reported cells. Nothing else here puts that many tables on one
+    // screen, and this is the page written to be quoted by people reading it end to end,
+    // which makes correct table semantics the difference between citable and unusable.
+    ["Outcomes coverage (English)", join(OUT, "en", "outcomes-coverage", "index.html")],
+    ["Outcomes coverage (Spanish)", join(OUT, "es", "outcomes-coverage", "index.html")],
   ].filter(([, file]) => file && existsSync(file));
 
   if (targets.length === 0) {

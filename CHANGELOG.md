@@ -8,6 +8,34 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `/outcomes-coverage/`, in both languages: how much of California's training outcomes data
+  is actually published. California's Eligible Training Provider List exists only as a
+  CalJOBS search screen with no export behind it, so there is no public count of how many of
+  the state's listed programs carry evidence of what happened to the people who took them.
+  This page produces that count from the federal scorecard the same programs are reported
+  into: per measure, per provider category as filed, and against the size of the group each
+  figure describes. 1,209 of 3,266 programs publish no completion rate, no employment rate,
+  and no earnings figure, and 1,167 of those filed no cohort count either, which are two
+  different gaps with two different fixes. The measure most often absent is median earnings
+  (1,882 of 3,266), and it is the one measure whose absence cohort size does not explain: it
+  stays a quarter of programs unpublished in the largest cohort band, where completion has
+  fallen to none and employment to 7%. The provider categories with the most empty rows are
+  the ones with the most distinct federal reporting obligations, so the page states those
+  obligations beside the table and orders the table by size rather than by blank rate. The
+  measures also split cleanly by who produces them: every measure the training provider
+  supplies is published more often than every measure the state produces by matching a roster
+  against wage records, with no overlap at all between the two groups, which locates the gap
+  in a records match rather than in anyone's willingness to report. Every figure carries the
+  program-year window and the date the federal record was read: the scorecard publishes no
+  program-year field anywhere in its data, states the window only in prose on its About page,
+  and its data dictionary still names an earlier year, so an undated coverage figure invites a
+  correction that would be right.
+- Reporting obligations recorded in `PROVENANCE.md` (I7 to I11) with the primary texts: 20 CFR
+  677.230(b) is the operative apprenticeship performance exemption, not 680.470; the federal
+  suppression rule is a standard with no published numeric threshold; the `-1` sentinel has
+  three documented causes rather than two; and California's current directive (WSD25-02)
+  exempts registered apprenticeship from performance reporting and nobody else, so a community
+  college or public university with a blank row is not using an exemption.
 - Data pipeline joining California's WIOA-reported training programs to the state's
   long-term occupational employment projections. 3,266 programs from 584 providers, 99.5%
   matched to an occupation (3,250 of 3,266; the SOC aggregation table below lifted this from
