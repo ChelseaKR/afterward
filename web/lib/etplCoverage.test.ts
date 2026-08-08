@@ -61,7 +61,7 @@ function program(overrides: Partial<Program> = {}): Program {
     soc_codes: [],
     location: { city: "Fresno", state: "CA", zip: null, lat: null, lon: null },
     region: null,
-    length: { weeks: null, hours: null },
+    length: { weeks: null, hours: null, competency_based: false },
     cost: {
       tuition: null,
       supplies: null,
