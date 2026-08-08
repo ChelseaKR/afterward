@@ -102,6 +102,18 @@ All notable changes to this project are documented here. The format follows
   none. The interface's "this filter also leaves out N programs whose provider reported no
   length" had been describing the competency-based population and nothing else.
 
+- The promise to switch to an official DOL bulk file is resolved rather than left open. DOL
+  now publishes one; it was fetched and diffed against the search API on 2026-08-07, and this
+  project is staying on the API. The file carries no program identifier of any kind, so there
+  is nothing to key the site's program pages by and no join back; its California program set is
+  a different, older vintage rather than a superset (646 of the current programs are missing
+  from it, 1,635 of its rows have no current counterpart, and it suppresses figures the API
+  publishes far more often than the reverse); and it has no program-year column either, so it
+  does not close the provenance gap that motivated looking. It does carry `de129`, the actual
+  denominator of the published Q2 employment rate, which the API does not publish and which
+  reconciles that rate exactly on all 1,801 California rows that have it. The full column diff
+  and the recommendation are in `PROVENANCE.md`; nothing here ingests the file.
+
 - A build can no longer publish coverage figures that the dataset it ships contradicts.
   `check_coverage_shape` asked whether `coverage.json` carried the keys the site reads; it
   never asked whether the numbers in them were true of the programs being written out beside

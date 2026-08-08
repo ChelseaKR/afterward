@@ -115,7 +115,8 @@ the ETA-9171 WIOA Eligible Training Provider Performance Report data, which stat
 statutorily required to report and DOL is required to publish. Access is unauthenticated and
 read-only. This project queries it politely: paginated bulk reads on a quarterly refresh
 cadence, cached locally, with no per-user-request traffic to DOL (the published site is
-static). If DOL publishes an official bulk file, this project will switch to it.
+static). DOL does now publish a bulk file. It was evaluated on 2026-08-07 and this project is
+staying on the search API; the reasons are in "the bulk export, evaluated" below.
 
 ### Notes on D1: `-1` has two meanings, and only one of them is suppression
 
@@ -150,6 +151,51 @@ never in the third state. Every count here is recomputed at build time and none 
 code; `build.check_length_integrity` refuses to emit a `-1` as a duration, or a record that
 cannot say which of the three rows it belongs to.
 
+### Notes on D1: the bulk export, evaluated 2026-08-07
+
+DOL publishes `https://www.trainingproviderresults.gov/data/DownloadPrograms.xlsx` (36.2 MB,
+one sheet, 57 columns, 77,085 program rows across 61 state and territory values, 4,258 of them
+California). This is the file the note above used to promise a switch to. **The switch is not
+being made, and the promise is resolved rather than left open.** Three reasons, each measured
+against the same day's read of the search API:
+
+1. **It carries no program identifier at all.** No `uuid`, no `nid`, no `id` and no `title`,
+   although the dictionary lists the last three. Its only identifier is `provider_unique_id`,
+   which the dictionary itself says "is not persistent from year to year". Every program page
+   this site publishes is keyed by the API's `field_uuid`, so there is no join back and no
+   stable URL to keep: switching would break every program link with nothing to migrate them
+   by.
+2. **It is an older vintage, and not a superset.** Joined on provider, program name, CIP and
+   ZIP, 2,618 keys are shared, 646 of California's current programs are absent from the bulk
+   file entirely, and 1,635 bulk rows have no counterpart in the current list. Across the 2,615
+   uniquely paired programs the two disagree about half the time on every outcome measure, and
+   the disagreement runs one way: the bulk file suppresses a figure the API publishes 87 to 199
+   times per measure, against 13 to 61 the other way. Its newest `de172` (date added to a state
+   ETP list) is 2024-09-16, while the scorecard's About page says the live data covers training
+   programs on states' lists "as of June 30, 2025" and the dictionary's cover page names
+   PY2022. Adopting it would move the site's figures backwards and withhold more of them.
+3. **It does not close the program-year gap.** No column on it names a program year, a
+   reporting period or a cycle, so the window would still have to be quoted from prose with the
+   date it was read. The only date it carries is `de172`, which is when a program was added to
+   a state's list, not what period its outcomes describe.
+
+Licensing is not the obstacle: the file is the same U.S. Government work as D1, public domain
+under 17 U.S.C. §105.
+
+**What it has that the API does not**, and what a follow-up is worth opening for: seven
+columns, of which `de129` is the significant one. That is the *actual denominator of the
+published Q2 employment rate*, which the note below records as unpublished in the search API
+and impossible to reconstruct from it. On the 1,801 California rows carrying all three figures,
+`d123_total_employed_q2 / de129` reproduces the published `c_q2_employment_percent` to within
+0.01 on **1,801 of 1,801**. The rest are `de130`, `de170` and `de171` (the Q4 and WIOA-exiter
+denominators), `CIP_Title`, `provider_unique_id` and `de172`. The API in turn holds
+`field_uuid`, `field_cluster`, `field_wioa`, `field_provider_ref` and the
+dictionary-deprecated `field_tags`, plus Drupal search-index internals that are not data.
+
+That makes the bulk file worth reading **beside** the API for one specific gap, on its own
+vintage and labelled as such, and not worth reading instead of it. Nothing in this change
+ingests it.
+
 ### Notes on D1 — `employed_q2` is not the numerator of `employment_rate_q2` (#25)
 
 Both fields ship (`employed_q2`, `employment_rate_q2` in `programs.json`). A consumer joining
@@ -181,6 +227,11 @@ related. `completion_rate` has no such gap: DE122/DE121 uses the same denominato
 already publishes, which is exactly why it reconciles exactly across all 2,047 programs where
 this project checked, while the employment pair does not.
 
+Postscript, 2026-08-07: DE129 *is* published, in DOL's bulk export, as the column `de129`, on
+that file's own older vintage. The paragraph above is unchanged as a statement about this feed,
+which is what the site is built from. See "the bulk export, evaluated" above for the
+reconciliation that column makes possible and for why it is not a reason to switch sources.
+
 Both fields stay published, unreconciled, and undocumented as the same quantity by anything
 downstream of the parse — `build.py`'s `search_entry` and the emitted `outcomes` block carry
 a comment recording this finding beside both fields.
@@ -195,4 +246,4 @@ a comment recording this finding beside both fields.
 | I4 | U.S. DOL TrainingProviderResults.gov public site | 2026-08-04 | Confirmed what federal outcome measures exist and are publishable |
 | I5 | WIOA §116 / TEGL 03-18 ETP reporting guidance | 2026-08-04 | Understanding of measure definitions (Q2/Q4 employment, credential attainment, median earnings) |
 | I6 | ETA-9171 form data element definitions, PY21+ (OMB 1205-0526), read via the Wayback Machine's 2024 capture — the live DOL URL 403s automated fetches | 2026-08-07 | Confirmed DE121 (`total_exited`) and DE129 (the published employment rate's actual denominator) are differently-scoped exiter cohorts, not the same population under two names; see "Notes on D1" |
-| I7 | [TrainingProviderResults.gov ETP Data Dictionary v4.0](https://www.trainingproviderresults.gov/assets/ETP_Data_Dictionary.pdf), updated 2024-05-15 (cover page names PY2022, OMB 1205-0526, TEGL 03-18) | 2026-08-07 | The `-1` sentinel's three documented suppression causes, and the exception that overturned how this pipeline read two fields: on `d113_program_length_hours` and `d114_program_length_weeks` alone it notes that "a suppressed value (-1) indicates it was reported as a competency-based program". Also the source for `c_q2_employment_percent` = DE123/DE129. See "Notes on D1" above |
+| I7 | [TrainingProviderResults.gov ETP Data Dictionary v4.0](https://www.trainingproviderresults.gov/assets/ETP_Data_Dictionary.pdf), updated 2024-05-15 (cover page names PY2022, OMB 1205-0526, TEGL 03-18) | 2026-08-07 | The `-1` sentinel's three documented suppression causes, and the exception that overturned how this pipeline read two fields: on `d113_program_length_hours` and `d114_program_length_weeks` alone it notes that "a suppressed value (-1) indicates it was reported as a competency-based program". Also the source for `c_q2_employment_percent` = DE123/DE129, for `provider_unique_id` being non-persistent across years, and for `field_tags` being deprecated. See both "Notes on D1" sections above |
