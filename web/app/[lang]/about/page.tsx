@@ -268,6 +268,17 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
           tally(coverage.total_programs, lang),
         )}
       </p>
+      {/*
+        This paragraph states the size of the gap in one sentence. The page it now links to
+        takes that sentence apart: which measure, which kind of provider, and against how
+        large a group. Someone who arrives here asking "why is this blank?" is exactly the
+        reader that page was written for.
+      */}
+      <p>
+        <Link href={`/${lang}/outcomes-coverage/`} prefetch={false}>
+          {t.coverageTitle} →
+        </Link>
+      </p>
 
       <h2 id="quarter">{t.aboutQuarterHeading}</h2>
       <p>{t.aboutQuarterBody}</p>

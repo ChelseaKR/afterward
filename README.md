@@ -87,6 +87,23 @@ in code:
   easier to miss: publishing an absence over a fact is the same error as publishing a zero
   over a blank. See [PROVENANCE.md](PROVENANCE.md), "Notes on D1".
 
+`/outcomes-coverage/` takes that headline apart in public, in both languages: which measure is
+missing, from which kind of provider, and against how large a group. It exists because nobody
+else publishes the number. California's ETPL is a CalJOBS search screen with no export behind
+it, so the federal scorecard is the only record the question can be asked of, and the answer
+is two different gaps rather than one: 1,167 of the 1,209 silent programs filed no cohort
+count either, so there is no record for a measure to be missing from. Median earnings is the
+measure most often absent, and the only one whose absence cohort size does not explain.
+The measures also split by who produces them, with no overlap: everything the provider files
+is published more often than everything the state produces by matching a roster against wage
+records. Provider categories are ordered by size and never by how much each leaves blank, with
+the reporting obligations that legitimately differ between them stated beside the table: an
+apprenticeship program with an empty row is doing what 20 CFR 677.230(b) asks of it, and a
+community college with one is not, because California's directive exempts nobody else. Every
+figure carries the program-year window and the date the record was read. The scorecard
+publishes no program-year field anywhere in its data, states the window only in prose on its
+About page, and its data dictionary still names an earlier year.
+
 ## Design commitments
 
 - **No account, no tracking.** Everything is public, static, and readable without logging in.

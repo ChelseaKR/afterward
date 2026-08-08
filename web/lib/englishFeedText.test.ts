@@ -72,6 +72,14 @@ describe("English-only feed text carries lang=\"en\" on Spanish pages", () => {
     expectEveryOccurrenceGuarded(source, "{tidyName(entry.p)}");
   });
 
+  it("guards the untranslated provider category on the coverage page", () => {
+    // `entity_type` is not in the closed set above, because this project does publish Spanish
+    // for the categories California actually files (`entityTypeLabel`). What is unguardable
+    // by that map is a category it has never seen, which falls back to the filed English on a
+    // Spanish page and is exactly the case this file exists for.
+    expectEveryOccurrenceGuarded(read("app/[lang]/outcomes-coverage/page.tsx"), "{label.text}");
+  });
+
   it("guards the program name (tray chip and table column) and provider name in the comparison", () => {
     const source = read("components/Compare.tsx");
     expectEveryOccurrenceGuarded(source, '{entry.n ?? "—"}');
