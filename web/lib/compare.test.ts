@@ -23,6 +23,7 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     $partial: false,
     at: true,
     w: 30,
+    cb: false,
     s: [],
     o: ["Occupation"],
     g: 10,
@@ -120,7 +121,7 @@ function program(occupations: ProgramOccupation[]): Program {
     soc_codes: [],
     location: { city: "Bakersfield", state: "CA", zip: null, lat: null, lon: null },
     region: null,
-    length: { weeks: 30, hours: null },
+    length: { weeks: 30, hours: null, competency_based: false },
     cost: {
       tuition: null,
       supplies: null,
@@ -313,6 +314,15 @@ describe("oneLengthBand", () => {
 
   it("refuses when any program's length was never established", () => {
     expect(oneLengthBand([entry({ w: 20 }), entry({ w: null })])).toBe(false);
+  });
+
+  it("refuses when any program is competency-based, which has no place on the scale", () => {
+    // This gates the completion mark, and the reason it needs gating is that the median share
+    // who finish falls with length. A course that finishes when the student can do the work is
+    // not somewhere on that scale, so nothing may be marked strongest against it. The stray
+    // week count is there to prove the flag decides, not the number beside it.
+    expect(oneLengthBand([entry({ w: 20 }), entry({ w: null, cb: true })])).toBe(false);
+    expect(oneLengthBand([entry({ w: 20 }), entry({ w: 20, cb: true })])).toBe(false);
   });
 });
 

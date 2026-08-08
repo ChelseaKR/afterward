@@ -25,6 +25,7 @@ from afterward.build import (
     build_offline,
     check_coverage_counts,
     check_coverage_shape,
+    check_length_integrity,
     check_outcome_integrity,
     check_provider_links,
     cohort_integrity_coverage,
@@ -35,6 +36,7 @@ from afterward.build import (
     fetch_enrichment,
     fetch_job_centers,
     index_occupations,
+    length_integrity_problems,
     load_link_checks,
     local_help_block,
     local_help_coverage,
@@ -790,7 +792,7 @@ class TestSearchEntryArea:
             "location": {"city": city},
             "region": region,
             "cost": {"total_out_of_pocket": None, "total_is_complete": True},
-            "length": {"weeks": None},
+            "length": {"weeks": None, "hours": None, "competency_based": False},
             "soc_codes": [],
             "occupations": [],
             "outcomes": {
@@ -1181,6 +1183,103 @@ class TestOutcomeIntegrity:
         build_offline(FIXTURE_DIR, output_dir=tmp_path)
         payloads = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
         assert outcome_integrity_problems(payloads) == []
+
+
+def _length_payload(uuid: str = "p1", **overrides: object) -> dict:
+    return {"uuid": uuid, "length": {"weeks": 24.0, "hours": 600.0, **overrides}}
+
+
+class TestLengthIntegrity:
+    """A duration on the page the source did not state.
+
+    The counterpart of :class:`TestOutcomeIntegrity` for the block beside it, and needed for a
+    reason that block is not: the offline build re-emits a committed fixture's payloads without
+    re-cleaning them, so a fixture written before `clean_length` existed would publish `-1`
+    straight into `length.weeks`.
+    """
+
+    def test_a_clean_record_passes(self) -> None:
+        assert length_integrity_problems([_length_payload(competency_based=False)]) == []
+        check_length_integrity([_length_payload(competency_based=False)])
+
+    def test_a_competency_based_record_passes(self) -> None:
+        payload = _length_payload(weeks=None, hours=None, competency_based=True)
+        assert length_integrity_problems([payload]) == []
+
+    def test_the_sentinel_reaching_output_as_a_duration_is_caught(self) -> None:
+        problems = length_integrity_problems([_length_payload(weeks=-1, competency_based=True)])
+        assert problems == ["p1.length.weeks: the -1 sentinel reached output as a duration"]
+
+    def test_a_negative_duration_is_caught(self) -> None:
+        problems = length_integrity_problems([_length_payload(hours=-40, competency_based=False)])
+        assert problems == ["p1.length.hours: -40 is a negative duration"]
+
+    def test_a_record_predating_the_field_is_caught_rather_than_defaulted(self) -> None:
+        """Because defaulting it to False republishes the bug in a record that looks fixed.
+
+        A payload with no `competency_based` key cannot say whether its null length is a design
+        decision or an absence. Guessing "not competency-based" is exactly the guess this whole
+        change removes, so the build stops instead.
+        """
+        assert length_integrity_problems([_length_payload(weeks=None, hours=None)]) == [
+            "p1.length: no competency_based key; this record predates it"
+        ]
+
+    def test_a_zero_length_is_not_a_problem(self) -> None:
+        assert length_integrity_problems([_length_payload(weeks=0, competency_based=False)]) == []
+
+    def test_the_build_refuses_rather_than_publishing(self) -> None:
+        with pytest.raises(ValueError, match="sentinel reached output as a duration"):
+            check_length_integrity([_length_payload(weeks=-1, competency_based=True)])
+
+    def test_an_offline_build_emits_no_misreported_length(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        payloads = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        assert length_integrity_problems(payloads) == []
+
+
+class TestCompetencyBasedReachesTheSite:
+    """End to end: the fourth length state survives the whole pipeline into what ships.
+
+    The fixture is chosen to contain a competency-based program (`scripts/make_fixture.py`),
+    so this asserts against the same bundle CI builds the site from rather than against a
+    record invented here.
+    """
+
+    def _bundle(self, tmp_path: Path) -> tuple[list[dict], list[dict]]:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        programs = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        index = json.loads((tmp_path / "search-index.json").read_text(encoding="utf-8"))
+        rows = index["programs"] if isinstance(index, dict) else index
+        return programs, rows
+
+    def test_the_fixture_still_exercises_the_state(self, tmp_path: Path) -> None:
+        """If this fails the fixture stopped covering the case; fix the fixture, not this."""
+        programs, _ = self._bundle(tmp_path)
+        assert [p for p in programs if p["length"]["competency_based"]]
+
+    def test_such_a_program_publishes_no_length_and_says_why(self, tmp_path: Path) -> None:
+        programs, _ = self._bundle(tmp_path)
+        for program in programs:
+            if not program["length"]["competency_based"]:
+                continue
+            # Null, so nothing downstream compares it, ranks it or bands it -- and flagged,
+            # so nothing downstream calls that null "not reported".
+            assert program["length"]["weeks"] is None
+            assert program["length"]["hours"] is None
+
+    def test_every_program_says_which_state_it_is_in(self, tmp_path: Path) -> None:
+        programs, rows = self._bundle(tmp_path)
+        assert all("competency_based" in p["length"] for p in programs)
+        assert all("cb" in row for row in rows)
+
+    def test_the_search_index_carries_the_flag_a_filter_needs(self, tmp_path: Path) -> None:
+        """Without this the row reaches the browser indistinguishable from an unfiled length,
+        and the length filter drops it as one."""
+        programs, rows = self._bundle(tmp_path)
+        expected = {p["uuid"] for p in programs if p["length"]["competency_based"]}
+        assert {row["i"] for row in rows if row["cb"]} == expected
+        assert expected
 
 
 class TestCohortLabellingOnProgramRecords:

@@ -3,13 +3,16 @@
 Source D1 in PROVENANCE.md. This is the public search backend behind
 trainingproviderresults.gov, serving WIOA ETA-9171 performance data.
 
-Two things about this data matter more than anything else in this module:
+Three things about this data matter more than anything else in this module:
 
 1. ``-1`` and ``""`` mean "not reported or suppressed", never zero. WIOA suppresses
    small-cohort cells to protect participant privacy. Rendering a suppressed cell as 0%
    would libel a training provider, so :func:`clean_measure` maps both to ``None`` and the
    distinction is preserved all the way to the UI.
-2. Programs carry SOC codes directly (``field_program_soc_occ_1..3``), so the program ->
+2. On the two program-length fields, and only there, ``-1`` means something else entirely:
+   the program is competency-based. See :func:`clean_length`. Reading that sentinel as
+   "not reported" reports a deliberate design decision as missing data.
+3. Programs carry SOC codes directly (``field_program_soc_occ_1..3``), so the program ->
    occupation join needs no CIP/SOC crosswalk.
 
 This module also owns the HTTP manners for the whole package -- see "HTTP citizenship"
@@ -42,7 +45,22 @@ PAUSE_BETWEEN_PAGES = 0.4
 """Deliberate throttle. This is a public service funded by taxpayers, not a firehose."""
 
 SUPPRESSED = -1
-"""Sentinel used by the ETP scorecard for withheld or unreported measures."""
+"""Sentinel used by the ETP scorecard for withheld or unreported measures.
+
+Except on the two program-length fields, where the same number means something else. See
+:data:`COMPETENCY_BASED` and :func:`clean_length`.
+"""
+
+COMPETENCY_BASED = -1
+"""The same ``-1``, on ``field_program_length_hours`` and ``field_program_length_weeks``.
+
+A separate name for the same number because it is a separate fact, and code that reaches for
+one of these two constants should have to say which meaning it is claiming. The ETP Scorecard
+data dictionary (v4.0, updated 2024-05-15) attaches a note to those two elements and to no
+others: "NOTE: For this element, a suppressed value (-1) indicates it was reported as a
+competency-based program." Its general suppression note -- the one that covers every other
+column, and gives the three documented causes -- does not apply here.
+"""
 
 
 def clean_measure(value: Any) -> float | None:
@@ -50,6 +68,9 @@ def clean_measure(value: Any) -> float | None:
 
     Empty strings and the ``-1`` sentinel both mean "no data" and must not be confused
     with a genuine zero.
+
+    Not for the program-length fields: see :func:`clean_length`, which reads the same ``-1``
+    as the positive fact the data dictionary says it is.
     """
     if value is None or value == "":
         return None
@@ -135,6 +156,95 @@ def reconcile_rate(
     if rate != 0 or numerator is None or denominator in (None, 0):
         return rate
     return None if numerator > 0 else rate
+
+
+@dataclass(frozen=True)
+class ProgramLength:
+    """How long a program takes, or the reason it has no clock length to report.
+
+    Three states, not two, and the middle one is what this type exists for:
+
+    * a clock length, filed in weeks, in hours, or in both;
+    * **competency-based**: the program ends when the student can do the work, so it has no
+      fixed length *by design*. A positive fact the provider filed about the course, not an
+      absence;
+    * nothing filed at all, which is the only one of the three that is missing data.
+
+    Competency-based is carried as its own flag rather than as a magic value in ``weeks``,
+    because every consumer that compares, sorts, bands or filters on a length has to treat it
+    as "no number here" -- and a number chosen to stand for "no number" is the failure this
+    module spends most of its length preventing. ``weeks`` and ``hours`` stay strictly
+    numeric-or-null, so existing null handling downstream stays correct without knowing this
+    state exists; ``competency_based`` then tells a page *why* they are null, which is what
+    lets it say "competency-based, no fixed length" instead of "not reported".
+    """
+
+    weeks: float | None
+    hours: float | None
+    competency_based: bool
+
+    @property
+    def reported(self) -> bool:
+        """True when the provider filed a clock length in either unit."""
+        return self.weeks is not None or self.hours is not None
+
+    @property
+    def unstated(self) -> bool:
+        """True only for a record that says nothing about length at all.
+
+        The state the site used to attribute to competency-based programs, and the one it
+        must keep distinguishable from them: nobody said, as against nobody could.
+        """
+        return not self.reported and not self.competency_based
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "weeks": self.weeks,
+            "hours": self.hours,
+            # Always written, never omitted when false. A consumer has to be able to tell a
+            # program that is not competency-based from a record built before the field
+            # existed, and an absent key reads as the first while meaning the second.
+            "competency_based": self.competency_based,
+        }
+
+
+def _is_competency_sentinel(value: Any) -> bool:
+    """True when a length field holds the ``-1`` the dictionary calls competency-based."""
+    if value is None or value == "":
+        return False
+    try:
+        return float(value) == COMPETENCY_BASED
+    except (TypeError, ValueError):
+        return False
+
+
+def clean_length(hours: Any, weeks: Any) -> ProgramLength:
+    """Read the two program-length fields together, honouring their own sentinel.
+
+    ``clean_measure`` was applied to these two fields until 2026-08-07, which mapped ``-1`` to
+    null exactly as it does for an outcome measure. That is wrong here and only here: the ETP
+    Scorecard data dictionary (v4.0) documents ``-1`` on ``d113_program_length_hours`` and
+    ``d114_program_length_weeks`` as meaning the program was "reported as a competency-based
+    program", where the general suppression note it carries for every other column does not
+    apply. Twelve of California's 3,266 programs filed it, and every one of them reached the
+    site as "length not reported" and was dropped by the length filter: a course whose provider
+    deliberately stated it has no fixed length, published as a provider who never answered.
+    That is the error class this project exists to refuse, committed by this project.
+
+    Both fields are read here rather than one at a time, because competency-based is a fact
+    about the *program* and not about a column: a record carrying the sentinel in either field
+    is competency-based whichever unit it appears in. In the 2026-08-07 California snapshot
+    all 12 carry it in both fields and none carries it in only one, so the mixed case is
+    defined here rather than left to be discovered later. A real length filed alongside the
+    sentinel in the other unit is kept, because it is a real filing and dropping it would lose
+    a fact the provider took the trouble to state.
+    """
+    competency_based = _is_competency_sentinel(hours) or _is_competency_sentinel(weeks)
+    return ProgramLength(
+        weeks=clean_measure(weeks),
+        hours=clean_measure(hours),
+        competency_based=competency_based,
+    )
 
 
 SAFE_URL_SCHEMES = ("http://", "https://")
@@ -269,8 +379,9 @@ class Program:
     lat: float | None
     lon: float | None
     entity_type: str | None
-    length_weeks: float | None
-    length_hours: float | None
+    # Not two nullable floats: a competency-based program has no clock length by design, and
+    # that has to survive as a distinct state rather than as a pair of nulls. See ProgramLength.
+    length: ProgramLength
     cost_wioa: float | None
     cost_tuition: float | None
     cost_supplies: float | None
@@ -352,8 +463,10 @@ def parse_program(hit: dict[str, Any]) -> Program:
         lat=clean_measure(source.get("field_lat")),
         lon=clean_measure(source.get("field_lon")),
         entity_type=clean_text(source.get("field_entity_type")),
-        length_weeks=clean_measure(source.get("field_program_length_weeks")),
-        length_hours=clean_measure(source.get("field_program_length_hours")),
+        length=clean_length(
+            source.get("field_program_length_hours"),
+            source.get("field_program_length_weeks"),
+        ),
         cost_wioa=clean_measure(source.get("field_cost_per_wioa_num")),
         cost_tuition=clean_measure(source.get("field_non_wioa_tuition_cost")),
         cost_supplies=clean_measure(source.get("field_non_wioa_supplies_cost")),

@@ -7,6 +7,7 @@
  */
 
 import type { Lang } from "./i18n";
+import { clockWeeks } from "./search";
 import type { Program, SearchEntry } from "./types";
 
 export const MAX_COMPARE = 4;
@@ -59,11 +60,14 @@ export function ownCohortOnly(
 export const LENGTH_BAND_BOUNDS: readonly number[] = [4, 12, 26, 52];
 
 /**
- * Which length band a program sits in, or null when its length was never established.
+ * Which length band a program sits in, or null when it has no clock length to band.
  *
- * 12 of California's 3,266 programs report no length at all. A missing length is read the way
- * a missing cohort flag is — as "not established", never as "near enough" — so a program that
- * never said how long it takes cannot be placed on a scale beside one that did.
+ * Two populations arrive with nothing to band, and neither may be put on the scale: a program
+ * whose provider filed no length, and a competency-based one, which has no fixed length by
+ * design. A length that cannot be established is read the way a missing cohort flag is: as
+ * "not established", never as "near enough", so such a program is not measured against one
+ * that did say. Callers pass `clockWeeks(entry)` rather than `entry.w`, which is where the
+ * second population becomes null.
  */
 export function lengthBand(weeks: number | null): number | null {
   // `Number.isFinite` as well as the null test: an index built before `w` existed arrives with
@@ -73,9 +77,16 @@ export function lengthBand(weeks: number | null): number | null {
   return index === -1 ? LENGTH_BAND_BOUNDS.length : index;
 }
 
-/** Whether every one of these programs reported a length, and all of them land in one band. */
+/**
+ * Whether every one of these programs has a clock length, and all of them land in one band.
+ *
+ * False as soon as one of them is competency-based, which is the answer that matters: this
+ * gates the completion mark, and the whole reason the mark needs gating is that the median
+ * share who finish falls with length. A course with no fixed length has no place on that
+ * scale, so nothing here may rank it against one that has.
+ */
 export function oneLengthBand(entries: SearchEntry[]): boolean {
-  const bands = entries.map((entry) => lengthBand(entry.w));
+  const bands = entries.map((entry) => lengthBand(clockWeeks(entry)));
   return bands.every((band) => band !== null) && new Set(bands).size <= 1;
 }
 

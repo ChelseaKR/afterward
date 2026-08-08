@@ -148,6 +148,36 @@ export function matchesArea(entry: SearchEntry, area: AreaFilter): boolean {
   }
 }
 
+/**
+ * Whether the provider filed this program as competency-based.
+ *
+ * A missing key is read as "no", and that is the safe direction here rather than the
+ * convenient one: an index built before this field existed cannot distinguish the two, and
+ * "no" leaves such a row behaving exactly as it did before the field was added. It is the
+ * *presence* of the flag that changes anything, and only a current build sets it.
+ */
+export function isCompetencyBased(entry: SearchEntry): boolean {
+  return entry.cb === true;
+}
+
+/**
+ * The program's length in weeks of clock time, or null when it has none to compare.
+ *
+ * The single place the site decides what "how long is this" means, because three different
+ * pieces of the interface ask it and they must not answer differently: the length filter, the
+ * "shortest first" ordering, and the comparison's length band.
+ *
+ * Null for a competency-based program even if a week count was somehow filed alongside the
+ * sentinel. "Ends when you can do the work" is a statement about the course that one filed
+ * duration does not override, and a control that placed such a program on a scale of weeks
+ * would be publishing a fixed length its provider explicitly declined to claim. No California
+ * record does this today (0 of 3,266 on 2026-08-07; all 12 competency-based programs carry the
+ * sentinel in both units), so this defines the case rather than reacting to one.
+ */
+export function clockWeeks(entry: SearchEntry): number | null {
+  return isCompetencyBased(entry) ? null : entry.w;
+}
+
 export const isShrinking = (growth: number | null): boolean => growth !== null && growth < 0;
 
 export function terms(query: string): string[] {
@@ -189,11 +219,21 @@ export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
   if (filters.maxCost !== null && (entry.$ === null || entry.$ > filters.maxCost)) return false;
 
   // The null test is load-bearing and cannot be folded into the comparison. `null > 12` is
-  // false in JavaScript, so `entry.w > filters.maxWeeks` alone would pass every program whose
-  // provider reported no length — presenting 12 unmeasured programs as ones that fit inside a
-  // month. A length nobody reported is not a length of zero, so it fails the test instead, and
-  // `unmeasuredLength` below exists so the interface can say how many that cost.
-  if (filters.maxWeeks !== null && (entry.w === null || entry.w > filters.maxWeeks)) return false;
+  // false in JavaScript, so `weeks > filters.maxWeeks` alone would pass every program with no
+  // length to test, presenting them as ones that fit inside a month. A length nobody reported
+  // is not a length of zero, so it fails the test instead.
+  //
+  // Two different populations fail it, and the interface has to say which is which:
+  // `unmeasuredLength` counts the programs nobody filed a length for, and
+  // `competencyBasedLength` counts the ones that have no fixed length by design. Both fail
+  // the cap, for reasons that are not the same. "Six months or less" is a question about
+  // clock time, and a competency-based program cannot be shown to fit inside it: how long it
+  // takes is the student's answer, not the provider's. Including it would put a duration on
+  // screen its provider declined to claim; dropping it silently would say it is too long,
+  // which the record does not say. So it is excluded and counted, and the count is disclosed
+  // in words of its own.
+  const weeks = clockWeeks(entry);
+  if (filters.maxWeeks !== null && (weeks === null || weeks > filters.maxWeeks)) return false;
 
   if (!matchesArea(entry, filters.area)) return false;
   if (filters.city !== null && entry.c !== filters.city) return false;
@@ -224,20 +264,19 @@ export function unplacedMatches(programs: SearchEntry[], filters: Filters): numb
 }
 
 /**
- * Programs this search found that no length limit can ever include.
+ * Programs the length limit removes, counted against the rest of the reader's search.
  *
  * The exact counterpart of `unplacedMatches`, for the same reason and against the same
  * measure: everything else the reader asked for still applies, only the length limit is
- * lifted. A program whose provider filed no length cannot be shown to fit inside one, so it
- * is excluded — and a filter that quietly drops programs on the grounds that nobody said how
- * long they take reads as "these are too long", which is a claim the data does not make.
- *
- * Twelve programs are in that state in this snapshot, so the number is usually small and
- * frequently zero. It is computed against the running search rather than stated as a blanket
- * 12 for the same reason the geography figure is: what a reader is owed is what *their* search
- * is losing.
+ * lifted. Two separate calls rather than one total, because the two populations are excluded
+ * for two different reasons and a reader deciding whether to widen the search needs to know
+ * which one they are being offered.
  */
-export function unmeasuredLength(programs: SearchEntry[], filters: Filters): number {
+function excludedByLength(
+  programs: SearchEntry[],
+  filters: Filters,
+  qualifies: (entry: SearchEntry) => boolean,
+): number {
   if (filters.maxWeeks === null) return 0;
 
   const searchTerms = terms(filters.query);
@@ -245,12 +284,49 @@ export function unmeasuredLength(programs: SearchEntry[], filters: Filters): num
 
   let found = 0;
   for (const entry of programs) {
-    if (entry.w !== null) continue;
+    if (!qualifies(entry)) continue;
     if (score(entry, searchTerms) < 0) continue;
     if (!matchesFilters(entry, ignoringLength)) continue;
     found += 1;
   }
   return found;
+}
+
+/**
+ * Programs this search found whose provider filed no length at all.
+ *
+ * A program nobody measured cannot be shown to fit inside a limit, so it is excluded, and a
+ * filter that quietly drops programs on the grounds that nobody said how long they take reads
+ * as "these are too long", which is a claim the data does not make.
+ *
+ * This was 12 programs until 2026-08-07, and those 12 were never in this state: they carry the
+ * scorecard's competency-based sentinel, which the pipeline was reading as "not reported".
+ * With that fixed, **no California program is in this state**: every one either files a clock
+ * length or says it has none by design. The count stays, computed rather than assumed, because
+ * a later snapshot can bring one back and the interface must not be silent when it does.
+ */
+export function unmeasuredLength(programs: SearchEntry[], filters: Filters): number {
+  return excludedByLength(
+    programs,
+    filters,
+    (entry) => !isCompetencyBased(entry) && entry.w === null,
+  );
+}
+
+/**
+ * Programs this search found that are competency-based, and so have no length to test.
+ *
+ * The other half of what a length cap removes, and the half that until 2026-08-07 was
+ * misreported as the first. These programs end when the student can do the work; their
+ * providers said so, on the record. 12 of California's 3,266 are in this state.
+ *
+ * Counted separately and disclosed in its own words so a reader can act on it: "no fixed
+ * length" is a fact about how a course is run and may be exactly what somebody wants, whereas
+ * "nobody said" is a gap in the record. Rolling them into one number would put the design
+ * decision back inside the missing-data bucket this count exists to take it out of.
+ */
+export function competencyBasedLength(programs: SearchEntry[], filters: Filters): number {
+  return excludedByLength(programs, filters, isCompetencyBased);
 }
 
 /** Headline counts for the context strip above the results. */
@@ -280,10 +356,12 @@ const COMPARATORS: Record<Sort, (a: Ranked, b: Ranked) => number> = {
   cost: (a, b) => (a.entry.$ ?? Infinity) - (b.entry.$ ?? Infinity),
   // Length is a property of the course, not of the cohort, so unlike the three outcome
   // measures it stays comparable however the provider filed its outcome rows — the same
-  // distinction `ownCohortOnly` in lib/compare.ts is built on. Infinity for an unreported
-  // length rather than a large number, so "nobody said" trails every real length instead of
-  // landing among the two-year pathways.
-  length: (a, b) => (a.entry.w ?? Infinity) - (b.entry.w ?? Infinity),
+  // distinction `ownCohortOnly` in lib/compare.ts is built on. Infinity for a program with no
+  // clock length rather than a large number, so both "nobody said" and "no fixed length by
+  // design" trail every real length instead of landing among the two-year pathways. Through
+  // `clockWeeks`, so a competency-based program cannot win "shortest first" on a week count
+  // its provider declined to claim.
+  length: (a, b) => (clockWeeks(a.entry) ?? Infinity) - (clockWeeks(b.entry) ?? Infinity),
   openings: (a, b) => (b.entry.op ?? -1) - (a.entry.op ?? -1),
 };
 

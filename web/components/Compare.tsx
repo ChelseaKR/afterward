@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { dict, feedTextLang, type Lang } from "@/lib/i18n";
-import { isShrinking } from "@/lib/search";
-import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
+import { clockWeeks, isShrinking } from "@/lib/search";
+import { count, lengthText, money, percent, signedPercent, tidyName } from "@/lib/format";
 import type { Program, SearchEntry } from "@/lib/types";
 import {
   bestOf,
@@ -403,11 +403,18 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
               best={bestOf(entries, (e) => e.$, "low")}
               bestNote={t.compareBestCost}
             />
+            {/*
+              * A competency-based program says so in its cell rather than reading "Not
+              * reported", and is ranked on nothing: `clockWeeks` yields no number for it, so
+              * `bestOf` skips it and it can never be marked the shortest. That is the point.
+              * "Shortest" is a claim about clock time, and a course that finishes when the
+              * student can do the work has not entered that race.
+              */}
             <Row
               label={t.length}
               lang={lang}
-              values={entries.map((e) => (e.w === null ? null : t.weeks(e.w)))}
-              best={bestOf(entries, (e) => e.w, "low")}
+              values={entries.map((e) => lengthText(e.w, e.cb, t))}
+              best={bestOf(entries, clockWeeks, "low")}
               bestNote={t.compareBestLength}
             />
             {/*

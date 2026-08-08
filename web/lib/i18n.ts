@@ -112,6 +112,32 @@ const en = {
         `search: their providers reported no length, so there is nothing here for the ` +
         `filter to test. A program that never said how long it takes is not a program that ` +
         `takes no time.`,
+  /* ---- Competency-based programs ----
+   *
+   * Its own disclosure, in its own words, beside the one above. Until 2026-08-07 these
+   * programs were inside that one, because the pipeline read the scorecard's competency-based
+   * marker as "not reported": the site told a reader that six providers had failed to say
+   * how long their courses run, when what those providers had said is that the course runs
+   * until the student can do the work. The two sentences stay apart because one describes a
+   * gap in the record and the other describes how a course is taught, and the second may be
+   * the thing the reader was looking for.
+   */
+  filterLengthCompetency: (n: number): string =>
+    n === 1
+      ? "This filter also leaves out 1 competency-based program that matches the rest of " +
+        "your search. It finishes when the student can do the work, so it has no fixed " +
+        "length to compare against a time limit. That is how the provider built it, not " +
+        "something missing from the record."
+      : `This filter also leaves out ${fmt(n)} competency-based programs that match the rest ` +
+        `of your search. They finish when the student can do the work, so they have no fixed ` +
+        `length to compare against a time limit. That is how their providers built them, not ` +
+        `something missing from the record.`,
+  /** The length cell itself, everywhere a program's length is shown. Never "Not reported". */
+  lengthCompetencyBased: "Competency-based: no fixed length",
+  lengthCompetencyBasedLong:
+    "The provider reported this program as competency-based: it finishes when the student can " +
+    "do the work, so there is no set number of weeks. That is what the provider filed, not a " +
+    "gap in the record.",
   /**
    * The length cap named as something a sentence can remove, for the empty state's list of
    * filters worth dropping. Belongs with the `nameQuery`/`nameCost` family that `SearchApp`
@@ -1027,6 +1053,21 @@ const es: Dictionary = {
         `de su búsqueda: sus instituciones no reportaron la duración, así que el filtro no ` +
         `tiene nada que evaluar. Que un programa nunca haya dicho cuánto dura no significa ` +
         `que no dure nada.`,
+  filterLengthCompetency: (n: number): string =>
+    n === 1
+      ? "Este filtro también deja fuera 1 programa basado en competencias que coincide con el " +
+        "resto de su búsqueda. Termina cuando la persona ya sabe hacer el trabajo, así que no " +
+        "tiene una duración fija que comparar con un límite de tiempo. Así lo diseñó la " +
+        "institución; no es algo que falte en el registro."
+      : `Este filtro también deja fuera ${fmt(n)} programas basados en competencias que ` +
+        `coinciden con el resto de su búsqueda. Terminan cuando la persona ya sabe hacer el ` +
+        `trabajo, así que no tienen una duración fija que comparar con un límite de tiempo. ` +
+        `Así los diseñaron sus instituciones; no es algo que falte en el registro.`,
+  lengthCompetencyBased: "Basado en competencias: sin duración fija",
+  lengthCompetencyBasedLong:
+    "La institución reportó este programa como basado en competencias: termina cuando la " +
+    "persona ya sabe hacer el trabajo, así que no tiene un número fijo de semanas. Eso es lo " +
+    "que reportó la institución, no un vacío en el registro.",
   filterNameLength: (label: string): string => `el límite de tiempo «${label}»`,
 
   sortBy: "Ordenar por",

@@ -63,8 +63,9 @@ make fixture       # regenerate the fixture after a real `make data`
 
 The fixture is chosen rather than sampled, so it exercises every case the UI renders
 differently: reported and unreported outcomes, a suppressed measure beside a reported one, a
-shrinking occupation and a growing one, a small cohort, and a program with no matching
-occupation. Fixture builds are marked `is_fixture: true` in `coverage.json`.
+shrinking occupation and a growing one, a small cohort, a competency-based program, and a
+program with no matching occupation. Fixture builds are marked `is_fixture: true` in
+`coverage.json`.
 
 ## Honesty about coverage
 
@@ -78,6 +79,13 @@ in code:
   provider's performance.
 - "Not reported" and "reported as zero" are different facts and must stay visually
   different everywhere they appear.
+- And a null is not always "not reported". The scorecard writes `-1` for a suppressed value
+  everywhere except the two program-length fields, where it means the program is
+  competency-based: it finishes when the student can do the work, so it has no fixed length by
+  design. 12 of California's 3,266 programs say that, and the site says it back rather than
+  calling them unreported. Every rule here cuts both ways, and this is the direction that is
+  easier to miss: publishing an absence over a fact is the same error as publishing a zero
+  over a blank. See [PROVENANCE.md](PROVENANCE.md), "Notes on D1".
 
 `/outcomes-coverage/` takes that headline apart in public, in both languages: which measure is
 missing, from which kind of provider, and against how large a group. It exists because nobody

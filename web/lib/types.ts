@@ -641,7 +641,18 @@ export interface Program {
   };
   /** Null when this program's city could not be placed in a published EDD area. */
   region: ProgramArea | null;
-  length: { weeks: number | null; hours: number | null };
+  /**
+   * How long the program takes, or the reason it has no clock length.
+   *
+   * `competency_based` is a fourth state beside a reported length, a suppressed one and an
+   * unfiled one: the provider filed the program as ending when the student can do the work,
+   * so it has no fixed length by design. The ETP Scorecard writes that as `-1` on these two
+   * fields and only these two, where the same `-1` on every other column means suppressed.
+   * `weeks` and `hours` are null for such a program, so anything rendering them has to read
+   * this flag before saying "not reported": 12 of California's 3,266 programs are in this
+   * state, and not one of them is a provider who failed to answer.
+   */
+  length: { weeks: number | null; hours: number | null; competency_based: boolean };
   cost: {
     tuition: number | null;
     supplies: number | null;
@@ -683,7 +694,17 @@ export interface SearchEntry {
   $partial: boolean;
   /** Mirrors `outcomes.cohort.attributable`: false means no verdict may be drawn from cr/er/me. */
   at: boolean;
+  /** Weeks exactly as the provider filed them. Null when no clock length was filed. */
   w: number | null;
+  /**
+   * True when `w` is null because the program is competency-based, not because nobody said.
+   *
+   * Mirrors `Program.length.competency_based`. Optional because an index built before this
+   * field existed carries no key, and that has to read as "this index cannot say", which
+   * `clockWeeks` in lib/search.ts turns into the same conservative answer the site gives
+   * everywhere else. Every current build writes it on every row, false ones included.
+   */
+  cb?: boolean;
   s: string[];
   o: string[];
   g: number | null;

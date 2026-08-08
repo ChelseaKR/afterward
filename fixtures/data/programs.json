@@ -1,5 +1,5 @@
 {
- "snapshot_date": "2026-08-04",
+ "snapshot_date": "2026-08-07",
  "state": "CA",
  "programs": [
   {
@@ -42,7 +42,8 @@
    },
    "length": {
     "weeks": null,
-    "hours": null
+    "hours": null,
+    "competency_based": true
    },
    "cost": {
     "tuition": 5660.0,
@@ -193,7 +194,8 @@
    "region": null,
    "length": {
     "weeks": null,
-    "hours": null
+    "hours": null,
+    "competency_based": true
    },
    "cost": {
     "tuition": 5684.0,
@@ -277,7 +279,7 @@
     "substitution": null
    },
    "entity_type": "Private For-Profit",
-   "cip_code": "1.0505",
+   "cip_code": "01.0505",
    "soc_codes": [
     "39-2011"
    ],
@@ -291,7 +293,8 @@
    "region": null,
    "length": {
     "weeks": null,
-    "hours": null
+    "hours": null,
+    "competency_based": true
    },
    "cost": {
     "tuition": 5701.0,
@@ -375,7 +378,7 @@
     "substitution": null
    },
    "entity_type": "Private For-Profit",
-   "cip_code": "1.0504",
+   "cip_code": "01.0504",
    "soc_codes": [
     "39-2021"
    ],
@@ -389,7 +392,8 @@
    "region": null,
    "length": {
     "weeks": null,
-    "hours": null
+    "hours": null,
+    "competency_based": true
    },
    "cost": {
     "tuition": 6249.0,
@@ -493,7 +497,8 @@
    },
    "length": {
     "weeks": 260.0,
-    "hours": 30.0
+    "hours": 30.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 12374.0,
@@ -592,7 +597,7 @@
    "uuid": "f6939ff4-31e5-11f1-b734-00155dd2f085",
    "provider_name": "Springboard",
    "program_name": "User Experience Design Career Track (500 clock hours)",
-   "description": "6091|Covers understanding user needs to create products that are dynamic and easy to use.",
+   "description": "Covers understanding user needs to create products that are dynamic and easy to use.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/courses/ux-career-track/",
    "provider_link": {
@@ -626,7 +631,8 @@
    },
    "length": {
     "weeks": 26.0,
-    "hours": 19.0
+    "hours": 19.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 7900.0,
@@ -702,7 +708,7 @@
    "uuid": "f693a050-31e5-11f1-bf37-00155dd2f085",
    "provider_name": "Springboard",
    "program_name": "Tech Sales Career Track (150 clock hours)",
-   "description": "6090|Covers the skills for the direct promotion of products & services to customers & functioning independently.",
+   "description": "Covers the skills for the direct promotion of products & services to customers & functioning independently.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/courses/tech-sales-career-track/",
    "provider_link": {
@@ -736,7 +742,8 @@
    },
    "length": {
     "weeks": 16.0,
-    "hours": 9.0
+    "hours": 9.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 5900.0,
@@ -827,7 +834,7 @@
     "substitution": null
    },
    "entity_type": "Private For-Profit",
-   "cip_code": "9.0702",
+   "cip_code": "09.0702",
    "soc_codes": [
     "15-1252"
    ],
@@ -846,7 +853,8 @@
    },
    "length": {
     "weeks": 12.0,
-    "hours": 20.0
+    "hours": 20.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 18150.0,
@@ -922,7 +930,7 @@
    "uuid": "f693a013-31e5-11f1-8e16-00155dd2f085",
    "provider_name": "Springboard",
    "program_name": "Software Engineering Career Track (800 clock hours)",
-   "description": "6082|Web developer training, build web-based pages and applications to achieve user, business, and product goals and transform your career.",
+   "description": "Web developer training, build web-based pages and applications to achieve user, business, and product goals and transform your career.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/",
    "provider_link": {
@@ -956,7 +964,8 @@
    },
    "length": {
     "weeks": 38.0,
-    "hours": 21.0
+    "hours": 21.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 10900.0,
@@ -1032,7 +1041,7 @@
    "uuid": "f693a032-31e5-11f1-b11b-00155dd2f085",
    "provider_name": "Springboard",
    "program_name": "Data Analytics Career Track (500 clock hours)",
-   "description": "6089|Prepares individuals to apply data science to generate insights from data and identify and predict trends.",
+   "description": "Prepares individuals to apply data science to generate insights from data and identify and predict trends.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/",
    "provider_link": {
@@ -1067,7 +1076,8 @@
    },
    "length": {
     "weeks": 26.0,
-    "hours": 19.0
+    "hours": 19.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 8900.0,
@@ -1166,7 +1176,7 @@
    "uuid": "f693a070-31e5-11f1-b76d-00155dd2f085",
    "provider_name": "Springboard",
    "program_name": "Cybersecurity Career Track (500 clock hours)",
-   "description": "6086|Preparation for Security+ exam for those with Network+ certification and at least two years of experience in IT administration with a security focus, recommended.",
+   "description": "Preparation for Security+ exam for those with Network+ certification and at least two years of experience in IT administration with a security focus, recommended.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.springboard.com/",
    "provider_link": {
@@ -1200,7 +1210,8 @@
    },
    "length": {
     "weeks": 26.0,
-    "hours": 19.0
+    "hours": 19.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 10900.0,
@@ -1276,7 +1287,7 @@
    "uuid": "f69d0411-31e5-11f1-9582-00155dd2f085",
    "provider_name": "Bay Area Video Coalition",
    "program_name": "Occupational Training For Beginning Video Production Certificate: Producer/Editor Fast-Track",
-   "description": "39635|Fast paced program that prepares individuals to communicate dramatic information, ideas, moods, and feelings through the making and production of films and videos. Courses include DSLR Bootcamp, Lighting, and Audio Post Production.",
+   "description": "Fast paced program that prepares individuals to communicate dramatic information, ideas, moods, and feelings through the making and production of films and videos. Courses include DSLR Bootcamp, Lighting, and Audio Post Production.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/7/beginning-video-production-producereditor-fast-track",
    "provider_link": {
@@ -1310,7 +1321,8 @@
    },
    "length": {
     "weeks": 16.0,
-    "hours": 50.0
+    "hours": 50.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2025.0,
@@ -1386,7 +1398,7 @@
    "uuid": "f69d04a9-31e5-11f1-91b0-00155dd2f085",
    "provider_name": "Reach University",
    "program_name": "Reach University K-12 Teacher Apprenticeship Program",
-   "description": "72155|The term of the competency-based apprenticeship with a minimum of 144 credit hours of relatedtechnical instruction (RTI) plus employer specific training and 2,000 hours of on-the-job learning(OJL) to achieve skills based on employer requirements per year. Term of apprenticeship will bedetermined by the apprentices educational level as outlined in the Minimum Qualifications.The estimated length of an apprenticeship program based on this occupation was set by the DOL tobe 3 years.",
+   "description": "The term of the competency-based apprenticeship with a minimum of 144 credit hours of relatedtechnical instruction (RTI) plus employer specific training and 2,000 hours of on-the-job learning(OJL) to achieve skills based on employer requirements per year. Term of apprenticeship will bedetermined by the apprentices educational level as outlined in the Minimum Qualifications.The estimated length of an apprenticeship program based on this occupation was set by the DOL tobe 3 years.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "http://www.reach.edu",
    "provider_link": {
@@ -1421,7 +1433,8 @@
    },
    "length": {
     "weeks": 156.0,
-    "hours": 50.0
+    "hours": 50.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 12374.0,
@@ -1520,7 +1533,7 @@
    "uuid": "f69d0c12-31e5-11f1-b47c-00155dd2f085",
    "provider_name": "West Valley Occupational Center - LAUSD",
    "program_name": "Medical Billing/Medical Front Office Assistant",
-   "description": "63479|This program prepares individuals for employment as a front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility.  Students learn medical terminology, abbreviations, procedures, and common diseases.  The Medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics.  Telecommunications, file management and preparing correspondence will also be covered in the program.  Students will have hands-or practice with electronic records management and the insurance billing process.  Medicare, Medicaid, HMOS, PPOS and commercial plans will be discussed.  HIPAA compliance, fraud/abuse, ethics, professionalism, and job search strategies will be emphasized throughout the course. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
+   "description": "This program prepares individuals for employment as a front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility.  Students learn medical terminology, abbreviations, procedures, and common diseases.  The Medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics.  Telecommunications, file management and preparing correspondence will also be covered in the program.  Students will have hands-or practice with electronic records management and the insurance billing process.  Medicare, Medicaid, HMOS, PPOS and commercial plans will be discussed.  HIPAA compliance, fraud/abuse, ethics, professionalism, and job search strategies will be emphasized throughout the course. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -1551,7 +1564,8 @@
    "region": null,
    "length": {
     "weeks": 27.0,
-    "hours": 17.0
+    "hours": 17.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1575.0,
@@ -1652,7 +1666,7 @@
    "uuid": "f69d1112-31e5-11f1-a794-00155dd2f085",
    "provider_name": "Shasta College",
    "program_name": "Accounting Clerk/Bookkeeper Certificate",
-   "description": "3245|A program that prepares individuals to provide technical administrative support to professional accountants and other financial management personnel.  Includes instruction in posting transactions to accounts  record-keeping systems  accounting software operation  and general accounting principles and practices.",
+   "description": "A program that prepares individuals to provide technical administrative support to professional accountants and other financial management personnel.  Includes instruction in posting transactions to accounts  record-keeping systems  accounting software operation  and general accounting principles and practices.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://www.shastacollege.edu/academics/programs/accounting/",
    "provider_link": {
@@ -1687,7 +1701,8 @@
    },
    "length": {
     "weeks": 34.0,
-    "hours": 15.0
+    "hours": 15.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1311.0,
@@ -1782,7 +1797,7 @@
    "uuid": "f69d118b-31e5-11f1-a64a-00155dd2f085",
    "provider_name": "Shasta College",
    "program_name": "Shasta College Accounting Clerk Apprenticeship",
-   "description": "71929|A state-approved registered apprenticeship program. Apprentices follow the program Standards, outlining related instruction and on-the-job training hours required to receive a certificate from the state upon completion. Related instruction includes, but is not limited to, accounting principles and theory, financial accounting, managerial accounting, cost accounting, budget control, legal aspects of accounting, reporting procedures, statement analysis, business information systems, professional standards and ethics.",
+   "description": "A state-approved registered apprenticeship program. Apprentices follow the program Standards, outlining related instruction and on-the-job training hours required to receive a certificate from the state upon completion. Related instruction includes, but is not limited to, accounting principles and theory, financial accounting, managerial accounting, cost accounting, budget control, legal aspects of accounting, reporting procedures, statement analysis, business information systems, professional standards and ethics.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://www.shastacollege.edu/about/economic-workforce-development/apprenticeship/",
    "provider_link": {
@@ -1817,7 +1832,8 @@
    },
    "length": {
     "weeks": 99.0,
-    "hours": 40.0
+    "hours": 40.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 0.0,
@@ -1927,7 +1943,7 @@
     "substitution": null
    },
    "entity_type": "Private For-Profit",
-   "cip_code": "1.0505",
+   "cip_code": "01.0505",
    "soc_codes": [
     "39-2011"
    ],
@@ -1941,7 +1957,8 @@
    "region": null,
    "length": {
     "weeks": 52.0,
-    "hours": 10.0
+    "hours": 10.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 4131.0,
@@ -2025,7 +2042,7 @@
     "substitution": null
    },
    "entity_type": "Private For-Profit",
-   "cip_code": "1.0504",
+   "cip_code": "01.0504",
    "soc_codes": [
     "39-2021"
    ],
@@ -2039,7 +2056,8 @@
    "region": null,
    "length": {
     "weeks": 52.0,
-    "hours": 10.0
+    "hours": 10.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 3542.0,
@@ -2123,7 +2141,7 @@
     "substitution": null
    },
    "entity_type": "Private For-Profit",
-   "cip_code": "1.8301",
+   "cip_code": "01.8301",
    "soc_codes": [
     "31-9096"
    ],
@@ -2137,7 +2155,8 @@
    "region": null,
    "length": {
     "weeks": 52.0,
-    "hours": 10.0
+    "hours": 10.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 3901.0,
@@ -2206,7 +2225,7 @@
    "uuid": "f69d042f-31e5-11f1-a9f9-00155dd2f085",
    "provider_name": "Bay Area Video Coalition",
    "program_name": "Occupational Training For Intermediate Multimedia Certificate: After Effects Fast Track",
-   "description": "39639|Fast paced program that prepares individuals to use computer applications and related visual and sound imaging techniques to manipulate images and information originating as film, video, still photographs, digital copy, soundtracks, and physical objects.",
+   "description": "Fast paced program that prepares individuals to use computer applications and related visual and sound imaging techniques to manipulate images and information originating as film, video, still photographs, digital copy, soundtracks, and physical objects.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/8/beginning-multimedia-after-effects-fast-track",
    "provider_link": {
@@ -2240,7 +2259,8 @@
    },
    "length": {
     "weeks": 16.0,
-    "hours": 50.0
+    "hours": 50.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1830.0,
@@ -2316,7 +2336,7 @@
    "uuid": "f69d046b-31e5-11f1-8304-00155dd2f085",
    "provider_name": "Bay Area Video Coalition",
    "program_name": "Occupational Training for Intermediate Digital Post Production: Video Post-production Full Certificate",
-   "description": "54831|Comprehensive certificate training to learn video and audio editing, special effects, motion graphics, color correction, aesthetics and workflow.",
+   "description": "Comprehensive certificate training to learn video and audio editing, special effects, motion graphics, color correction, aesthetics and workflow.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/4/beginning-digital-post-production-video-post-production-full-certificate",
    "provider_link": {
@@ -2351,7 +2371,8 @@
    },
    "length": {
     "weeks": 40.0,
-    "hours": 50.0
+    "hours": 50.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 3750.0,
@@ -2450,7 +2471,7 @@
    "uuid": "f69d048a-31e5-11f1-b572-00155dd2f085",
    "provider_name": "Bay Area Video Coalition",
    "program_name": "Occupational Training For Beginning Digital Post Production: Editor Fast Track",
-   "description": "39622|A program that prepares individuals to communicate dramatic information  ideas  moods  and feelings through the making and producing of films and videos. Includes instruction in theory of film  film technology and equipment operation  film production  film directing  film editing  cinematographic art  film audio  techniques for making specific types of films and or videos  media technologies  computer image making  multi-media production  and the planning and management of film video operations.",
+   "description": "A program that prepares individuals to communicate dramatic information  ideas  moods  and feelings through the making and producing of films and videos. Includes instruction in theory of film  film technology and equipment operation  film production  film directing  film editing  cinematographic art  film audio  techniques for making specific types of films and or videos  media technologies  computer image making  multi-media production  and the planning and management of film video operations.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/5/beginning-digital-post-production-editor-fast-track",
    "provider_link": {
@@ -2484,7 +2505,8 @@
    },
    "length": {
     "weeks": 16.0,
-    "hours": 50.0
+    "hours": 50.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2025.0,
@@ -2560,7 +2582,7 @@
    "uuid": "f69d09bc-31e5-11f1-ada9-00155dd2f085",
    "provider_name": "United Youth of America, Inc",
    "program_name": "Cyber Security Support Technician (Basic)",
-   "description": "65446|A program that prepares individuals to assess the security needs of computer and network systems  recommend safeguard solutions  and manage the implementation and maintenance of security devices  systems  and procedures.  Includes instruction in computer architecture  programming  and systems analysis  networking  telecommunications  cryptography  security system design  applicable law and regulations  risk assessment and policy analysis  contingency planning  user access issues  investigation techniques  and troubleshooting.",
+   "description": "A program that prepares individuals to assess the security needs of computer and network systems  recommend safeguard solutions  and manage the implementation and maintenance of security devices  systems  and procedures.  Includes instruction in computer architecture  programming  and systems analysis  networking  telecommunications  cryptography  security system design  applicable law and regulations  risk assessment and policy analysis  contingency planning  user access issues  investigation techniques  and troubleshooting.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.uyoa.org",
    "provider_link": {
@@ -2596,7 +2618,8 @@
    },
    "length": {
     "weeks": 99.0,
-    "hours": 40.0
+    "hours": 40.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 9575.0,
@@ -2718,7 +2741,7 @@
    "uuid": "f69d0a37-31e5-11f1-86b1-00155dd2f085",
    "provider_name": "West Valley Occupational Center - LAUSD",
    "program_name": "Graphic Design",
-   "description": "75071|A program that prepares individuals to apply artistic and computer techniques to the interpretation of technical and commercial concepts. Includes instruction in computer-assisted art and design  printmaking  concepts sketching  technical drawing  color theory  imaging  studio technique  still and life modeling  multimedia applications  communication skills and commercial art business operations.",
+   "description": "A program that prepares individuals to apply artistic and computer techniques to the interpretation of technical and commercial concepts. Includes instruction in computer-assisted art and design  printmaking  concepts sketching  technical drawing  color theory  imaging  studio technique  still and life modeling  multimedia applications  communication skills and commercial art business operations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -2737,7 +2760,8 @@
    "region": null,
    "length": {
     "weeks": 20.0,
-    "hours": 27.0
+    "hours": 27.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1890.0,
@@ -2806,7 +2830,7 @@
    "uuid": "f69d11a9-31e5-11f1-9c95-00155dd2f085",
    "provider_name": "Shasta College",
    "program_name": "Logging and Forestry Workers Apprenticeship Program",
-   "description": "70024|The standard term of the paid apprenticeship includes 3,000 on-the-job (OJT) hours, 272 related supplemental instruction (RSI), and completed within 24 months. This program serves the entire state of California and, upon completion, the apprentice will receive a state and industry recognized certificate of completion.",
+   "description": "The standard term of the paid apprenticeship includes 3,000 on-the-job (OJT) hours, 272 related supplemental instruction (RSI), and completed within 24 months. This program serves the entire state of California and, upon completion, the apprentice will receive a state and industry recognized certificate of completion.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://craftprogram.net/",
    "provider_link": {
@@ -2821,7 +2845,7 @@
     "substitution": null
    },
    "entity_type": "Public",
-   "cip_code": "3.0599",
+   "cip_code": "03.0599",
    "soc_codes": [
     "45-4029"
    ],
@@ -2840,7 +2864,8 @@
    },
    "length": {
     "weeks": 99.0,
-    "hours": 40.0
+    "hours": 40.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 0.0,
@@ -2888,7 +2913,7 @@
    "uuid": "f69d2fd4-31e5-11f1-8107-00155dd2f085",
    "provider_name": "Glendale Community College",
    "program_name": "Leadership for New and Future Supervisors",
-   "description": "52529|THIS COURSE IS DESIGNED FOR NEW AND FUTURE SUPERVISORS WHO WANT TO GROW THEIR LEADERSHIP SKILLS AND MANAGEMENT TECHNIQUES TO BECOME MORE CONFIDENT LEADERS. PARTICIPANTS WILL LEARN HOW THE TRANSITION FROM INDIVIDUAL CONTRIBUTOR TO SUPERVISOR AND HOW TO ESTABLISH AUTHORITY, CREDIBILITY, AND DIRECTION FOR THEIR TEAM. THEY WILL ALSO LEARN HOW TO MOTIVATE EMPLOYEES AND HANDLE CHALLENGING SITUATIONS. THIS COURSE IS ALSO SUITABLE FOR NEW MANAGERS THAT CAN BENEFIT FROM NEW TECHNIQUES AND TOOLS TO ENHANCE THEIR LEADERSHIP SKILLS. PARTICIPANTS WILL LEARN HOW TO COMMUNICATE, COACH, AND BUILD EFFECTIVE TEAMS.THIS COURSE IS FOR EMPLOYEES THAT ARE NEW TO THEIR LEADERSHIP POSITIONS AND INTERESTED IN ENHANCING THEIR ABILITIES TO MOTIVATE EMPLOYEES AND DEVELOPING TEAM MEMBERS SKILLS.",
+   "description": "THIS COURSE IS DESIGNED FOR NEW AND FUTURE SUPERVISORS WHO WANT TO GROW THEIR LEADERSHIP SKILLS AND MANAGEMENT TECHNIQUES TO BECOME MORE CONFIDENT LEADERS. PARTICIPANTS WILL LEARN HOW THE TRANSITION FROM INDIVIDUAL CONTRIBUTOR TO SUPERVISOR AND HOW TO ESTABLISH AUTHORITY, CREDIBILITY, AND DIRECTION FOR THEIR TEAM. THEY WILL ALSO LEARN HOW TO MOTIVATE EMPLOYEES AND HANDLE CHALLENGING SITUATIONS. THIS COURSE IS ALSO SUITABLE FOR NEW MANAGERS THAT CAN BENEFIT FROM NEW TECHNIQUES AND TOOLS TO ENHANCE THEIR LEADERSHIP SKILLS. PARTICIPANTS WILL LEARN HOW TO COMMUNICATE, COACH, AND BUILD EFFECTIVE TEAMS.THIS COURSE IS FOR EMPLOYEES THAT ARE NEW TO THEIR LEADERSHIP POSITIONS AND INTERESTED IN ENHANCING THEIR ABILITIES TO MOTIVATE EMPLOYEES AND DEVELOPING TEAM MEMBERS SKILLS.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.glendale.edu",
    "provider_link": {
@@ -2922,7 +2947,8 @@
    },
    "length": {
     "weeks": 15.0,
-    "hours": 4.0
+    "hours": 4.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2400.0,
@@ -2974,7 +3000,7 @@
    "uuid": "f69d3a0b-31e5-11f1-8a2a-00155dd2f085",
    "provider_name": "Associated Builders and Contractors (ABC) Training Academy",
    "program_name": "Confined Space Entry",
-   "description": "53050|Confined Space topics will include: Air Monitoring, Lockout/Tagout, Blinding, Line Breaking, Safe Work Permit, Confined Spaces, Supplier Air System, and Field Exercise.",
+   "description": "Confined Space topics will include: Air Monitoring, Lockout/Tagout, Blinding, Line Breaking, Safe Work Permit, Confined Spaces, Supplier Air System, and Field Exercise.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -2998,7 +3024,8 @@
    },
    "length": {
     "weeks": 1.0,
-    "hours": 8.0
+    "hours": 8.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 128.0,
@@ -3050,7 +3077,7 @@
    "uuid": "f69d3a84-31e5-11f1-ab33-00155dd2f085",
    "provider_name": "Associated Builders and Contractors (ABC) Training Academy",
    "program_name": "Excavator",
-   "description": "54797|Identifies and describes the common types, uses, and components of excavators. Presents safety guidelines, prestart inspection procedures, and preventative maintenance requirements. Describes basic startup and operation, and covers common work activities associated with excavators. This course includes 8 hours of classroom training and 32 hours of hands-on training.",
+   "description": "Identifies and describes the common types, uses, and components of excavators. Presents safety guidelines, prestart inspection procedures, and preventative maintenance requirements. Describes basic startup and operation, and covers common work activities associated with excavators. This course includes 8 hours of classroom training and 32 hours of hands-on training.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -3074,7 +3101,8 @@
    },
    "length": {
     "weeks": 1.0,
-    "hours": 40.0
+    "hours": 40.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 920.0,
@@ -3126,7 +3154,7 @@
    "uuid": "f69d044d-31e5-11f1-b96f-00155dd2f085",
    "provider_name": "Bay Area Video Coalition",
    "program_name": "Occupational Training for Intermediate Video Production Full Certificate",
-   "description": "39585|Program that aims to aid students in developing aesthetic skills along with learning how to communicate using HD video. Student will learn lighting, sound, editing, workflow, compression and output to web. This is recommended for people who are filling in the gaps in their skillsets or to gain a solid understanding of video.",
+   "description": "Program that aims to aid students in developing aesthetic skills along with learning how to communicate using HD video. Student will learn lighting, sound, editing, workflow, compression and output to web. This is recommended for people who are filling in the gaps in their skillsets or to gain a solid understanding of video.",
    "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
    "program_url": "https://learn.bavc.org/learn/public/learning_plan/view/2/video-production-full-certificate",
    "provider_link": {
@@ -3160,7 +3188,8 @@
    },
    "length": {
     "weeks": 40.0,
-    "hours": 50.0
+    "hours": 50.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2965.0,
@@ -3236,7 +3265,7 @@
    "uuid": "f69d04c8-31e5-11f1-931a-00155dd2f085",
    "provider_name": "Designs School of Cosmetology",
    "program_name": "Skin Care / Esthetics",
-   "description": "55986|A program that prepares individuals to cleanse, depilate, massage, and beautify the human body and to function as licensed estheticians and skin care specialists.  Includes instruction in skin anatomy, physiology, and health principles of nutrition decontamination and infection control health and safety facial and body massage body wrapping and spa treatments temporary hair removal including waxing and tweezing color and skin analysis client consultation and care applicable laws and regulations business practices and sometimes related alternative healing regimens.  At the end of the program, Esthetician/Skin Care students will possess the skills and the necessary knowledge to take/pass the California State Board Exam.",
+   "description": "A program that prepares individuals to cleanse, depilate, massage, and beautify the human body and to function as licensed estheticians and skin care specialists.  Includes instruction in skin anatomy, physiology, and health principles of nutrition decontamination and infection control health and safety facial and body massage body wrapping and spa treatments temporary hair removal including waxing and tweezing color and skin analysis client consultation and care applicable laws and regulations business practices and sometimes related alternative healing regimens.  At the end of the program, Esthetician/Skin Care students will possess the skills and the necessary knowledge to take/pass the California State Board Exam.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -3260,7 +3289,8 @@
    },
    "length": {
     "weeks": 20.0,
-    "hours": 30.0
+    "hours": 30.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 11125.0,
@@ -3328,7 +3358,7 @@
    "uuid": "f69d04e6-31e5-11f1-9494-00155dd2f085",
    "provider_name": "Designs School of Cosmetology",
    "program_name": "Cosmetology",
-   "description": "55922|State licensing program which gives students necessary training to gain eligibility for the state licensing exam. A program that generally prepares individuals to cut, trim, and style scalp, facial, and body hair apply cosmetic preparations perform manicures and pedicures massage the head and extremities and prepare for practice as licensed cosmetologists in specialized or full-service salons.  Includes instruction in hair cutting and styling, manicuring, pedicuring, facial treatments, shampooing, chemical applications, esthetics, shop management, sanitation and safety, customer service, and applicable professional and labor laws and regulations.  At the end of the program, cosmetology students will possess the skills and knowledge necessary to take/pass the California State Board exam.",
+   "description": "State licensing program which gives students necessary training to gain eligibility for the state licensing exam. A program that generally prepares individuals to cut, trim, and style scalp, facial, and body hair apply cosmetic preparations perform manicures and pedicures massage the head and extremities and prepare for practice as licensed cosmetologists in specialized or full-service salons.  Includes instruction in hair cutting and styling, manicuring, pedicuring, facial treatments, shampooing, chemical applications, esthetics, shop management, sanitation and safety, customer service, and applicable professional and labor laws and regulations.  At the end of the program, cosmetology students will possess the skills and knowledge necessary to take/pass the California State Board exam.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.designsschool.edu",
    "provider_link": {
@@ -3362,7 +3392,8 @@
    },
    "length": {
     "weeks": 32.0,
-    "hours": 32.0
+    "hours": 32.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 14475.0,
@@ -3430,7 +3461,7 @@
    "uuid": "f69d0505-31e5-11f1-af10-00155dd2f085",
    "provider_name": "Helix Opportunity LLC",
    "program_name": "Digital Accessibility Developer",
-   "description": "74438|Digital Accessibility Developers program accessible software, websites, and other information communication technology (ICT). They make sure that digital products, environments, and services, are perceivable, operable, and sufficiently robust, to meet the user needs of the broadest range of disabilities, for instance by programming Accessibility Rich Internet Applications (ARIA) into ICT to interact with screen reader technologies. Students learn to plan, design, build, and implement accessible content. Once launched, they will perform research, analyze data, present results, and prepare publications as needed to advance the field of accessibility.",
+   "description": "Digital Accessibility Developers program accessible software, websites, and other information communication technology (ICT). They make sure that digital products, environments, and services, are perceivable, operable, and sufficiently robust, to meet the user needs of the broadest range of disabilities, for instance by programming Accessibility Rich Internet Applications (ARIA) into ICT to interact with screen reader technologies. Students learn to plan, design, build, and implement accessible content. Once launched, they will perform research, analyze data, present results, and prepare publications as needed to advance the field of accessibility.",
    "program_format": "This program provides online instruction, e-learning, or distance learning only.",
    "program_url": "https://helixopp.institute/admin/2",
    "provider_link": {
@@ -3464,7 +3495,8 @@
    },
    "length": {
     "weeks": 121.0,
-    "hours": 20.0
+    "hours": 20.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 18150.0,
@@ -3537,10 +3569,91 @@
    }
   },
   {
+   "uuid": "f69dae44-31e5-11f1-bc02-00155dd2f085",
+   "provider_name": "Mendocino College",
+   "program_name": "Business Office Technology Adminstrative Assistant Certificate of Achievement",
+   "description": "Administrative Assistant and Secretarial Science, General. A program that generally prepares individuals to perform the duties of administrative assistants and/or secretaries and stenographers.",
+   "program_format": "This program provides in-person instruction only.",
+   "program_url": null,
+   "provider_link": null,
+   "entity_type": "Higher Ed: Associate's Degree",
+   "cip_code": "52.0401",
+   "soc_codes": [
+    "43-6011"
+   ],
+   "location": {
+    "city": "Ukiah",
+    "state": "CA",
+    "zip": "95482",
+    "lat": 39.12,
+    "lon": -123.28
+   },
+   "region": null,
+   "length": {
+    "weeks": null,
+    "hours": null,
+    "competency_based": true
+   },
+   "cost": {
+    "tuition": 1764.0,
+    "supplies": 2500.0,
+    "total_out_of_pocket": 4264.0,
+    "total_is_complete": true,
+    "wioa_funded_cost": 0.0
+   },
+   "outcomes": {
+    "total_served": null,
+    "total_exited": null,
+    "total_completed": null,
+    "completion_rate": null,
+    "credentials_earned": null,
+    "median_earnings": null,
+    "employment_rate_q2": null,
+    "employed_q2": null,
+    "employed_q4": null,
+    "reported": false,
+    "cohort": {
+     "attributable": true,
+     "internally_consistent": true,
+     "shared_with_sibling_programs": null,
+     "exited_exceeds_served": false,
+     "completed_exceeds_served": false,
+     "oversized_for_one_program": false
+    }
+   },
+   "occupations": [
+    {
+     "soc_code": "43-6011",
+     "title": "Executive Secretaries and Executive Administrative Assistants",
+     "median_annual_wage": 91106.0,
+     "total_job_openings": 62570.0,
+     "percent_change": 1.3,
+     "entry_level_education": "High school diploma or equivalent",
+     "match": {
+      "kind": "exact",
+      "program_soc_codes": [
+       "43-6011"
+      ],
+      "entry_level_education_withheld": false
+     },
+     "region": null
+    }
+   ],
+   "local_help": {
+    "radius_miles": 25.0,
+    "centers": [
+     {
+      "id": "61623",
+      "miles": 5.8
+     }
+    ]
+   }
+  },
+  {
    "uuid": "f69d0523-31e5-11f1-bfaf-00155dd2f085",
    "provider_name": "Merced Adult School",
    "program_name": "Phlebotomy Technician",
-   "description": "61979|A program that prepares individuals under the supervision of physicians and other health care professionals to draw blood samples from patients using a variety of intrusive procedures. Includes instruction in basic vascular anatomy and physiology blood physiology skin puncture techniques venipuncture venous specimen collection and handling safety and sanitation procedures and applicable standards and regulations.",
+   "description": "A program that prepares individuals under the supervision of physicians and other health care professionals to draw blood samples from patients using a variety of intrusive procedures. Includes instruction in basic vascular anatomy and physiology blood physiology skin puncture techniques venipuncture venous specimen collection and handling safety and sanitation procedures and applicable standards and regulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -3564,7 +3677,8 @@
    },
    "length": {
     "weeks": 9.0,
-    "hours": 20.0
+    "hours": 20.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2995.0,
@@ -3632,7 +3746,7 @@
    "uuid": "f69d0541-31e5-11f1-9b52-00155dd2f085",
    "provider_name": "Merced Adult School",
    "program_name": "Solar Installation",
-   "description": "57050|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
+   "description": "A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -3656,7 +3770,8 @@
    },
    "length": {
     "weeks": 26.0,
-    "hours": 10.0
+    "hours": 10.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 0.0,
@@ -3717,7 +3832,7 @@
    "uuid": "f69d0560-31e5-11f1-8f39-00155dd2f085",
    "provider_name": "Merced Adult School",
    "program_name": "Clinical Medical Assistant",
-   "description": "61981|A program that prepares individuals, under the supervision of physicians, to provide medical office administrative services and perform clinical duties including patient intake and care, routine diagnostic and recording procedures, pre-examination and examination assistance, and the administration of medications and first aid. Includes instruction in basic anatomy and physiology medical terminology medical law and ethics patient psychology and communications medical office procedures and clinical diagnostic, examination, testing, and treatment procedures.",
+   "description": "A program that prepares individuals, under the supervision of physicians, to provide medical office administrative services and perform clinical duties including patient intake and care, routine diagnostic and recording procedures, pre-examination and examination assistance, and the administration of medications and first aid. Includes instruction in basic anatomy and physiology medical terminology medical law and ethics patient psychology and communications medical office procedures and clinical diagnostic, examination, testing, and treatment procedures.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -3742,7 +3857,8 @@
    },
    "length": {
     "weeks": 16.0,
-    "hours": 32.0
+    "hours": 32.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2995.0,
@@ -3833,7 +3949,7 @@
    "uuid": "f69d057e-31e5-11f1-8a47-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Physical Therapy Aide",
-   "description": "63467|A program that prepares individuals  under the supervision of a physical therapist  to implement physical therapy treatment care plans  train patients  conduct treatment interventions  use equipment  and observe and record patient progress.  Includes instruction in applied anatomy and physiology  applied kinesiology  principles and procedures of physical therapy  basic neurology and orthopedics  physical therapy modalities  documentation skills  psychosocial aspects of health care  wound and injury care  electrotherapy  working with orthotics and prostheses  and personal and professional ethics.",
+   "description": "A program that prepares individuals  under the supervision of a physical therapist  to implement physical therapy treatment care plans  train patients  conduct treatment interventions  use equipment  and observe and record patient progress.  Includes instruction in applied anatomy and physiology  applied kinesiology  principles and procedures of physical therapy  basic neurology and orthopedics  physical therapy modalities  documentation skills  psychosocial aspects of health care  wound and injury care  electrotherapy  working with orthotics and prostheses  and personal and professional ethics.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -3867,7 +3983,8 @@
    },
    "length": {
     "weeks": 20.0,
-    "hours": 9.0
+    "hours": 9.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 630.0,
@@ -3943,7 +4060,7 @@
    "uuid": "f69d059e-31e5-11f1-ae18-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Security Officer l",
-   "description": "63469|A program that prepares individuals to perform the duties of police and public security officers  including patrol and investigative activities  traffic control  crowd control and public relations  witness interviewing  evidence collection and management  basic crime prevention methods  weapon and equipment operation and maintenance  report preparation and other routine law enforcement responsibilities.",
+   "description": "A program that prepares individuals to perform the duties of police and public security officers  including patrol and investigative activities  traffic control  crowd control and public relations  witness interviewing  evidence collection and management  basic crime prevention methods  weapon and equipment operation and maintenance  report preparation and other routine law enforcement responsibilities.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -3978,7 +4095,8 @@
    },
    "length": {
     "weeks": 5.0,
-    "hours": 40.0
+    "hours": 40.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 140.0,
@@ -4077,7 +4195,7 @@
    "uuid": "f69d05ca-31e5-11f1-a2d6-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Medical Assistant and Health Information Technology",
-   "description": "63438|This training prepares you to work as clinical medical assistant. Classroom instruction includes: ethics, medical terminology, medical forms, ambulatory care, obstetrics, gynecology, pediatrics, out-patient surgery, urology, orthopedics, internal medicine, and cardiology. You will be able to practice techniques and topics learned to gain expertise through externships in a physician office or medical clinics.",
+   "description": "This training prepares you to work as clinical medical assistant. Classroom instruction includes: ethics, medical terminology, medical forms, ambulatory care, obstetrics, gynecology, pediatrics, out-patient surgery, urology, orthopedics, internal medicine, and cardiology. You will be able to practice techniques and topics learned to gain expertise through externships in a physician office or medical clinics.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4113,7 +4231,8 @@
    },
    "length": {
     "weeks": 26.0,
-    "hours": 23.0
+    "hours": 23.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2065.0,
@@ -4235,7 +4354,7 @@
    "uuid": "f69d05ea-31e5-11f1-b119-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Automotive Brakes Specialist",
-   "description": "63366|The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems. Our program offers Snap-On Multimeter certification and allows completers to sit for the automotive service excellence (ASE) G1 certification exam {after completing two years of field experience).",
+   "description": "The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems. Our program offers Snap-On Multimeter certification and allows completers to sit for the automotive service excellence (ASE) G1 certification exam {after completing two years of field experience).",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4269,7 +4388,8 @@
    },
    "length": {
     "weeks": 20.0,
-    "hours": 18.0
+    "hours": 18.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1260.0,
@@ -4345,12 +4465,12 @@
    "uuid": "f69d0608-31e5-11f1-a2a1-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Medical Office Assistant",
-   "description": "63447|A modularized instructional program that prepares individuals to perform clerical duties utilizing knowledge of medical terminology and hospital, clinical, laboratory and/or medical office procedures. Also included are writing reports such as case histories; understanding medical knowledge and procedures. The program includes the following courses; general clerk, business english, business math, typist, keyboarding, computer operator, software applications, integrated applications, medical records clerk, terminology and records management.",
+   "description": "A modularized instructional program that prepares individuals to perform clerical duties utilizing knowledge of medical terminology and hospital, clinical, laboratory and/or medical office procedures. Also included are writing reports such as case histories; understanding medical knowledge and procedures. The program includes the following courses; general clerk, business english, business math, typist, keyboarding, computer operator, software applications, integrated applications, medical records clerk, terminology and records management.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
    "entity_type": "Public",
-   "cip_code": "51.071",
+   "cip_code": "51.0710",
    "soc_codes": [
     "31-9092",
     "43-6013"
@@ -4370,7 +4490,8 @@
    },
    "length": {
     "weeks": 18.0,
-    "hours": 30.0
+    "hours": 30.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1890.0,
@@ -4469,7 +4590,7 @@
    "uuid": "f69d0627-31e5-11f1-842d-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Automotive Engine Repair Specialist",
-   "description": "63369|The east Los Angeles skills centers automotive engine repair specialist program prepares individuals to apply technical knowledge and skills to repair, service, and maintain small internal-combustion engines used on portable equipment such as lawnmowers, chain saws, rotary tillers, and snowmobiles. After two years working experience students qualify to take the automotive service excellence (ASE) a 1 certification exam.  Our program is also a certified multimeter snap-on certified program.",
+   "description": "The east Los Angeles skills centers automotive engine repair specialist program prepares individuals to apply technical knowledge and skills to repair, service, and maintain small internal-combustion engines used on portable equipment such as lawnmowers, chain saws, rotary tillers, and snowmobiles. After two years working experience students qualify to take the automotive service excellence (ASE) a 1 certification exam.  Our program is also a certified multimeter snap-on certified program.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4503,7 +4624,8 @@
    },
    "length": {
     "weeks": 20.0,
-    "hours": 18.0
+    "hours": 18.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1260.0,
@@ -4579,7 +4701,7 @@
    "uuid": "f69d0646-31e5-11f1-aaba-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Photovoltaic Installer",
-   "description": "63465|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
+   "description": "A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4613,7 +4735,8 @@
    },
    "length": {
     "weeks": 12.0,
-    "hours": 30.0
+    "hours": 30.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1260.0,
@@ -4689,7 +4812,7 @@
    "uuid": "f69d0664-31e5-11f1-af10-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Medical Coder",
-   "description": "63442|The health information technology program will prepare you for a career as a medical insurance coder. You will learn the basics of healthcare law, ethics, customer relations, appointment scheduling, minor accounting, chart noting, correspondence, protected health information standards, phone etiquette, paper and electronic health records, insurance programs, the insurance billing process. Diagnostic coding and procedure coding; through workplace simulations.",
+   "description": "The health information technology program will prepare you for a career as a medical insurance coder. You will learn the basics of healthcare law, ethics, customer relations, appointment scheduling, minor accounting, chart noting, correspondence, protected health information standards, phone etiquette, paper and electronic health records, insurance programs, the insurance billing process. Diagnostic coding and procedure coding; through workplace simulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4724,7 +4847,8 @@
    },
    "length": {
     "weeks": 56.0,
-    "hours": 10.0
+    "hours": 10.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1890.0,
@@ -4823,7 +4947,7 @@
    "uuid": "f69d0682-31e5-11f1-a086-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Graphic Designer",
-   "description": "63404|The east Los Angeles skills center graphic design program prepares individuals to apply artistic and computer techniques to the interpretation of technical commercial concepts.  Includes instruction in computer-assisted art and design , printmaking, concepts sketching, and technical drawing, color theory, imaging, studio technique, still and life modeling multimedia applications, communication skills and commercial art business operations.",
+   "description": "The east Los Angeles skills center graphic design program prepares individuals to apply artistic and computer techniques to the interpretation of technical commercial concepts.  Includes instruction in computer-assisted art and design , printmaking, concepts sketching, and technical drawing, color theory, imaging, studio technique, still and life modeling multimedia applications, communication skills and commercial art business operations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4858,7 +4982,8 @@
    },
    "length": {
     "weeks": 74.0,
-    "hours": 10.0
+    "hours": 10.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 2520.0,
@@ -4957,7 +5082,7 @@
    "uuid": "f69d06a0-31e5-11f1-adc0-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Automotive Technician",
-   "description": "63371|The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems.  Our program offers snap-on multimeter certification and allows completers to sit for the automotive service excellence (ASE) g1 certification exam {after completing two years of field experience).",
+   "description": "The automotive technician program at the east Los Angeles skills center prepares individuals to apply technical knowledge and skills to repair, service, and maintain all types of automobiles. The program includes instruction in brake systems, electrical systems, engine performance, engine repair, suspension and steering, automatic and manual transmissions and drive trains, and heating and air condition systems.  Our program offers snap-on multimeter certification and allows completers to sit for the automotive service excellence (ASE) g1 certification exam {after completing two years of field experience).",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -4993,7 +5118,8 @@
    },
    "length": {
     "weeks": 13.0,
-    "hours": 14.0
+    "hours": 14.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 630.0,
@@ -5108,7 +5234,7 @@
    "uuid": "f69d06be-31e5-11f1-acc3-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Nurse Assistant/ Long Term Care and Home Health Aide",
-   "description": "63459|A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
+   "description": "A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -5143,7 +5269,8 @@
    },
    "length": {
     "weeks": 15.0,
-    "hours": 14.0
+    "hours": 14.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 948.0,
@@ -5242,7 +5369,7 @@
    "uuid": "f69d06dd-31e5-11f1-a53e-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Medical Assistant",
-   "description": "63429|This competency-based course contains information and training to prepare persons to function as clinical medical assistants though training in ethics, medical terminology, and the preparation of medical forms. In addition, students will gain expertise in the day-to-day functions of the following specialties: ambulatory care, obstetrics and gynecology, pediatrics, outpatient surgery, urology, orthopedics, internal medicine, cardiology, and laboratory.",
+   "description": "This competency-based course contains information and training to prepare persons to function as clinical medical assistants though training in ethics, medical terminology, and the preparation of medical forms. In addition, students will gain expertise in the day-to-day functions of the following specialties: ambulatory care, obstetrics and gynecology, pediatrics, outpatient surgery, urology, orthopedics, internal medicine, cardiology, and laboratory.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -5276,7 +5403,8 @@
    },
    "length": {
     "weeks": 20.0,
-    "hours": 25.0
+    "hours": 25.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1750.0,
@@ -5352,7 +5480,7 @@
    "uuid": "f69d06fc-31e5-11f1-976c-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Cosmetology",
-   "description": "63375|This competency-based outline is the second of the three-series cosmetology training and offers the 600-hour course conducted under the rules and regulations issued by the California state board of barbering and cosmetology (CSBBC). This course develops the skills needed to take and pass the license examination. Instruction includes wet and thermal hair styling, permanent waving, chemical straightening, and haircutting. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
+   "description": "This competency-based outline is the second of the three-series cosmetology training and offers the 600-hour course conducted under the rules and regulations issued by the California state board of barbering and cosmetology (CSBBC). This course develops the skills needed to take and pass the license examination. Instruction includes wet and thermal hair styling, permanent waving, chemical straightening, and haircutting. The competencies in this course outline are aligned with the California high school academic content standards and the California career technical education model curriculum standards.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -5387,7 +5515,8 @@
    },
    "length": {
     "weeks": 30.0,
-    "hours": 40.0
+    "hours": 40.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 3000.0,
@@ -5486,7 +5615,7 @@
    "uuid": "f69d071b-31e5-11f1-a792-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Hospital Maintenance Technician",
-   "description": "63409|This competency-based course is designed to prepare students for employment in building maintenance and cleaning work. Instruction covers equipment, materials, and methods used in routine maintenance and cleaning of offices, shops, hospitals, schools, stores, and outdoor areas. Topics include commercial methods for floor care, wall and window washing, and making minor building repairs.",
+   "description": "This competency-based course is designed to prepare students for employment in building maintenance and cleaning work. Instruction covers equipment, materials, and methods used in routine maintenance and cleaning of offices, shops, hospitals, schools, stores, and outdoor areas. Topics include commercial methods for floor care, wall and window washing, and making minor building repairs.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -5522,7 +5651,8 @@
    },
    "length": {
     "weeks": 22.0,
-    "hours": 9.0
+    "hours": 9.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 700.0,
@@ -5637,7 +5767,7 @@
    "uuid": "f69d073a-31e5-11f1-ae8d-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Construction Worker",
-   "description": "63507|The East Los Angeles Skills Center's Construction Worker Program prepares students for careers in the Residential and Commercial Construction Career Pathway. Students will learn how to perform tasks involving physical labor at construction sites; operate hand and power tools of all types: air hammers, earth tampers, cement mixers, small mechanical hoists, surveying and measuring equipment, and a variety of other equipment and instruments; clean and prepare sites, dig trenches, set braces to support the sides of excavations, erect scaffolding, and clean up rubble, debris and other waste materials; and assist other craft workers. At the completion of this course students may apply for their OSHA-10 and HazMat certifications.",
+   "description": "The East Los Angeles Skills Center's Construction Worker Program prepares students for careers in the Residential and Commercial Construction Career Pathway. Students will learn how to perform tasks involving physical labor at construction sites; operate hand and power tools of all types: air hammers, earth tampers, cement mixers, small mechanical hoists, surveying and measuring equipment, and a variety of other equipment and instruments; clean and prepare sites, dig trenches, set braces to support the sides of excavations, erect scaffolding, and clean up rubble, debris and other waste materials; and assist other craft workers. At the completion of this course students may apply for their OSHA-10 and HazMat certifications.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": null,
    "provider_link": null,
@@ -5661,7 +5791,8 @@
    },
    "length": {
     "weeks": 22.0,
-    "hours": 25.0
+    "hours": 25.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1890.0,
@@ -5737,7 +5868,7 @@
    "uuid": "f69d0759-31e5-11f1-a39f-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Nursing Assistant, Home Health Aide, and Medical Terminology",
-   "description": "63461|A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
+   "description": "A program that prepares individuals to perform routine nursing-related services to patients in hospitals or long-term care facilities  under the training and supervision of a registered nurse or licensed practical nurse.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -5771,7 +5902,8 @@
    },
    "length": {
     "weeks": 13.0,
-    "hours": 23.0
+    "hours": 23.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1050.0,
@@ -5847,7 +5979,7 @@
    "uuid": "f69d0777-31e5-11f1-b6e4-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Medical Biller",
-   "description": "63440|This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology, abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with workplace simulations.",
+   "description": "This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic, medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology, abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with workplace simulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -5882,7 +6014,8 @@
    },
    "length": {
     "weeks": 38.0,
-    "hours": 9.0
+    "hours": 9.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1260.0,
@@ -5981,7 +6114,7 @@
    "uuid": "f69d0796-31e5-11f1-9ec5-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Solar Thermal Technician",
-   "description": "63473|A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
+   "description": "A program that prepares individuals to apply technical knowledge and skills to assemble  install  operate  maintain  and repair solar energy systems. Includes instruction in installing  maintaining and testing various types of equipment.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -6017,7 +6150,8 @@
    },
    "length": {
     "weeks": 13.0,
-    "hours": 9.0
+    "hours": 9.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 735.0,
@@ -6139,7 +6273,7 @@
    "uuid": "f69d07b4-31e5-11f1-be7b-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Medical Secretary/Medical Front Office Assistant",
-   "description": "63450|This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic. Medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology. Abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with  workplace simulations.",
+   "description": "This program prepares you for employment as a medical secretary/front office assistant in a doctors office/clinic. Medical billing service, insurance company, or outpatient hospital facility. Students learn language of healthcare (terminology. Abbreviations, procedures, and common diseases. The medisoft software will be utilized to schedule patient appointments, manage files, verify insurance, and enter patient demographics. Telecommunications, file management and preparing correspondence will also be covered in the program students will have hands-or practice with  workplace simulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -6174,7 +6308,8 @@
    },
    "length": {
     "weeks": 10.0,
-    "hours": 36.0
+    "hours": 36.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 1260.0,
@@ -6273,7 +6408,7 @@
    "uuid": "f69d07d3-31e5-11f1-b508-00155dd2f085",
    "provider_name": "East Los Angeles Skills Center - LAUSD",
    "program_name": "Electrical Powerline Mechanic",
-   "description": "63396|This competency-based course is designed to prepare a student to enter an electrical distribution mechanic training program. This course covers the basic mechanical and electrical principles associated with the electrical line working trade. The goal of this course is to produce candidates for the edm training program, who as a result of this course will develop the basic skills needed to be successful trainees. These skills include: overall safety considerations, power pole climbing skills, knowledge of the basic tools and materials involved with the electrical line crafts, general construction standards, basic rigging principles, and basic electrical theory that is specific to this trade. A 175-hour power pole-climbing certificate of completion is granted to students who successfully complete the course. A component of this course includes preparation for civil service examination.",
+   "description": "This competency-based course is designed to prepare a student to enter an electrical distribution mechanic training program. This course covers the basic mechanical and electrical principles associated with the electrical line working trade. The goal of this course is to produce candidates for the edm training program, who as a result of this course will develop the basic skills needed to be successful trainees. These skills include: overall safety considerations, power pole climbing skills, knowledge of the basic tools and materials involved with the electrical line crafts, general construction standards, basic rigging principles, and basic electrical theory that is specific to this trade. A 175-hour power pole-climbing certificate of completion is granted to students who successfully complete the course. A component of this course includes preparation for civil service examination.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "http://www.laadulted.com",
    "provider_link": {
@@ -6307,7 +6442,8 @@
    },
    "length": {
     "weeks": 21.0,
-    "hours": 29.0
+    "hours": 29.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 3244.0,
@@ -6383,7 +6519,7 @@
    "uuid": "f69d07f2-31e5-11f1-8e2e-00155dd2f085",
    "provider_name": "GROSSMONT ADULT SCHOOL",
    "program_name": "Phlebotomy Technician and Medical Lab Assistant",
-   "description": "61404|A program that prepares individuals  under the supervision of physicians and other health care professionals  to draw blood samples from patients using a variety of intrusive procedures.  Includes instruction in basic vascular anatomy and physiology  blood physiology  skin puncture techniques  venipuncture  venous specimen collection and handling  safety and sanitation procedures  and applicable standards and regulations.",
+   "description": "A program that prepares individuals  under the supervision of physicians and other health care professionals  to draw blood samples from patients using a variety of intrusive procedures.  Includes instruction in basic vascular anatomy and physiology  blood physiology  skin puncture techniques  venipuncture  venous specimen collection and handling  safety and sanitation procedures  and applicable standards and regulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://docs.google.com/document/d/1rRLBYaRwBVQ3lUuzrBx9KRVUVh1YEVlDQf3G92LAmXY/edit?tab=t.0",
    "provider_link": {
@@ -6412,7 +6548,8 @@
    "region": null,
    "length": {
     "weeks": 19.0,
-    "hours": 16.0
+    "hours": 16.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 875.0,
@@ -6481,7 +6618,7 @@
    "uuid": "f69d0810-31e5-11f1-882e-00155dd2f085",
    "provider_name": "GROSSMONT ADULT SCHOOL",
    "program_name": "Veterinary Assistant",
-   "description": "72299|A program that prepares individuals  under the supervision of veterinarians  laboratory animal specialists  and zoological professionals  to provide patient management  care  and clinical procedures assistance as well as owner communication.  Includes instruction in animal nursing care  animal health and nutrition  animal handling  clinical pathology  radiology  anesthesiology  dental prophylaxis  surgical assisting  clinical laboratory procedures  office administration skills  patient and owner management  and applicable standards and regulations.",
+   "description": "A program that prepares individuals  under the supervision of veterinarians  laboratory animal specialists  and zoological professionals  to provide patient management  care  and clinical procedures assistance as well as owner communication.  Includes instruction in animal nursing care  animal health and nutrition  animal handling  clinical pathology  radiology  anesthesiology  dental prophylaxis  surgical assisting  clinical laboratory procedures  office administration skills  patient and owner management  and applicable standards and regulations.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://docs.google.com/document/d/1zFY57NDasI-e-XJax9iYhu2VbBBVYtkfssaXNRAXIxM/edit?tab=t.0",
    "provider_link": {
@@ -6496,7 +6633,7 @@
     "substitution": null
    },
    "entity_type": "Public",
-   "cip_code": "1.8301",
+   "cip_code": "01.8301",
    "soc_codes": [
     "31-9096"
    ],
@@ -6510,7 +6647,8 @@
    "region": null,
    "length": {
     "weeks": 15.0,
-    "hours": 2.0
+    "hours": 2.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 375.0,
@@ -6579,7 +6717,7 @@
    "uuid": "f69d082f-31e5-11f1-8898-00155dd2f085",
    "provider_name": "GROSSMONT ADULT SCHOOL",
    "program_name": "SMAW - Stick Welding",
-   "description": "75364|A program that prepares individuals to apply basic engineering principles and technical skills to the design and engineering of welding and joining systems and the implementation of welding processes.  Includes instruction in materials science  computer-aided design  welding design  welding processes  welding metallurgy  automation and robotics  and codes  inspections  testing  and quality assurance.",
+   "description": "A program that prepares individuals to apply basic engineering principles and technical skills to the design and engineering of welding and joining systems and the implementation of welding processes.  Includes instruction in materials science  computer-aided design  welding design  welding processes  welding metallurgy  automation and robotics  and codes  inspections  testing  and quality assurance.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://adultschool.guhsd.net/Find-Your-Program/Career-Training/AWS-Welding-Certification/SMAW-Shield-Metal-Arc-Welding-STICKARC/index.html",
    "provider_link": {
@@ -6610,7 +6748,8 @@
    "region": null,
    "length": {
     "weeks": 18.0,
-    "hours": 6.0
+    "hours": 6.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 400.0,
@@ -6711,7 +6850,7 @@
    "uuid": "f69d084e-31e5-11f1-b062-00155dd2f085",
    "provider_name": "GROSSMONT ADULT SCHOOL",
    "program_name": "Class-B Commercial Truck Driver",
-   "description": "61534|A program that prepares individuals to apply technical knowledge and skills to drive trucks and buses  delivery vehicles  for-hire vehicles and other commercial vehicles  or to instruct commerical vehicle operators. Includes instruction in operating gas  diesel  or electrically-powered vehicles  loading and unloading cargo or passengers  reporting delays or accidents on the road  verifying load against shipping papers  arranging transportation for personnel  and keeping records of receipts and fares.",
+   "description": "A program that prepares individuals to apply technical knowledge and skills to drive trucks and buses  delivery vehicles  for-hire vehicles and other commercial vehicles  or to instruct commerical vehicle operators. Includes instruction in operating gas  diesel  or electrically-powered vehicles  loading and unloading cargo or passengers  reporting delays or accidents on the road  verifying load against shipping papers  arranging transportation for personnel  and keeping records of receipts and fares.",
    "program_format": "This program provides in-person instruction only.",
    "program_url": "https://docs.google.com/document/d/12KEQZufu13FqEuH68JGuuneoBo_0aeBrufipwcjUo8c/edit?tab=t.0",
    "provider_link": {
@@ -6742,7 +6881,8 @@
    "region": null,
    "length": {
     "weeks": 11.0,
-    "hours": 12.0
+    "hours": 12.0,
+    "competency_based": false
    },
    "cost": {
     "tuition": 800.0,
@@ -6815,104 +6955,6 @@
       "kind": "exact",
       "program_soc_codes": [
        "53-3051"
-      ],
-      "entry_level_education_withheld": false
-     },
-     "region": null
-    }
-   ],
-   "local_help": {
-    "radius_miles": 25.0,
-    "centers": [
-     {
-      "id": "14171355",
-      "miles": 6.4
-     },
-     {
-      "id": "32692432",
-      "miles": 14.8
-     },
-     {
-      "id": "8507",
-      "miles": 15.8
-     }
-    ]
-   }
-  },
-  {
-   "uuid": "f69d086c-31e5-11f1-b6d6-00155dd2f085",
-   "provider_name": "GROSSMONT ADULT SCHOOL",
-   "program_name": "Pharmacy Technician",
-   "description": "61402|A program that prepares individuals  under the supervision of pharmacists  to prepare medications  provide medications and related assistance to patients  and manage pharmacy clinical and business operations.  Includes instruction in medical and pharmaceutical terminology  principles of pharmacology and pharmaceutics  drug identification  pharmacy laboratory procedures  prescription interpretation  patient communication and education  safety procedures  record-keeping  measurement and testing techniques  pharmacy business operations  prescription preparation  logistics and dispensing operations  and applicable standards and regulations.",
-   "program_format": "This is a hybrid or blended program providing both in-person and online instruction.",
-   "program_url": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
-   "provider_link": {
-    "url": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
-    "href": "https://docs.google.com/document/d/1hMn-KmI8T1ToEy3CcObZOrpVDJWryEcE4FYMtBrq62w/edit?tab=t.0",
-    "linked": true,
-    "label": "program_page",
-    "verdict": "alive",
-    "reason": "ok",
-    "checked_on": "2026-08-04",
-    "notice": null,
-    "substitution": null
-   },
-   "entity_type": "Public",
-   "cip_code": "51.0805",
-   "soc_codes": [
-    "29-2052"
-   ],
-   "location": {
-    "city": "El Cajon",
-    "state": "CA",
-    "zip": "92019",
-    "lat": 32.77,
-    "lon": -116.86
-   },
-   "region": null,
-   "length": {
-    "weeks": 16.0,
-    "hours": 8.0
-   },
-   "cost": {
-    "tuition": 750.0,
-    "supplies": 0.0,
-    "total_out_of_pocket": 750.0,
-    "total_is_complete": true,
-    "wioa_funded_cost": 600.0
-   },
-   "outcomes": {
-    "total_served": 141.0,
-    "total_exited": 141.0,
-    "total_completed": 100.0,
-    "completion_rate": 0.71,
-    "credentials_earned": 100.0,
-    "median_earnings": null,
-    "employment_rate_q2": 0.97,
-    "employed_q2": 97.0,
-    "employed_q4": 64.0,
-    "reported": true,
-    "cohort": {
-     "attributable": true,
-     "internally_consistent": true,
-     "shared_with_sibling_programs": null,
-     "exited_exceeds_served": false,
-     "completed_exceeds_served": false,
-     "oversized_for_one_program": false
-    }
-   },
-   "occupations": [
-    {
-     "soc_code": "29-2052",
-     "title": "Pharmacy Technicians",
-     "median_annual_wage": 56653.0,
-     "total_job_openings": 41220.0,
-     "percent_change": 8.2,
-     "entry_level_education": "High school diploma or equivalent",
-     "match": {
-      "kind": "exact",
-      "program_soc_codes": [
-       "29-2052"
       ],
       "entry_level_education_withheld": false
      },

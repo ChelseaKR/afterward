@@ -115,11 +115,86 @@ the ETA-9171 WIOA Eligible Training Provider Performance Report data, which stat
 statutorily required to report and DOL is required to publish. Access is unauthenticated and
 read-only. This project queries it politely: paginated bulk reads on a quarterly refresh
 cadence, cached locally, with no per-user-request traffic to DOL (the published site is
-static). If DOL publishes an official bulk file, this project will switch to it.
+static). DOL does now publish a bulk file. It was evaluated on 2026-08-07 and this project is
+staying on the search API; the reasons are in "the bulk export, evaluated" below.
 
-Sentinel value: `-1` in a `field_c_*` or `field_total_*` column means "not reported or
-suppressed", **not** zero. The pipeline maps it to null and the UI must render it as
-"not reported" — never as a zero or a low score.
+### Notes on D1: `-1` has two meanings, and only one of them is suppression
+
+`-1` in a `field_c_*` or `field_total_*` column means "not reported or suppressed", **not**
+zero. The pipeline maps it to null and the UI must render it as "not reported", never as a
+zero or a low score. The data dictionary (I9) gives three documented causes: a sample too small
+to publish without identifying someone, no data reported for the program, or data the
+Department found quality problems in.
+
+**On `field_program_length_hours` and `field_program_length_weeks`, and nowhere else, `-1`
+means the program is competency-based.** The dictionary attaches a note to those two elements
+(`d113`, `d114`) that it attaches to no others: "NOTE: For this element, a suppressed value
+(-1) indicates it was reported as a competency-based program." Such a program has no fixed
+clock length because of how it is taught, not because anything was withheld.
+
+`dol_etp.clean_measure` was applied to those two fields until 2026-08-07, which read the marker
+as suppression. 12 of California's 3,266 programs, from 6 providers, therefore reached the site
+as "length not reported" and were dropped by the length filter, publishing a deliberate design
+decision as a provider's failure to answer. `dol_etp.clean_length` now reads them, and
+`length.competency_based` in `programs.json` (`cb` in the search index) carries the state as
+its own positive fact rather than as a null:
+
+| Program length, California, read 2026-08-07 | Programs |
+|---|---:|
+| A clock length filed, in weeks and hours | 3,254 |
+| Competency-based, no fixed length by design | 12 |
+| Nothing filed at all | 0 |
+
+The third row is the finding that fell out of the fix. Every California program either states a
+length or states that it has none, and the 12 the site used to describe as unreported were
+never in the third state. Every count here is recomputed at build time and none is asserted in
+code; `build.check_length_integrity` refuses to emit a `-1` as a duration, or a record that
+cannot say which of the three rows it belongs to.
+
+### Notes on D1: the bulk export, evaluated 2026-08-07
+
+DOL publishes `https://www.trainingproviderresults.gov/data/DownloadPrograms.xlsx` (36.2 MB,
+one sheet, 57 columns, 77,085 program rows across 61 state and territory values, 4,258 of them
+California). This is the file the note above used to promise a switch to. **The switch is not
+being made, and the promise is resolved rather than left open.** Three reasons, each measured
+against the same day's read of the search API:
+
+1. **It carries no program identifier at all.** No `uuid`, no `nid`, no `id` and no `title`,
+   although the dictionary lists the last three. Its only identifier is `provider_unique_id`,
+   which the dictionary itself says "is not persistent from year to year". Every program page
+   this site publishes is keyed by the API's `field_uuid`, so there is no join back and no
+   stable URL to keep: switching would break every program link with nothing to migrate them
+   by.
+2. **It is an older vintage, and not a superset.** Joined on provider, program name, CIP and
+   ZIP, 2,618 keys are shared, 646 of California's current programs are absent from the bulk
+   file entirely, and 1,635 bulk rows have no counterpart in the current list. Across the 2,615
+   uniquely paired programs the two disagree about half the time on every outcome measure, and
+   the disagreement runs one way: the bulk file suppresses a figure the API publishes 87 to 199
+   times per measure, against 13 to 61 the other way. Its newest `de172` (date added to a state
+   ETP list) is 2024-09-16, while the scorecard's About page says the live data covers training
+   programs on states' lists "as of June 30, 2025" and the dictionary's cover page names
+   PY2022. Adopting it would move the site's figures backwards and withhold more of them.
+3. **It does not close the program-year gap.** No column on it names a program year, a
+   reporting period or a cycle, so the window would still have to be quoted from prose with the
+   date it was read. The only date it carries is `de172`, which is when a program was added to
+   a state's list, not what period its outcomes describe.
+
+Licensing is not the obstacle: the file is the same U.S. Government work as D1, public domain
+under 17 U.S.C. §105.
+
+**What it has that the API does not**, and what a follow-up is worth opening for: seven
+columns, of which `de129` is the significant one. That is the *actual denominator of the
+published Q2 employment rate*, which the note below records as unpublished in the search API
+and impossible to reconstruct from it. On the 1,801 California rows carrying all three figures,
+`d123_total_employed_q2 / de129` reproduces the published `c_q2_employment_percent` to within
+0.01 on **1,801 of 1,801**. The rest are `de130`, `de170` and `de171` (the Q4 and WIOA-exiter
+denominators), `CIP_Title`, `provider_unique_id` and `de172`. The API in turn holds
+`field_uuid`, `field_cluster`, `field_wioa`, `field_provider_ref` and the
+dictionary-deprecated `field_tags`, plus Drupal search-index internals that are not data.
+
+That makes the bulk file worth reading **beside** the API for one specific gap, on its own
+vintage and labelled as such, and not worth reading instead of it. Nothing in this change
+ingests it.
 
 ### Notes on D1: the feed carries no program year
 
@@ -185,6 +260,11 @@ related. `completion_rate` has no such gap: DE122/DE121 uses the same denominato
 already publishes, which is exactly why it reconciles exactly across all 2,047 programs where
 this project checked, while the employment pair does not.
 
+Postscript, 2026-08-07: DE129 *is* published, in DOL's bulk export, as the column `de129`, on
+that file's own older vintage. The paragraph above is unchanged as a statement about this feed,
+which is what the site is built from. See "the bulk export, evaluated" above for the
+reconciliation that column makes possible and for why it is not a reason to switch sources.
+
 Both fields stay published, unreconciled, and undocumented as the same quantity by anything
 downstream of the parse — `build.py`'s `search_entry` and the emitted `outcomes` block carry
 a comment recording this finding beside both fields.
@@ -201,6 +281,6 @@ a comment recording this finding beside both fields.
 | I6 | ETA-9171 form data element definitions, PY21+ (OMB 1205-0526), read via the Wayback Machine's 2024 capture — the live DOL URL 403s automated fetches | 2026-08-07 | Confirmed DE121 (`total_exited`) and DE129 (the published employment rate's actual denominator) are differently-scoped exiter cohorts, not the same population under two names; see "Notes on D1" |
 | I7 | 20 CFR 677.230, 680.450, 680.470 and 680.490, read via Cornell LII and the eCFR versioner API (the eCFR HTML site answers automated fetches with a redirect to an unblock page) | 2026-08-07 | The reporting-obligation section of `/outcomes-coverage/`. **677.230(b)** is the operative exemption and says it in terms: "Apprenticeship programs registered under the National Apprenticeship Act are not required to submit ETP performance information. If a registered apprenticeship program voluntarily submits performance information to a State, the State must include this information in the report." **677.230(e)(1)** puts the UI wage-record match on the State, not the provider, which is what the page's reporting-route paragraph rests on. **680.450(b)** exempts them from initial eligibility; **680.470(a)** makes them automatically eligible while registered; **680.490** excludes them by its own heading ("providers *other than registered apprenticeship programs*"). An earlier draft of this page cited 680.470 for the performance exemption, which is wrong: 680.470(e) covers only *voluntary* reporting |
 | I8 | WIOA sec. 116(d)(4) and 116(d)(6)(C), 29 U.S.C. 3141(d)(4) and (d)(6)(C), read via Cornell LII | 2026-08-07 | (d)(4): the ETP report covers "all individuals engaging in the program of study (or the equivalent)", not only WIOA participants, which is the obligation the data-linkage gap sits under. (d)(6)(C): the suppression rule is a **standard, not a threshold**. Disaggregation "shall not be required when the number of participants in a category is insufficient to yield statistically reliable information or when the results would reveal personally identifiable information". No numeric minimum cell size was found in TEGL 03-18, TEN 24-19, the ETA-9171 instructions, the ETP data dictionary, or 20 CFR 677/680, so the page states none |
-| I9 | TrainingProviderResults.gov ETP Data Dictionary v4.0 (updated 2024-05-15) | 2026-08-07 | The `-1` sentinel's three documented causes, quoted on the page and in `etplCoverage.ts`: "sample sizes that are too small to protect Personally Identifiable Information", "No data were reported for the program", or "the Department identified significant data quality issues with the state submitted data". Also carries a trap this project has **not** yet acted on: on `d113_program_length_hours` and `d114_program_length_weeks`, `-1` means the program is *competency-based*, not suppressed, and `dol_etp.clean_measure` currently maps those to null like any other measure |
+| I9 | [TrainingProviderResults.gov ETP Data Dictionary v4.0](https://www.trainingproviderresults.gov/assets/ETP_Data_Dictionary.pdf), updated 2024-05-15 (cover page names PY2022, OMB 1205-0526, TEGL 03-18) | 2026-08-07 | The `-1` sentinel's three documented causes, quoted on the page and in `etplCoverage.ts`: "sample sizes that are too small to protect Personally Identifiable Information", "No data were reported for the program", or "the Department identified significant data quality issues with the state submitted data". It also carries an exception that overturned how this pipeline read two fields: on `d113_program_length_hours` and `d114_program_length_weeks` alone, "a suppressed value (-1) indicates it was reported as a competency-based program". `clean_length` now models that as its own state rather than a null. The same document is the source for `c_q2_employment_percent` = DE123/DE129, for `provider_unique_id` being non-persistent across years, and for `field_tags` being deprecated. See both "Notes on D1" sections above |
 | I10 | TrainingProviderResults.gov About page (`https://www.trainingproviderresults.gov/#!/about`; the SPA route serves a shell to a fetch, so read from its Angular template at `/modules/about-page/about-page.template.html`) | 2026-08-07 | The **only** statement of which program years the scorecard covers: "training programs approved to be on states' ETP list as of June 30, 2025, covering the period from July 1, 2021, through June 30, 2025", i.e. program years 2021 through 2024. This is what `SCORECARD_PERIOD` in `web/app/[lang]/outcomes-coverage/page.tsx` quotes; the two must be updated together. The same page names states with known PY2023 data-quality problems and records that Oklahoma had not submitted PY2024 |
 | I11 | California EDD Workforce Services Directive **WSD25-02**, "California Eligible Training Provider List", issued 2026-02-23 (Amendment 1, 2026-05-19), superseding WSD21-03 which superseded WSD15-07. Published as DOCX only | 2026-08-07 | The California half of the obligations section. Registered apprenticeship is the **only** category the directive exempts from performance reporting ("RAPs may voluntarily report performance information; however, they are exempt from ETP performance reporting requirements"). The California Community Colleges, UC and CSU are **not named anywhere in the directive** and have no reporting exemption: they reach the list by accreditation or public-institution status, and the numeric performance thresholds are limited to programs offered by "a private postsecondary institution". So this project must never describe a college's blank row as an exemption being used. The directive also has California's own small-n rule (a program is excused from *meeting* a measure with "less than ten students in the denominator"), which is a benchmark exemption and **not** the federal publication-suppression standard |

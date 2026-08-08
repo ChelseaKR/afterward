@@ -103,6 +103,45 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Competency-based programs are no longer published as programs whose length nobody reported.
+  The ETP Scorecard writes `-1` for a suppressed value in every column except the two
+  program-length fields, where its data dictionary (v4.0) notes that `-1` means the program
+  "was reported as a competency-based program": it finishes when the student can do the work,
+  so it has no fixed clock length by design. `clean_measure` was applied to those two fields
+  like any other, so 12 of California's 3,266 programs, from 6 providers, rendered as "length
+  not reported" and were silently dropped by the length filter. A deliberate design decision
+  was published as a provider's failure to answer, which is the error this project exists to
+  avoid. `dol_etp.clean_length` now reads the two fields together and returns a `ProgramLength`
+  carrying the state; `length.competency_based` ships in `programs.json` and `cb` in the search
+  index, written on every record including the false ones, so a consumer can tell "not
+  competency-based" from "built before the question existed".
+
+  What the site does with them: the program page, the result card and the comparison table all
+  say "Competency-based: no fixed length" through one `lengthText` helper, so the three cannot
+  drift apart again. A length cap excludes them, because "six months or less" is a question
+  about clock time that these programs decline to answer, and the number it removed is
+  disclosed in its own sentence beside the existing one for unreported lengths. They can never
+  be marked shortest in a comparison, and they cannot be placed in a length band, which keeps
+  them out of the completion-rate mark that band gates. `build.check_length_integrity` refuses
+  to emit a `-1` as a duration, or a record that cannot say which state it is in.
+
+  The count that fell out of the fix: with those 12 read correctly, **no California program is
+  left that filed no length at all**. Every one either states a length or states that it has
+  none. The interface's "this filter also leaves out N programs whose provider reported no
+  length" had been describing the competency-based population and nothing else.
+
+- The promise to switch to an official DOL bulk file is resolved rather than left open. DOL
+  now publishes one; it was fetched and diffed against the search API on 2026-08-07, and this
+  project is staying on the API. The file carries no program identifier of any kind, so there
+  is nothing to key the site's program pages by and no join back; its California program set is
+  a different, older vintage rather than a superset (646 of the current programs are missing
+  from it, 1,635 of its rows have no current counterpart, and it suppresses figures the API
+  publishes far more often than the reverse); and it has no program-year column either, so it
+  does not close the provenance gap that motivated looking. It does carry `de129`, the actual
+  denominator of the published Q2 employment rate, which the API does not publish and which
+  reconciles that rate exactly on all 1,801 California rows that have it. The full column diff
+  and the recommendation are in `PROVENANCE.md`; nothing here ingests the file.
+
 - A build can no longer publish coverage figures that the dataset it ships contradicts.
   `check_coverage_shape` asked whether `coverage.json` carried the keys the site reads; it
   never asked whether the numbers in them were true of the programs being written out beside

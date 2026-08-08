@@ -58,6 +58,33 @@ export function isSmallSample(exited: number | null): boolean {
   return exited !== null && exited > 0 && exited <= SMALL_SAMPLE_THRESHOLD;
 }
 
+/**
+ * How long a program takes, as a phrase, or null when the record genuinely does not say.
+ *
+ * One function because three places show a program's length -- the result card, the program
+ * page's summary strip and the comparison table -- and every one of them turns a null into the
+ * site's "Not reported" treatment. Each used to write its own ternary on `weeks === null`, so
+ * all three made the same mistake at once for as long as the pipeline handed them a null for a
+ * competency-based program: a course whose provider said it finishes when the student can do
+ * the work was published as a provider who never answered.
+ *
+ * The rule therefore lives here, and it is a rule about what null is permitted to mean. Null
+ * comes back only for a record that says nothing about length at all. A competency-based
+ * program always comes back with words, because there is something to say about it.
+ *
+ * `competencyBased` is optional and a missing value reads as false, which is all a record built
+ * before the field existed can honestly support: it cannot tell the two states apart, so this
+ * returns what it returned before the field was added rather than guessing.
+ */
+export function lengthText(
+  weeks: number | null,
+  competencyBased: boolean | undefined,
+  t: { lengthCompetencyBased: string; weeks: (n: number) => string },
+): string | null {
+  if (competencyBased === true) return t.lengthCompetencyBased;
+  return weeks === null ? null : t.weeks(weeks);
+}
+
 /** Title-cases the SHOUTING provider names that appear throughout the federal feed. */
 export function tidyName(name: string | null): string {
   if (!name) return "";

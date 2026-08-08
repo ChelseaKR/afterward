@@ -16,6 +16,7 @@ from afterward.sources.dol_etp import (
     clean_cip_code,
     clean_description,
     clean_earnings,
+    clean_length,
     clean_measure,
     clean_rate,
     clean_url,
@@ -43,6 +44,99 @@ class TestCleanMeasure:
 
     def test_unparseable_becomes_none(self) -> None:
         assert clean_measure("not a number") is None
+
+
+class TestCleanLength:
+    """The one place ``-1`` does not mean "withheld".
+
+    The ETP Scorecard data dictionary (v4.0) attaches a note to ``d113_program_length_hours``
+    and ``d114_program_length_weeks`` and to no other element: a ``-1`` there means the program
+    was reported as competency-based. Reading it as suppression, which this pipeline did until
+    2026-08-07, publishes a deliberate design decision as a provider's failure to answer.
+    """
+
+    def test_the_sentinel_is_competency_based_and_not_a_length(self) -> None:
+        length = clean_length(-1, -1)
+        assert length.competency_based is True
+        assert length.weeks is None
+        assert length.hours is None
+
+    @pytest.mark.parametrize("value", [-1, -1.0, "-1"])
+    def test_the_sentinel_is_recognised_however_the_feed_types_it(self, value: object) -> None:
+        assert clean_length(value, value).competency_based is True
+
+    def test_an_ordinary_length_is_not_competency_based(self) -> None:
+        length = clean_length(600, 24)
+        assert length.competency_based is False
+        assert length.weeks == 24.0
+        assert length.hours == 600.0
+        assert length.reported is True
+
+    def test_a_record_that_says_nothing_is_neither(self) -> None:
+        """The state that used to swallow all 12 competency-based programs.
+
+        "Nobody filed a length" and "there is no fixed length" must stay tellable apart, or
+        the site cannot say which of the two it is looking at.
+        """
+        length = clean_length("", None)
+        assert length.competency_based is False
+        assert length.reported is False
+        assert length.unstated is True
+
+    def test_competency_based_is_never_also_unstated(self) -> None:
+        assert clean_length(-1, -1).unstated is False
+
+    def test_the_sentinel_in_either_unit_marks_the_program(self) -> None:
+        """Competency-based is a fact about the program, not about a column.
+
+        No California record files it in one unit only -- all 12 carry it in both -- so this
+        defines the mixed case rather than reacting to one. The real filing in the other unit
+        is kept, because the provider took the trouble to state it.
+        """
+        hours_only = clean_length(-1, 12)
+        assert hours_only.competency_based is True
+        assert hours_only.weeks == 12.0
+        assert hours_only.hours is None
+
+        weeks_only = clean_length(400, -1)
+        assert weeks_only.competency_based is True
+        assert weeks_only.hours == 400.0
+
+    def test_a_zero_length_is_not_the_sentinel(self) -> None:
+        length = clean_length(0, 0)
+        assert length.competency_based is False
+        assert length.weeks == 0.0
+
+    def test_the_emitted_block_always_carries_the_flag(self) -> None:
+        """Including when it is false: an absent key would read as "not competency-based"
+        while meaning "this record predates the question"."""
+        assert clean_length(600, 24).as_dict() == {
+            "weeks": 24.0,
+            "hours": 600.0,
+            "competency_based": False,
+        }
+
+    def test_a_parsed_program_carries_the_state(self) -> None:
+        program = parse_program(
+            {
+                "_source": {
+                    "field_uuid": "u",
+                    "field_program_length_hours": -1,
+                    "field_program_length_weeks": -1,
+                }
+            }
+        )
+        assert program.length.competency_based is True
+        assert program.length.weeks is None
+
+    def test_the_outcome_cleaner_still_reads_the_sentinel_as_suppression(self) -> None:
+        """The narrow scope of the change, asserted rather than assumed.
+
+        Every other column keeps the dictionary's general suppression meaning, and a future
+        tidy-up that pointed the outcome measures at `clean_length` would start publishing
+        "competency-based" over withheld earnings.
+        """
+        assert clean_measure(-1) is None
 
 
 class TestSocNormalisation:
