@@ -913,7 +913,7 @@ areaNote: (unplaced: number, total: number) =>
   coverageObligationsClosing: (first: string, second: string) =>
     `In this snapshot the two categories leaving the most rows empty are ${first} and ${second}. The first is the one the regulation above makes voluntary rather than required. For the second, and for every other row in that table, this page cannot tell you which of these explanations applies to any particular program, or whether any of them does. Reading that column as a ranking of diligence would get the direction of the finding backwards.`,
   coverageCitationsNote:
-    "The regulations and the statute below are federal texts, published in English only.",
+    "The primary texts below, federal and state, are published in English only.",
 
   coverageCohortHeading: "Blank cells against the size of the group",
   coverageCohortIntro:
@@ -1712,7 +1712,7 @@ areaNote: (unplaced, total) =>
   coverageObligationsClosing: (first: string, second: string) =>
     `En esta instantánea las dos categorías que dejan más filas vacías son ${first} y ${second}. La primera es aquella cuyo reporte el reglamento de arriba hace voluntario en vez de obligatorio. Para la segunda, y para cualquier otra fila de esa tabla, esta página no le puede decir cuál de estas explicaciones aplica a un programa concreto, ni si aplica alguna. Leer esa columna como un ranking de cumplimiento invertiría el sentido del hallazgo.`,
   coverageCitationsNote:
-    "El reglamento y la ley que se citan abajo son textos federales y se publican solo en inglés.",
+    "Los textos que se citan abajo, federales y estatales, se publican solo en inglés.",
 
   coverageCohortHeading: "Celdas en blanco frente al tamaño del grupo",
   coverageCohortIntro:

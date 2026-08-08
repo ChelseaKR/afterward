@@ -441,8 +441,9 @@ export default async function OutcomesCoveragePage({
       <ul className="limits">
         {OBLIGATION_CITATIONS.map((citation) => (
           <li key={citation.id}>
-            {/* Federal legal texts, published in English only. Marked as English on the
-                Spanish page for the same reason every other English-only string is. */}
+            {/* Primary legal texts, federal and state, published in English only. Marked as
+                English on the Spanish page for the same reason every other English-only
+                string is. */}
             <a href={citation.url} rel="noopener noreferrer" lang={feedTextLang(lang)}>
               {citation.label}
             </a>
