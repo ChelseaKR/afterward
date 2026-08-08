@@ -121,6 +121,39 @@ Sentinel value: `-1` in a `field_c_*` or `field_total_*` column means "not repor
 suppressed", **not** zero. The pipeline maps it to null and the UI must render it as
 "not reported" — never as a zero or a low score.
 
+### Notes on D1: the feed carries no program year
+
+The scorecard publishes **no reporting-period or program-year field**, on either index. Every
+key on a `etp_scorecard_programs` document and on the `etp_scorecard_states` document was
+enumerated against the live endpoint on 2026-08-07, and no key on either index names a program
+year, a reporting period, a cycle, or any date at all. The nearest thing to a date anywhere in
+a record is `field_reportingstate`, which holds a two-letter state code. The same is true of
+the machine-readable bulk export DOL publishes at
+`https://www.trainingproviderresults.gov/data/DownloadPrograms.xlsx`: 58 columns, no
+program-year column.
+
+The reporting period is asserted in exactly one place, and it is prose: the scorecard's About
+page (I10) says the data covers July 1, 2021 through June 30, 2025, i.e. program years 2021 to
+2024. The ETP data dictionary published beside the same data (I9) still says PY2022, so the
+source does not agree with itself, and neither statement is in anything a client can read
+programmatically.
+
+This is the same finding the CTDL export records from the other direction, where it is the
+reason `qdata:DataSetTimeFrame` is deliberately not emitted: the source states no reporting
+period, and this project does not invent one.
+
+The consequence for anything published from this data is that the program-year window has to
+be **quoted, with the date the quote was read**, and the figures stamped with the date the
+record was read. `/outcomes-coverage/` does both beside every table rather than leaving a
+reader to assume the figures are current, because the scorecard lags and an undated coverage
+number invites a correction that would be right. `SCORECARD_PERIOD` in that page's source is
+the single place the quoted window lives; it is not derived and cannot be, so a refresh
+upstream can move it with nothing in this repository noticing.
+
+There is also a bulk file now (linked above), which the "Notes on D1" paragraph about
+switching to an official bulk export should be read against. Nothing in this change switches
+to it.
+
 ### Notes on D1 — `employed_q2` is not the numerator of `employment_rate_q2` (#25)
 
 Both fields ship (`employed_q2`, `employment_rate_q2` in `programs.json`). A consumer joining
@@ -166,3 +199,8 @@ a comment recording this finding beside both fields.
 | I4 | U.S. DOL TrainingProviderResults.gov public site | 2026-08-04 | Confirmed what federal outcome measures exist and are publishable |
 | I5 | WIOA §116 / TEGL 03-18 ETP reporting guidance | 2026-08-04 | Understanding of measure definitions (Q2/Q4 employment, credential attainment, median earnings) |
 | I6 | ETA-9171 form data element definitions, PY21+ (OMB 1205-0526), read via the Wayback Machine's 2024 capture — the live DOL URL 403s automated fetches | 2026-08-07 | Confirmed DE121 (`total_exited`) and DE129 (the published employment rate's actual denominator) are differently-scoped exiter cohorts, not the same population under two names; see "Notes on D1" |
+| I7 | 20 CFR 677.230, 680.450, 680.470 and 680.490, read via Cornell LII and the eCFR versioner API (the eCFR HTML site answers automated fetches with a redirect to an unblock page) | 2026-08-07 | The reporting-obligation section of `/outcomes-coverage/`. **677.230(b)** is the operative exemption and says it in terms: "Apprenticeship programs registered under the National Apprenticeship Act are not required to submit ETP performance information. If a registered apprenticeship program voluntarily submits performance information to a State, the State must include this information in the report." **677.230(e)(1)** puts the UI wage-record match on the State, not the provider, which is what the page's reporting-route paragraph rests on. **680.450(b)** exempts them from initial eligibility; **680.470(a)** makes them automatically eligible while registered; **680.490** excludes them by its own heading ("providers *other than registered apprenticeship programs*"). An earlier draft of this page cited 680.470 for the performance exemption, which is wrong: 680.470(e) covers only *voluntary* reporting |
+| I8 | WIOA sec. 116(d)(4) and 116(d)(6)(C), 29 U.S.C. 3141(d)(4) and (d)(6)(C), read via Cornell LII | 2026-08-07 | (d)(4): the ETP report covers "all individuals engaging in the program of study (or the equivalent)", not only WIOA participants, which is the obligation the data-linkage gap sits under. (d)(6)(C): the suppression rule is a **standard, not a threshold**. Disaggregation "shall not be required when the number of participants in a category is insufficient to yield statistically reliable information or when the results would reveal personally identifiable information". No numeric minimum cell size was found in TEGL 03-18, TEN 24-19, the ETA-9171 instructions, the ETP data dictionary, or 20 CFR 677/680, so the page states none |
+| I9 | TrainingProviderResults.gov ETP Data Dictionary v4.0 (updated 2024-05-15) | 2026-08-07 | The `-1` sentinel's three documented causes, quoted on the page and in `etplCoverage.ts`: "sample sizes that are too small to protect Personally Identifiable Information", "No data were reported for the program", or "the Department identified significant data quality issues with the state submitted data". Also carries a trap this project has **not** yet acted on: on `d113_program_length_hours` and `d114_program_length_weeks`, `-1` means the program is *competency-based*, not suppressed, and `dol_etp.clean_measure` currently maps those to null like any other measure |
+| I10 | TrainingProviderResults.gov About page (`https://www.trainingproviderresults.gov/#!/about`; the SPA route serves a shell to a fetch, so read from its Angular template at `/modules/about-page/about-page.template.html`) | 2026-08-07 | The **only** statement of which program years the scorecard covers: "training programs approved to be on states' ETP list as of June 30, 2025, covering the period from July 1, 2021, through June 30, 2025", i.e. program years 2021 through 2024. This is what `SCORECARD_PERIOD` in `web/app/[lang]/outcomes-coverage/page.tsx` quotes; the two must be updated together. The same page names states with known PY2023 data-quality problems and records that Oklahoma had not submitted PY2024 |
+| I11 | California EDD Workforce Services Directive **WSD25-02**, "California Eligible Training Provider List", issued 2026-02-23 (Amendment 1, 2026-05-19), superseding WSD21-03 which superseded WSD15-07. Published as DOCX only | 2026-08-07 | The California half of the obligations section. Registered apprenticeship is the **only** category the directive exempts from performance reporting ("RAPs may voluntarily report performance information; however, they are exempt from ETP performance reporting requirements"). The California Community Colleges, UC and CSU are **not named anywhere in the directive** and have no reporting exemption: they reach the list by accreditation or public-institution status, and the numeric performance thresholds are limited to programs offered by "a private postsecondary institution". So this project must never describe a college's blank row as an exemption being used. The directive also has California's own small-n rule (a program is excused from *meeting* a measure with "less than ten students in the denominator"), which is a benchmark exemption and **not** the federal publication-suppression standard |

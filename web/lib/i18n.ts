@@ -808,6 +808,156 @@ areaNote: (unplaced: number, total: number) =>
    */
   fundingTranslationNote:
     "This section was reviewed by a native Spanish speaker (slegarraga) on 2026-08-06, and the English text remains the reference version. If anything here is unclear, ask at the center — they are the ones who decide.",
+
+  /* ---- Outcomes data coverage --------------------------------------------------------
+   *
+   * This page answers a question nobody publishes an answer to: of the training programs
+   * California lists as eligible, how many carry any evidence of what happened to the people
+   * who took them? California's own list is a CalJOBS search screen with no download behind
+   * it, so the federal scorecard the state files into is the only public record the question
+   * can be asked of at all.
+   *
+   * The copy has one hard constraint, and it is the reason the page can exist without doing
+   * harm: it describes records, never conduct. Two of the categories with the most blank
+   * cells in California are two of the categories with the most distinct federal reporting
+   * obligations, so a sentence that reads as "these providers do not report" would be both
+   * unkind and wrong. Every string below is written so that a gap is a finding about data
+   * infrastructure, and so that a reader who arrives looking for someone to blame leaves
+   * without a candidate.
+   *
+   * No sentence here states a number. Every figure is interpolated from a count taken over
+   * the dataset at build time, so the page corrects itself on a refresh and cannot go stale
+   * while continuing to sound precise.
+   * ------------------------------------------------------------------------------------ */
+  coverageTitle: "How complete California's training outcomes data is",
+  /** Link text wherever this page is referenced compactly. Reads on its own, out of context. */
+  coverageNavShort: "How complete this data is",
+  /* Distinct from the visible "On this page" heading above the list. A nav whose accessible
+     name only repeats the heading beside it tells a screen reader user nothing they did not
+     already have; this says what pressing something in it will do. */
+  coverageJumpLabel: "Jump to a section of this page",
+  coverageLede:
+    "Every program on California's Eligible Training Provider List is reported to the federal government, and that federal report is where the outcome figures live. This page counts how much of it is filled in: measure by measure, provider category by provider category, and against the size of the group each figure is meant to describe.",
+  coverageWhy:
+    "California publishes its Eligible Training Provider List only as a search screen inside CalJOBS. There is no file to download, and no published count of how many listed programs carry outcome data. So a person choosing between two programs, and an agency deciding where a reporting effort would do the most good, are both working without that number. The federal scorecard is the same programs under a different cover, and it can be counted, so this page counts it and shows the working.",
+  coverageFraming:
+    "This measures a public record. It does not assess any provider, college, or agency. A blank cell here is a fact about how workforce data is collected and about which providers are required to file what. It is not evidence that a program is poor, that a provider withheld something it owed, or that anyone failed at anything.",
+
+  // The stamp. It sits beside every figure on the page rather than once at the top, because
+  // a coverage number without a date is an invitation to be corrected by someone who knows
+  // the scorecard lags, and the correction would be right.
+  coverageStamp: (first: string, last: string, date: string) =>
+    `Federal ETP Scorecard, program years ${first} to ${last}, read on ${date}.`,
+  coverageStampNote: (statedOn: string) =>
+    `That program-year window is not in the data. No record the scorecard publishes carries a program-year or reporting-period field of any kind, on either of its indexes. The window comes from a sentence on the scorecard's own About page, read there on ${statedOn}, and the data dictionary published alongside the same data still names an earlier program year, so the source does not agree with itself. A refresh upstream can move the window without anything on this page noticing, which is why the date this project read the record sits beside every figure below.`,
+
+  coverageProgramsCounted: "California programs in the federal record",
+  coverageSilentLabel: "Publish no outcome measure at all",
+  coverageSilentNoRecordLabel: "Of those, filed no cohort count either",
+  coverageHeadlineBody: (silent: string, total: string, withCohort: string, unfiled: string) =>
+    `${silent} of ${total} California programs publish no completion rate, no employment rate, and no median earnings figure. Those split two ways that matter. Of them, ${withCohort} filed a count of the people they served, exited, or completed, so a record exists and the outcome cells on it are empty. The remaining ${unfiled} filed no performance figures of any kind, so there is no record to have cells in.`,
+  coverageHeadlineSecond:
+    "Both are gaps, and they are not the same gap. One is a measure that was not published beside a group that was; the other is a program about which the federal record says nothing. A fix for the first is a reporting rule. A fix for the second is a data pipeline.",
+
+  coverageMeasuresHeading: "What is filled in, measure by measure",
+  coverageMeasuresIntro:
+    "Every outcome measure the scorecard carries for a program, and how many of California's programs publish each one. Nothing here is derived, combined, or estimated: these are the columns the feed has.",
+  coverageMeasureColumn: "Measure",
+  coverageReportedColumn: "Published",
+  coverageBlankColumn: "Blank beside a filed cohort",
+  coverageUnfiledColumn: "No performance record",
+  coverageMissingColumn: "Not published",
+  coverageMeasureNote:
+    "The employment count and the employment rate are separate filings, and the count is not the rate's numerator. The rate is divided by a differently scoped group of leavers that this feed does not publish, so those two rows move independently and neither can be rebuilt from the other.",
+  // Rendered only while the separation actually holds. See `reportingRouteSplit`.
+  coverageRouteSplit: (providerFloor: string, providerN: string, wageCeiling: string, wageN: string) =>
+    `The table divides along a line that has nothing to do with any provider. The counts of who was served, who left, who finished and who earned a credential are the training provider's to supply. The employment and earnings figures are produced by the state, by matching the provider's roster against unemployment-insurance wage records. In this snapshot the two groups do not overlap at all: the least-published measure the provider supplies, ${providerFloor}, is filled in for ${providerN} programs, and the most-published measure the wage match produces, ${wageCeiling}, for ${wageN}. Every measure that has to survive a records match is published less often than every measure that does not.`,
+  coverageRouteSplitCaveat:
+    "That is a description of the published data, not an explanation of it, and it is not a claim that the match is done badly. It does locate the gap: for most of these programs the reporting relationship exists and is working, and the measures going missing are the ones that depend on two systems finding the same person.",
+  coverageMeasureTotalServed: "People served",
+  coverageMeasureTotalExited: "People who left the program",
+  coverageMeasureTotalCompleted: "People who completed",
+  coverageMeasureCompletionRate: "Completion rate",
+  coverageMeasureCredentials: "Credentials earned",
+  coverageMeasureEmployedQ2: "Employed two quarters after leaving (count)",
+  coverageMeasureEmploymentRate: "Employment rate two quarters after leaving",
+  coverageMeasureEmployedQ4: "Employed four quarters after leaving (count)",
+  coverageMeasureEarnings: "Median earnings in the second quarter after leaving",
+
+  coverageByTypeHeading: "By the category the provider filed under",
+  coverageByTypeIntro:
+    "The category below is the provider's own, as filed in the federal record. It is not a clean map of California's training system: in this snapshot community colleges appear under both Public and Higher Ed: Associate's Degree, and adult schools, regional occupational programs, and county offices of education all arrive as Public. It is reported as filed rather than re-sorted, because re-sorting it would mean inventing a classification here and then measuring the invention.",
+  coverageCategoryColumn: "Category as filed",
+  coverageProgramsColumn: "Programs",
+  coveragePublishSomeColumn: "Publish at least one measure",
+  coveragePublishNoneColumn: "Publish none",
+  coverageShareNoneColumn: "Share publishing none",
+  coverageEntityUnstated: "No category filed",
+  coverageByTypeCaveat:
+    "Rows are ordered by how many programs each category holds, not by how much each leaves blank. Ordering by the blank rate would publish a league table of who reports least, and the categories at the top of it would be the ones with the most distinct reporting obligations, which is the opposite of what the numbers show.",
+
+  coverageObligationsHeading: "Not every provider owes the same report",
+  coverageObligationsIntro:
+    "A blank row is only readable against what its filer was actually required to file, and that is not the same for everyone on the list. Four differences do real work in the tables above, and none of them is a provider choosing to say nothing.",
+  coverageObligationRegisteredApprenticeship:
+    "Registered apprenticeship programs are on the list on different terms from everybody else. They are eligible by virtue of being registered, for as long as they stay registered, so they never go through the initial eligibility process the other providers go through. They are also not required to submit eligible training provider performance information at all, in so many words, and where they do submit it the submission is voluntary. An apprenticeship program with an empty row is doing exactly what the rule asks of it.",
+  coverageObligationCalifornia:
+    "California asks everyone else for it. The state's current eligible training provider directive exempts registered apprenticeship from performance reporting and nobody else, including its community colleges and its public universities. Those institutions reach the list by a different route, on their accreditation or their status as public institutions rather than by meeting the numeric performance thresholds the directive applies to private postsecondary providers, but the reporting duty is the same one everybody else has. So a blank row at a college is not an exemption being used. It is something else, and this page cannot tell you what.",
+  coverageObligationAllStudents:
+    "The scorecard is meant to describe everyone who engaged in a program of study, not only the people whose training the workforce system paid for. Getting from one to the other is a records problem: the provider supplies the roster, and the state produces the employment and earnings figures by matching that roster against its unemployment-insurance wage records. Where that match cannot be made, there is nothing to publish about the people it would have covered, and no filing by the provider would produce it.",
+  coverageObligationSuppression:
+    "A results cell is withheld when the group behind it is small enough that publishing the figure could identify a person in it. That is a privacy protection working as designed, and it is not distinguishable at source from a cell nobody filled in.",
+  // Names the top of a ranking the table above deliberately does not sort by. A reader finds
+  // that ranking on their own in about four seconds, so the choice is between letting them
+  // find it unaccompanied and naming it with the obligations attached. This names it.
+  coverageObligationsClosing: (first: string, second: string) =>
+    `In this snapshot the two categories leaving the most rows empty are ${first} and ${second}. The first is the one the regulation above makes voluntary rather than required. For the second, and for every other row in that table, this page cannot tell you which of these explanations applies to any particular program, or whether any of them does. Reading that column as a ranking of diligence would get the direction of the finding backwards.`,
+  coverageCitationsNote:
+    "The primary texts below, federal and state, are published in English only.",
+
+  coverageCohortHeading: "Blank cells against the size of the group",
+  coverageCohortIntro:
+    "If small-group suppression is what is behind an empty cell, the blank rate should fall as the group grows. That is a prediction the data can be asked about, and asking it is the only way this page can say anything about why a cell is empty without inventing a reason.",
+  coverageCohortColumn: "People who left the program",
+  coverageCohortAtLeast: (lower: string) => `${lower} or more`,
+  coverageCohortRange: (lower: string, upper: string) => `${lower} to ${upper}`,
+  coverageCohortOf: (missing: string, total: string) => `${missing} of ${total}`,
+  coverageCohortCaveat:
+    "Only cohorts a provider filed against a single program are counted here. A provider that filed one cohort covering a whole institution would land in the largest band while describing a population that is not one program. Programs that filed no exit count appear in no band at all, because an unstated group size is not a small group.",
+  coverageCohortReading:
+    "Completion and employment behave the way small-group suppression predicts: the blank rate is highest in the smallest groups and falls as the groups grow. Earnings does not fall to meet them. It stays the least published measure in every band, including the largest, where group size can no longer be the explanation. Whatever is keeping the earnings column empty in large programs is something other than protecting a small group.",
+
+  coverageProvidersHeading: "Where the silence sits",
+  coverageProvidersBody: (silent: string, total: string, programs: string) =>
+    `${silent} of the ${total} providers named in this record publish nothing for any program they filed, covering ${programs} programs between them. Every other program with an empty row belongs to a provider that did publish something somewhere, which is worth knowing: for most of the gap, the reporting relationship exists and a particular measure is missing from it.`,
+
+  coverageMethodHeading: "How this page counts",
+  coverageMethodSource:
+    "The source is the U.S. Department of Labor's Eligible Training Provider scorecard, the WIOA ETA-9171 performance report that states file and the Department publishes. California's programs are read from it whole, with no sampling and no exclusions. Every figure on this page is a count taken over that record at build time, and none is typed into the text.",
+  coverageMethodBlankHeading: "What a blank means, precisely",
+  coverageMethodBlank:
+    "The scorecard writes a single sentinel value wherever a measure has no figure, and its own data dictionary says that one value covers three different situations: a group too small to publish without identifying somebody in it, no data reported for the program at all, and data the Department found significant quality problems in. One sentinel, three causes, and no way to tell them apart from outside. So this page does not separate them, and any page that claims to has invented the distinction. What the record can support is a different and narrower split: whether it described a group at all.",
+  coverageMethodThreshold:
+    "There is also no published number behind the first of those three. The rule is a standard rather than a threshold: disaggregated data is not required where the count is too small to be statistically reliable or where publishing it would reveal something about an individual participant. No minimum cell size appears in the reporting guidance, the form instructions, or the data dictionary, so this page states no threshold either, and the cohort-size table above is a description of what the published data does rather than a reconstruction of a rule.",
+  coverageMethodStates:
+    "Published means the measure carries a figure. Blank beside a filed cohort means the record states how many people were served, left, or completed, and leaves this particular measure empty. No performance record means the record states neither, so nothing about outcomes was filed for that program in any form.",
+  coverageMethodZeroHeading: "A masked figure is not a zero",
+  coverageMethodZero:
+    "Nothing on this page adds, averages, ranks, or renders a missing measure as if it were zero. A withheld completion rate is not a completion rate of nought, and a program with an empty row has not scored badly, it has not been scored. Where a genuine reported zero exists in this data it is treated as the real and serious finding it is, and kept visibly apart from an empty cell.",
+  coverageMethodFloorHeading: "When a share is withheld",
+  coverageMethodFloor: (minimum: string) =>
+    `A percentage is published only where at least ${minimum} records sit behind it. Below that a single record moves the answer by more than three points, which is more precision than the denominator can carry, so the counts are published and the share is left out. That is the same rule this project applies to every figure it cannot stand behind.`,
+  coverageMethodLimitsHeading: "What this page does not claim",
+  coverageMethodLimits:
+    "It does not claim that California's own Eligible Training Provider List holds the same programs as the federal file. The state publishes no export to check that against, which is the gap this whole page sits in. It does not claim to know why any individual cell is empty. It does not rank providers, categories, or agencies, and it draws no conclusion about the quality of any program from the presence or absence of a figure about it. And the program-year window beside every figure is quoted from the scorecard's About page rather than measured from the data, because the data carries no such field: if that sentence changes upstream, this page will not notice on its own.",
+  coverageMethodRebuild:
+    "The dataset behind this page is rebuilt from the public sources by a documented pipeline, and the counting is done by a tested module rather than by hand. Anyone can reproduce it.",
+
+  coverageCiteHeading: "Citing or correcting this page",
+  coverageCiteBody: (date: string) =>
+    `If you are quoting a figure from this page, quote the read date with it: the underlying record was read on ${date}, and the scorecard is refreshed periodically, so a figure here can be behind the source without either being wrong. This page is a stable address and will keep answering the same question as the data underneath it changes.`,
+  coverageCiteCorrections:
+    "If you work on this data and something here is misread, the correction is welcome and will be made. That includes the reporting obligations described above: they are the part of this page least visible in the data itself and most easily got wrong from outside.",
 };
 
 /**
@@ -1487,6 +1637,126 @@ areaNote: (unplaced, total) =>
   fundingRuleLabel: "La regla:",
   fundingTranslationNote:
     "Esta sección fue revisada por una persona hablante nativa de español (slegarraga) el 6 de agosto de 2026. La versión en inglés sigue siendo la de referencia. Si algo aquí no queda claro, pregúntelo en el centro: son ellos quienes deciden.",
+
+  // ---- Cobertura de los datos de resultados ----
+  coverageTitle: "Qué tan completos están los datos de resultados de la capacitación en California",
+  coverageNavShort: "Qué tan completos están estos datos",
+  coverageJumpLabel: "Ir a una sección de esta página",
+  coverageLede:
+    "Cada programa de la Lista de Instituciones de Capacitación Elegibles de California se reporta al gobierno federal, y ese informe federal es donde viven las cifras de resultados. Esta página cuenta cuánto de ese informe está lleno: medida por medida, categoría de institución por categoría de institución, y frente al tamaño del grupo que cada cifra debería describir.",
+  coverageWhy:
+    "California publica su Lista de Instituciones de Capacitación Elegibles únicamente como una pantalla de búsqueda dentro de CalJOBS. No hay archivo que descargar ni conteo publicado de cuántos programas de la lista traen datos de resultados. Así que tanto una persona que elige entre dos programas como una agencia que decide dónde rendiría más un esfuerzo de reporte trabajan sin ese número. El informe federal son los mismos programas con otra portada, y sí se puede contar, así que esta página lo cuenta y muestra el procedimiento.",
+  coverageFraming:
+    "Esto mide un registro público. No evalúa a ninguna institución, colegio ni agencia. Una celda en blanco aquí dice algo sobre cómo se recogen los datos laborales y sobre qué está obligado a presentar cada tipo de institución. No es prueba de que un programa sea malo, ni de que una institución haya ocultado algo que debía, ni de que alguien haya fallado.",
+
+  coverageStamp: (first: string, last: string, date: string) =>
+    `Informe federal ETP, años de programa ${first} a ${last}, consultado el ${date}.`,
+  coverageStampNote: (statedOn: string) =>
+    `Ese rango de años de programa no está en los datos. Ningún registro que publica el informe federal trae un campo de año de programa ni de periodo de reporte, en ninguno de sus dos índices. El rango sale de una frase en la página «About» del propio informe, consultada ahí el ${statedOn}, y el diccionario de datos que se publica junto a esos mismos datos todavía nombra un año de programa anterior, así que la fuente no coincide consigo misma. Una actualización en el origen puede mover ese rango sin que nada de esta página se entere, y por eso la fecha en que este proyecto consultó el registro aparece junto a cada cifra de abajo.`,
+
+  coverageProgramsCounted: "Programas de California en el registro federal",
+  coverageSilentLabel: "No publican ninguna medida de resultados",
+  coverageSilentNoRecordLabel: "De esos, tampoco presentaron un conteo de personas",
+  coverageHeadlineBody: (silent: string, total: string, withCohort: string, unfiled: string) =>
+    `${silent} de ${total} programas de California no publican tasa de finalización, ni tasa de empleo, ni ingresos medianos. Y se dividen en dos grupos que conviene distinguir. De ellos, ${withCohort} presentaron un conteo de las personas que atendieron, que salieron o que terminaron, así que el registro existe y las celdas de resultados están vacías. Los ${unfiled} restantes no presentaron ninguna cifra de desempeño, así que no hay registro en el que pueda haber celdas.`,
+  coverageHeadlineSecond:
+    "Los dos son huecos, y no son el mismo hueco. Uno es una medida que no se publicó junto a un grupo que sí se declaró; el otro es un programa del que el registro federal no dice nada. Lo primero se arregla con una regla de reporte. Lo segundo se arregla con una tubería de datos.",
+
+  coverageMeasuresHeading: "Qué está lleno, medida por medida",
+  coverageMeasuresIntro:
+    "Todas las medidas de resultados que el informe federal trae para un programa, y cuántos programas de California publican cada una. Aquí nada se deriva, se combina ni se estima: estas son las columnas que tiene la fuente.",
+  coverageMeasureColumn: "Medida",
+  coverageReportedColumn: "Publicada",
+  coverageBlankColumn: "En blanco junto a un grupo declarado",
+  coverageUnfiledColumn: "Sin registro de desempeño",
+  coverageMissingColumn: "No publicada",
+  coverageMeasureNote:
+    "El conteo de personas empleadas y la tasa de empleo son dos datos distintos, y el conteo no es el numerador de la tasa. La tasa se divide entre un grupo de personas salientes definido de otra manera que esta fuente no publica, así que esas dos filas se mueven por separado y ninguna se puede reconstruir a partir de la otra.",
+  coverageRouteSplit: (providerFloor: string, providerN: string, wageCeiling: string, wageN: string) =>
+    `La tabla se parte por una línea que no tiene nada que ver con ninguna institución. Los conteos de a cuántas personas se atendió, cuántas salieron, cuántas terminaron y cuántas obtuvieron una credencial los aporta la institución de capacitación. Las cifras de empleo e ingresos las produce el estado, cruzando la lista de personas de la institución con los registros salariales del seguro de desempleo. En esta instantánea los dos grupos no se solapan en absoluto: la medida menos publicada de las que aporta la institución, «${providerFloor}», está llena en ${providerN} programas, y la más publicada de las que produce el cruce salarial, «${wageCeiling}», en ${wageN}. Toda medida que tiene que sobrevivir a un cruce de registros se publica menos que cualquier medida que no.`,
+  coverageRouteSplitCaveat:
+    "Eso describe los datos publicados, no los explica, y no afirma que el cruce esté mal hecho. Sí ubica el hueco: en la mayoría de estos programas la relación de reporte existe y funciona, y las medidas que faltan son justo las que dependen de que dos sistemas encuentren a la misma persona.",
+  coverageMeasureTotalServed: "Personas atendidas",
+  coverageMeasureTotalExited: "Personas que salieron del programa",
+  coverageMeasureTotalCompleted: "Personas que terminaron",
+  coverageMeasureCompletionRate: "Tasa de finalización",
+  coverageMeasureCredentials: "Credenciales obtenidas",
+  coverageMeasureEmployedQ2: "Con empleo dos trimestres después de salir (conteo)",
+  coverageMeasureEmploymentRate: "Tasa de empleo dos trimestres después de salir",
+  coverageMeasureEmployedQ4: "Con empleo cuatro trimestres después de salir (conteo)",
+  coverageMeasureEarnings: "Ingresos medianos del segundo trimestre después de salir",
+
+  coverageByTypeHeading: "Según la categoría con la que la institución se registró",
+  coverageByTypeIntro:
+    "La categoría de abajo es la que declaró la propia institución en el registro federal. No es un mapa limpio del sistema de capacitación de California: en esta instantánea los colegios comunitarios aparecen tanto en «Public» como en «Higher Ed: Associate's Degree», y las escuelas para adultos, los programas ocupacionales regionales y las oficinas de educación de condado llegan todos como «Public». Se reporta tal como se presentó y no se reordena, porque reordenarla significaría inventar aquí una clasificación y luego medir el invento.",
+  coverageCategoryColumn: "Categoría declarada",
+  coverageProgramsColumn: "Programas",
+  coveragePublishSomeColumn: "Publican al menos una medida",
+  coveragePublishNoneColumn: "No publican ninguna",
+  coverageShareNoneColumn: "Proporción que no publica ninguna",
+  coverageEntityUnstated: "Sin categoría declarada",
+  coverageByTypeCaveat:
+    "Las filas van ordenadas por cuántos programas tiene cada categoría, no por cuánto deja en blanco cada una. Ordenarlas por la proporción en blanco publicaría una tabla de posiciones de quién reporta menos, y arriba quedarían justo las categorías con las obligaciones de reporte más distintas, que es lo contrario de lo que muestran las cifras.",
+
+  coverageObligationsHeading: "No todas las instituciones deben el mismo informe",
+  coverageObligationsIntro:
+    "Una fila en blanco solo se puede leer frente a lo que su institución estaba realmente obligada a presentar, y eso no es igual para todas las que están en la lista. Hay cuatro diferencias que pesan de verdad en las tablas de arriba, y ninguna de ellas es una institución que decida callar.",
+  coverageObligationRegisteredApprenticeship:
+    "Los programas de aprendizaje registrado están en la lista en condiciones distintas a las de las demás instituciones. Son elegibles por el hecho de estar registrados, mientras sigan registrados, así que nunca pasan por el proceso de elegibilidad inicial por el que sí pasan las otras. Tampoco están obligados a entregar información de desempeño como institución de capacitación elegible, dicho con esas palabras, y cuando la entregan lo hacen de forma voluntaria. Un programa de aprendizaje con la fila vacía está haciendo exactamente lo que la norma le pide.",
+  coverageObligationCalifornia:
+    "A todas las demás California sí se la pide. La directiva estatal vigente sobre instituciones de capacitación elegibles exime del reporte de desempeño al aprendizaje registrado y a nadie más, ni siquiera a sus colegios comunitarios ni a sus universidades públicas. Esas instituciones llegan a la lista por otra vía, por su acreditación o por su carácter de institución pública, en lugar de tener que cumplir los umbrales numéricos de desempeño que la directiva aplica a las instituciones privadas, pero la obligación de reportar es la misma que la de todas las demás. Así que una fila en blanco en un colegio no es una exención en uso. Es otra cosa, y esta página no le puede decir cuál.",
+  coverageObligationAllStudents:
+    "El informe federal debería describir a todas las personas que cursaron un programa de estudios, no solo a aquellas cuya capacitación pagó el sistema laboral. Pasar de lo uno a lo otro es un problema de registros: la institución entrega la lista de personas y el estado produce las cifras de empleo e ingresos cruzándola con sus registros salariales del seguro de desempleo. Donde ese cruce no se puede hacer, no hay nada que publicar sobre las personas que habría cubierto, y ninguna presentación de la institución lo produciría.",
+  coverageObligationSuppression:
+    "Una celda de resultados se oculta cuando el grupo detrás de ella es tan pequeño que publicar la cifra podría identificar a una persona. Es una protección de privacidad funcionando como debe, y en la fuente no se distingue de una celda que nadie llenó.",
+  coverageObligationsClosing: (first: string, second: string) =>
+    `En esta instantánea las dos categorías que dejan más filas vacías son ${first} y ${second}. La primera es aquella cuyo reporte el reglamento de arriba hace voluntario en vez de obligatorio. Para la segunda, y para cualquier otra fila de esa tabla, esta página no le puede decir cuál de estas explicaciones aplica a un programa concreto, ni si aplica alguna. Leer esa columna como un ranking de cumplimiento invertiría el sentido del hallazgo.`,
+  coverageCitationsNote:
+    "Los textos que se citan abajo, federales y estatales, se publican solo en inglés.",
+
+  coverageCohortHeading: "Celdas en blanco frente al tamaño del grupo",
+  coverageCohortIntro:
+    "Si lo que hay detrás de una celda vacía es la protección de grupos pequeños, la proporción en blanco debería bajar a medida que el grupo crece. Esa es una predicción que se le puede preguntar a los datos, y preguntarla es la única forma en que esta página puede decir algo sobre por qué una celda está vacía sin inventarse un motivo.",
+  coverageCohortColumn: "Personas que salieron del programa",
+  coverageCohortAtLeast: (lower: string) => `${lower} o más`,
+  coverageCohortRange: (lower: string, upper: string) => `de ${lower} a ${upper}`,
+  coverageCohortOf: (missing: string, total: string) => `${missing} de ${total}`,
+  coverageCohortCaveat:
+    "Aquí solo se cuentan los grupos que una institución presentó para un único programa. Una institución que presentó un solo grupo que abarca a toda la escuela caería en el tramo más grande describiendo a una población que no es un programa. Los programas que no presentaron conteo de salidas no están en ningún tramo, porque un tamaño de grupo no declarado no es un grupo pequeño.",
+  coverageCohortReading:
+    "La finalización y el empleo se comportan como predice la protección de grupos pequeños: la proporción en blanco es más alta en los grupos más chicos y baja conforme crecen. Los ingresos no bajan igual. Siguen siendo la medida menos publicada en todos los tramos, incluido el más grande, donde el tamaño del grupo ya no puede ser la explicación. Lo que mantiene vacía la columna de ingresos en los programas grandes es otra cosa, no la protección de un grupo pequeño.",
+
+  coverageProvidersHeading: "Dónde está el silencio",
+  coverageProvidersBody: (silent: string, total: string, programs: string) =>
+    `${silent} de las ${total} instituciones nombradas en este registro no publican nada para ninguno de los programas que presentaron, y entre todas suman ${programs} programas. Todos los demás programas con la fila vacía pertenecen a una institución que sí publicó algo en alguna parte, y eso vale la pena saberlo: en la mayor parte del hueco la relación de reporte existe y lo que falta es una medida concreta.`,
+
+  coverageMethodHeading: "Cómo cuenta esta página",
+  coverageMethodSource:
+    "La fuente es el informe de desempeño de instituciones de capacitación elegibles del Departamento de Trabajo de EE. UU., el ETA-9171 que los estados presentan bajo la Ley de Innovación y Oportunidad en la Fuerza Laboral y que el Departamento debe publicar. Los programas de California se leen completos, sin muestreo y sin exclusiones. Cada cifra de esta página es un conteo hecho sobre ese registro al construir el sitio, y ninguna está escrita a mano en el texto.",
+  coverageMethodBlankHeading: "Qué significa exactamente un espacio en blanco",
+  coverageMethodBlank:
+    "El informe federal escribe un mismo valor centinela dondequiera que una medida no traiga cifra, y su propio diccionario de datos dice que ese único valor cubre tres situaciones distintas: un grupo demasiado pequeño para publicarlo sin identificar a alguien, ningún dato reportado para el programa, y datos en los que el Departamento encontró problemas serios de calidad. Un centinela, tres causas y ninguna manera de distinguirlas desde fuera. Por eso esta página no las separa, y cualquier página que diga separarlas se inventó la distinción. Lo que el registro sí sostiene es una división distinta y más estrecha: si describió a un grupo o no.",
+  coverageMethodThreshold:
+    "Tampoco hay un número publicado detrás de la primera de esas tres causas. La regla es un criterio, no un umbral: no se exige desglosar los datos cuando el conteo es demasiado pequeño para ser estadísticamente confiable o cuando publicarlo revelaría algo sobre una persona participante concreta. Ningún tamaño mínimo de celda aparece en la guía de reporte, ni en las instrucciones del formulario, ni en el diccionario de datos, así que esta página tampoco enuncia ningún umbral, y la tabla por tamaño de grupo de arriba describe lo que hacen los datos publicados, no reconstruye una regla.",
+  coverageMethodStates:
+    "«Publicada» significa que la medida trae cifra. «En blanco junto a un grupo declarado» significa que el registro dice cuántas personas fueron atendidas, salieron o terminaron, y deja vacía esa medida en particular. «Sin registro de desempeño» significa que no dice ni lo uno ni lo otro, así que de ese programa no se presentó nada sobre resultados, en ninguna forma.",
+  coverageMethodZeroHeading: "Una cifra oculta no es un cero",
+  coverageMethodZero:
+    "Nada en esta página suma, promedia, ordena ni muestra una medida faltante como si fuera cero. Una tasa de finalización oculta no es una finalización de cero, y un programa con la fila vacía no sacó mala nota: no lo calificaron. Cuando en estos datos hay un cero realmente reportado, se trata como el hallazgo real y serio que es, y se mantiene claramente separado de una celda vacía.",
+  coverageMethodFloorHeading: "Cuándo se omite una proporción",
+  coverageMethodFloor: (minimum: string) =>
+    `Un porcentaje se publica solo cuando hay al menos ${minimum} registros detrás. Por debajo de eso un solo registro mueve la respuesta más de tres puntos, que es más precisión de la que aguanta el denominador, así que se publican los conteos y se omite la proporción. Es la misma regla que este proyecto aplica a toda cifra que no puede sostener.`,
+  coverageMethodLimitsHeading: "Qué no afirma esta página",
+  coverageMethodLimits:
+    "No afirma que la propia lista de California contenga los mismos programas que el archivo federal. El estado no publica una descarga con la cual comprobarlo, y ese es justamente el hueco en el que vive esta página entera. No afirma saber por qué está vacía ninguna celda concreta. No clasifica instituciones, categorías ni agencias, y no saca ninguna conclusión sobre la calidad de un programa a partir de que haya o no haya una cifra sobre él. Y el rango de años de programa que aparece junto a cada cifra está citado de la página «About» del informe federal, no medido en los datos, porque los datos no traen ese campo: si esa frase cambia en el origen, esta página no se va a enterar sola.",
+  coverageMethodRebuild:
+    "El conjunto de datos detrás de esta página se reconstruye desde las fuentes públicas con una tubería documentada, y el conteo lo hace un módulo con pruebas, no una persona a mano. Cualquiera puede reproducirlo.",
+
+  coverageCiteHeading: "Cómo citar o corregir esta página",
+  coverageCiteBody: (date: string) =>
+    `Si va a citar una cifra de esta página, cite también la fecha de consulta: el registro de base se consultó el ${date}, y el informe federal se actualiza cada cierto tiempo, así que una cifra de aquí puede ir por detrás de la fuente sin que ninguna de las dos esté mal. Esta página tiene una dirección estable y va a seguir respondiendo la misma pregunta conforme cambien los datos que tiene debajo.`,
+  coverageCiteCorrections:
+    "Si usted trabaja con estos datos y aquí hay algo mal leído, la corrección es bienvenida y se hará. Eso incluye las obligaciones de reporte descritas arriba: son la parte de esta página menos visible en los datos mismos y la más fácil de entender mal desde fuera.",
 };
 
 function fmt(n: number): string {
@@ -1501,3 +1771,45 @@ export function dict(lang: Lang): Dictionary {
 
 export const OTHER_LANG: Record<Lang, Lang> = { en: "es", es: "en" };
 export const LANG_NAME: Record<Lang, string> = { en: "English", es: "Español" };
+
+/**
+ * Spanish for the provider categories the federal feed files, and nothing else.
+ *
+ * Deliberately outside the dictionary. Everything in `en` and `es` is text this project
+ * wrote; these are keys the U.S. Department of Labor writes, and the map is a lookup on a
+ * value that arrives from outside rather than a string with an English original to be
+ * translated from. Keeping it separate also keeps the completeness test honest: a nested
+ * object inside the dictionary would satisfy that test without any of its contents being
+ * checked.
+ *
+ * Only the categories present in California's record are here. A category this map has never
+ * seen falls back to the filed English, which is the correct answer rather than a failure:
+ * inventing a Spanish name for a federal classification nobody has read would be worse than
+ * showing the one the record actually carries. `translated` tells the caller which happened,
+ * so an untranslated fallback can be marked `lang="en"` for a screen reader, the same way
+ * every other English-only feed string on a Spanish page is.
+ */
+const ENTITY_TYPE_ES: Record<string, string> = {
+  Public: "Pública",
+  "Private For-Profit": "Privada con fines de lucro",
+  "Private Non-Profit": "Privada sin fines de lucro",
+  "Higher Ed: Associate's Degree": "Educación superior: grado de asociado",
+  "Higher Ed: Baccalaureate or Higher": "Educación superior: licenciatura o más",
+  "Higher Ed: Certificate of Completion": "Educación superior: certificado de finalización",
+  "National Apprenticeship": "Aprendizaje registrado",
+  Other: "Otra",
+};
+
+export interface EntityTypeLabel {
+  text: string;
+  /** False when the filed English is being shown because no translation exists for it. */
+  translated: boolean;
+}
+
+export function entityTypeLabel(lang: Lang, filed: string): EntityTypeLabel {
+  if (lang === "en") return { text: filed, translated: true };
+  const translation = ENTITY_TYPE_ES[filed];
+  return translation === undefined
+    ? { text: filed, translated: false }
+    : { text: translation, translated: true };
+}

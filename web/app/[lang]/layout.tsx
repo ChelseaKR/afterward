@@ -275,7 +275,20 @@ export default async function LangLayout({
         <footer className="footer">
           <div className="shell">
             <p>
-              {t.snapshot(coverage.snapshot_date)} · {t.coverageNote(coverage.outcome_coverage_pct)}
+              {t.snapshot(coverage.snapshot_date)} · {t.coverageNote(coverage.outcome_coverage_pct)}{" "}
+              {/*
+                The footer states a coverage figure on every page in the site and, until now,
+                offered nowhere to go and read what it is made of. The page it points at is
+                meant to be cited by people who work on this data, and the footer is the one
+                place every visitor already meets the number it explains.
+
+                `prefetch={false}` for the reason set out on the masthead links above: this is
+                in the document of all ~9,000 pages, so a prefetch here is a route fetched on
+                every visit for the small share of readers who press it.
+              */}
+              <Link href={`/${lang}/outcomes-coverage/`} prefetch={false}>
+                {t.coverageNavShort}
+              </Link>
             </p>
             <p>
               {t.aboutData}: U.S. Department of Labor (WIOA ETA-9171) ·{" "}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { LANGUAGES, OTHER_LANG, dict, feedTextLang, isLang } from "./i18n";
+import { LANGUAGES, OTHER_LANG, dict, entityTypeLabel, feedTextLang, isLang } from "./i18n";
 
 const en = dict("en");
 const es = dict("es");
@@ -92,6 +92,49 @@ describe("the non-affiliation notice", () => {
   it("names California in both languages so the denial is unambiguous", () => {
     expect(en.notAffiliated).toMatch(/California/);
     expect(es.notAffiliated).toMatch(/California/);
+  });
+});
+
+/**
+ * Provider categories arrive from the federal feed rather than from this project, so they
+ * are not covered by the completeness test above. They still reach a Spanish reader, on the
+ * one page whose whole subject is a breakdown by category, so they need their own guard.
+ */
+describe("entityTypeLabel", () => {
+  /** Every category present in California's record, as the feed spells it. */
+  const FILED = [
+    "Public",
+    "Private For-Profit",
+    "Private Non-Profit",
+    "Higher Ed: Associate's Degree",
+    "Higher Ed: Baccalaureate or Higher",
+    "Higher Ed: Certificate of Completion",
+    "National Apprenticeship",
+    "Other",
+  ];
+
+  it("returns the category as filed on an English page", () => {
+    for (const filed of FILED) {
+      expect(entityTypeLabel("en", filed)).toEqual({ text: filed, translated: true });
+    }
+  });
+
+  it("translates every category California actually files", () => {
+    for (const filed of FILED) {
+      const label = entityTypeLabel("es", filed);
+      expect(label.translated).toBe(true);
+      expect(label.text).not.toBe(filed);
+    }
+  });
+
+  it("falls back to the filed English, and says so, for a category it has never seen", () => {
+    // Inventing a Spanish name for a federal classification nobody has read would be worse
+    // than showing the one the record carries. `translated: false` is what lets the page
+    // mark that fallback as English rather than leave it inside `lang="es"`.
+    expect(entityTypeLabel("es", "Tribal Entity")).toEqual({
+      text: "Tribal Entity",
+      translated: false,
+    });
   });
 });
 
