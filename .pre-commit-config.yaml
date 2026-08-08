@@ -1,0 +1,55 @@
+# Fast local gates before a commit reaches CI. CI (`make verify` in
+# .github/workflows/ci.yml) remains the gate of record; these hooks catch the
+# same lint/format/secret findings locally, before they leave the machine.
+# Setup: `uv run pre-commit install` (pre-commit is already in the dev group).
+#
+# Revisions are pinned to full commit SHAs (tag in the trailing comment), the
+# same supply-chain convention the workflows use for GitHub Actions: a movable
+# tag is not an acceptable pin for a hook that runs on every commit.
+# Generated and vendored bytes are not style-fixable: the fixture must stay
+# byte-identical to what `make fixture` emits, and the vendored CTDL context
+# must stay byte-identical to what its recorded retrieval fetched.
+exclude: ^(fixtures/data/|src/afterward/ctdl/ctdl-context\.json$|web/public/data/)
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+        # CloudFormation intrinsics (!Equals, !Ref) are not plain YAML tags.
+        exclude: ^infra/
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 39d9ac5938dadb73df0564a45f163e25ff9fa6e2 # v0.16.1, the locked ruff version
+    hooks:
+      # No --fix and no path filter: mirrors `make lint` (`ruff format --check .`
+      # then `ruff check .`) so a local pass means the same thing as a CI pass.
+      - id: ruff-check
+      - id: ruff-format
+        args: ["--check"]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e # v8.30.1
+    hooks:
+      - id: gitleaks
+
+  # mypy strict needs this project's own environment to resolve dependencies,
+  # so it calls the project venv instead of pre-commit's isolated one. Pre-push
+  # rather than per-commit: a strict whole-package check is too slow for the
+  # inner loop.
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy --strict (src)
+        entry: .venv/bin/mypy
+        args: ["src"]
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-push]

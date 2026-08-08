@@ -238,7 +238,7 @@ export default async function OccupationPage({
           <p>{description}</p>
           {/*
             Which note depends on which text was actually rendered above it.
-            
+
             The Spanish description shipped for a few minutes under a note reading "Solo se
             publica en inglés" — published in English only — directly contradicting the
             Spanish paragraph the reader had just finished. A caveat that describes a
@@ -394,13 +394,13 @@ export default async function OccupationPage({
 
       {/*
         The spread, not just the midpoint.
-        
+
         The page showed one median, which answers "what does this pay?" and not "what would
         it pay me?" — and the distance between those is the entire question for someone
         deciding whether to spend a year training for it. Pharmacy technicians in California
         run from about $44,000 at the tenth percentile to about $83,000 at the ninetieth
         around a $57,000 median, and a reader shown only the median cannot see that.
-        
+
         Each percentile is printed only where one was published. They are independently
         suppressible at source, so a row can carry four of five, and a missing one is left
         out rather than interpolated from its neighbours.

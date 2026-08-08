@@ -1366,7 +1366,7 @@ td.num {
 
 /*
   Colored with --link, not --primary-70.
-  
+
   --primary-70 is the teal the design system uses for rules and accents; against the page
   background it measures 3.63:1, which is a border colour wearing a text colour's clothes.
   --white does not exist in this theme at all, so `background: var(--white)` resolved to

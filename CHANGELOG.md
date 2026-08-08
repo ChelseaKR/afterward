@@ -36,6 +36,17 @@ All notable changes to this project are documented here. The format follows
   three documented causes rather than two; and California's current directive (WSD25-02)
   exempts registered apprenticeship from performance reporting and nobody else, so a community
   college or public university with a blank row is not using an exemption.
+- Portfolio standards conformance pass (2026-08-07), behavior-preserving: every GitHub
+  Action pinned to a full commit SHA with its version noted; a gitleaks secret-scan workflow
+  (history verified clean first, 125 commits); Dependabot for actions, pip, and npm;
+  CODEOWNERS; CITATION.cff; `.python-version`; a pre-commit config mirroring `make lint`;
+  a coverage floor (`fail_under = 85`, measured 92%) and an explicit `max-complexity = 10`
+  (ruff's own default, now stated); strict pytest flags; the mypy floor raised to the 1.18
+  the lockfile already satisfies. New records: `docs/adr/` (0000 process, 0001 Release &
+  Versioning N/A, 0002 typed-module i18n), `docs/ROADMAP.md` (metrics ledger and standard
+  declarations), `docs/RESPONSIBLE-TECH-AUDITS.md`, `docs/I18N.md`, and README sections for
+  development disclosure and standards conformance.
+
 - Data pipeline joining California's WIOA-reported training programs to the state's
   long-term occupational employment projections. 3,266 programs from 584 providers, 99.5%
   matched to an occupation (3,250 of 3,266; the SOC aggregation table below lifted this from

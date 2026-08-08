@@ -94,7 +94,7 @@ jobs:
           echo "::error::Production deploys run from main only; this ref is ${GITHUB_REF}."
           exit 1
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Require CI success on this exact commit
         # This is the CI gate. It cannot be a trigger (see the header), so it is enforced
@@ -116,7 +116,7 @@ jobs:
           fi
           echo "CI green on ${GITHUB_SHA} (${successes} successful run(s))."
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
@@ -292,7 +292,7 @@ jobs:
         # OIDC, short-lived credentials, no stored secrets. The role is created by the
         # afterward-static-site stack and can do four things: list the bucket, read/write/
         # delete objects in it, and invalidate this one distribution.
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4.3.1
         with:
           role-to-assume: arn:aws:iam::014248889144:role/afterward-static-site-github-deploy
           role-session-name: afterward-deploy-${{ github.run_id }}
