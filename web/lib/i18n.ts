@@ -832,6 +832,10 @@ areaNote: (unplaced: number, total: number) =>
   coverageTitle: "How complete California's training outcomes data is",
   /** Link text wherever this page is referenced compactly. Reads on its own, out of context. */
   coverageNavShort: "How complete this data is",
+  /* Distinct from the visible "On this page" heading above the list. A nav whose accessible
+     name only repeats the heading beside it tells a screen reader user nothing they did not
+     already have; this says what pressing something in it will do. */
+  coverageJumpLabel: "Jump to a section of this page",
   coverageLede:
     "Every program on California's Eligible Training Provider List is reported to the federal government, and that federal report is where the outcome figures live. This page counts how much of it is filled in: measure by measure, provider category by provider category, and against the size of the group each figure is meant to describe.",
   coverageWhy:
@@ -1637,6 +1641,7 @@ areaNote: (unplaced, total) =>
   // ---- Cobertura de los datos de resultados ----
   coverageTitle: "Qué tan completos están los datos de resultados de la capacitación en California",
   coverageNavShort: "Qué tan completos están estos datos",
+  coverageJumpLabel: "Ir a una sección de esta página",
   coverageLede:
     "Cada programa de la Lista de Instituciones de Capacitación Elegibles de California se reporta al gobierno federal, y ese informe federal es donde viven las cifras de resultados. Esta página cuenta cuánto de ese informe está lleno: medida por medida, categoría de institución por categoría de institución, y frente al tamaño del grupo que cada cifra debería describir.",
   coverageWhy:

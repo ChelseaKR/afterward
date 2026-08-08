@@ -292,7 +292,7 @@ export default async function OutcomesCoveragePage({
       <p className="compare-note">{t.coverageStampNote(SCORECARD_PERIOD.statedOn)}</p>
 
       <h2 id="on-this-page">{t.onThisPage}</h2>
-      <nav className="jump-nav" aria-label={t.onThisPage}>
+      <nav className="jump-nav" aria-label={t.coverageJumpLabel}>
         <ul>
           {sections.map((section) => (
             <li key={section.id}>
