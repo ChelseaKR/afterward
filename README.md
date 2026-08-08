@@ -11,6 +11,10 @@ programs actually lead.**
 3,266 California training programs, joined to the state's own ten-year projection for the
 occupation each one leads to. No account, no tracking, English and Spanish.
 
+**Status:** Beta. Version `0.1.0`, first signed tag not yet cut. The public site, the bilingual
+interface, and the data pipeline are live and covered by an automated test suite. Datasets are
+tagged separately per build (latest `dataset-2026-08-07`). Independent personal project.
+
 ## The problem
 
 If you are a Californian deciding whether to spend months and thousands of dollars on a
