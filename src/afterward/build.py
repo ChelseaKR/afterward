@@ -571,6 +571,62 @@ def check_outcome_integrity(payloads: Sequence[Mapping[str, Any]]) -> None:
         )
 
 
+LENGTH_UNITS = ("weeks", "hours")
+
+
+def length_integrity_problems(payloads: Sequence[Mapping[str, Any]]) -> list[str]:
+    """Every emitted length that says something the source did not.
+
+    The counterpart of :func:`outcome_integrity_problems` for the block beside it, and needed
+    for a reason that block does not have: the offline build re-emits a committed fixture's
+    payloads without re-cleaning them, so a fixture written before
+    :func:`afterward.sources.dol_etp.clean_length` existed would publish ``-1`` straight into
+    ``length.weeks`` and the site would render "-1 weeks" under a real provider's name.
+
+    Three ways a length can be wrong:
+
+    * the ``-1`` sentinel reached output as though it were a duration;
+    * a length is negative, which no program is;
+    * ``competency_based`` is missing, which means the record predates the field and cannot
+      say whether its null length is a design decision or an absence. That is exactly the
+      confusion this key exists to end, so it stops the build rather than defaulting to
+      false and republishing the bug in a record that no longer looks like it has one.
+    """
+    problems: list[str] = []
+    for payload in payloads:
+        length = payload["length"]
+        where = payload.get("uuid", "<no uuid>")
+        if "competency_based" not in length:
+            problems.append(f"{where}.length: no competency_based key; this record predates it")
+        for unit in LENGTH_UNITS:
+            value = length.get(unit)
+            if value is None:
+                continue
+            if value == dol_etp.COMPETENCY_BASED:
+                problems.append(
+                    f"{where}.length.{unit}: the {dol_etp.COMPETENCY_BASED} sentinel reached "
+                    "output as a duration"
+                )
+            elif value < 0:
+                problems.append(f"{where}.length.{unit}: {value!r} is a negative duration")
+    return problems
+
+
+def check_length_integrity(payloads: Sequence[Mapping[str, Any]]) -> None:
+    """Refuse to emit a length that misreports how long a program takes.
+
+    Its own check rather than a branch of :func:`check_outcome_integrity`, because a length is
+    not an outcome: it is a property of the course, it is filed by the provider rather than
+    matched against wage records, and its ``-1`` means the opposite of the outcome one. Folding
+    them together would be the same conflation this change exists to undo.
+    """
+    problems = length_integrity_problems(payloads)
+    if problems:
+        shown = problems[:10]
+        more = f" (and {len(problems) - len(shown)} more)" if len(problems) > len(shown) else ""
+        raise ValueError("emitted lengths misreport the source: " + "; ".join(shown) + more)
+
+
 def detailed_soc_codes(projections: Iterable[edd_lmi.OccupationProjection]) -> list[str]:
     """The SOC codes this build will publish an occupation record for.
 
@@ -1644,7 +1700,12 @@ def program_payload(
             "area_type": area.area_type,
             "matched_on": AREA_MATCH_PRINCIPAL_CITY,
         },
-        "length": {"weeks": program.length_weeks, "hours": program.length_hours},
+        # A fourth state beside a reported length, a suppressed one and an unfiled one:
+        # `competency_based` says the provider filed this program as ending when the student
+        # can do the work, so it has no clock length to publish. `weeks` and `hours` are null
+        # for those programs, and anything rendering them has to read this key before calling
+        # them "not reported". See dol_etp.clean_length.
+        "length": program.length.as_dict(),
         "cost": {
             "tuition": program.cost_tuition,
             "supplies": program.cost_supplies,
@@ -1745,6 +1806,14 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         "$": program["cost"]["total_out_of_pocket"],
         "$partial": not program["cost"]["total_is_complete"],
         "w": program["length"]["weeks"],
+        # True when `w` is null because the program is competency-based rather than because
+        # nobody filed a length. Written on every row, including the false ones, for the same
+        # reason `a` is: a consumer has to be able to tell a program that is not
+        # competency-based from an index built before this field existed, and an absent key
+        # reads as the first while meaning the second. Measured on the 3,266-program build the
+        # key costs 1.5 KB gzipped (170.8 KB to 172.3 KB, +0.9%), because 3,254 of the values
+        # are the same literal and gzip charges almost nothing for a repeated one.
+        "cb": program["length"]["competency_based"],
         "s": program["soc_codes"],
         # Every occupation this program feeds, not just the first.
         "o": [o.get("title") for o in occupations if o.get("title")],
@@ -2037,6 +2106,9 @@ def build_offline(
     # to describe some other dataset. See check_coverage_counts.
     check_coverage_counts(coverage, payloads)
     check_outcome_integrity(payloads)
+    # A fixture predating `length.competency_based` cannot say whether its null lengths are a
+    # design decision or an absence, and this build would republish them as the latter.
+    check_length_integrity(payloads)
 
     for name, document in (
         ("programs.json", programs_doc),
@@ -2114,6 +2186,7 @@ def build(
     # should stop the build rather than land in programs.json and the per-program shards for
     # the coverage check at the end of this function to fail behind it.
     check_outcome_integrity(payloads)
+    check_length_integrity(payloads)
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
     # aggregation those are no longer the same set, and the emitted records are the ones a
     # reader can check.

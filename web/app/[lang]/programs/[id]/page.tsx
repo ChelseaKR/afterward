@@ -16,7 +16,15 @@ import {
   occupationTitleIn,
   occupationTitleLang,
 } from "@/lib/data";
-import { count, isSmallSample, money, percent, signedPercent, tidyName } from "@/lib/format";
+import {
+  count,
+  isSmallSample,
+  lengthText,
+  money,
+  percent,
+  signedPercent,
+  tidyName,
+} from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang, type Lang } from "@/lib/i18n";
 import { linkNotice } from "@/lib/links";
 import type {
@@ -1251,11 +1259,30 @@ export default async function ProgramPage({
         </div>
         <div>
           <dt>{t.length}</dt>
+          {/*
+            `lengthText` decides, here as on the cards and in the comparison table, so all
+            three cannot drift into answering "how long is this" differently. It returns null
+            only for a record that says nothing about length, which is the one case that may
+            reach the "not reported" treatment below.
+
+            Competency-based wins even if a week count was filed beside the marker: "finishes
+            when you can do the work" is a statement about the course that one filed duration
+            does not override, and printing weeks would put a fixed length on screen that the
+            provider declined to claim. No California record does both (0 of 3,266 on
+            2026-08-07), and `length.weeks` is still in `programs.json` for anyone reading the
+            data rather than the page.
+
+            The competency-based phrase deliberately does not carry the `unreported` class:
+            that italic grey and its "not reported" tooltip are how this site says a record is
+            silent, and this record is not.
+          */}
           <dd>
-            {length.weeks === null ? (
+            {lengthText(length.weeks, length.competency_based, t) === null ? (
               <span className="unreported">{t.notReported}</span>
+            ) : length.competency_based ? (
+              <span title={t.lengthCompetencyBasedLong}>{t.lengthCompetencyBased}</span>
             ) : (
-              t.weeks(length.weeks)
+              t.weeks(length.weeks as number)
             )}
           </dd>
         </div>

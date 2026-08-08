@@ -117,9 +117,38 @@ read-only. This project queries it politely: paginated bulk reads on a quarterly
 cadence, cached locally, with no per-user-request traffic to DOL (the published site is
 static). If DOL publishes an official bulk file, this project will switch to it.
 
-Sentinel value: `-1` in a `field_c_*` or `field_total_*` column means "not reported or
-suppressed", **not** zero. The pipeline maps it to null and the UI must render it as
-"not reported" — never as a zero or a low score.
+### Notes on D1: `-1` has two meanings, and only one of them is suppression
+
+`-1` in a `field_c_*` or `field_total_*` column means "not reported or suppressed", **not**
+zero. The pipeline maps it to null and the UI must render it as "not reported", never as a
+zero or a low score. The data dictionary (I7) gives three documented causes: a sample too small
+to publish without identifying someone, no data reported for the program, or data the
+Department found quality problems in.
+
+**On `field_program_length_hours` and `field_program_length_weeks`, and nowhere else, `-1`
+means the program is competency-based.** The dictionary attaches a note to those two elements
+(`d113`, `d114`) that it attaches to no others: "NOTE: For this element, a suppressed value
+(-1) indicates it was reported as a competency-based program." Such a program has no fixed
+clock length because of how it is taught, not because anything was withheld.
+
+`dol_etp.clean_measure` was applied to those two fields until 2026-08-07, which read the marker
+as suppression. 12 of California's 3,266 programs, from 6 providers, therefore reached the site
+as "length not reported" and were dropped by the length filter, publishing a deliberate design
+decision as a provider's failure to answer. `dol_etp.clean_length` now reads them, and
+`length.competency_based` in `programs.json` (`cb` in the search index) carries the state as
+its own positive fact rather than as a null:
+
+| Program length, California, read 2026-08-07 | Programs |
+|---|---:|
+| A clock length filed, in weeks and hours | 3,254 |
+| Competency-based, no fixed length by design | 12 |
+| Nothing filed at all | 0 |
+
+The third row is the finding that fell out of the fix. Every California program either states a
+length or states that it has none, and the 12 the site used to describe as unreported were
+never in the third state. Every count here is recomputed at build time and none is asserted in
+code; `build.check_length_integrity` refuses to emit a `-1` as a duration, or a record that
+cannot say which of the three rows it belongs to.
 
 ### Notes on D1 — `employed_q2` is not the numerator of `employment_rate_q2` (#25)
 
@@ -166,3 +195,4 @@ a comment recording this finding beside both fields.
 | I4 | U.S. DOL TrainingProviderResults.gov public site | 2026-08-04 | Confirmed what federal outcome measures exist and are publishable |
 | I5 | WIOA §116 / TEGL 03-18 ETP reporting guidance | 2026-08-04 | Understanding of measure definitions (Q2/Q4 employment, credential attainment, median earnings) |
 | I6 | ETA-9171 form data element definitions, PY21+ (OMB 1205-0526), read via the Wayback Machine's 2024 capture — the live DOL URL 403s automated fetches | 2026-08-07 | Confirmed DE121 (`total_exited`) and DE129 (the published employment rate's actual denominator) are differently-scoped exiter cohorts, not the same population under two names; see "Notes on D1" |
+| I7 | [TrainingProviderResults.gov ETP Data Dictionary v4.0](https://www.trainingproviderresults.gov/assets/ETP_Data_Dictionary.pdf), updated 2024-05-15 (cover page names PY2022, OMB 1205-0526, TEGL 03-18) | 2026-08-07 | The `-1` sentinel's three documented suppression causes, and the exception that overturned how this pipeline read two fields: on `d113_program_length_hours` and `d114_program_length_weeks` alone it notes that "a suppressed value (-1) indicates it was reported as a competency-based program". Also the source for `c_q2_employment_percent` = DE123/DE129. See "Notes on D1" above |

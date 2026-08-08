@@ -8,7 +8,10 @@ import {
   areaOptionValue,
   areas,
   cities,
+  clockWeeks,
+  competencyBasedLength,
   DEFAULT_FILTERS,
+  isCompetencyBased,
   isShrinking,
   matchesArea,
   matchesFilters,
@@ -33,6 +36,7 @@ function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
     $partial: false,
     at: true,
     w: 30,
+    cb: false,
     s: ["31-9092"],
     o: ["Medical Assistants"],
     g: 12.5,
@@ -169,6 +173,68 @@ describe("unmeasuredLength", () => {
     ];
     const filters = { ...DEFAULT_FILTERS, maxWeeks: 12, query: "welding" };
     expect(unmeasuredLength(programs, filters)).toBe(1);
+  });
+
+  it("does not count a competency-based program, which is not an unreported one", () => {
+    // The whole bug in one assertion. Before 2026-08-07 the pipeline handed these programs a
+    // null length, so this count claimed their providers had said nothing about how long the
+    // course runs. Their providers said precisely that it has no fixed length.
+    const programs = [entry({ i: "competency", w: null, cb: true })];
+    expect(unmeasuredLength(programs, { ...DEFAULT_FILTERS, maxWeeks: 12 })).toBe(0);
+    expect(competencyBasedLength(programs, { ...DEFAULT_FILTERS, maxWeeks: 12 })).toBe(1);
+  });
+});
+
+describe("competency-based programs and the length filter", () => {
+  const competency = entry({ i: "competency", w: null, cb: true });
+  const short = entry({ i: "short", w: 4 });
+  const unsaid = entry({ i: "unsaid", w: null });
+
+  it("keeps them in the results while no length limit is set", () => {
+    const found = runSearch([competency, short], DEFAULT_FILTERS).map((e) => e.i);
+    expect(found).toContain("competency");
+  });
+
+  it("excludes them from a length cap, because they have no clock length to test", () => {
+    const found = runSearch([competency, short], { ...DEFAULT_FILTERS, maxWeeks: 52 }).map(
+      (e) => e.i,
+    );
+    expect(found).toEqual(["short"]);
+  });
+
+  it("never drops them silently: what the cap removed is counted, in its own bucket", () => {
+    // "Never silently dropped" is the contract. A reader who sets a time limit is told that
+    // three competency-based programs matched everything else they asked for, separately from
+    // the one program nobody filed a length for, because those are different facts.
+    const programs = [competency, entry({ i: "competency2", w: null, cb: true }), short, unsaid];
+    const filters = { ...DEFAULT_FILTERS, maxWeeks: 52 };
+    expect(competencyBasedLength(programs, filters)).toBe(2);
+    expect(unmeasuredLength(programs, filters)).toBe(1);
+  });
+
+  it("does not let one win 'shortest first' on a week count it never claimed", () => {
+    // A competency-based row carrying a stray week count sorts last anyway. No California
+    // record does this, and the ordering must not depend on none ever appearing.
+    const stray = entry({ i: "stray", w: 1, cb: true });
+    const ordered = runSearch([stray, short, entry({ i: "medium", w: 20 })], {
+      ...DEFAULT_FILTERS,
+      sort: "length",
+    }).map((e) => e.i);
+    expect(ordered).toEqual(["short", "medium", "stray"]);
+  });
+
+  it("keeps that stray row out of a length cap too, for the same reason", () => {
+    const stray = entry({ i: "stray", w: 1, cb: true });
+    const found = runSearch([stray, short], { ...DEFAULT_FILTERS, maxWeeks: 4 }).map((e) => e.i);
+    expect(found).toEqual(["short"]);
+  });
+
+  it("reads an index built before the field as it always behaved, not as competency-based", () => {
+    const legacy = entry({ i: "legacy", w: 4 });
+    delete (legacy as { cb?: boolean }).cb;
+    expect(isCompetencyBased(legacy)).toBe(false);
+    expect(clockWeeks(legacy)).toBe(4);
+    expect(runSearch([legacy], { ...DEFAULT_FILTERS, maxWeeks: 4 })).toHaveLength(1);
   });
 });
 

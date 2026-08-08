@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import { dict, feedTextLang, type Lang } from "@/lib/i18n";
-import { money, percent, signedPercent, tidyName } from "@/lib/format";
+import { lengthText, money, percent, signedPercent, tidyName } from "@/lib/format";
 import {
   ANY_AREA,
   UNPLACED_AREA,
@@ -13,6 +13,7 @@ import {
   areaOptionValue,
   areas,
   cities,
+  competencyBasedLength,
   isShrinking,
   matchesArea,
   matchesFilters,
@@ -391,15 +392,24 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   const unreported = stats.total - stats.reported;
 
   /*
-    Programs the length filter removes for never having reported a length at all.
+    Programs the length filter removes for reasons the filter itself cannot state.
 
     Exactly the disclosure the outlook filter makes below, for exactly the same reason: "26
     weeks or less" reads as a claim about every program it leaves out, and for these it is not
-    one. Twelve of California's 3,266 filed no length, so the number is small and often zero —
-    but a control that silently drops a program on the grounds that nobody said how long it
-    takes has told the reader it is too long, which is a thing the data does not say.
+    one. A control that silently drops a program on the grounds that it has no comparable
+    length has told the reader it is too long, which is a thing the data does not say.
+
+    Two counts, not one, because there are two populations here and until 2026-08-07 this site
+    reported one of them as the other. Nobody filed a length for the first. The second is
+    competency-based: it finishes when the student can do the work, which is a fact about the
+    course that a reader may well be looking for, and describing it as unreported hid it
+    inside a bucket labelled "the provider did not say".
   */
   const hiddenNoLength = useMemo(() => unmeasuredLength(programs, filters), [programs, filters]);
+  const hiddenCompetency = useMemo(
+    () => competencyBasedLength(programs, filters),
+    [programs, filters],
+  );
 
   /*
     Region and city, and why both survive.
@@ -995,7 +1005,12 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
             id="length"
             value={maxWeeks ?? ""}
             aria-describedby={
-              hiddenNoLength > 0 ? "length-note length-unmeasured" : "length-note"
+              // Each disclosure joins the description only while it has something to say, so a
+              // screen reader is never pointed at an element that is not on the page.
+              ["length-note"]
+                .concat(hiddenNoLength > 0 ? ["length-unmeasured"] : [])
+                .concat(hiddenCompetency > 0 ? ["length-competency"] : [])
+                .join(" ")
             }
             onChange={(e) => {
               setMaxWeeks(e.target.value === "" ? null : Number(e.target.value));
@@ -1018,6 +1033,14 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
               style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}
             >
               {t.filterLengthUnmeasured(hiddenNoLength)}
+            </p>
+          )}
+          {hiddenCompetency > 0 && (
+            <p
+              id="length-competency"
+              style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.45 }}
+            >
+              {t.filterLengthCompetency(hiddenCompetency)}
             </p>
           )}
         </div>
@@ -1426,7 +1449,11 @@ function ResultCard({
           }
           lang={lang}
         />
-        <Fact label={t.length} value={entry.w === null ? null : t.weeks(entry.w)} lang={lang} />
+        {/*
+          Through `lengthText`, which is where "a null length is not always 'not reported'"
+          is decided once for the card, the program page and the comparison table alike.
+        */}
+        <Fact label={t.length} value={lengthText(entry.w, entry.cb, t)} lang={lang} />
         <Fact label={t.employmentRate} value={percent(entry.er, lang)} lang={lang} />
         <Fact label={t.medianEarnings} value={money(entry.me, lang)} lang={lang} />
       </dl>

@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { count, isSmallSample, money, percent, signedPercent, tidyName } from "./format";
+import {
+  count,
+  isSmallSample,
+  lengthText,
+  money,
+  percent,
+  signedPercent,
+  tidyName,
+} from "./format";
+import { dict } from "./i18n";
 
 /**
  * The rule these tests exist to defend: a null measure must never render as a number.
@@ -100,5 +109,38 @@ describe("localisation", () => {
   it("keeps the not-reported contract in both languages", () => {
     expect(money(null, "es")).toBeNull();
     expect(percent(null, "es")).toBeNull();
+  });
+});
+
+/**
+ * The counterpart rule, and the one the pipeline broke until 2026-08-07: a null that is not an
+ * absence must never render as "not reported".
+ *
+ * Every place that shows a program's length turns a null from this function into the site's
+ * "Not reported" treatment, so returning null here *is* the claim that nobody said. A
+ * competency-based program's provider did say: the course finishes when the student can do the
+ * work. That is the whole of the bug, and this is where it cannot come back.
+ */
+describe("lengthText", () => {
+  it.each(["en", "es"] as const)("never returns null for a competency-based program (%s)", (lang) => {
+    const t = dict(lang);
+    expect(lengthText(null, true, t)).toBe(t.lengthCompetencyBased);
+    expect(lengthText(null, true, t)).not.toBeNull();
+    expect(lengthText(null, true, t)).not.toBe(t.notReported);
+  });
+
+  it("still returns null for a record that genuinely says nothing", () => {
+    expect(lengthText(null, false, dict("en"))).toBeNull();
+  });
+
+  it("prefers the design statement over a week count filed beside it", () => {
+    const t = dict("en");
+    expect(lengthText(6, true, t)).toBe(t.lengthCompetencyBased);
+  });
+
+  it("reads a record built before the field as it always behaved", () => {
+    const t = dict("en");
+    expect(lengthText(6, undefined, t)).toBe(t.weeks(6));
+    expect(lengthText(null, undefined, t)).toBeNull();
   });
 });

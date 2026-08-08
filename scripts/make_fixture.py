@@ -14,6 +14,8 @@ case the UI renders differently, or a green CI run would prove very little:
   * a small cohort that should trigger the sample-size caution
   * a program with no matching occupation
   * at least one program with no reported cost
+  * a competency-based program, which has no clock length by design and must render as that
+    rather than as "length not reported"
 
 Regenerate with `make fixture` after a real `make data`.
 """
@@ -40,6 +42,14 @@ def pick(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     chosen: dict[str, dict[str, Any]] = {}
 
     def take(label: str, predicate: Any, limit: int = 4) -> None:
+        """Add up to ``limit`` programs matching ``predicate``, and say if the case is missing.
+
+        The warning asks whether the *fixture* covers the case, not whether this call added
+        anything to it. A case an earlier call already satisfied is covered, and saying "no
+        program matched" about it would send the next person looking for a gap that is not
+        there. It reads the whole snapshot rather than only what was chosen, so a case absent
+        from the source is still reported as absent.
+        """
         count = 0
         for program in programs:
             if count >= limit:
@@ -48,7 +58,7 @@ def pick(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 continue
             chosen[program["uuid"]] = program
             count += 1
-        if count == 0:
+        if count == 0 and not any(predicate(program) for program in chosen.values()):
             print(f"  warning: no program matched {label!r}")
 
     outcomes = lambda p: p["outcomes"]  # noqa: E731
@@ -79,6 +89,34 @@ def pick(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     take("no matching occupation", lambda p: not p["occupations"])
     take("no reported cost", lambda p: p["cost"]["total_out_of_pocket"] is None)
     take("has a description", lambda p: bool(p.get("description")))
+    # Two of them, one that publishes outcomes and one that publishes none, because the
+    # length cell and the outcome block are rendered by different code and a competency-based
+    # program has to survive both. Only 12 of California's 3,266 programs are in this state,
+    # so a top-up sample would almost certainly contain none and CI would build a site that
+    # never exercises the label at all.
+    take(
+        "competency-based, reporting outcomes",
+        lambda p: p["length"]["competency_based"] and outcomes(p)["reported"],
+        limit=1,
+    )
+    take(
+        "competency-based, reporting nothing",
+        lambda p: p["length"]["competency_based"] and not outcomes(p)["reported"],
+        limit=1,
+    )
+    # A program that genuinely filed no length, if the snapshot still has one. It had none on
+    # 2026-08-07: every California program either files a length or is competency-based, and
+    # all 12 that once looked unreported were the latter. The case is still asked for, because
+    # the site renders it differently and a later snapshot may bring one back.
+    take(
+        "no length filed at all",
+        lambda p: (
+            not p["length"]["competency_based"]
+            and p["length"]["weeks"] is None
+            and p["length"]["hours"] is None
+        ),
+        limit=1,
+    )
 
     for program in programs:
         if len(chosen) >= TARGET_PROGRAMS:
