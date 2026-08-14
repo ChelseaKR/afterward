@@ -45,6 +45,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // crawler that cannot reach it is the difference between the page existing and the
       // page being useful.
       { path: `/${lang}/outcomes-coverage/`, priority: 0.8 },
+      // The CTDL export's account of itself. Same reasoning as the coverage page and a
+      // narrower audience: the people who would check a mapping against the schema will
+      // arrive from a search or a link, never by walking a training-program site.
+      { path: `/${lang}/ctdl/`, priority: 0.6 },
     ]),
     ...LANGUAGES.flatMap((lang) =>
       allOccupationCodes().map((soc) => ({

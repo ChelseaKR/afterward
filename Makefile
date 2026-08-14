@@ -2,7 +2,8 @@
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
-	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate
+	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
+	ctdl-statements ctdl-package
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -264,6 +265,32 @@ ctdl-export:
 # to any registry.
 ctdl-validate: ctdl-export
 	uv run afterward validate-ctdl --export-dir $(DIST_DIR)/ctdl
+
+# The two statements the site publishes, into the one directory the site serves them from.
+#
+# The graph itself is 17 MB and is never committed -- same rule as the dataset. These two are
+# roughly a kilobyte each, they are the only things `/en/ctdl/` renders from, and committing
+# them means every figure on that page arrives as a reviewable diff rather than as a build
+# artifact nobody sees. Re-run this after `make data`; if it changes nothing, nothing changed.
+CTDL_SITE_DIR ?= web/public/ctdl
+ctdl-statements: ctdl-validate
+	@mkdir -p $(CTDL_SITE_DIR)
+	cp $(DIST_DIR)/ctdl/ctdl-coverage.json $(DIST_DIR)/ctdl/ctdl-validation.json $(CTDL_SITE_DIR)/
+	@echo "statements -> $(CTDL_SITE_DIR)/ (commit the diff; the site renders from these)"
+
+# Gzip the graph and checksum it, into dist/ (gitignored).
+#
+# 17 MB of JSON-LD, about 1.5 MB compressed. Deliberately not committed and deliberately not
+# put in the site bucket: it is a derived artifact of one dated snapshot, exactly like the
+# dataset tarball, and the same handling applies. This target only builds the file and its
+# checksum. Where the bytes go afterwards is a decision, not a build step.
+ctdl-package: ctdl-validate
+	@snapshot=$$(uv run python -c 'import json;print(json.load(open("$(DIST_DIR)/ctdl/ctdl-coverage.json"))["snapshot_date"])'); \
+	asset=afterward-ctdl-$$snapshot.jsonld.gz; \
+	gzip -9 -c $(DIST_DIR)/ctdl/learning-programs.jsonld > $(DIST_DIR)/$$asset; \
+	( cd $(DIST_DIR) && if command -v sha256sum >/dev/null 2>&1; then \
+		sha256sum $$asset > $$asset.sha256; else shasum -a 256 $$asset > $$asset.sha256; fi ); \
+	ls -lh $(DIST_DIR)/$$asset $(DIST_DIR)/$$asset.sha256
 
 web-install:
 	cd web && npm ci

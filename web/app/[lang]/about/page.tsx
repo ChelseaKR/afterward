@@ -279,6 +279,16 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
           {t.coverageTitle} →
         </Link>
       </p>
+      {/*
+        The other page written for somebody checking rather than choosing: the same data as
+        CTDL, with what the mapping carries, what it drops, and what an outside validator made
+        of it. Linked from here because it is otherwise reachable only from a search result.
+      */}
+      <p>
+        <Link href={`/${lang}/ctdl/`} prefetch={false}>
+          {t.ctdlTitle} →
+        </Link>
+      </p>
 
       <h2 id="quarter">{t.aboutQuarterHeading}</h2>
       <p>{t.aboutQuarterBody}</p>

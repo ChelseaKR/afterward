@@ -724,6 +724,174 @@ PROGRAM_PROPERTIES: Final = (
 """LearningProgram properties the coverage statement counts, in publication order."""
 
 
+@dataclass(frozen=True)
+class UnprojectedField:
+    """One thing the source record says that the export does not carry.
+
+    A coverage statement that counts only what was emitted describes a projection as though
+    it were the whole record. These are the other half: source fields this export drops, the
+    CTDL term that would have carried each one where such a term exists, and the reason.
+
+    ``ctdl_term`` being non-empty is the uncomfortable case and the one worth publishing --
+    the vocabulary has somewhere to put this and the export does not use it, which is a gap
+    in the export rather than a limit of CTDL. Saying which kind of gap it is, per field, is
+    the difference between a coverage statement and a feature list.
+    """
+
+    key: str
+    source_fields: tuple[str, ...]
+    ctdl_term: str
+    reason: str
+
+
+UNPROJECTED_SOURCE_FIELDS: Final = (
+    UnprojectedField(
+        key="outcome_measures",
+        source_fields=(
+            "outcomes.total_served",
+            "outcomes.total_exited",
+            "outcomes.total_completed",
+            "outcomes.employed_q4",
+        ),
+        ctdl_term="qdata:Metric / qdata:Observation",
+        reason=(
+            "The source reports nine WIOA performance measures. This export projects the "
+            "five counted under observation_measures. These four are reported and are not "
+            "carried; the QData layer could express them in the same Metric/Observation "
+            "shape, so this is a gap in the export rather than an absence in the vocabulary."
+        ),
+    ),
+    UnprojectedField(
+        key="program_length",
+        source_fields=("length.weeks", "length.hours", "length.competency_based"),
+        ctdl_term="ceterms:estimatedDuration",
+        reason=(
+            "CTDL declares ceterms:estimatedDuration for how long a learning opportunity "
+            "takes. The source's program length is not carried, including the "
+            "competency-based flag, which means a program finishes when the student can do "
+            "the work and therefore has no fixed length by design. A gap in the export."
+        ),
+    ),
+    UnprojectedField(
+        key="program_format",
+        source_fields=("program_format",),
+        ctdl_term="ceterms:learningDeliveryType",
+        reason=(
+            "CTDL declares ceterms:learningDeliveryType, whose value is a concept from a "
+            "controlled vocabulary credreg.net serves as an HTML page rather than as "
+            "fetchable data. This export emits no concept it cannot check against "
+            "machine-readable data, so the source's online, in-person or blended statement "
+            "is not carried."
+        ),
+    ),
+    UnprojectedField(
+        key="instructional_program_code",
+        source_fields=("cip_code",),
+        ctdl_term="ceterms:instructionalProgramType",
+        reason=(
+            "CTDL declares ceterms:instructionalProgramType for a CIP alignment, in the same "
+            "ceterms:CredentialAlignmentObject shape this export already uses for SOC. The "
+            "source's CIP code is not carried. A gap in the export."
+        ),
+    ),
+    UnprojectedField(
+        key="program_location",
+        source_fields=("location", "region"),
+        ctdl_term="ceterms:availableAt",
+        reason=(
+            "CTDL declares ceterms:availableAt for where a learning opportunity is offered. "
+            "The source's program location, and the region this project derives from it, are "
+            "not carried. Separately and for a different reason, no address is placed on the "
+            "organization either: the location on a record is the program's, not necessarily "
+            "the provider's."
+        ),
+    ),
+    UnprojectedField(
+        key="provider_category",
+        source_fields=("entity_type",),
+        ctdl_term="ceterms:agentSectorType",
+        reason=(
+            "The source's provider category -- 'Higher Ed: Associate's Degree' and the like "
+            "-- does not map onto CTDL's agent-sector concept scheme without judgement "
+            "calls, and credreg.net serves that scheme as an HTML page rather than as "
+            "fetchable data. The organization carries the name the source filed and nothing "
+            "else."
+        ),
+    ),
+    UnprojectedField(
+        key="wioa_funded_cost",
+        source_fields=("cost.wioa_funded_cost",),
+        ctdl_term="ceterms:CostProfile with ceterms:directCostType",
+        reason=(
+            "The source reports what the same program costs a student whose training is "
+            "funded under WIOA, which is a different cost to a different payer. CTDL can "
+            "carry it as a second CostProfile distinguished by ceterms:directCostType, whose "
+            "value is a concept from a scheme credreg.net serves as HTML rather than as "
+            "data. Only the out-of-pocket total is carried."
+        ),
+    ),
+    UnprojectedField(
+        key="occupation_projections",
+        source_fields=("occupations",),
+        ctdl_term="",
+        reason=(
+            "This export projects the ETPL program record. California EDD's ten-year "
+            "projections for the occupation each program feeds -- median wage, projected "
+            "openings, growth, entry-level education -- are joined to the program on the "
+            "site and are not carried here, and no ceterms:Occupation entity is emitted. "
+            "They describe an occupation rather than this program, and hanging them off the "
+            "program would assert that this program leads to that wage, which the source "
+            "does not say. The SOC code the source filed is carried, on "
+            "ceterms:occupationType, so the alignment is stated and the projection is not."
+        ),
+    ),
+)
+"""Every source field this export drops, in publication order.
+
+Counted rather than described: :func:`unprojected_field_counts` reports how many programs
+actually report each one, so a gap nobody hits and a gap affecting every record cannot read
+the same way.
+"""
+
+
+def _reports(payload: Mapping[str, Any], path: str) -> bool:
+    """Whether one program payload asserts a value at a dotted source path.
+
+    Absent, ``None`` and empty all count as not reported, for the same reason they do
+    everywhere else in this codebase: a key present and empty is not a fact.
+    """
+    node: Any = payload
+    for segment in path.split("."):
+        if not isinstance(node, Mapping):
+            return False
+        node = node.get(segment)
+    if node is None or node is False:
+        return False
+    return not (isinstance(node, (list, tuple, str, dict)) and len(node) == 0)
+
+
+def unprojected_field_counts(payloads: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """How many programs report each thing the export does not carry.
+
+    ``reported_in_source`` is programs reporting *any* of a field group, which is the number
+    a reader wants ("how many records lose something here"); the per-path counts beside it
+    are what makes that number checkable.
+    """
+    return {
+        field.key: {
+            "reported_in_source": sum(
+                1 for p in payloads if any(_reports(p, path) for path in field.source_fields)
+            ),
+            "source_fields": {
+                path: sum(1 for p in payloads if _reports(p, path)) for path in field.source_fields
+            },
+            "ctdl_term": field.ctdl_term,
+            "reason": field.reason,
+        }
+        for field in UNPROJECTED_SOURCE_FIELDS
+    }
+
+
 def ctdl_coverage(
     document: Mapping[str, Any],
     payloads: Sequence[Mapping[str, Any]],
@@ -735,7 +903,11 @@ def ctdl_coverage(
     artifact it describes at the moment of writing, and :func:`ctdl_coverage_problems`
     recomputes the lot before anything is written. ``not_projected`` names what the source
     reports that this export deliberately does not carry, with the reason -- absence with
-    an explanation, rather than absence a reader has to interpret.
+    an explanation, rather than absence a reader has to interpret. Its ``source_fields``
+    block is the part that is uncomfortable to publish and therefore the part worth
+    publishing: eight things the ETPL record says that this projection drops, each with the
+    CTDL term that would have carried it where one exists, so a reader can tell a limit of
+    the vocabulary from a limit of this export.
     """
     graph: list[Mapping[str, Any]] = list(document.get("@graph", []))
     programs = [e for e in graph if e.get("@type") == "ceterms:LearningProgram"]
@@ -783,7 +955,8 @@ def ctdl_coverage(
                     "a cost component was suppressed at the source, so the total is a "
                     "floor; ceterms:price cannot say 'at least', so no cost is published"
                 ),
-            }
+            },
+            "source_fields": unprojected_field_counts(payloads),
         },
     }
 

@@ -8,6 +8,27 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `/ctdl/`, in both languages: the CTDL export's own account of itself, so a mapping nobody
+  can check stops being a claim. Which classes and properties it fills in and how often, which
+  outcome measures become metrics and observations, what an independent validator found, and —
+  the half a coverage page is most tempted to leave out — what the source record says that the
+  export drops. The coverage statement now counts that second half: eight things the ETPL
+  record carries that this projection does not, each with the CTDL term that would have carried
+  it where one exists, so a reader can tell a limit of the vocabulary from a limit of this
+  export. Three of them turn on the same documented rule (the concept schemes for delivery
+  type, agent sector and direct-cost type are served as HTML pages rather than as data, and
+  this export emits no concept it cannot check against machine-readable data); four are outcome
+  measures the source reports and this export has not projected; one is a refusal rather than
+  an omission, because California's occupation projections describe an occupation and hanging
+  them off a program would assert that the program leads to that wage. Four boundary statements
+  sit above everything they qualify: nothing here has been published to the Credential Registry,
+  this is not affiliated with or endorsed by Credential Engine, the identifiers are locally
+  derived rather than Registry-assigned, and it is a demonstration of mapping discipline rather
+  than a production publication. Every figure on the page is read from a statement the export
+  wrote while it ran; the page computes nothing and types nothing. The two statements are
+  committed under `web/public/ctdl/` and served at stable URLs, so each refresh arrives as a
+  reviewable diff; the 17 MB graph is not committed, and `make ctdl-package` builds it with a
+  checksum instead.
 - `make ctdl-validate`: the demonstration CTDL export, checked by something that is not
   itself. The export's existing guards were written by the same hand as the export, against
   the same reading of the same schema, so they cannot catch a mistake in that reading. The

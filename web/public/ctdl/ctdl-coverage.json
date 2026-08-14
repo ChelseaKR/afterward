@@ -1,0 +1,104 @@
+{
+  "note": "Demonstration export of California ETPL-derived program data as CTDL JSON-LD. These records are not published to any registry; CTIDs are derived locally and are not Registry-assigned.",
+  "snapshot_date": "2026-08-07",
+  "source_programs": 3266,
+  "entities": {
+    "ceterms:LearningProgram": 3266,
+    "ceterms:CredentialOrganization": 584,
+    "qdata:DataSetProfile": 2057
+  },
+  "learning_program_properties": {
+    "ceterms:name": 3266,
+    "ceterms:description": 3266,
+    "ceterms:subjectWebpage": 1654,
+    "ceterms:offeredBy": 3266,
+    "ceterms:occupationType": 3266,
+    "ceterms:estimatedCost": 3265,
+    "qdata:relevantDataSet": 2057
+  },
+  "observation_measures": {
+    "median_earnings": 1384,
+    "credentials_earned": 1800,
+    "employed_q2": 1766,
+    "completion_rate": 2047,
+    "employment_rate_q2": 1760
+  },
+  "not_projected": {
+    "cost_total_incomplete": {
+      "reported_in_source": 1,
+      "reason": "a cost component was suppressed at the source, so the total is a floor; ceterms:price cannot say 'at least', so no cost is published"
+    },
+    "source_fields": {
+      "outcome_measures": {
+        "reported_in_source": 2099,
+        "source_fields": {
+          "outcomes.total_served": 2099,
+          "outcomes.total_exited": 2084,
+          "outcomes.total_completed": 2047,
+          "outcomes.employed_q4": 1737
+        },
+        "ctdl_term": "qdata:Metric / qdata:Observation",
+        "reason": "The source reports nine WIOA performance measures. This export projects the five counted under observation_measures. These four are reported and are not carried; the QData layer could express them in the same Metric/Observation shape, so this is a gap in the export rather than an absence in the vocabulary."
+      },
+      "program_length": {
+        "reported_in_source": 3266,
+        "source_fields": {
+          "length.weeks": 3254,
+          "length.hours": 3254,
+          "length.competency_based": 12
+        },
+        "ctdl_term": "ceterms:estimatedDuration",
+        "reason": "CTDL declares ceterms:estimatedDuration for how long a learning opportunity takes. The source's program length is not carried, including the competency-based flag, which means a program finishes when the student can do the work and therefore has no fixed length by design. A gap in the export."
+      },
+      "program_format": {
+        "reported_in_source": 3266,
+        "source_fields": {
+          "program_format": 3266
+        },
+        "ctdl_term": "ceterms:learningDeliveryType",
+        "reason": "CTDL declares ceterms:learningDeliveryType, whose value is a concept from a controlled vocabulary credreg.net serves as an HTML page rather than as fetchable data. This export emits no concept it cannot check against machine-readable data, so the source's online, in-person or blended statement is not carried."
+      },
+      "instructional_program_code": {
+        "reported_in_source": 3266,
+        "source_fields": {
+          "cip_code": 3266
+        },
+        "ctdl_term": "ceterms:instructionalProgramType",
+        "reason": "CTDL declares ceterms:instructionalProgramType for a CIP alignment, in the same ceterms:CredentialAlignmentObject shape this export already uses for SOC. The source's CIP code is not carried. A gap in the export."
+      },
+      "program_location": {
+        "reported_in_source": 3266,
+        "source_fields": {
+          "location": 3266,
+          "region": 1525
+        },
+        "ctdl_term": "ceterms:availableAt",
+        "reason": "CTDL declares ceterms:availableAt for where a learning opportunity is offered. The source's program location, and the region this project derives from it, are not carried. Separately and for a different reason, no address is placed on the organization either: the location on a record is the program's, not necessarily the provider's."
+      },
+      "provider_category": {
+        "reported_in_source": 3266,
+        "source_fields": {
+          "entity_type": 3266
+        },
+        "ctdl_term": "ceterms:agentSectorType",
+        "reason": "The source's provider category -- 'Higher Ed: Associate's Degree' and the like -- does not map onto CTDL's agent-sector concept scheme without judgement calls, and credreg.net serves that scheme as an HTML page rather than as fetchable data. The organization carries the name the source filed and nothing else."
+      },
+      "wioa_funded_cost": {
+        "reported_in_source": 3266,
+        "source_fields": {
+          "cost.wioa_funded_cost": 3266
+        },
+        "ctdl_term": "ceterms:CostProfile with ceterms:directCostType",
+        "reason": "The source reports what the same program costs a student whose training is funded under WIOA, which is a different cost to a different payer. CTDL can carry it as a second CostProfile distinguished by ceterms:directCostType, whose value is a concept from a scheme credreg.net serves as HTML rather than as data. Only the out-of-pocket total is carried."
+      },
+      "occupation_projections": {
+        "reported_in_source": 3250,
+        "source_fields": {
+          "occupations": 3250
+        },
+        "ctdl_term": "",
+        "reason": "This export projects the ETPL program record. California EDD's ten-year projections for the occupation each program feeds -- median wage, projected openings, growth, entry-level education -- are joined to the program on the site and are not carried here, and no ceterms:Occupation entity is emitted. They describe an occupation rather than this program, and hanging them off the program would assert that this program leads to that wage, which the source does not say. The SOC code the source filed is carried, on ceterms:occupationType, so the alignment is stated and the projection is not."
+      }
+    }
+  }
+}
