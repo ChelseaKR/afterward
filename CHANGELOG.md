@@ -8,6 +8,26 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `make ctdl-validate`: the demonstration CTDL export, checked by something that is not
+  itself. The export's existing guards were written by the same hand as the export, against
+  the same reading of the same schema, so they cannot catch a mistake in that reading. The
+  export is now also run through [`ctdl-validate`](https://pypi.org/project/ctdl-validate/),
+  a separate published tool with its own vendored copies of Credential Engine's schema
+  encodings and a citation for every rule it applies, consumed as a dependency and never
+  modified from here. On the 2026-08-07 snapshot: no errors, and one warning on all 5,907
+  entities — `CTID_NOT_UUIDV4`, because the locally derived CTIDs are UUIDv5 and the
+  published grammar says v4, which is the tension this export already declared in writing,
+  arriving from the outside. No domain violation, no range violation, no unresolved
+  reference, no inverse mismatch, no undeclared term. Every finding code must be listed in
+  `ACCEPTED_CODES` with a reason or the run fails, so an accepted warning stays counted and
+  published rather than filtered, and a new class of finding cannot arrive quietly. The scope
+  of the result is published with it in `dist/ctdl/ctdl-validation.json`, because a clean run
+  over terms nobody checked is not evidence: that tool drives its schema-based checks from
+  the core CTDL and CTDL-ASN encodings it vendors, the QData layer publishes its own encoding
+  neither of those contains, and so it could judge 4 of the 7 classes and 17 of the 24
+  properties this export emits — a term it has never heard of being one it declines to judge,
+  not one it approves. Those counts are computed from the emitted document against the
+  validator's own schema index.
 - `/outcomes-coverage/`, in both languages: how much of California's training outcomes data
   is actually published. California's Eligible Training Provider List exists only as a
   CalJOBS search screen with no export behind it, so there is no public count of how many of

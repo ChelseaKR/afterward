@@ -37,6 +37,36 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook, and typical experience / on-the-job training. Also carries the national education attainment distribution, which is parsed and typed but **not rendered anywhere on the site**; see the note below |
 | D7 | Credential Engine — CTDL schema, JSON-LD context and term definitions (credreg.net) | `https://credreg.net/ctdl/schema/context/json`, `https://credreg.net/ctdl/terms/<Term>/json` | 2026-08-06 | Credential Engine publishes CTDL openly for exactly this use. Schema definitions only; **no registry data is read, and nothing is published to any registry.** | The vocabulary for the demonstration CTDL export (`make ctdl-export`): the context is vendored at `src/afterward/ctdl/ctdl-context.json` with retrieval provenance beside it, and every emitted class and property was checked against the fetched term definitions |
 
+### Note on D7 — the second opinion, and what it could and could not see
+
+The CTDL export's own guards check it against the vendored context under D7. That check and
+the export were written together, from the same reading of the same schema, so it cannot
+catch a mistake in that reading. `make ctdl-validate` therefore runs the export through
+[`ctdl-validate`](https://pypi.org/project/ctdl-validate/) as well — a separate published
+tool with its own vendored snapshots of Credential Engine's schema encodings and a citation
+for every rule it applies. It is consumed as a dependency and never modified from this
+repository, it makes no network request at validation time, and it submits nothing anywhere.
+
+On the 2026-08-07 snapshot it returned no errors and one warning, `CTID_NOT_UUIDV4`, on all
+5,907 entities: the locally derived CTIDs are UUIDv5 and the published grammar says v4. That
+is the tension already recorded above, arriving from the outside, and it is accepted with the
+reason in `afterward.ctdl.validate.ACCEPTED_CODES` rather than filtered out. Any other finding
+code fails the run.
+
+The limit of that result is recorded with it, in `dist/ctdl/ctdl-validation.json`. That tool
+drives its domain, range, inverse and unknown-term checks from the core CTDL and CTDL-ASN
+schema encodings it vendors. The QData layer publishes a separate encoding at
+`https://credreg.net/qdata/schema/encoding/json` (fetched 2026-08-07 for the export's own
+term checks), which neither of those documents contains, so the validator could judge 4 of
+the 7 classes and 17 of the 24 properties this export emits. The three classes and seven
+properties outside its reach are
+`qdata:DataSetProfile`, `qdata:Metric`, `qdata:Observation`, `qdata:hasMetric`,
+`qdata:hasObservation`, `qdata:isObservationOf`, `qdata:median`, `qdata:metricType`,
+`qdata:relevantDataSetFor` and `schema:currency` — a term the tool has never heard of is one
+it declines to judge, not one it approves. Those terms rest on the QData encoding check the
+export performs itself, and the counts are computed from the emitted document rather than
+asserted.
+
 ### Notes on D5 — what is and is not taken from it
 
 O\*NET's `software_skills` table was read, wired in and removed rather than published; the

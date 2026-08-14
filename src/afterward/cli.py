@@ -17,6 +17,7 @@ from afterward.build import (
     check_provider_links,
 )
 from afterward.ctdl.export import export_ctdl
+from afterward.ctdl.validate import validate_export
 from afterward.sources import link_check
 
 app = typer.Typer(
@@ -268,6 +269,39 @@ def export_ctdl_command(
         typer.echo(f"    {term:<30}{count:>6}")
     typer.echo(f"  coverage statement -> {report.coverage_path}")
     typer.echo("\nDemonstration export: not published to any registry; CTIDs are locally derived.")
+
+
+@app.command("validate-ctdl")
+def validate_ctdl_command(
+    export_dir: Path = typer.Option(
+        Path("dist/ctdl"),
+        "--export-dir",
+        help="Directory `export-ctdl` wrote: the JSON-LD graph and its coverage statement.",
+    ),
+) -> None:
+    """Check the CTDL export with ctdl-validate, an independent validator.
+
+    Runs the published `ctdl-validate` package over the exact bytes `export-ctdl` wrote and
+    writes a validation statement beside them. Every finding code is either listed in
+    ACCEPTED_CODES with a reason or fails this command; an accepted finding is still counted
+    and still published. Structural validation only: no network access, and nothing is
+    submitted to any registry.
+    """
+    report = validate_export(export_dir)
+    typer.echo(f"Snapshot {report.snapshot_date}: {report.entities} entities validated")
+    for severity, total in report.severity_counts.items():
+        typer.echo(f"  {severity:<14}{total:>6}")
+    for code, summary in report.codes.items():
+        state = "accepted" if summary["accepted"] else "UNACCEPTED"
+        typer.echo(f"    {code:<24}{summary['count']:>6}  ({state})")
+    scope = report.scope
+    typer.echo(
+        f"  validator judged {scope['classes_in_validator_schema']}"
+        f"/{scope['classes_emitted']} emitted classes and "
+        f"{scope['properties_in_validator_schema']}/{scope['properties_emitted']} "
+        "emitted properties"
+    )
+    typer.echo(f"  validation statement -> {report.statement_path}")
 
 
 def main() -> None:

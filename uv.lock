@@ -14,6 +14,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "bandit" },
+    { name = "ctdl-validate" },
     { name = "mypy" },
     { name = "pip-audit" },
     { name = "pre-commit" },
@@ -32,6 +33,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "bandit", extras = ["toml"], specifier = ">=1.8.3" },
+    { name = "ctdl-validate", specifier = ">=0.1,<1" },
     { name = "mypy", specifier = ">=1.18" },
     { name = "pip-audit", specifier = ">=2.9" },
     { name = "pre-commit", specifier = ">=4.2" },
@@ -301,6 +303,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/31/9d/a7b0d9afd18ed5274dd00651a78e7810a931c70d94b79996f150bec1a30f/coverage-7.15.3-cp314-cp314t-win_amd64.whl", hash = "sha256:fe578952b1b29fe8c777f43f241d49efac4b56724a3434f5d22ebe3c208df429", size = 225897, upload-time = "2026-08-02T18:50:10.572Z" },
     { url = "https://files.pythonhosted.org/packages/ca/11/34c5ae40b945e69aa72b87dc268135b7049905f3824af573b7073acbb946/coverage-7.15.3-cp314-cp314t-win_arm64.whl", hash = "sha256:d2e1acb7aee29dfa8f3e48c23f36670898baca1209d9bdd3985a50c7f982165e", size = 225212, upload-time = "2026-08-02T18:50:12.63Z" },
     { url = "https://files.pythonhosted.org/packages/37/e7/7069b3d6c018917f49ba2e1c5fb910e498c7fefa3a1b78cb1b79e61ff45d/coverage-7.15.3-py3-none-any.whl", hash = "sha256:da78fa6fc7dafe4212839173133ee85afcf42c5cd5f3e47fa7c1c210453b445e", size = 214297, upload-time = "2026-08-02T18:50:14.709Z" },
+]
+
+[[package]]
+name = "ctdl-validate"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/dd/7f/2a7a6197f3dbda25405a02e6f2920d28d8b8f9245ac7b4f7ae703ffcdb3f/ctdl_validate-0.1.0.tar.gz", hash = "sha256:0c79827268e84aa34e6ebd6320e98d37995563683ce242dcc7496079206a6f49", size = 157003, upload-time = "2026-08-13T00:07:26.008Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cd/59/624b314f46cd59630f309fd104e645bb62b5c278e6d9254f0fda8add6115/ctdl_validate-0.1.0-py3-none-any.whl", hash = "sha256:d56340851afe14bf0752c6f6d56ad22004f99a2876cbd61a4f9b2b9f8215e123", size = 153616, upload-time = "2026-08-13T00:07:24.739Z" },
 ]
 
 [[package]]
