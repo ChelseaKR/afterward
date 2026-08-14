@@ -197,6 +197,73 @@ outcome-statistics layer plus `schema:currency`. Those terms rest on the QData e
 the export runs itself. The counts are computed from the emitted document against the
 validator's own schema index, not asserted.
 
+### What it does not carry
+
+A coverage statement that counts only what was emitted describes a projection as though it
+were the whole record. `ctdl-coverage.json` therefore also counts the other half: eight things
+the ETPL record says that this export drops, each with the CTDL term that would have carried
+it where such a term exists. On the 2026-08-07 snapshot, and every figure below is counted by
+the export rather than typed here:
+
+| The source says | Programs | CTDL term that would carry it |
+|---|---|---|
+| The CIP code for the field of study | 3,266 | `ceterms:instructionalProgramType` |
+| Online, in person, or both | 3,266 | `ceterms:learningDeliveryType` |
+| How long the program takes | 3,266 | `ceterms:estimatedDuration` |
+| Where the program is offered | 3,266 | `ceterms:availableAt` |
+| What kind of provider it is | 3,266 | `ceterms:agentSectorType` |
+| What it costs a student funded under WIOA | 3,266 | `ceterms:CostProfile` + `ceterms:directCostType` |
+| The state's ten-year outlook for the occupation | 3,250 | none used |
+| Four of the nine reported outcome measures | 2,099 | `qdata:Metric` / `qdata:Observation` |
+
+Where a term is named, the vocabulary has somewhere to put the field and this export does not
+use it — a gap in the export, not a limit of CTDL, and stated that way. Three of them turn on
+the same documented rule: `learningDeliveryType`, `agentSectorType` and `directCostType` all
+take a concept from a scheme credreg.net serves as an HTML page rather than as fetchable data,
+and this export emits no concept it cannot check against machine-readable data. The occupation
+projections are the one refusal rather than an omission: they describe an occupation, not this
+program, and hanging them off the program would assert that the program leads to that wage,
+which the source does not say. The SOC alignment is carried; the projection is not.
+
+`/ctdl/` publishes all of this, in both languages, beside the validator's findings.
+
+### Getting the export, and rebuilding it
+
+Two statements are committed and served, because they are about a kilobyte each and because
+committing them makes every figure on `/ctdl/` a reviewable diff rather than an invisible
+build artifact:
+
+- `web/public/ctdl/ctdl-coverage.json` → `https://afterward.chelseakr.com/ctdl/ctdl-coverage.json`
+- `web/public/ctdl/ctdl-validation.json` → `https://afterward.chelseakr.com/ctdl/ctdl-validation.json`
+
+The graph itself is ~17 MB and is never committed, on the same rule the dataset follows.
+`make ctdl-package` writes `dist/afterward-ctdl-<snapshot>.jsonld.gz` (~1.5 MB) with a
+`.sha256` beside it, for attaching to a release. To rebuild the whole thing from public
+sources:
+
+```bash
+make install                       # Python toolchain, via uv
+make data                          # fetches from U.S. DOL and CA EDD into web/public/data/
+make ctdl-export                   # dist/ctdl/learning-programs.jsonld + ctdl-coverage.json
+make ctdl-validate                 # + ctdl-validation.json, and fails on anything unaccounted for
+make ctdl-statements               # copies the two statements into web/public/ctdl/
+make ctdl-package                  # gzip + sha256, into dist/
+```
+
+Everything downstream of `make data` is deterministic — same dataset, byte-identical output —
+so a rebuild can be diffed against a published one directly. That is also why there is no
+generation timestamp anywhere in the output: the only date it carries is the dataset's own
+`snapshot_date`, which is the date that actually identifies what the file describes. A
+wall-clock stamp would change the bytes on every run and make exactly that comparison
+impossible.
+
+Provenance for the export, in one place: the source data is D1 (U.S. DOL ETP scorecard) and
+D2/D3 (CA EDD) at the `snapshot_date` recorded in every statement; the vocabulary is D7
+(credreg.net), vendored with its retrieval date and SHA-256 in
+`src/afterward/ctdl/ctdl-context.source.json`; the method is `src/afterward/ctdl/export.py`,
+which records beside each mapping the definition it was checked against. See
+[PROVENANCE.md](PROVENANCE.md).
+
 Outcome statistics originally used `ceterms:aggregateData`, which surfaced a schema gap —
 `ceterms:LearningProgram` missing from that property's per-class enumeration — filed as
 [Schema-Development #1080](https://github.com/CredentialEngine/Schema-Development/issues/1080).

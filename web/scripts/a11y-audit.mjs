@@ -145,6 +145,10 @@ if (SINGLE) {
     // which makes correct table semantics the difference between citable and unusable.
     ["Outcomes coverage (English)", join(OUT, "en", "outcomes-coverage", "index.html")],
     ["Outcomes coverage (Spanish)", join(OUT, "es", "outcomes-coverage", "index.html")],
+    // Table-heavy, like the coverage page, and for the same reason it needs auditing: a page
+    // this listing does not name is unchecked rather than passing.
+    ["CTDL export (English)", join(OUT, "en", "ctdl", "index.html")],
+    ["CTDL export (Spanish)", join(OUT, "es", "ctdl", "index.html")],
   ].filter(([, file]) => file && existsSync(file));
 
   if (targets.length === 0) {

@@ -1,0 +1,57 @@
+{
+  "note": "Structural validation only, with no network access at validation time and nothing submitted anywhere. Nothing in this export has been published to the Credential Registry.",
+  "snapshot_date": "2026-08-07",
+  "document": "learning-programs.jsonld",
+  "tool": {
+    "name": "ctdl-validate",
+    "version": "0.1.0",
+    "package": "https://pypi.org/project/ctdl-validate/",
+    "source": "https://github.com/ChelseaKR/ctdl-validate"
+  },
+  "entities_validated": 5907,
+  "findings": {
+    "ERROR": 0,
+    "WARNING": 5907,
+    "INFO": 0,
+    "UNVERIFIABLE": 0
+  },
+  "codes": {
+    "CTID_NOT_UUIDV4": {
+      "severity": "WARNING",
+      "count": 5907,
+      "entities": 5907,
+      "accepted": true,
+      "reason": "Known and documented. credreg.net's CTID page says a CTID is 'a standard UUID v4 prefixed with ce-', and v4 means random -- the one thing a deterministic re-export cannot be. This export derives CTIDs as UUIDv5 over a fixed namespace so that re-exporting the same dataset reproduces the same identifiers, and says so rather than pretending the tension away. These are demonstration identifiers; a record actually published to the Credential Registry would carry that registry's assigned CTID instead. See afterward.ctdl.export.entity_ctid.",
+      "message": "CTID matches the 39-character shape but its UUID version/variant bits are not version 4. The published grammar says \"a standard UUID v4\"; Registry enforcement of the version bits is not documented, so this is a WARNING rather than an ERROR.",
+      "rule": {
+        "citation": "About the CTID, section \"CTID Structure\": \"Each CTID is made up of a standard UUID v4 prefixed with ce-\" for \"a total of 39 characters (34 hexadecimal characters and 5 hyphens)\", in the form ce- plus 8-4-4-4-12 hexadecimal digits. Example given: ce-e8a41a52-6ff6-48f0-9872-889c87b093b7.",
+        "url": "https://credreg.net/ctdl/ctid",
+        "retrieved": "2026-08-06"
+      }
+    }
+  },
+  "accepted_codes": {
+    "CTID_NOT_UUIDV4": "Known and documented. credreg.net's CTID page says a CTID is 'a standard UUID v4 prefixed with ce-', and v4 means random -- the one thing a deterministic re-export cannot be. This export derives CTIDs as UUIDv5 over a fixed namespace so that re-exporting the same dataset reproduces the same identifiers, and says so rather than pretending the tension away. These are demonstration identifiers; a record actually published to the Credential Registry would carry that registry's assigned CTID instead. See afterward.ctdl.export.entity_ctid."
+  },
+  "validator_scope": {
+    "note": "ctdl-validate drives its domain, range, inverse and unknown-term checks from the schema encodings it vendors (core CTDL and CTDL-ASN). Terms outside those documents are left alone rather than guessed at, so they are neither flagged nor confirmed. This block counts which of the terms this export emits the validator was in a position to judge.",
+    "classes_emitted": 7,
+    "classes_in_validator_schema": 4,
+    "classes_not_in_validator_schema": [
+      "qdata:DataSetProfile",
+      "qdata:Metric",
+      "qdata:Observation"
+    ],
+    "properties_emitted": 24,
+    "properties_in_validator_schema": 17,
+    "properties_not_in_validator_schema": [
+      "qdata:hasMetric",
+      "qdata:hasObservation",
+      "qdata:isObservationOf",
+      "qdata:median",
+      "qdata:metricType",
+      "qdata:relevantDataSetFor",
+      "schema:currency"
+    ]
+  }
+}
