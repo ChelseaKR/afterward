@@ -19,6 +19,8 @@ import pytest
 from afterward.ctdl.export import (
     COVERAGE_FILENAME,
     GRAPH_FILENAME,
+    MEASURES,
+    UNPROJECTED_SOURCE_FIELDS,
     check_ctdl_coverage,
     check_ctdl_terms,
     check_projection,
@@ -35,6 +37,7 @@ from afterward.ctdl.export import (
     project_program,
     projection_problems,
     unknown_term_problems,
+    unprojected_field_counts,
 )
 
 FIXTURE_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "data"
@@ -378,6 +381,85 @@ class TestCoverageStatement:
         coverage = json.loads((tmp_path / COVERAGE_FILENAME).read_text(encoding="utf-8"))
         assert "not published to any registry" in coverage["note"]
         assert "not Registry-assigned" in coverage["note"]
+
+
+class TestUnprojectedSourceFields:
+    """The half of coverage that is about what the projection dropped."""
+
+    def test_every_dropped_field_is_counted_and_explained(self) -> None:
+        counts = unprojected_field_counts([make_payload()])
+        assert set(counts) == {field.key for field in UNPROJECTED_SOURCE_FIELDS}
+        for key, entry in counts.items():
+            assert entry["reason"], f"{key} is dropped without a reason"
+            assert entry["source_fields"], f"{key} names no source field"
+
+    def test_a_field_the_source_does_not_report_counts_zero(self) -> None:
+        # The distinction the block exists to make: a gap nobody hits and a gap on every
+        # record must not read the same way.
+        counts = unprojected_field_counts([make_payload(cip_code=None)])
+        assert counts["instructional_program_code"]["reported_in_source"] == 0
+
+    def test_a_field_the_source_reports_counts_it(self) -> None:
+        counts = unprojected_field_counts([make_payload(cip_code="51.0801")])
+        assert counts["instructional_program_code"]["reported_in_source"] == 1
+
+    def test_a_group_counts_a_program_reporting_any_of_its_fields(self) -> None:
+        payload = make_payload(
+            outcomes={
+                "total_served": None,
+                "total_exited": None,
+                "total_completed": None,
+                "employed_q4": 7.0,
+                "reported": True,
+            }
+        )
+        entry = unprojected_field_counts([payload])["outcome_measures"]
+        assert entry["reported_in_source"] == 1
+        assert entry["source_fields"]["outcomes.employed_q4"] == 1
+        assert entry["source_fields"]["outcomes.total_served"] == 0
+
+    def test_an_empty_value_is_not_a_report(self) -> None:
+        # Same rule as everywhere else here: a key present and empty is not a fact.
+        counts = unprojected_field_counts([make_payload(occupations=[], location="")])
+        assert counts["occupation_projections"]["reported_in_source"] == 0
+        assert counts["program_location"]["source_fields"]["location"] == 0
+
+    def test_a_dropped_field_names_the_ctdl_term_that_would_carry_it(self) -> None:
+        # The uncomfortable case, and the one worth publishing: the vocabulary has somewhere
+        # to put this and the export does not use it.
+        counts = unprojected_field_counts([make_payload()])
+        assert counts["program_length"]["ctdl_term"] == "ceterms:estimatedDuration"
+        assert counts["instructional_program_code"]["ctdl_term"] == (
+            "ceterms:instructionalProgramType"
+        )
+
+    def test_the_coverage_statement_carries_the_block(self) -> None:
+        payloads = [make_payload()]
+        coverage = ctdl_coverage(project_graph(payloads), payloads, "2026-08-07")
+        assert coverage["not_projected"]["source_fields"] == unprojected_field_counts(payloads)
+
+    def test_a_wrong_dropped_field_count_refuses_to_publish(self) -> None:
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        coverage = ctdl_coverage(document, payloads, "2026-08-07")
+        entry = coverage["not_projected"]["source_fields"]["occupation_projections"]
+        assert entry["reported_in_source"] == 1
+        entry["reported_in_source"] = 0
+        with pytest.raises(ValueError, match="does not describe the export"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_the_five_projected_measures_and_the_four_dropped_ones_are_disjoint(self) -> None:
+        # Nine source measures, split with nothing counted twice and nothing lost between
+        # the two blocks -- which is the only way the pair can be read as a whole.
+        projected = {measure.field for measure in MEASURES}
+        dropped = {
+            path.removeprefix("outcomes.")
+            for field in UNPROJECTED_SOURCE_FIELDS
+            if field.key == "outcome_measures"
+            for path in field.source_fields
+        }
+        assert projected & dropped == set()
+        assert len(projected) + len(dropped) == 9
 
 
 class TestFixtureExportShape:

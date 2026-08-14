@@ -984,6 +984,144 @@ areaNote: (unplaced: number, total: number) =>
     `If you are quoting a figure from this page, quote the read date with it: the underlying record was read on ${date}, and the scorecard is refreshed periodically, so a figure here can be behind the source without either being wrong. This page is a stable address and will keep answering the same question as the data underneath it changes.`,
   coverageCiteCorrections:
     "If you work on this data and something here is misread, the correction is welcome and will be made. That includes the reporting obligations described above: they are the part of this page least visible in the data itself and most easily got wrong from outside.",
+
+  ctdlTitle: "The CTDL export, and what it does and does not carry",
+  ctdlLede:
+    "This project publishes California's training programs as CTDL, the vocabulary Credential Engine maintains for describing credentials and learning opportunities. This page is the export's own account of itself: which classes and properties it fills in, what the source record says that it drops, and what an independent validator found when it was pointed at the result.",
+  ctdlWhy:
+    "A mapping is only worth anything if somebody can check it. So the counts here are produced by the export at the moment it runs, the omissions are counted the same way as the coverage, and the validator's findings are published whichever way they came out.",
+
+  ctdlBoundaryHeading: "What this is not",
+  ctdlBoundaryRegistry:
+    "None of this has been published to the Credential Registry. Not a submission, not a sandbox, nothing. The records exist as files in this project and nowhere else.",
+  ctdlBoundaryEndorsement:
+    "This is not affiliated with, endorsed by, or reviewed by Credential Engine. They publish CTDL openly and this project reads it; that is the whole of the relationship.",
+  ctdlBoundaryCtids:
+    "The identifiers are derived locally and are not Registry-assigned. A real CTID is issued when a resource is published to the Registry, which these are not, and the identifier URIs deliberately live on this project's own host rather than on a registry domain.",
+  ctdlBoundaryDemo:
+    "It is a demonstration of mapping discipline rather than a production publication. It exists to show how a public source maps onto a public vocabulary, and what is lost on the way.",
+
+  ctdlStamp: (snapshot: string) =>
+    `Counted from the export of the ${snapshot} dataset snapshot, at the moment that export ran.`,
+  ctdlSnapshotMismatch: (exportSnapshot: string, siteSnapshot: string) =>
+    `Note: this export describes the ${exportSnapshot} snapshot, and the rest of this site is currently serving ${siteSnapshot}. The figures below describe the export, not the pages around it.`,
+
+  ctdlCoverageHeading: "What the export contains",
+  ctdlCoverageIntro:
+    "One entity per training program, one per distinct provider name as filed, and one statistics profile for each program that reports at least one outcome. A program that reported nothing gets no statistics profile at all: an empty one would read as \"measured, and empty\".",
+  ctdlEntityColumn: "CTDL class",
+  ctdlEntityCountColumn: "Entities",
+
+  ctdlPropertiesHeading: "Which properties are filled in",
+  ctdlPropertiesIntro:
+    "Every property below is emitted only where the source asserted something. A blank is a blank: no placeholder, no zero, and nothing inferred from a neighbouring field. The order is the export's own, not best-first.",
+  ctdlPropertyColumn: "Property",
+  ctdlPropertyCountColumn: "Programs carrying it",
+  ctdlPropertyShareColumn: "Share",
+
+  ctdlMeasuresHeading: "Which outcome measures are projected",
+  ctdlMeasuresIntro:
+    "Each reported measure becomes one metric and one observation inside the program's statistics profile. The share is against the programs that have a statistics profile at all, not against every program: a measure missing because a program reported nothing is a different fact from a measure missing from a program that reported something else.",
+  ctdlMeasureColumn: "Measure",
+  ctdlMeasureCountColumn: "Observations",
+  ctdlMeasureShareColumn: "Of programs with any outcome",
+
+  ctdlGapsHeading: "What the export does not carry",
+  ctdlGapsIntro:
+    "The source record says more than this export projects. Counting only what was emitted would describe a projection as though it were the whole record, so the dropped fields are counted too, with the CTDL term that would have carried each one where such a term exists.",
+  ctdlGapsReading:
+    "Where a CTDL term is named, the vocabulary has somewhere to put this and the export does not use it. That is a gap in the export, not a limit of CTDL, and it is stated that way rather than left for a reader to work out from an absence.",
+  ctdlGapColumn: "What the source says",
+  ctdlGapProgramsColumn: "Programs reporting it",
+  ctdlGapTermColumn: "CTDL term that would carry it",
+  ctdlGapNoTerm: "None used",
+  ctdlGapFieldsLabel: "Source fields",
+  ctdlCostFloor: (n: string) =>
+    `Separately, ${n} program(s) report a cost total that a suppressed component makes a floor rather than a price. CTDL's price property has no way to say "at least", so no cost is published for those rather than publishing a floor as though it were the fee.`,
+
+  ctdlGapOutcomeMeasures: "Four of the nine reported outcome measures",
+  ctdlGapOutcomeMeasuresWhy:
+    "The source reports nine WIOA performance measures and this export projects five. Total served, total exited, total completed and employment in the fourth quarter after exit are reported and are not carried. The statistics layer could express them in exactly the same shape as the five that are.",
+  ctdlGapProgramLength: "How long the program takes",
+  ctdlGapProgramLengthWhy:
+    "CTDL has a property for the estimated duration of a learning opportunity. The source's length in weeks and hours is not carried, and neither is the competency-based flag, which means a program finishes when the student can do the work and so has no fixed length by design.",
+  ctdlGapProgramFormat: "Online, in person, or both",
+  ctdlGapProgramFormatWhy:
+    "CTDL has a delivery-type property, but its value has to be a concept from a controlled vocabulary that credreg.net serves as a web page rather than as data. This export emits no concept it cannot check against machine-readable data, so the format is not carried.",
+  ctdlGapInstructionalProgramCode: "The CIP code for the field of study",
+  ctdlGapInstructionalProgramCodeWhy:
+    "CTDL has an instructional-program property that takes a CIP alignment, in the same shape this export already uses for the occupation's SOC code. The CIP code the source filed is not carried.",
+  ctdlGapProgramLocation: "Where the program is offered",
+  ctdlGapProgramLocationWhy:
+    "CTDL has a property for where a learning opportunity is available. The program's location, and the region this project derives from it, are not carried. For a separate reason, no address is put on the organization either: the location on a record is the program's, not necessarily the provider's.",
+  ctdlGapProviderCategory: "What kind of provider it is",
+  ctdlGapProviderCategoryWhy:
+    "The source's provider category does not map onto CTDL's agent-sector vocabulary without judgement calls, and that vocabulary is served as a web page rather than as data. The organization carries the name the source filed and nothing else.",
+  ctdlGapWioaFundedCost: "What it costs a student funded under WIOA",
+  ctdlGapWioaFundedCostWhy:
+    "That is a different cost to a different payer, and CTDL can carry it as a second cost profile distinguished by a concept from a vocabulary served as a web page rather than as data. Only the out-of-pocket total is carried.",
+  ctdlGapOccupationProjections: "The state's ten-year outlook for the occupation",
+  ctdlGapOccupationProjectionsWhy:
+    "This export projects the federal training record. California's projections for the occupation each program feeds — median wage, expected openings, growth — are joined to the program everywhere else on this site and are not carried here. They describe an occupation rather than this program, and hanging them off the program would assert that the program leads to that wage, which the source does not say. The occupation code itself is carried, so the alignment is stated and the projection is not.",
+
+  ctdlValidationHeading: "What an independent validator found",
+  ctdlValidationIntro: (tool: string, version: string) =>
+    `The export checks itself, but every one of those checks was written by the same hand as the export, against the same reading of the same schema — which is the reading a mistake would survive. So it is also run through ${tool} ${version}, a separate tool with its own copies of Credential Engine's schema and a citation for every rule it applies. It makes no network request and submits nothing anywhere.`,
+  ctdlValidationEntities: (n: string) => `${n} entities were checked.`,
+  ctdlValidationSeverityColumn: "Severity",
+  ctdlValidationCountColumn: "Findings",
+  ctdlSeverityError: "Error (blocking)",
+  ctdlSeverityWarning: "Warning",
+  ctdlSeverityInfo: "Information",
+  ctdlSeverityUnverifiable: "Unverifiable",
+  ctdlValidationResult:
+    "No errors, and one warning, on every entity in the graph. The warning is the tension this export already had on the record: the published grammar says an identifier is a random UUID, and an export that has to produce the same identifiers every time cannot use a random one. Nothing else came back — no property used on a class that does not declare it, no reference pointing at nothing, no relationship stated in one direction and contradicted in the other, no invented term.",
+  ctdlValidationUnaccepted:
+    "This run returned a finding that has not been reasoned about. The export refuses to publish in that state, so if you are reading this sentence on a live page, something is wrong and a correction is welcome.",
+  ctdlFindingCodeColumn: "Finding",
+  ctdlFindingCountColumn: "Times",
+  ctdlFindingEntitiesColumn: "Entities",
+  ctdlFindingStateColumn: "State",
+  ctdlFindingAccepted: "Accepted, with a reason",
+  ctdlFindingUnaccepted: "Not accepted",
+  ctdlFindingsNote:
+    "An accepted finding is a decision on the record, not a filter: it stays counted here and in the machine-readable statement. Any finding whose code has not been reasoned about fails the export instead of appearing quietly among the others.",
+
+  ctdlScopeHeading: "What the validator could and could not judge",
+  ctdlScopeBody: (
+    knownClasses: string,
+    classes: string,
+    knownProperties: string,
+    properties: string,
+  ) =>
+    `A clean result is only as wide as the vocabulary the checker holds. This one drives its structural checks from the core schema documents it carries, so it was in a position to judge ${knownClasses} of the ${classes} classes and ${knownProperties} of the ${properties} properties this export emits.`,
+  ctdlScopeUnjudged:
+    "The rest are the outcome-statistics layer, which publishes its own schema document that the validator does not carry, plus one currency property. A term a checker has never heard of is one it declines to judge, not one it approves.",
+  ctdlScopeCaveat:
+    "Those terms were checked by the export itself against the statistics schema, fetched and recorded in this project's provenance. That is a weaker guarantee than an outside opinion, and it is named as one.",
+  ctdlScopeClassesLabel: "Classes not judged",
+  ctdlScopePropertiesLabel: "Properties not judged",
+
+  ctdlMappingHeading: "What each mapping rests on",
+  ctdlMappingIntro:
+    "Every class and property here was chosen against a published definition rather than from memory, and the export refuses at build time to emit a term the vocabulary does not define. These are the primary definitions, not summaries of them.",
+  ctdlMappingCitationsNote:
+    "Credential Engine publishes these in English only, so they are marked as English on this page.",
+  ctdlExportSourceLink: "Read the export, including the reason recorded beside every mapping",
+
+  ctdlGetHeading: "Getting the export, and rebuilding it",
+  ctdlGetIntro:
+    "The graph is about 17 MB of JSON-LD, which is too large to commit and too specific to one snapshot to serve as though it were current. It is built on demand and packaged with a checksum, and the two statements this page renders from are published beside it.",
+  ctdlGetStatements: "The statements this page is built from, as published:",
+  ctdlGetCoverageFile: "Coverage statement (what is carried, and what is not)",
+  ctdlGetValidationFile: "Validation statement (what the validator found)",
+  ctdlGetReproduce:
+    "To rebuild the graph from source: clone the repository, run the pipeline to fetch the public federal and state data, then run the export and the validation. Both are single commands and both are deterministic — the same dataset always produces byte-identical output, so a rebuild can be compared against a published one directly.",
+  ctdlGetReleases: "Packaged exports are published as releases:",
+
+  ctdlCiteHeading: "Corrections",
+  ctdlCiteBody:
+    "If a mapping here is wrong, or a property is being used in a way the schema does not intend, that is worth an issue. This is a demonstration and the point of it is to be checkable; a correction from somebody who works on this vocabulary is the most useful thing this page could produce.",
 };
 
 /**
@@ -1798,6 +1936,145 @@ areaNote: (unplaced, total) =>
     `Si va a citar una cifra de esta página, cite también la fecha de consulta: el registro de base se consultó el ${date}, y el informe federal se actualiza cada cierto tiempo, así que una cifra de aquí puede ir por detrás de la fuente sin que ninguna de las dos esté mal. Esta página tiene una dirección estable y va a seguir respondiendo la misma pregunta conforme cambien los datos que tiene debajo.`,
   coverageCiteCorrections:
     "Si usted trabaja con estos datos y aquí hay algo mal leído, la corrección es bienvenida y se hará. Eso incluye las obligaciones de reporte descritas arriba: son la parte de esta página menos visible en los datos mismos y la más fácil de entender mal desde fuera.",
+
+  ctdlTitle: "La exportación CTDL: qué lleva y qué no",
+  ctdlLede:
+    "Este proyecto publica los programas de capacitación de California en CTDL, el vocabulario que mantiene Credential Engine para describir credenciales y oportunidades de aprendizaje. Esta página es el informe que la exportación hace de sí misma: qué clases y propiedades llena, qué dice el registro de origen que ella descarta, y qué encontró un validador independiente al revisar el resultado.",
+  ctdlWhy:
+    "Una correspondencia solo vale algo si alguien puede comprobarla. Por eso las cifras de aquí las produce la exportación en el momento de ejecutarse, las omisiones se cuentan igual que la cobertura, y los hallazgos del validador se publican salgan como salgan.",
+
+  ctdlBoundaryHeading: "Qué no es esto",
+  ctdlBoundaryRegistry:
+    "Nada de esto se ha publicado en el Credential Registry. Ni un envío, ni una prueba, nada. Los registros existen como archivos en este proyecto y en ningún otro lugar.",
+  ctdlBoundaryEndorsement:
+    "Esto no está afiliado a Credential Engine ni cuenta con su respaldo o revisión. Ellos publican CTDL de forma abierta y este proyecto lo lee; ahí termina la relación.",
+  ctdlBoundaryCtids:
+    "Los identificadores se derivan localmente y no los asigna el Registry. Un CTID real se emite cuando un recurso se publica en el Registry, y estos no lo están; las direcciones de los identificadores viven a propósito en el servidor de este proyecto y no en un dominio del registro.",
+  ctdlBoundaryDemo:
+    "Es una demostración de disciplina en la correspondencia, no una publicación en producción. Existe para mostrar cómo una fuente pública se corresponde con un vocabulario público, y qué se pierde en el camino.",
+
+  ctdlStamp: (snapshot: string) =>
+    `Contado a partir de la exportación de la instantánea de datos del ${snapshot}, en el momento en que esa exportación se ejecutó.`,
+  ctdlSnapshotMismatch: (exportSnapshot: string, siteSnapshot: string) =>
+    `Nota: esta exportación describe la instantánea del ${exportSnapshot} y el resto del sitio está sirviendo ahora la del ${siteSnapshot}. Las cifras de abajo describen la exportación, no las páginas que la rodean.`,
+
+  ctdlCoverageHeading: "Qué contiene la exportación",
+  ctdlCoverageIntro:
+    "Una entidad por programa de capacitación, una por cada nombre distinto de institución tal como fue reportado, y un perfil de estadísticas por cada programa que reporta al menos un resultado. Un programa que no reportó nada no recibe perfil alguno: uno vacío se leería como «se midió, y salió vacío».",
+  ctdlEntityColumn: "Clase de CTDL",
+  ctdlEntityCountColumn: "Entidades",
+
+  ctdlPropertiesHeading: "Qué propiedades están llenas",
+  ctdlPropertiesIntro:
+    "Cada propiedad de abajo se emite solo donde la fuente afirmó algo. Un vacío es un vacío: sin relleno, sin ceros y sin nada deducido de un campo vecino. El orden es el propio de la exportación, no el de las mejor cubiertas primero.",
+  ctdlPropertyColumn: "Propiedad",
+  ctdlPropertyCountColumn: "Programas que la llevan",
+  ctdlPropertyShareColumn: "Proporción",
+
+  ctdlMeasuresHeading: "Qué medidas de resultados se proyectan",
+  ctdlMeasuresIntro:
+    "Cada medida reportada se convierte en una métrica y una observación dentro del perfil de estadísticas del programa. La proporción se calcula sobre los programas que tienen perfil, no sobre todos: una medida que falta porque el programa no reportó nada es un hecho distinto de una medida que falta en un programa que sí reportó otra cosa.",
+  ctdlMeasureColumn: "Medida",
+  ctdlMeasureCountColumn: "Observaciones",
+  ctdlMeasureShareColumn: "De los programas con algún resultado",
+
+  ctdlGapsHeading: "Qué no lleva la exportación",
+  ctdlGapsIntro:
+    "El registro de origen dice más de lo que esta exportación proyecta. Contar solo lo emitido describiría una proyección como si fuera el registro entero, así que los campos descartados también se cuentan, junto con el término de CTDL que habría podido llevar cada uno cuando ese término existe.",
+  ctdlGapsReading:
+    "Donde se nombra un término de CTDL, el vocabulario tiene dónde poner ese dato y la exportación no lo usa. Eso es una carencia de la exportación, no un límite de CTDL, y se dice así en vez de dejar que quien lea lo deduzca de una ausencia.",
+  ctdlGapColumn: "Qué dice la fuente",
+  ctdlGapProgramsColumn: "Programas que lo reportan",
+  ctdlGapTermColumn: "Término de CTDL que lo llevaría",
+  ctdlGapNoTerm: "Ninguno en uso",
+  ctdlGapFieldsLabel: "Campos de origen",
+  ctdlCostFloor: (n: string) =>
+    `Aparte, ${n} programa(s) reportan un costo total que, por tener un componente suprimido, es un mínimo y no un precio. La propiedad de precio de CTDL no tiene forma de decir «al menos», así que para esos no se publica costo alguno en vez de publicar un mínimo como si fuera la tarifa.`,
+
+  ctdlGapOutcomeMeasures: "Cuatro de las nueve medidas de resultados reportadas",
+  ctdlGapOutcomeMeasuresWhy:
+    "La fuente reporta nueve medidas de desempeño de WIOA y esta exportación proyecta cinco. El total de personas atendidas, el total que salió, el total que completó y el empleo en el cuarto trimestre tras la salida se reportan y no se llevan. La capa de estadísticas podría expresarlas exactamente igual que a las cinco que sí van.",
+  ctdlGapProgramLength: "Cuánto dura el programa",
+  ctdlGapProgramLengthWhy:
+    "CTDL tiene una propiedad para la duración estimada de una oportunidad de aprendizaje. La duración en semanas y horas de la fuente no se lleva, ni tampoco la marca de programa por competencias, que significa que el programa termina cuando la persona sabe hacer el trabajo y por diseño no tiene duración fija.",
+  ctdlGapProgramFormat: "En línea, presencial o ambos",
+  ctdlGapProgramFormatWhy:
+    "CTDL tiene una propiedad de modalidad, pero su valor debe ser un concepto de un vocabulario controlado que credreg.net publica como página web y no como datos. Esta exportación no emite ningún concepto que no pueda contrastar con datos legibles por máquina, así que la modalidad no se lleva.",
+  ctdlGapInstructionalProgramCode: "El código CIP del campo de estudio",
+  ctdlGapInstructionalProgramCodeWhy:
+    "CTDL tiene una propiedad de programa instruccional que admite una correspondencia CIP, con la misma forma que esta exportación ya usa para el código SOC de la ocupación. El código CIP que reportó la fuente no se lleva.",
+  ctdlGapProgramLocation: "Dónde se imparte el programa",
+  ctdlGapProgramLocationWhy:
+    "CTDL tiene una propiedad para dónde está disponible una oportunidad de aprendizaje. Ni la ubicación del programa ni la región que este proyecto deriva de ella se llevan. Por una razón distinta, tampoco se pone dirección a la organización: la ubicación de un registro es la del programa, no necesariamente la de la institución.",
+  ctdlGapProviderCategory: "Qué tipo de institución es",
+  ctdlGapProviderCategoryWhy:
+    "La categoría de institución de la fuente no se corresponde con el vocabulario de sector de CTDL sin decisiones de criterio, y ese vocabulario se publica como página web y no como datos. La organización lleva el nombre que reportó la fuente y nada más.",
+  ctdlGapWioaFundedCost: "Cuánto cuesta a quien recibe fondos de WIOA",
+  ctdlGapWioaFundedCostWhy:
+    "Ese es otro costo y otro pagador, y CTDL puede llevarlo como un segundo perfil de costo distinguido por un concepto de un vocabulario publicado como página web y no como datos. Solo se lleva el total de gasto de bolsillo.",
+  ctdlGapOccupationProjections: "La proyección estatal a diez años de la ocupación",
+  ctdlGapOccupationProjectionsWhy:
+    "Esta exportación proyecta el registro federal de capacitación. Las proyecciones de California para la ocupación a la que lleva cada programa — salario mediano, vacantes previstas, crecimiento — se unen al programa en todo el resto de este sitio y aquí no se llevan. Describen una ocupación y no este programa, y colgarlas del programa afirmaría que el programa lleva a ese salario, cosa que la fuente no dice. El código de la ocupación sí se lleva, de modo que la correspondencia queda dicha y la proyección no.",
+
+  ctdlValidationHeading: "Qué encontró un validador independiente",
+  ctdlValidationIntro: (tool: string, version: string) =>
+    `La exportación se revisa a sí misma, pero todas esas revisiones las escribió la misma mano que la exportación, sobre la misma lectura del mismo esquema, que es justo la lectura a la que un error sobreviviría. Por eso también pasa por ${tool} ${version}, una herramienta aparte con sus propias copias del esquema de Credential Engine y una cita para cada regla que aplica. No hace ninguna petición de red ni envía nada a ningún sitio.`,
+  ctdlValidationEntities: (n: string) => `Se revisaron ${n} entidades.`,
+  ctdlValidationSeverityColumn: "Gravedad",
+  ctdlValidationCountColumn: "Hallazgos",
+  ctdlSeverityError: "Error (bloqueante)",
+  ctdlSeverityWarning: "Advertencia",
+  ctdlSeverityInfo: "Información",
+  ctdlSeverityUnverifiable: "No verificable",
+  ctdlValidationResult:
+    "Ningún error, y una advertencia en todas las entidades del grafo. La advertencia es la tensión que esta exportación ya tenía anotada: la gramática publicada dice que un identificador es un UUID aleatorio, y una exportación que debe producir los mismos identificadores cada vez no puede usar uno aleatorio. No salió nada más: ninguna propiedad usada en una clase que no la declara, ninguna referencia que apunte a la nada, ninguna relación afirmada en un sentido y contradicha en el otro, ningún término inventado.",
+  ctdlValidationUnaccepted:
+    "Esta ejecución devolvió un hallazgo sobre el que nadie ha razonado. La exportación se niega a publicar en ese estado, así que si usted está leyendo esta frase en una página en vivo, algo va mal y la corrección es bienvenida.",
+  ctdlFindingCodeColumn: "Hallazgo",
+  ctdlFindingCountColumn: "Veces",
+  ctdlFindingEntitiesColumn: "Entidades",
+  ctdlFindingStateColumn: "Estado",
+  ctdlFindingAccepted: "Aceptado, con motivo",
+  ctdlFindingUnaccepted: "No aceptado",
+  ctdlFindingsNote:
+    "Un hallazgo aceptado es una decisión anotada, no un filtro: sigue contado aquí y en la declaración legible por máquina. Cualquier hallazgo cuyo código no se haya razonado hace fallar la exportación en vez de aparecer discretamente entre los demás.",
+
+  ctdlScopeHeading: "Qué pudo y qué no pudo juzgar el validador",
+  ctdlScopeBody: (
+    knownClasses: string,
+    classes: string,
+    knownProperties: string,
+    properties: string,
+  ) =>
+    `Un resultado limpio alcanza solo hasta donde llega el vocabulario que tiene quien revisa. Este basa sus comprobaciones estructurales en los documentos de esquema centrales que lleva consigo, así que estuvo en condiciones de juzgar ${knownClasses} de las ${classes} clases y ${knownProperties} de las ${properties} propiedades que emite esta exportación.`,
+  ctdlScopeUnjudged:
+    "El resto es la capa de estadísticas de resultados, que publica su propio documento de esquema que el validador no lleva, más una propiedad de moneda. Un término del que quien revisa nunca ha oído hablar es uno que se abstiene de juzgar, no uno que aprueba.",
+  ctdlScopeCaveat:
+    "Esos términos los revisó la propia exportación contra el esquema de estadísticas, obtenido y anotado en la procedencia de este proyecto. Esa es una garantía más débil que una opinión de fuera, y así se dice.",
+  ctdlScopeClassesLabel: "Clases no juzgadas",
+  ctdlScopePropertiesLabel: "Propiedades no juzgadas",
+
+  ctdlMappingHeading: "En qué se apoya cada correspondencia",
+  ctdlMappingIntro:
+    "Cada clase y cada propiedad de aquí se eligió contra una definición publicada y no de memoria, y la exportación se niega, al construirse, a emitir un término que el vocabulario no defina. Estas son las definiciones primarias, no resúmenes de ellas.",
+  ctdlMappingCitationsNote:
+    "Credential Engine las publica solo en inglés, por lo que aquí van marcadas como inglés.",
+  ctdlExportSourceLink:
+    "Leer la exportación, con el motivo anotado junto a cada correspondencia",
+
+  ctdlGetHeading: "Cómo obtener la exportación y cómo reconstruirla",
+  ctdlGetIntro:
+    "El grafo son unos 17 MB de JSON-LD: demasiado grande para versionarlo y demasiado propio de una instantánea concreta como para servirlo como si fuera actual. Se construye a demanda y se empaqueta con una suma de verificación, y las dos declaraciones que esta página muestra se publican junto a él.",
+  ctdlGetStatements: "Las declaraciones con las que se arma esta página, tal como se publican:",
+  ctdlGetCoverageFile: "Declaración de cobertura (qué se lleva y qué no)",
+  ctdlGetValidationFile: "Declaración de validación (qué encontró el validador)",
+  ctdlGetReproduce:
+    "Para reconstruir el grafo desde el origen: clone el repositorio, ejecute la canalización que descarga los datos públicos federales y estatales, y luego ejecute la exportación y la validación. Ambas son un solo comando y ambas son deterministas: la misma instantánea produce siempre una salida idéntica byte a byte, así que una reconstrucción se puede comparar directamente con una publicada.",
+  ctdlGetReleases: "Las exportaciones empaquetadas se publican como releases:",
+
+  ctdlCiteHeading: "Correcciones",
+  ctdlCiteBody:
+    "Si alguna correspondencia de aquí está mal, o una propiedad se usa de un modo que el esquema no pretende, eso merece un reporte. Esto es una demostración y su razón de ser es poder comprobarse; una corrección de alguien que trabaja con este vocabulario es lo más útil que esta página podría producir.",
 };
 
 function fmt(n: number): string {
