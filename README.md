@@ -167,6 +167,36 @@ refuses to write a term the schema does not define. A coverage statement
 (`ctdl-coverage.json`) is counted from the emitted graph at export time — including what
 the source reports that the export deliberately does not carry, with reasons.
 
+### Checking it with something that is not itself
+
+Every guard above is written by the same hand as the export, against the same reading of the
+same schema — which is the reading a mistake would survive. So the export is also put through
+[`ctdl-validate`](https://pypi.org/project/ctdl-validate/), a separate published tool with its
+own vendored copies of Credential Engine's schema encodings and a citation for every rule it
+applies. It is consumed as an ordinary dependency and never modified from here.
+
+```bash
+make ctdl-validate   # exports, then validates, and writes dist/ctdl/ctdl-validation.json
+```
+
+What it found, on the 2026-08-07 snapshot: **no errors, and one warning, 5,907 times.** The
+warning is `CTID_NOT_UUIDV4`, on every entity in the graph — the tension this export already
+declared in writing, that a CTID is specified as a random UUIDv4 and a deterministic
+re-export cannot use one. Nothing else fired: no domain violation, no range violation, no
+unresolved reference, no inverse mismatch, no undeclared term. Every finding code has to be
+listed in `ACCEPTED_CODES` with a reason or the run fails, so an accepted warning stays a
+decision on the record rather than a filter, and a new class of finding cannot arrive quietly.
+
+The scope of that result is published beside it, because a clean run over terms nobody checked
+is not evidence. `ctdl-validate` drives its domain, range, inverse and unknown-term checks from
+the schema encodings it vendors — core CTDL and CTDL-ASN — and the QData layer publishes its
+own encoding at `https://credreg.net/qdata/schema/encoding/json`, which neither of those
+contains. So the validator could judge 4 of the 7 classes and 17 of the 24 properties this
+export emits; the three classes and seven properties it could not are the QData
+outcome-statistics layer plus `schema:currency`. Those terms rest on the QData encoding check
+the export runs itself. The counts are computed from the emitted document against the
+validator's own schema index, not asserted.
+
 Outcome statistics originally used `ceterms:aggregateData`, which surfaced a schema gap —
 `ceterms:LearningProgram` missing from that property's per-class enumeration — filed as
 [Schema-Development #1080](https://github.com/CredentialEngine/Schema-Development/issues/1080).

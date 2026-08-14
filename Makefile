@@ -2,7 +2,7 @@
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
-	publish-preflight publish dataset-check dataset-manifest ctdl-export
+	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -251,6 +251,19 @@ dataset-publish: dataset-package
 # produces is published to any registry; see the README section on the CTDL export.
 ctdl-export:
 	uv run afterward export-ctdl --dataset-dir $(DATASET_DIR) --output-dir $(DIST_DIR)/ctdl
+
+# Check the export with ctdl-validate, a separate published tool with its own vendored copies
+# of Credential Engine's schema encodings and its own citation for every rule it applies.
+#
+# The export's own guards are written by the same hand as the export, against the same reading
+# of the same schema -- which is the reading a mistake would survive. This is the second
+# opinion. It fails on any ERROR, and on any finding code that is not listed with a reason in
+# afterward.ctdl.validate.ACCEPTED_CODES, so a new class of finding cannot arrive quietly.
+#
+# Structural validation only: no network access at validation time, and nothing is submitted
+# to any registry.
+ctdl-validate: ctdl-export
+	uv run afterward validate-ctdl --export-dir $(DIST_DIR)/ctdl
 
 web-install:
 	cd web && npm ci

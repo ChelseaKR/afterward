@@ -37,6 +37,10 @@ afterward = "afterward.cli:main"
 [dependency-groups]
 dev = [
   "bandit[toml]>=1.8.3",
+  # Independent structural validation of the demonstration CTDL export (`make ctdl-validate`).
+  # A dev dependency because the export is a demonstration artifact built by an operator, not
+  # something the site or the pipeline needs at runtime. Consumed only; never modified here.
+  "ctdl-validate>=0.1,<1",
   "mypy>=1.18",
   "pip-audit>=2.9",
   "pre-commit>=4.2",
