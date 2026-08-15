@@ -8,6 +8,31 @@ A/AAAA aliases; directory-route rewriting so `/en/occupations/` resolves to its
 The bucket is never public. CloudFront reads it through OAC, so the only way to the content
 is through the distribution and its headers.
 
+`aws-static-site.yml` in this directory is that stack, and it is the only one this repo's
+CI touches. `legacy/camino-static-site.yml` is a second, retired stack for the predecessor
+hostname; see below.
+
+## The retired stack
+
+`legacy/camino-static-site.yml` is the `camino-static-site` stack (us-east-1), which served
+`camino.chelseakr.com` before the 2026-08-05 rename. It is retired rather than deleted: the
+CloudFront function answers every request with a 301 to the matching
+`afterward.chelseakr.com` URL, path and query preserved, and the bucket is emptied by
+lifecycle rule but kept (`DeletionPolicy: Retain`) so the redirect can be reverted. It
+publishes no content and nothing here deploys it — the template is committed so the change
+that retired it has a reviewable diff and a place to apply the next one from. Apply by hand:
+
+```bash
+aws cloudformation deploy --region us-east-1 --stack-name camino-static-site \
+  --template-file infra/legacy/camino-static-site.yml --capabilities CAPABILITY_NAMED_IAM
+```
+
+One string in it still says "NearMiss" — the CloudFront distribution's `Comment`, copied
+from that stack's template when this one was bootstrapped. Left as filed: this file is a
+verbatim `get-template` capture plus the retirement change, and editing a string inside a
+retired stack would make the capture stop matching what is deployed for no benefit to
+anyone.
+
 ## First deployment is two phases, on purpose
 
 `PublishDns=false` creates everything except the DNS records. Upload the built site, check

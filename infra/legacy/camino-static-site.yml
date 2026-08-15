@@ -1,9 +1,10 @@
 # Retrieved from the live `camino-static-site` CloudFormation stack (us-east-1) on 2026-08-08
 # via `aws cloudformation get-template`, since no source-controlled copy existed anywhere —
 # the rename to `afterward` (2026-08-05) moved the working site but left this predecessor
-# stack orphaned. See issue #24 for the other rename leftovers this template's own comments
-# reveal (its Description/role names still say "NearMiss", copy-pasted from that stack's
-# template when this one was bootstrapped).
+# stack orphaned. See issue #24 for the other rename leftovers. This template carries one of
+# its own: the CloudFront distribution's Comment (below) reads "Public NearMiss evidence site
+# at ${DomainName}", copy-pasted from that stack's template when this one was bootstrapped.
+# One occurrence, in a Comment -- the Description and the resource names are camino's own.
 #
 # This copy exists so the redirect below has a reviewable diff and a place to apply future
 # changes from — nothing in this repo's CI deploys it. Apply by hand:
