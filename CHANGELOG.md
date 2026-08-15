@@ -49,6 +49,20 @@ All notable changes to this project are documented here. The format follows
   properties this export emits — a term it has never heard of being one it declines to judge,
   not one it approves. Those counts are computed from the emitted document against the
   validator's own schema index.
+- The CTDL coverage statement's prose is now checked against the export, not only its
+  figures. `check_ctdl_coverage` recomputes every count before publishing, so a stale number
+  cannot ship; the reasons beside those numbers had no such check. "The source's program
+  length is not carried" was true because somebody wrote it, and would have stayed published
+  word for word the day somebody added `ceterms:estimatedDuration` to `project_program` —
+  and the existing term guard would not have objected, because that term is defined in the
+  vendored CTDL context, which is precisely why the reason names it. Two contradictions now
+  fail the export: a property the statement lists as dropped turning up in the emitted
+  document, and a property landing on a `ceterms:LearningProgram` that `PROGRAM_PROPERTIES`
+  does not count, which would publish a property block describing a smaller projection than
+  the one beside it. The dropped terms are read out of each reason's own `ctdl_term` string
+  rather than kept as a second list, so the claim a reader sees and the claim the export
+  checks are the same characters. Neither contradiction exists today; both are one commit
+  away, which is the point.
 - `/outcomes-coverage/`, in both languages: how much of California's training outcomes data
   is actually published. California's Eligible Training Provider List exists only as a
   CalJOBS search screen with no export behind it, so there is no public count of how many of
