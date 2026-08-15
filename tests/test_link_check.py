@@ -14,6 +14,7 @@ import json
 import ssl
 import threading
 from collections.abc import Iterator
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, get_args
@@ -25,6 +26,7 @@ from afterward.sources import link_check, link_review
 from afterward.sources.dol_etp import USER_AGENT
 from afterward.sources.link_check import (
     CACHE_TTL,
+    CLASSIFIER_VERSION,
     DOCUMENT_VERSION,
     LABEL_PROGRAM_PAGE,
     LABEL_PROVIDER_HOME,
@@ -890,6 +892,41 @@ class TestCache:
             later = LinkCheckCache(tmp_path, now=at(NOW + CACHE_TTL[verdict] + timedelta(days=1)))
             assert later.get(PAGE) is None
 
+    def test_an_entry_from_an_older_classifier_is_re_read(self, tmp_path: Path) -> None:
+        """The bug that kept a working detector from ever judging anything.
+
+        The 2026-08-05 title detector changed what a 200 means, and every 200 in the cache was
+        warm for thirty days, so a re-run handed back the verdicts it was written to replace.
+        Ten "page not found" screens stayed published as working provider links. A cache entry
+        now belongs to the classifier that wrote it.
+        """
+        cache = LinkCheckCache(tmp_path, now=at())
+        path = cache.path_for(PAGE)
+        assert path is not None
+        stale = replace(checked(PAGE, "ok"), classifier_version=CLASSIFIER_VERSION - 1)
+        path.write_text(json.dumps(stale.as_dict()), encoding="utf-8")
+        assert cache.get(PAGE) is None
+
+    def test_an_entry_written_before_the_classifier_was_versioned_is_re_read(
+        self, tmp_path: Path
+    ) -> None:
+        """Older than every version there is, which is the only safe reading of a file that
+        does not say."""
+        cache = LinkCheckCache(tmp_path, now=at())
+        path = cache.path_for(PAGE)
+        assert path is not None
+        payload = checked(PAGE, "ok").as_dict()
+        del payload["classifier_version"]
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        assert LinkCheck.from_dict(payload).classifier_version == 0
+        assert cache.get(PAGE) is None
+
+    def test_an_entry_from_this_classifier_is_still_served(self, tmp_path: Path) -> None:
+        """The other half: a version bump costs one full re-read, not every read forever."""
+        cache = LinkCheckCache(tmp_path, now=at())
+        cache.put(checked(PAGE, "ok"))
+        assert cache.get(PAGE) is not None
+
     def test_a_corrupt_entry_is_ignored_rather_than_fatal(self, tmp_path: Path) -> None:
         cache = LinkCheckCache(tmp_path, now=at())
         path = cache.path_for(PAGE)
@@ -1658,3 +1695,40 @@ class TestChecksDocument:
     def test_the_document_records_when_the_run_finished(self) -> None:
         document = checks_document({}, checked_at=NOW)
         assert document["checked_at"] == NOW.isoformat()
+
+    def test_the_document_records_which_classifier_reached_its_verdicts(self) -> None:
+        assert checks_document({})["classifier_version"] == CLASSIFIER_VERSION
+
+
+class TestAReportOlderThanTheClassifier:
+    """A report is still read; it is no longer read silently.
+
+    The 2026-08-05 title detector spent ten days judging nothing, because the report every
+    build read had been produced before it existed and nothing anywhere compared the two.
+    """
+
+    def test_an_older_verdict_is_named(self) -> None:
+        checks = results(
+            replace(checked(PAGE, "ok"), classifier_version=CLASSIFIER_VERSION - 1),
+            checked(ROOT, "ok"),
+        )
+        assert link_check.unasked_by_the_current_classifier(checks) == [PAGE]
+
+    def test_a_current_report_names_nobody(self) -> None:
+        checks = results(checked(PAGE, "ok"), checked(ROOT, "ok"))
+        assert link_check.unasked_by_the_current_classifier(checks) == []
+
+    def test_an_older_verdict_is_still_a_verdict(self) -> None:
+        """It is not discarded. Withholding every link over a version number would hide
+        hundreds of working schools to fix a problem that is about ten of them."""
+        checks = results(replace(checked(PAGE, "not_found"), classifier_version=1))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.verdict == "dead"
+        assert decision.linked is False
+
+    def test_a_report_from_an_older_classifier_still_loads(self) -> None:
+        document = checks_document(results(checked(PAGE, "ok")))
+        document["checks"][0]["classifier_version"] = 1
+        restored = checks_from_document(document)
+        assert restored[PAGE].classifier_version == 1

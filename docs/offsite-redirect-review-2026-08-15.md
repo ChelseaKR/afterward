@@ -29,9 +29,10 @@ Two other things the same fetch showed, both worth recording because neither is 
 - **The published dataset contains no `soft_not_found` and no `domain_for_sale` decisions at
   all.** The title detector this project built on 2026-08-05 — 20 URLs on 23 program pages —
   has never had an effect on anything a reader sees. `data/interim/link-checks.json` is still
-  the 2026-08-04 run, and an `alive` verdict is cached for 30 days, so re-running
-  `make link-check` today would not re-ask most of them either. The repair exists, is tested,
-  and has never run against published data: the same shape as #28.
+  the 2026-08-04 run, and an `alive` verdict was cached for 30 days, so re-running
+  `make link-check` would not have re-asked most of them either. The repair exists, is tested,
+  and has never run against published data: the same shape as #28. That second half is fixed
+  below.
 - The links published on 2026-08-15 were read on **2026-08-04**. Every sentence the site
   prints about them carries that date, which is the design working, but the gap is worth
   knowing when reading the counts below.
@@ -170,13 +171,34 @@ Run today, against the working dataset — the one production is serving — the
 it, naming 129 links. That is the correct answer and it will stay the answer until the dataset
 is rebuilt.
 
+## The cache that made a working detector useless
+
+The three hijacked domains are the loud finding. This is the quiet one, and it is the more
+general fault.
+
+A verdict is cached per URL for thirty days when `alive`. The 2026-08-05 title detector changed
+what a 200 *means* — it is the thing that separates a page from a "page not found" screen
+served with a 200 — and every 200 in the cache had been written the day before by the
+classifier that could not tell those apart. So a re-run of `make link-check` would have handed
+back the verdicts the new detector was written to replace, and did: ten days later the
+published dataset contains no `soft_not_found` and no `domain_for_sale` decision at all.
+
+Nothing was wrong with the detector, the tests, the report format or the build. The cache had
+no notion of *which* classifier wrote an entry, so a change in judgement was invisible to it.
+
+`CLASSIFIER_VERSION` fixes that: an entry is served only to the classifier that wrote it, an
+entry written before versioning existed counts as older than everything, and the build prints
+how many of the verdicts it just published were reached by an older classifier rather than
+leaving that to be noticed. A version bump costs one full re-read — about 1,100 requests, on a
+pass a person invokes deliberately — which is the right price for having changed what a check
+means.
+
 ## What this does not fix
 
 The code change reaches nobody until a new dataset is built and published:
 `make data` → `make dataset-publish` → the dispatch-only deploy workflow. Until then the live
 site keeps serving the 2026-08-07 asset, hijacked links included.
 
-Worth doing in the same pass, and separately from this change: clear `data/raw/link-cache` and
-re-run `make link-check`, so the 2026-08-05 title detector finally reads the corpus it was
-written for. Ten soft 404s and ten domain-sale listings on 23 program pages are still published
-as working links today, and a warm cache is the only reason.
+Worth doing in the same pass: re-run `make link-check`. Ten soft 404s and ten domain-sale
+listings on 23 program pages are still published as working links today, and the version bump
+above is what makes that re-run actually re-read them.

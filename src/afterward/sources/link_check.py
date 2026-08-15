@@ -223,6 +223,25 @@ address is that page's own statement about itself, which is the only kind of evi
 rest of this module accepts.
 """
 
+CLASSIFIER_VERSION: Final = 2
+"""What this module's judgement is worth, bumped whenever the same response would now be
+classified differently.
+
+``1`` was the status code and the redirect chain. ``2`` is that plus what a 2xx says it is,
+from its ``<title>`` -- the soft-404 and domain-for-sale detection added on 2026-08-05.
+
+This exists because of what happened to that change. Verdicts are cached per URL for 30 days
+when ``alive``, so on 2026-08-15 the published dataset contained **no** ``soft_not_found`` and
+**no** ``domain_for_sale`` decision at all: the report was the 2026-08-04 run, every entry in
+it was still warm, and a re-run of ``check-links`` would have handed back the very verdicts
+the new detector was written to replace. Ten "page not found" screens and ten domain-sale
+listings stayed published as working provider links, and nothing anywhere said so.
+
+So the cache now serves an entry only to the classifier that wrote it. A version bump costs a
+full re-read -- roughly 1,100 requests, spread politely, on a pass a person invokes
+deliberately -- which is the correct price for having changed what a check means.
+"""
+
 Verdict = Literal["alive", "dead", "indeterminate"]
 """What the check established. Note what is missing: there is no "unchecked"."""
 
@@ -331,6 +350,13 @@ class LinkCheck:
     checked_at: datetime
     attempts: int
     """HTTP requests spent on this URL, so politeness is auditable after the fact."""
+    classifier_version: int = CLASSIFIER_VERSION
+    """Which version of this module's judgement produced the verdict.
+
+    Written on every check and read by the cache. An entry from an older classifier is not
+    wrong -- it is unasked, about whatever the newer one would have looked at -- so it is
+    re-checked rather than reinterpreted.
+    """
 
     @property
     def is_upgradeable(self) -> bool:
@@ -348,6 +374,7 @@ class LinkCheck:
             "detail": self.detail,
             "checked_at": self.checked_at.isoformat(),
             "attempts": self.attempts,
+            "classifier_version": self.classifier_version,
         }
 
     @classmethod
@@ -366,6 +393,10 @@ class LinkCheck:
             detail=payload["detail"],
             checked_at=datetime.fromisoformat(payload["checked_at"]),
             attempts=int(payload["attempts"]),
+            # A file written before the classifier was versioned gets 0, which is older than
+            # every version there is. That is the fail-safe direction: it costs a re-read and
+            # it cannot mistake a verdict from an unknown classifier for a current one.
+            classifier_version=int(payload.get("classifier_version", 0)),
         )
 
 
@@ -803,6 +834,11 @@ class LinkCheckCache:
             # A cache is a convenience. An unreadable one means re-check, not fail.
             return None
         if check.url != url:
+            return None
+        if check.classifier_version != CLASSIFIER_VERSION:
+            # Written by a classifier that asked a different question. Serving it would let a
+            # detector improve nothing for thirty days, which is exactly what happened to the
+            # 2026-08-05 title detector: see :data:`CLASSIFIER_VERSION`.
             return None
         age = self._now() - check.checked_at
         return None if age > self._ttl.get(check.verdict, timedelta(0)) else check
@@ -1368,6 +1404,10 @@ def checks_document(
     """
     return {
         "version": DOCUMENT_VERSION,
+        # The classifier this run's own results were produced by. Per-entry values are what
+        # decide anything -- a report can hold a mix, because a re-run re-reads only what the
+        # cache would no longer serve -- and this is the run's own stamp beside them.
+        "classifier_version": CLASSIFIER_VERSION,
         "checked_at": (checked_at or _utcnow()).isoformat(),
         "urls": len(checks),
         "checks": [check.as_dict() for check in checks.values()],
@@ -1387,6 +1427,17 @@ def checks_from_document(payload: Mapping[str, Any]) -> dict[str, LinkCheck]:
         raise ValueError(f"unsupported link-check document version {version!r}")
     checks = [LinkCheck.from_dict(entry) for entry in payload["checks"]]
     return {check.url: check for check in checks}
+
+
+def unasked_by_the_current_classifier(checks: Mapping[str, LinkCheck]) -> list[str]:
+    """URLs whose verdict predates the current classifier, and so was never asked its question.
+
+    Not an error and not a reason to refuse a build: an older verdict is still an observation,
+    and withholding every link over it would hide hundreds of working schools. It is a reason
+    to *say something*, which is what nothing did for the ten days the 2026-08-05 title
+    detector spent judging nothing at all.
+    """
+    return [url for url, check in checks.items() if check.classifier_version != CLASSIFIER_VERSION]
 
 
 @dataclass(frozen=True)

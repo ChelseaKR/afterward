@@ -15,6 +15,7 @@ from afterward.build import (
     build,
     build_offline,
     check_provider_links,
+    load_link_checks,
 )
 from afterward.ctdl.export import export_ctdl
 from afterward.ctdl.validate import validate_export
@@ -93,7 +94,29 @@ def build_command(
         )
 
     _echo_provider_links(report.provider_links, link_checks)
+    _echo_link_report_age(link_checks)
     _echo_local_help(report.local_help)
+
+
+def _echo_link_report_age(report_path: Path) -> None:
+    """Say when the link verdicts this build published were reached by an older classifier.
+
+    A build cannot fix this and must not fail over it -- an older verdict is still a real
+    observation, and withholding links over one would hide working schools. What it can do is
+    stop the situation being invisible, which it was for the ten days between the 2026-08-05
+    title detector landing and anyone noticing that no published link had ever been judged by
+    it.
+    """
+    checks = load_link_checks(report_path)
+    unasked = link_check.unasked_by_the_current_classifier(checks)
+    if not unasked:
+        return
+    typer.echo(
+        f"  ({len(unasked)} of {len(checks)} link verdicts were reached by an older "
+        f"classifier (this one is v{link_check.CLASSIFIER_VERSION}); they were never asked "
+        "what their page says it is."
+    )
+    typer.echo("   Run `afterward check-links` to re-read them, then build again.)")
 
 
 def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None:
