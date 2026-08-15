@@ -120,6 +120,12 @@ def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None
     typer.echo(f"    answered                {links.programs_alive:>6}")
     typer.echo(f"    we could not reach      {links.programs_dead:>6}")
     typer.echo(f"    could not be judged     {links.programs_indeterminate:>6}")
+    if links.programs_offsite_redirect:
+        # A page answered from a domain the record did not name. Some of those are the
+        # provider having moved and some are somebody else holding the lapsed address, so the
+        # two halves are printed apart rather than added up.
+        typer.echo(f"    answered from elsewhere {links.programs_offsite_redirect:>6}")
+        typer.echo(f"      confirmed as theirs   {links.programs_offsite_confirmed:>6}")
     if links.programs_unchecked:
         typer.echo(f"  not checked               {links.programs_unchecked:>6}")
     typer.echo(f"  published as a link       {links.programs_linked:>6}")

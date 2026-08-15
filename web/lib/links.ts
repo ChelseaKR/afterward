@@ -44,6 +44,17 @@ export function linkNotice(t: Copy, link: ProviderLink): string | null {
       // advertisement to buy the domain is what answered. "We could not reach it" would be
       // false and would send someone back to retry an address that is never coming back.
       return t.linkForSale(link.checked_on);
+    case "redirect_unrelated":
+      // A hand review found somebody else's live site at the filed address — gambling,
+      // lottery and charity sites sit behind three of them. Never phrased as a claim about
+      // the school: what changed hands is an address.
+      return t.linkRedirectUnrelated(link.checked_on);
+    case "redirect_unconfirmed":
+      // The address goes somewhere else and nothing established where. This sentence is an
+      // admission rather than a finding, which is why it is separate from the one above: a
+      // reader deciding where to spend a year is owed the difference between "this is not
+      // them" and "we do not know that this is them".
+      return t.linkRedirectUnconfirmed(link.checked_on);
     default:
       return null;
   }

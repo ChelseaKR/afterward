@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "about": "Hand reviews of provider addresses that redirect to another domain. Read by afterward.sources.link_review, which links an off-site redirect only where something corroborates that the destination is still the provider the federal record names. An entry applies to exactly the filed_host -> destination pair it records: if the redirect moves, the entry stops matching and the link falls back to unresolved rather than carrying a stale blessing onto a page nobody looked at. Never write an entry to make a link work. Write one only for something you established, put what you established in evidence, and date it.",
+  "statuses": {
+    "same_provider": "The destination is the organisation the record names, moved. Linked as filed.",
+    "unrelated": "Somebody else's live site is at the address now. Not linked; the page says the address leads somewhere unrelated.",
+    "for_sale": "The address is being advertised for sale. Not linked; the page says so and tells the reader to look the school up by name."
+  },
+  "entries": [
+    {
+      "filed_host": "giligiacollege.com",
+      "destination": "seinquote.com",
+      "status": "unrelated",
+      "provider_name": "Giligia College",
+      "evidence": "Opened during the hand review recorded in docs/soft-404-provider-links-2026-08-05.md: the address serves an Indonesian gambling site with nothing to do with the college, which is in Van Nuys. Published as a working 'Provider's website' link on four program pages until this entry.",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "eastvalleycollege.com",
+      "destination": "mechanicaljungle.com",
+      "status": "unrelated",
+      "provider_name": "East Valley College, Inc.",
+      "evidence": "Opened during the hand review recorded in docs/soft-404-provider-links-2026-08-05.md: the address serves an Indonesian lottery site, unrelated to the Fontana truck-driving school that filed it.",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "hollywoodculturalcollege.com",
+      "destination": "stopglaucomajhu.org",
+      "status": "unrelated",
+      "provider_name": "Hollywood Cultural College",
+      "evidence": "Opened during the hand review recorded in docs/soft-404-provider-links-2026-08-05.md: the address serves a Baltimore glaucoma-screening charity. A real and reputable site, and not this Los Angeles college's, which is the whole point: nothing mechanical separates it from a rebrand.",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "dronitek.com",
+      "destination": "hugedomains.com",
+      "status": "for_sale",
+      "provider_name": "Dronitek Drone Flight Academy (Business Office)",
+      "evidence": "Seven filed URLs all end at hugedomains.com/domain_profile.cfm?d=dronitek.com, a listing offering dronitek.com itself for sale; the title review in docs/soft-404-provider-links-2026-08-05.md read the same listing ('DronitEk.com is for sale | HugeDomains').",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "aselbeauty.com",
+      "destination": "hugedomains.com",
+      "status": "for_sale",
+      "provider_name": "Asel Beauty College, Inc.",
+      "evidence": "Ends at hugedomains.com/domain_profile.cfm?d=aselbeauty.com, a listing for the filed address itself; title read on 2026-08-05 as 'AselBeauty.com is for sale | HugeDomains'.",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "intechcollege.com",
+      "destination": "expireddomains.com",
+      "status": "for_sale",
+      "provider_name": "Intech College",
+      "evidence": "Ends at expireddomains.com/domain/intechcollege.com, a listing for the filed address itself; title read on 2026-08-05 as 'intechcollege.com — Buy this expired domain | ED.com'.",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "catruckschool.com",
+      "destination": "expireddomains.com",
+      "status": "for_sale",
+      "provider_name": "Transportation Guidance and Assistance Truck Driving School",
+      "evidence": "Ends at expireddomains.com/domain/catruckschool.com, a listing for the filed address itself, read on 2026-08-05 alongside the other three.",
+      "reviewed_on": "2026-08-05"
+    },
+    {
+      "filed_host": "maiquelascosmetology.net",
+      "destination": "unstoppabledomains.com",
+      "status": "for_sale",
+      "provider_name": "Maiquela's Cosmetology Academy",
+      "evidence": "Two filed course pages end at unstoppabledomains.com/d/maiquelascosmetology.net, a marketplace listing for the filed address itself. The academy's own root answered separately with its 'Page Not Found' screen, so this entry is about the address, not about the school.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "westhillscollege.com",
+      "destination": "westhillslemoore.elumenapp.com",
+      "status": "same_provider",
+      "provider_name": "Lemoore College",
+      "evidence": "The college's own accreditation evidence file is a printout of its catalog footed https://westhillslemoore.elumenapp.com/catalog/22-23/home, so eLumen is its catalogue platform (lemoorecollege.edu/about/accreditation/iser-2024/standard1c/ic2_02_whcl_catalog_web.pdf). West Hills College Lemoore was renamed Lemoore College in April 2024, which is why the filed domain no longer matches the destination.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "curricunet.com",
+      "destination": "cuesta.curriqunet.com",
+      "status": "same_provider",
+      "provider_name": "Cuesta College",
+      "evidence": "Cuesta College's Academic Senate Curriculum Committee page names https://cuesta.curriqunet.com/ as where its courses and programs are searched (cuesta.edu/about/college-resources/academicsenate/curriculum-committee.html). The vendor renamed curricunet.com to curriqunet.com and moved each college onto its own subdomain.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "catalog.hancockcollege.edu",
+      "destination": "hancockcollege.curriqunet.com",
+      "status": "same_provider",
+      "provider_name": "Allan Hancock College",
+      "evidence": "The college's Academic Policy and Planning Committee page names CurriQunet META as its curriculum system and links https://hancockcollege.curriqunet.com/catalog as the college catalog (hancockcollege.edu/app/index.php).",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "riversidesce.org",
+      "destination": "rcoe.us",
+      "status": "same_provider",
+      "provider_name": "RCOE School of Career Education",
+      "evidence": "rcoe.us is the Riverside County Office of Education, which runs the School of Career Education the record names; the redirect lands on rcoe.us/programs/school-of-career-education/, that programme's own page.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "montebelloadulted.com",
+      "destination": "aemusd.com",
+      "status": "same_provider",
+      "provider_name": "Montebello Community Adult School",
+      "evidence": "Montebello Unified School District's own Adult Education page lists http://aemusd.com/ as the website for all four of its adult schools, Montebello Adult among them (montebello.k12.ca.us, Adult Education).",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "palladium.edu",
+      "destination": "palladiumcareeracademy.com",
+      "status": "same_provider",
+      "provider_name": "Palladium Technical Academy",
+      "evidence": "The EDUCAUSE .edu registry still records palladium.edu as registered to Palladium Technical Academy, 10229 Lower Azusa Rd., Temple City, CA (record updated 2026-05-22), so the redirect is set by the school rather than by a buyer of a lapsed address. Worth re-checking: third-party directories still list palladiumta.com, and the destination domain was created 2026-03-09.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "davetruckdrivingschool.com",
+      "destination": "1on1truckacademy.com",
+      "status": "same_provider",
+      "provider_name": "1 on 1 Truck Academy",
+      "evidence": "The Better Business Bureau record filed as '1-on-1 Dave Truck Driving School' now carries the business name '1 on 1 Truck Academy' at the same address, 3602 West Capitol Ave, West Sacramento, and still lists davetruckdrivingschool.com as its website.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "avadult.org",
+      "destination": "avadulted.org",
+      "status": "same_provider",
+      "provider_name": "Antelope Valley Adult School",
+      "evidence": "211LA's agency record for Antelope Valley Adult School gives avadulted.org as its website.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "untouchableapprentice.com",
+      "destination": "untouchableaa.com",
+      "status": "same_provider",
+      "provider_name": "Untouchable Apprentice Training",
+      "evidence": "The destination's contact page gives 1815 West 54th Street, Los Angeles CA 90062, the principal address on the California business filing for Untouchable Apprentice Training & Academy LLC.",
+      "reviewed_on": "2026-08-15"
+    },
+    {
+      "filed_host": "angelescollege.edu",
+      "destination": "angelesuniversity.edu",
+      "status": "same_provider",
+      "provider_name": "Angeles College",
+      "evidence": "The EDUCAUSE .edu registry lists angelesuniversity.edu's registrant as Angeles University, 3440 Wilshire Boulevard, Suite 310, Los Angeles, with an administrative contact at angelescollege.edu — the filed institution under a new name. Name similarity alone would not have settled this, and the automatic rules correctly did not.",
+      "reviewed_on": "2026-08-15"
+    }
+  ]
+}

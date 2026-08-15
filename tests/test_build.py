@@ -51,7 +51,7 @@ from afterward.build import (
     spanish_coverage,
     unmapped_cities,
 )
-from afterward.sources import link_check
+from afterward.sources import link_check, link_review
 from afterward.sources.careeronestop import TOKEN_ENV, USER_ID_ENV, OccupationEnrichment, Skill
 from afterward.sources.dol_etp import CohortFiling, cohort_integrity, parse_program
 from afterward.sources.edd_lmi import area_definitions, parse_projections, principal_city_areas
@@ -1449,13 +1449,15 @@ MISSING = "https://b.edu/programs/welding.aspx"
 B_ROOT = "https://b.edu/"
 
 
-def _check(url: str, reason: Reason, upgrade: str | None = None) -> LinkCheck:
+def _check(
+    url: str, reason: Reason, upgrade: str | None = None, final: str | None = None
+) -> LinkCheck:
     return LinkCheck(
         url=url,
         verdict=VERDICT_BY_REASON[reason],
         reason=reason,
         status_code=None,
-        final_url=None,
+        final_url=final,
         https_alternative=upgrade,
         detail=None,
         checked_at=datetime(2026, 8, 4, 9, 0, tzinfo=UTC),
@@ -1544,6 +1546,85 @@ class TestProviderLinkOnProgramRecords:
         assert link["href"] == GOOD
         assert link["linked"] is True
         assert link["notice"] is None
+
+
+class TestAnAddressThatNowAnswersFromSomewhereElse:
+    """The build path, exercised against the committed review rather than a stand-in.
+
+    On 2026-08-15 the live dataset published ``http://www.giligiacollege.com`` as a working
+    "Provider's website" link on four program pages. It has been an Indonesian gambling site
+    since at least 2026-08-05. These tests fail if that record can be built again.
+    """
+
+    HIJACKED = "http://www.giligiacollege.com"
+    HIJACK_DESTINATION = "https://seinquote.com"
+
+    def _reviewed(self, url: str, destination: str, provider: str) -> dict:
+        program = parse_program(
+            {"_source": {"field_uuid": "u", "field_etp": provider, "field_program_url": url}}
+        )
+        return program_payload(
+            program,
+            _occupations(),
+            link_checks=_checks(_check(url, "redirected_offsite", final=destination)),
+            reviewer=link_review.OffsiteReviewer.from_feed([]),
+        )
+
+    def test_a_hijacked_domain_is_not_published_as_a_link(self) -> None:
+        link = self._reviewed(self.HIJACKED, self.HIJACK_DESTINATION, "Giligia College")[
+            "provider_link"
+        ]
+        assert link["linked"] is False
+        assert link["href"] is None
+        assert link["redirect"] == "unrelated"
+        assert link["notice"] == "redirect_unrelated"
+
+    def test_the_federal_records_url_is_still_published_as_text(self) -> None:
+        """Suppressing the URL as well would hide what the source says, and a reader may
+        still want to look the address up in an archive."""
+        payload = self._reviewed(self.HIJACKED, self.HIJACK_DESTINATION, "Giligia College")
+        assert payload["program_url"] == self.HIJACKED
+        assert payload["provider_link"]["url"] == self.HIJACKED
+
+    def test_a_confirmed_rebrand_keeps_its_link(self) -> None:
+        """The other half, and the one that makes this a judgement rather than a purge:
+        Moler Barber College moved from moler.org to moler.edu and readers should still
+        reach it."""
+        link = self._reviewed(
+            "https://moler.org/programs/cosmetology-program/",
+            "https://moler.edu/programs/cosmetology/",
+            "Moler Barber College - OAKLAND main campus",
+        )["provider_link"]
+        assert link["linked"] is True
+        assert link["redirect"] == "same_provider"
+        assert link["notice"] is None
+
+    def test_a_redirect_nothing_corroborates_is_published_as_unconfirmed(self) -> None:
+        link = self._reviewed(
+            "https://nevadahelpdesk.tech", "https://nevadahelpdesk.ai/", "Nevada Help Desk"
+        )["provider_link"]
+        assert link["linked"] is False
+        assert link["redirect"] == "unresolved"
+        assert link["notice"] == "redirect_unconfirmed"
+
+    def test_a_build_that_forgets_the_reviewer_withholds_rather_than_publishes(self) -> None:
+        """The direction a mistake has to fall in. Every caller that does not resolve
+        redirects gets fewer links, never a link nobody checked."""
+        link = _payload(
+            self.HIJACKED,
+            _checks(_check(self.HIJACKED, "redirected_offsite", final=self.HIJACK_DESTINATION)),
+        )["provider_link"]
+        assert link["linked"] is False
+        assert link["redirect"] == "unresolved"
+
+    def test_the_coverage_block_counts_both_halves_apart(self) -> None:
+        payloads = [
+            self._reviewed(self.HIJACKED, self.HIJACK_DESTINATION, "Giligia College"),
+            self._reviewed("https://moler.org/x/", "https://moler.edu/x/", "Moler Barber College"),
+        ]
+        coverage = provider_link_coverage(payloads)
+        assert coverage.programs_offsite_redirect == 2
+        assert coverage.programs_offsite_confirmed == 1
 
 
 class TestProviderLinkPages:

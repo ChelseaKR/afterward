@@ -21,6 +21,7 @@ from afterward.sources import (
     dol_etp,
     edd_lmi,
     link_check,
+    link_review,
     local_help,
     onet,
     soc_vintage,
@@ -162,6 +163,11 @@ class ProviderLinkCoverage:
     programs_alive: int
     programs_dead: int
     programs_indeterminate: int
+    # Answered from a domain the record did not name. Counted separately because "a page
+    # answered" and "the provider answered" are different claims here, and only the second
+    # earns a link: see `afterward.sources.link_review`.
+    programs_offsite_redirect: int
+    programs_offsite_confirmed: int
     # What the reader actually gets.
     programs_linked: int
     programs_not_linked: int
@@ -880,7 +886,11 @@ def check_provider_links(
 
 
 def provider_link(
-    url: str | None, checks: Mapping[str, link_check.LinkCheck]
+    url: str | None,
+    checks: Mapping[str, link_check.LinkCheck],
+    *,
+    reviewer: link_review.OffsiteReviewer | None = None,
+    provider_name: str | None = None,
 ) -> dict[str, Any] | None:
     """The provider-link block for one program, or ``None`` when it has no URL at all.
 
@@ -888,9 +898,29 @@ def provider_link(
     programs and has nothing to do with the check. It is not "we suppressed it": that case is
     a populated block whose ``href`` is null and whose ``notice`` says on what date we failed
     to reach the page.
+
+    ``reviewer`` answers the one question a fetch cannot: when the address answered from
+    another domain, is the destination still this provider? Without one, every such redirect
+    is unresolved and none of them is linked -- the safe direction, and the one that keeps a
+    caller who forgot to pass a reviewer from publishing a hijacked domain.
     """
-    decision = link_check.decide(checks, url)
+    decision = link_check.decide(
+        checks, url, redirect=_redirect_verdict(url, checks, reviewer, provider_name)
+    )
     return None if decision is None else decision.as_dict()
+
+
+def _redirect_verdict(
+    url: str | None,
+    checks: Mapping[str, link_check.LinkCheck],
+    reviewer: link_review.OffsiteReviewer | None,
+    provider_name: str | None,
+) -> link_review.RedirectVerdict | None:
+    """Resolve an off-site redirect, or ``None`` when there is nothing to resolve."""
+    check = checks.get(url) if url is not None else None
+    if reviewer is None or check is None or check.reason != "redirected_offsite":
+        return None
+    return reviewer.resolve(url=check.url, final_url=check.final_url, provider_name=provider_name)
 
 
 def _attach_provider_links(
@@ -902,9 +932,20 @@ def _attach_provider_links(
     a consumer must be able to tell "checked, and there is nothing to say" from "built before
     this existed". With no link data every block reads unchecked, and unchecked renders
     exactly as this dataset has always rendered -- the URL, linked, unannotated.
+
+    The off-site reviewer is built once, from the committed review ledger and from the feed
+    these payloads came out of. A ledger this code cannot read raises here rather than being
+    treated as an empty review: an unreadable ledger is not "nothing was reviewed", it is a
+    build that no longer knows which redirects were found to be somebody else's.
     """
+    reviewer = link_review.OffsiteReviewer.from_feed(payloads)
     for payload in payloads:
-        payload["provider_link"] = provider_link(payload["program_url"], checks)
+        payload["provider_link"] = provider_link(
+            payload["program_url"],
+            checks,
+            reviewer=reviewer,
+            provider_name=payload.get("provider_name"),
+        )
 
 
 def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCoverage:
@@ -920,6 +961,7 @@ def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCovera
     checked_urls = {link["url"] for link in checked}
     verdicts = Counter(link["verdict"] for link in checked)
     substitutions = Counter(link["substitution"] for link in links)
+    offsite = [link for link in links if link["reason"] == "redirected_offsite"]
     return ProviderLinkCoverage(
         programs_with_link=len(links),
         distinct_urls=len(urls),
@@ -930,6 +972,8 @@ def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCovera
         programs_alive=verdicts["alive"],
         programs_dead=verdicts["dead"],
         programs_indeterminate=verdicts["indeterminate"],
+        programs_offsite_redirect=len(offsite),
+        programs_offsite_confirmed=sum(1 for link in offsite if link["linked"]),
         programs_linked=sum(1 for link in links if link["linked"]),
         programs_not_linked=sum(1 for link in links if not link["linked"]),
         programs_upgraded_to_https=substitutions[link_check.SUBSTITUTION_HTTPS],
@@ -1641,6 +1685,7 @@ def program_payload(
     cohort: dol_etp.CohortIntegrity | None = None,
     link_checks: Mapping[str, link_check.LinkCheck] | None = None,
     centers: Sequence[local_help.AmericanJobCenter] | None = None,
+    reviewer: link_review.OffsiteReviewer | None = None,
 ) -> dict[str, Any]:
     """One program record, with its outcomes labelled by who they actually describe.
 
@@ -1657,6 +1702,11 @@ def program_payload(
     ``centers`` is the state's America's Job Centers, read once for the whole build. Omitting
     it produces a record whose ``local_help.centers`` is null: nowhere was looked for, which
     is not the same as nowhere being near.
+
+    ``reviewer`` settles addresses that answered from another domain, and is built once for
+    the whole snapshot because one of its rules reads the rest of the feed. Omitting it
+    leaves every such redirect unresolved and therefore unlinked, which is the safe half of
+    the answer: a caller who forgot it publishes fewer links, never a hijacked one.
     """
     integrity = (
         cohort
@@ -1679,7 +1729,12 @@ def program_payload(
         # the provider's front page instead, or link nothing and say why -- is the block
         # below, so a consumer can always see the source's own value alongside the decision.
         "program_url": program.program_url,
-        "provider_link": provider_link(program.program_url, link_checks or {}),
+        "provider_link": provider_link(
+            program.program_url,
+            link_checks or {},
+            reviewer=reviewer,
+            provider_name=program.provider_name,
+        ),
         "entity_type": program.entity_type,
         "cip_code": program.cip_code,
         "soc_codes": list(program.soc_codes),
@@ -2176,9 +2231,21 @@ def build(
     # One statewide read for every program, cached on disk like the occupation enrichment.
     # None with no credentials, which is a complete build carrying no distance claims.
     centers = fetch_job_centers(state, cache_dir=COS_CACHE_DIR)
+    # Built from the whole snapshot before any record is, for the same reason the cohort
+    # integrity is: one of its rules asks whether another provider record in this same feed
+    # files the domain a redirect landed on, which no single row can answer.
+    reviewer = link_review.OffsiteReviewer.from_feed(
+        {"program_url": p.program_url, "provider_name": p.provider_name} for p in programs
+    )
     payloads = [
         program_payload(
-            p, occupations, city_areas, cohort=c, link_checks=link_checks, centers=centers
+            p,
+            occupations,
+            city_areas,
+            cohort=c,
+            link_checks=link_checks,
+            centers=centers,
+            reviewer=reviewer,
         )
         for p, c in zip(programs, integrity, strict=True)
     ]

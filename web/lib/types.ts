@@ -440,9 +440,32 @@ export interface ProviderLink {
    * them published as a working "Provider's website" link into a domain auction. Saying "we
    * could not reach it" there would be false and would send someone back to retry an address
    * that is never coming back.
+   *
+   * `redirect_unrelated` and `redirect_unconfirmed` are the addresses that now answer from
+   * another domain. The first is a hand review having found somebody else's live site there —
+   * three of this dataset's addresses serve gambling, lottery and charity sites that have
+   * nothing to do with the school that filed them. The second is the honest majority: the
+   * address goes elsewhere and nothing corroborated who is at the other end. Neither is
+   * linked. A redirect alone cannot tell a hijack from a rebrand, so an unconfirmed one is
+   * published as unconfirmed rather than as a link.
    */
-  notice: "page_unreachable" | "domain_for_sale" | null;
+  notice:
+    | "page_unreachable"
+    | "domain_for_sale"
+    | "redirect_unrelated"
+    | "redirect_unconfirmed"
+    | null;
   substitution: "https_upgrade" | "provider_front_page" | null;
+  /**
+   * What was established about an address that answered from another domain, and null when
+   * it did not leave the site it named.
+   *
+   * Only `same_provider` is linked. `unresolved` is the common case and is not a fault: a
+   * redirect cannot tell a rebrand from a hijacked domain, so an unconfirmed one is published
+   * as unconfirmed. A dataset built before the review carries null on a `redirected_offsite`
+   * link, which is how the packaging gate recognises it.
+   */
+  redirect: "same_provider" | "unrelated" | "for_sale" | "unresolved" | null;
 }
 
 /* ============================================================================================
