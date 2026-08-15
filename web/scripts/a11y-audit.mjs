@@ -18,8 +18,11 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-const OUT = process.argv[3] ?? process.argv[2] ?? "out";
+const POSITIONAL = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
+const OUT = POSITIONAL[1] ?? POSITIONAL[0] ?? "out";
 const SINGLE = process.env.A11Y_PAGE;
+/** Resolve the sample, check it is all there, and print it without auditing anything. */
+const LIST_ONLY = process.argv.includes("--list");
 
 async function auditOnePage(file) {
   const { JSDOM } = await import("jsdom");
@@ -149,11 +152,49 @@ if (SINGLE) {
     // this listing does not name is unchecked rather than passing.
     ["CTDL export (English)", join(OUT, "en", "ctdl", "index.html")],
     ["CTDL export (Spanish)", join(OUT, "es", "ctdl", "index.html")],
-  ].filter(([, file]) => file && existsSync(file));
+  ];
 
-  if (targets.length === 0) {
+  if (!existsSync(OUT)) {
     console.error(`a11y-audit: nothing built under ${OUT}/ — run the site build first`);
     process.exit(1);
+  }
+
+  /*
+   * A page on this list that is not in the build is a failure, not a page to skip.
+   *
+   * This list used to end in `.filter(([, file]) => file && existsSync(file))`, so a route
+   * that was renamed, removed, or failed to emit in one language simply left the sample —
+   * and the gate went green over a smaller sample without saying so. That is the same way of
+   * passing this file already refuses one level down, where a closed <details> hides its
+   * contents from the accessibility tree and the audit opens them rather than accept the
+   * silence; and the same way the contrast audit once reported success having resolved 0 of
+   * 17 pairings. The sample is the claim. It has to be stated, not inferred from what
+   * happens to exist.
+   *
+   * Every entry here is a page both the fixture build and a production build emit, so a
+   * missing one is a real change and worth stopping for. If a page ever becomes genuinely
+   * optional, it belongs in a separate list that says so, with the reason.
+   */
+  const missing = targets.filter(([, file]) => !file || !existsSync(file));
+  if (missing.length > 0) {
+    console.error(`a11y-audit: ${missing.length} page(s) on the audit list are not in ${OUT}/:`);
+    for (const [label, file] of missing) {
+      console.error(`  ${label} — ${file ?? "no page of this kind was built at all"}`);
+    }
+    console.error(
+      "  A page this gate is told to read and cannot is unaudited, not passing.\n" +
+        "  Rebuild the site, or change the list and say why in the same commit.",
+    );
+    process.exit(1);
+  }
+
+  if (LIST_ONLY) {
+    // What this gate reads, answerable without spending a minute auditing it. Worth having
+    // for its own sake -- "which pages does the a11y gate cover?" is a question the
+    // conformance note answers in prose and this answers from the code.
+    console.log(`a11y-audit: ${targets.length} pages, all present under ${OUT}/`);
+    for (const [label, file] of targets) console.log(`  ${label} — ${file}`);
+    process.exit(0);
   }
 
   let total = 0;

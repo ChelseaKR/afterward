@@ -7,7 +7,7 @@ automated gates actually prove, and — more usefully — what they cannot.
 
 | Gate | Covers | Where it runs |
 | --- | --- | --- |
-| `npm run a11y` | Every axe-core rule, including the sixteen axe disables by default | jsdom, 16 pages, both languages |
+| `npm run a11y` | Every axe-core rule, including the sixteen axe disables by default | jsdom, 22 pages, both languages |
 | `npm run a11y:rendered` | Every axe-core rule, against the DOM `a11y` cannot see | Chromium, search results + comparison table, both languages |
 | `npm run a11y:browser` | `color-contrast-enhanced` (1.4.6 AAA) and `target-size` (2.5.8 AA) | Chromium, light **and** dark |
 | `npm run contrast` | 1.4.6 analytically, from the design system's own tokens | Node, both schemes |
@@ -91,7 +91,12 @@ rather than a gap nobody noticed.
 ## Known limits of the coverage
 
 - The gates run against a sample of pages, not all 49,000. The templates are shared, so a
-  template fault appears on the sampled page; a data-dependent one might not.
+  template fault appears on the sampled page; a data-dependent one might not. The sample is
+  22 named pages and `npm run a11y -- --list` prints it. Until 2026-08-15 it was whichever of
+  those 22 happened to exist: the list was filtered by `existsSync` before use, so a route
+  renamed, removed, or not emitted in one language left the sample and the gate reported no
+  violations over what was left, saying nothing. A page on the list that is not in the build
+  now fails the run. Covered by `web/scripts/a11y-audit.test.ts`.
 - `npm run a11y:browser` needs a separately-started server, so it is not part of `verify` and
   must be run deliberately after a build. `npm run a11y:rendered` does not share this limit —
   it serves `out/` itself — and is part of `verify`.
