@@ -202,6 +202,78 @@ jobs:
               env_file.write(f"DATASET_PROGRAMS={total}\n")
           PY
 
+      - name: Refuse to publish a link nobody vouched for
+        # GUARD 1b. The dataset above is fetched by tag, so it can be older than the code in
+        # this repository -- and on 2026-08-15 it was: production was serving a snapshot in
+        # which 109 program pages linked an address that answers from a different domain,
+        # three of them domains somebody else now controls (an Indonesian gambling site, an
+        # Indonesian lottery site, a Baltimore charity). Nothing in the file distinguished a
+        # reviewed redirect from an unreviewed one, so nothing could refuse it.
+        #
+        # `redirect` on each link is what makes it distinguishable, and `null` there is the
+        # shape of every dataset built before the review. Both halves are checked: a link
+        # whose off-site redirect carries no confirmation, and a link pointing at a host the
+        # committed review rejected.
+        #
+        # Inline rather than `scripts/provider_link_check.py` for the same reason GUARD 1 is
+        # inline: this job installs Node and no Python toolchain, and adding one to run a
+        # thirty-line check would be a bigger change than the check. Both read the same
+        # committed ledger, which is what keeps them from drifting into different opinions.
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, sys
+          from urllib.parse import urlsplit
+
+          review_path = pathlib.Path("src/afterward/sources/provider-link-review.json")
+          review = json.loads(review_path.read_text(encoding="utf-8"))
+          if review.get("version") != 1:
+              sys.exit(f"::error::{review_path} is version {review.get('version')!r}; expected 1.")
+
+          rejected = {
+              entry[end]
+              for entry in review["entries"]
+              if entry["status"] != "same_provider"
+              for end in ("filed_host", "destination")
+          }
+
+          def host(url):
+              return urlsplit(url or "").netloc.lower().removeprefix("www.")
+
+          programs = json.loads(
+              pathlib.Path("web/public/data/programs.json").read_text(encoding="utf-8")
+          )["programs"]
+
+          problems = []
+          for program in programs:
+              link = program.get("provider_link") or {}
+              if not link.get("linked"):
+                  continue
+              name = program.get("provider_name")
+              if host(link.get("href")) in rejected or host(link.get("url")) in rejected:
+                  problems.append(f"{name}: {link.get('href')} was reviewed as not theirs")
+              elif (
+                  link.get("reason") == "redirected_offsite"
+                  and link.get("redirect") != "same_provider"
+              ):
+                  problems.append(
+                      f"{name}: {link.get('href')} answers from another domain, "
+                      f"resolution {link.get('redirect')!r}"
+                  )
+
+          if problems:
+              for problem in problems[:10]:
+                  print(f"::error::{problem}")
+              if len(problems) > 10:
+                  print(f"::error::... and {len(problems) - 10} more")
+              sys.exit(
+                  "This dataset predates the provider-link review. Rebuild with `make data` "
+                  "and publish a new dataset release before deploying."
+              )
+
+          print(f"Provider links accepted: {len(programs)} programs, none unvouched for.")
+          PY
+
       # ---------------------------------------------------------------------------------
       # Build
       # ---------------------------------------------------------------------------------
