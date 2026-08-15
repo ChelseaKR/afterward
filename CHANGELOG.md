@@ -144,6 +144,25 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- Neither accessibility gate can shrink its own sample and still report a pass. `npm run
+  a11y` filtered its list of 22 named pages through `existsSync` before using it, so a route
+  renamed, removed, or not emitted in one language simply left the sample and the run
+  reported no violations over what was left, saying nothing about what it stopped reading.
+  A page on the list that is not in the build now fails the run and is named;
+  `npm run a11y -- --list` prints the sample without auditing it, and
+  `web/scripts/a11y-audit.test.ts` covers both directions.
+
+  `npm run a11y:browser` had the same shape and a live instance of it. It looked for a
+  program page by following the first program link on `/en/programs/` — a path that has no
+  index behind it, because programs are reached from the client-rendered search results and
+  from provider and occupation pages. The request returned the 404 template, which links to
+  no program, and `if (href) PAGES.push(...)` dropped the entry: **the densest template on
+  the site had never been audited by this pass, on any run, and every run reported a clean
+  result.** The program page is now scouted from a provider page, which does link programs,
+  and a template this pass cannot reach fails the run instead of leaving the sample. With it
+  restored the pass covers 10 pages rather than 9, and `color-contrast-enhanced` and
+  `target-size` both pass on the program template in light and dark.
+
 - Competency-based programs are no longer published as programs whose length nobody reported.
   The ETP Scorecard writes `-1` for a suppressed value in every column except the two
   program-length fields, where its data dictionary (v4.0) notes that `-1` means the program

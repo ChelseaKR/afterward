@@ -93,7 +93,7 @@ describe("the audit's sample is a claim, not whatever happens to exist", () => {
 
   it("passes the sample check, and audits every page, when all of them are present", () => {
     // The other half. A gate that always fails is as useless as one that always passes, and
-    // this is also what pins the sample size: 24 pages, named, not "whatever was there".
+    // this is also what pins the sample size: 22 pages, named, not "whatever was there".
     const result = run(buildExport());
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("22 pages, all present");

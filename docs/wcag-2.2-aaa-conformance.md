@@ -100,6 +100,16 @@ rather than a gap nobody noticed.
 - `npm run a11y:browser` needs a separately-started server, so it is not part of `verify` and
   must be run deliberately after a build. `npm run a11y:rendered` does not share this limit —
   it serves `out/` itself — and is part of `verify`.
+- `a11y:browser` discovers its three detail pages by following the first qualifying link it
+  finds, and until 2026-08-15 dropped any it could not find — the same silent shrinking of
+  the sample as above, one script over. That was not hypothetical here: it looked for a
+  program page under `/en/programs/`, there is no such index (programs are reached from the
+  client-rendered search results and from provider and occupation pages), the lookup returned
+  the 404 template with no program links on it, and so **the site's densest template was
+  never audited by this pass and every run still reported a clean result.** It is now scouted
+  from a provider page, which does link programs, and a template this pass cannot reach fails
+  the run. It stays the weaker of the two guards: which program gets audited is whichever the
+  provider page links first, not a pinned page the way the 22 named ones are.
 - `a11y:rendered` covers the result list and the comparison table with two programs selected.
   It does not cover: the "no results" empty state, a card in its saved (`aria-pressed`) state,
   the shortlist bar that appears on first save, or the comparison with more than two programs
