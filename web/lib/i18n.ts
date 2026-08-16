@@ -300,6 +300,15 @@ areaNote: (unplaced: number, total: number) =>
   // address did, tells the reader the one thing that actually helps, and accuses nobody.
   linkForSale: (date: string) =>
     `When we checked on ${date}, this web address served a page offering the domain for sale rather than the provider's site. Searching for the provider by name, or telephoning it, is more likely to reach it.`,
+  // Somebody else's live site now answers at the filed address. Three of this dataset's
+  // addresses do. The sentence says what the address did and stops there: the school is not
+  // accused of anything, and "unrelated" is a statement about the destination, not about them.
+  linkRedirectUnrelated: (date: string) =>
+    `When we checked on ${date}, this web address led to a different website, unrelated to this provider. Searching for the provider by name, or telephoning it, is more likely to reach it.`,
+  // The honest majority case. It admits what we do not know rather than implying the school
+  // has gone: an address that now answers from somewhere else is not evidence about a school.
+  linkRedirectUnconfirmed: (date: string) =>
+    `When we checked on ${date}, this web address sent visitors to a different website, and we could not confirm it is this provider's. Searching for the provider by name, or telephoning it, is more likely to reach it.`,
   backToSearch: "Back to search",
   coverageNote: (pct: number) =>
     `${pct}% of California programs report at least one outcome. The rest are listed with what is known.`,
@@ -1337,6 +1346,10 @@ areaNote: (unplaced, total) =>
     `No pudimos abrir la página que aparece en el registro federal cuando la revisamos el ${date}, así que este enlace lleva a la página principal de la institución.`,
   linkForSale: (date: string) =>
     `Cuando la revisamos el ${date}, esta dirección web mostraba una página que ofrece el dominio a la venta, no el sitio de la institución. Buscar la institución por su nombre, o llamarla por teléfono, tiene más probabilidades de encontrarla.`,
+  linkRedirectUnrelated: (date: string) =>
+    `Cuando la revisamos el ${date}, esta dirección web llevaba a otro sitio web, sin relación con esta institución. Buscar la institución por su nombre, o llamarla por teléfono, tiene más probabilidades de encontrarla.`,
+  linkRedirectUnconfirmed: (date: string) =>
+    `Cuando la revisamos el ${date}, esta dirección web llevaba a otro sitio web y no pudimos confirmar que sea el de esta institución. Buscar la institución por su nombre, o llamarla por teléfono, tiene más probabilidades de encontrarla.`,
   backToSearch: "Volver a la búsqueda",
   coverageNote: (pct: number) =>
     `${pct}% de los programas de California reportan al menos un resultado. Los demás se muestran con lo que se sabe.`,

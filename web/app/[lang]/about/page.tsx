@@ -129,8 +129,9 @@ function corpusFacts(): CorpusFacts {
     }
     if (program.region === null) withoutArea += 1;
     // Mirrors the fallback in the program page: a missing `provider_link` block falls back to
-    // `program_url` and renders a link whenever one was filed, so only a block that is present
-    // and dead — or the absence of both — renders no link.
+    // `program_url` and renders a link whenever one was filed. So no link is rendered only
+    // where a block is present and says not to — dead, or alive from a domain nothing
+    // corroborated as the provider's — or where neither a block nor a URL exists at all.
     const renders = program.provider_link
       ? program.provider_link.linked && program.provider_link.href !== null
       : program.program_url !== null;

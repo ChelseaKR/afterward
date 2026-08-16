@@ -1111,6 +1111,7 @@ export default async function ProgramPage({
           checked_on: null,
           notice: null,
           substitution: null,
+          redirect: null,
         }
       : null);
   const linkNote = link === null ? null : linkNotice(t, link);

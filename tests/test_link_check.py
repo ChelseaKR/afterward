@@ -14,6 +14,7 @@ import json
 import ssl
 import threading
 from collections.abc import Iterator
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, get_args
@@ -21,15 +22,18 @@ from typing import Any, get_args
 import httpx
 import pytest
 
-from afterward.sources import link_check
+from afterward.sources import link_check, link_review
 from afterward.sources.dol_etp import USER_AGENT
 from afterward.sources.link_check import (
     CACHE_TTL,
+    CLASSIFIER_VERSION,
     DOCUMENT_VERSION,
     LABEL_PROGRAM_PAGE,
     LABEL_PROVIDER_HOME,
     MAX_ATTEMPTS,
     NOTICE_FOR_SALE,
+    NOTICE_REDIRECT_UNCONFIRMED,
+    NOTICE_REDIRECT_UNRELATED,
     NOTICE_UNREACHABLE,
     RETRYABLE_REASONS,
     SUBSTITUTION_FRONT_PAGE,
@@ -58,6 +62,9 @@ from afterward.sources.link_check import (
 PAGE = "https://example.edu/programs/welding"
 ROOT = "https://example.edu/"
 INSECURE = "http://example.edu/programs/welding"
+OFFSITE = "https://somewhere-else.example/"
+"""Where an off-site redirect landed. Which domain it is decides everything about the
+decision and nothing about the check, so the tests that care name it."""
 NOW = datetime(2026, 8, 4, 12, 0, tzinfo=UTC)
 
 
@@ -885,6 +892,41 @@ class TestCache:
             later = LinkCheckCache(tmp_path, now=at(NOW + CACHE_TTL[verdict] + timedelta(days=1)))
             assert later.get(PAGE) is None
 
+    def test_an_entry_from_an_older_classifier_is_re_read(self, tmp_path: Path) -> None:
+        """The bug that kept a working detector from ever judging anything.
+
+        The 2026-08-05 title detector changed what a 200 means, and every 200 in the cache was
+        warm for thirty days, so a re-run handed back the verdicts it was written to replace.
+        Ten "page not found" screens stayed published as working provider links. A cache entry
+        now belongs to the classifier that wrote it.
+        """
+        cache = LinkCheckCache(tmp_path, now=at())
+        path = cache.path_for(PAGE)
+        assert path is not None
+        stale = replace(checked(PAGE, "ok"), classifier_version=CLASSIFIER_VERSION - 1)
+        path.write_text(json.dumps(stale.as_dict()), encoding="utf-8")
+        assert cache.get(PAGE) is None
+
+    def test_an_entry_written_before_the_classifier_was_versioned_is_re_read(
+        self, tmp_path: Path
+    ) -> None:
+        """Older than every version there is, which is the only safe reading of a file that
+        does not say."""
+        cache = LinkCheckCache(tmp_path, now=at())
+        path = cache.path_for(PAGE)
+        assert path is not None
+        payload = checked(PAGE, "ok").as_dict()
+        del payload["classifier_version"]
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        assert LinkCheck.from_dict(payload).classifier_version == 0
+        assert cache.get(PAGE) is None
+
+    def test_an_entry_from_this_classifier_is_still_served(self, tmp_path: Path) -> None:
+        """The other half: a version bump costs one full re-read, not every read forever."""
+        cache = LinkCheckCache(tmp_path, now=at())
+        cache.put(checked(PAGE, "ok"))
+        assert cache.get(PAGE) is not None
+
     def test_a_corrupt_entry_is_ignored_rather_than_fatal(self, tmp_path: Path) -> None:
         cache = LinkCheckCache(tmp_path, now=at())
         path = cache.path_for(PAGE)
@@ -1264,18 +1306,115 @@ class TestDecideAlive:
         assert decision.label == LABEL_PROVIDER_HOME
         assert decision.notice is None
 
-    def test_an_offsite_redirect_is_left_alone(self) -> None:
-        """A catalogue vendor and a domain squatter are indistinguishable mechanically.
 
-        Both answer 200 from another domain. The report leaves this class to a human review
-        queue rather than inventing a rule, so nothing here changes.
-        """
-        decision = decide(results(checked(PAGE, "redirected_offsite")), PAGE)
+class TestDecideOffsiteRedirect:
+    """A page answered from another domain, and who is at the other end decides everything.
+
+    Until 2026-08-15 this class was published as an ordinary link on the reasoning that a
+    catalogue vendor and a domain squatter are indistinguishable mechanically. They are --
+    and the consequence was six California program pages offering a reader a link to
+    ``giligiacollege.com``, ``eastvalleycollege.com`` and ``hollywoodculturalcollege.com``,
+    which serve an Indonesian gambling site, an Indonesian lottery site and an unrelated
+    Baltimore charity. Indistinguishable is a reason to withhold, not a reason to publish.
+    """
+
+    def test_an_offsite_redirect_nobody_resolved_is_not_linked(self) -> None:
+        decision = decide(results(checked(PAGE, "redirected_offsite", final=OFFSITE)), PAGE)
+        assert decision is not None
+        assert decision.linked is False
+        assert decision.href is None
+        assert decision.notice == NOTICE_REDIRECT_UNCONFIRMED
+        assert decision.redirect == "unresolved"
+
+    def test_the_filed_url_survives_as_text_with_a_date(self) -> None:
+        """The federal record's own value is never dropped, and a sentence about it is
+        always dated: a reader may want the Internet Archive, and a verdict has a shelf
+        life."""
+        decision = decide(results(checked(PAGE, "redirected_offsite", final=OFFSITE)), PAGE)
+        assert decision is not None
+        assert decision.url == PAGE
+        assert decision.checked_on == "2026-08-04"
+
+    def test_a_confirmed_rebrand_is_published_exactly_as_it_was_before(self) -> None:
+        decision = decide(
+            results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
+            PAGE,
+            redirect=link_review.RedirectVerdict("same_provider", "review", "checked by hand"),
+        )
         assert decision is not None
         assert decision.linked is True
         assert decision.href == PAGE
         assert decision.label == LABEL_PROGRAM_PAGE
         assert decision.notice is None
+        assert decision.redirect == "same_provider"
+
+    def test_a_confirmed_rebrand_still_gets_its_https_upgrade(self) -> None:
+        checks = results(checked(INSECURE, "redirected_offsite", final=OFFSITE, upgrade=PAGE))
+        decision = decide(
+            checks,
+            INSECURE,
+            redirect=link_review.RedirectVerdict("same_provider", "feed", "the feed files it"),
+        )
+        assert decision is not None
+        assert decision.href == PAGE
+        assert decision.substitution == SUBSTITUTION_HTTPS
+
+    def test_a_reviewed_hijack_publishes_no_link_and_its_own_sentence(self) -> None:
+        decision = decide(
+            results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
+            PAGE,
+            redirect=link_review.RedirectVerdict("unrelated", "review", "somebody else's site"),
+        )
+        assert decision is not None
+        assert decision.linked is False
+        assert decision.href is None
+        assert decision.notice == NOTICE_REDIRECT_UNRELATED
+        assert decision.notice != NOTICE_REDIRECT_UNCONFIRMED
+
+    def test_an_address_advertised_for_sale_reuses_the_sentence_written_for_that(self) -> None:
+        """A redirect to a marketplace listing is the same situation the title detector
+        already has wording for, and one situation deserves one sentence."""
+        decision = decide(
+            results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
+            PAGE,
+            redirect=link_review.RedirectVerdict("for_sale", "review", "a listing for it"),
+        )
+        assert decision is not None
+        assert decision.linked is False
+        assert decision.notice == NOTICE_FOR_SALE
+
+    def test_only_a_confirmation_produces_a_link(self) -> None:
+        """The property the whole class turns on, stated over every resolution there is."""
+        for resolution in ("unresolved", "unrelated", "for_sale"):
+            decision = decide(
+                results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
+                PAGE,
+                redirect=link_review.RedirectVerdict(resolution, "review", "why"),  # type: ignore[arg-type]
+            )
+            assert decision is not None
+            assert decision.linked is False, resolution
+            assert decision.href is None, resolution
+
+    def test_the_reader_is_never_told_the_provider_is_gone(self) -> None:
+        """``page_unreachable`` would be false here twice over: the address answered, and
+        what answered is not evidence about a school."""
+        for resolution in ("unresolved", "unrelated"):
+            decision = decide(
+                results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
+                PAGE,
+                redirect=link_review.RedirectVerdict(resolution, "review", "why"),  # type: ignore[arg-type]
+            )
+            assert decision is not None
+            assert decision.notice != NOTICE_UNREACHABLE
+
+    def test_nothing_else_carries_a_redirect_resolution(self) -> None:
+        """``redirect`` is null for every link that never left the site it named, so a
+        consumer cannot read one class's field as another's."""
+        for reason in ("ok", "redirected_to_site_root", "not_found", "forbidden"):
+            decision = decide(results(checked(PAGE, reason)), PAGE)  # type: ignore[arg-type]
+            assert decision is not None
+            assert decision.redirect is None, reason
+        assert decide({}, PAGE).redirect is None  # type: ignore[union-attr]
 
 
 class TestDecideIndeterminate:
@@ -1482,7 +1621,20 @@ class TestDecisionSerialisation:
             "checked_on": "2026-08-04",
             "notice": NOTICE_UNREACHABLE,
             "substitution": SUBSTITUTION_FRONT_PAGE,
+            "redirect": None,
         }
+
+    def test_an_offsite_decision_publishes_what_was_established_about_it(self) -> None:
+        """The field a packaging gate reads. Without it, a dataset built before any redirect
+        was reviewed is byte-indistinguishable from one where every redirect was."""
+        decision = decide(
+            results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
+            PAGE,
+            redirect=link_review.RedirectVerdict("unrelated", "review", "somebody else's"),
+        )
+        assert decision is not None
+        assert decision.as_dict()["redirect"] == "unrelated"
+        assert decision.as_dict()["linked"] is False
 
     def test_an_unchecked_decision_publishes_nulls_not_omissions(self) -> None:
         """A consumer must be able to tell "checked, nothing to say" from "never looked",
@@ -1499,6 +1651,7 @@ class TestDecisionSerialisation:
             "checked_on": None,
             "notice": None,
             "substitution": None,
+            "redirect": None,
         }
 
 
@@ -1542,3 +1695,40 @@ class TestChecksDocument:
     def test_the_document_records_when_the_run_finished(self) -> None:
         document = checks_document({}, checked_at=NOW)
         assert document["checked_at"] == NOW.isoformat()
+
+    def test_the_document_records_which_classifier_reached_its_verdicts(self) -> None:
+        assert checks_document({})["classifier_version"] == CLASSIFIER_VERSION
+
+
+class TestAReportOlderThanTheClassifier:
+    """A report is still read; it is no longer read silently.
+
+    The 2026-08-05 title detector spent ten days judging nothing, because the report every
+    build read had been produced before it existed and nothing anywhere compared the two.
+    """
+
+    def test_an_older_verdict_is_named(self) -> None:
+        checks = results(
+            replace(checked(PAGE, "ok"), classifier_version=CLASSIFIER_VERSION - 1),
+            checked(ROOT, "ok"),
+        )
+        assert link_check.unasked_by_the_current_classifier(checks) == [PAGE]
+
+    def test_a_current_report_names_nobody(self) -> None:
+        checks = results(checked(PAGE, "ok"), checked(ROOT, "ok"))
+        assert link_check.unasked_by_the_current_classifier(checks) == []
+
+    def test_an_older_verdict_is_still_a_verdict(self) -> None:
+        """It is not discarded. Withholding every link over a version number would hide
+        hundreds of working schools to fix a problem that is about ten of them."""
+        checks = results(replace(checked(PAGE, "not_found"), classifier_version=1))
+        decision = decide(checks, PAGE)
+        assert decision is not None
+        assert decision.verdict == "dead"
+        assert decision.linked is False
+
+    def test_a_report_from_an_older_classifier_still_loads(self) -> None:
+        document = checks_document(results(checked(PAGE, "ok")))
+        document["checks"][0]["classifier_version"] = 1
+        restored = checks_from_document(document)
+        assert restored[PAGE].classifier_version == 1

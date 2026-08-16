@@ -55,6 +55,13 @@ than confirming a bad HEAD ever did.
 Results are cached on disk by URL so a rebuild does not re-ask 1,000 providers whether they
 still exist.
 
+A 2xx from *another domain* is a third thing again, and the one this module cannot settle by
+itself. ``moler.org`` now answers from ``moler.edu`` and that is a barber college that
+rebranded; ``giligiacollege.com`` now answers from an Indonesian gambling site, and from a
+redirect alone the two are the same event. That question is
+:mod:`afterward.sources.link_review`'s, it is answered from corroboration rather than from
+the redirect, and until it is answered :func:`decide` publishes no link.
+
 Reading a URL is only half of it. :func:`decide` turns one check into the decision an
 interface needs -- link this, link that instead, or link nothing and say why -- so that the
 rule lives in one tested place instead of being reinvented by whatever renders the page.
@@ -82,6 +89,7 @@ from typing import Any, Final, Literal
 
 import httpx
 
+from afterward.sources import link_review
 from afterward.sources.dol_etp import (
     BACKOFF_CAP_SECONDS,
     BACKOFF_INITIAL_SECONDS,
@@ -215,6 +223,25 @@ address is that page's own statement about itself, which is the only kind of evi
 rest of this module accepts.
 """
 
+CLASSIFIER_VERSION: Final = 2
+"""What this module's judgement is worth, bumped whenever the same response would now be
+classified differently.
+
+``1`` was the status code and the redirect chain. ``2`` is that plus what a 2xx says it is,
+from its ``<title>`` -- the soft-404 and domain-for-sale detection added on 2026-08-05.
+
+This exists because of what happened to that change. Verdicts are cached per URL for 30 days
+when ``alive``, so on 2026-08-15 the published dataset contained **no** ``soft_not_found`` and
+**no** ``domain_for_sale`` decision at all: the report was the 2026-08-04 run, every entry in
+it was still warm, and a re-run of ``check-links`` would have handed back the very verdicts
+the new detector was written to replace. Ten "page not found" screens and ten domain-sale
+listings stayed published as working provider links, and nothing anywhere said so.
+
+So the cache now serves an entry only to the classifier that wrote it. A version bump costs a
+full re-read -- roughly 1,100 requests, spread politely, on a pass a person invokes
+deliberately -- which is the correct price for having changed what a check means.
+"""
+
 Verdict = Literal["alive", "dead", "indeterminate"]
 """What the check established. Note what is missing: there is no "unchecked"."""
 
@@ -246,6 +273,11 @@ Reason = Literal[
 VERDICT_BY_REASON: Final[Mapping[Reason, Verdict]] = {
     "ok": "alive",
     "redirected_to_site_root": "alive",
+    # Alive says a page answered. It does not say whose page, and for this reason it must not
+    # be read as one: the answer came from a domain the record did not name. Who is at the
+    # other end is settled -- or explicitly left unsettled -- by
+    # :mod:`afterward.sources.link_review`, and :func:`decide` refuses to link an off-site
+    # redirect that nothing corroborates.
     "redirected_offsite": "alive",
     # Dead. Every one of these is the far end saying so itself: DNS has never heard of the
     # name, the server states the page is not there in its status line, or -- for the two
@@ -318,6 +350,13 @@ class LinkCheck:
     checked_at: datetime
     attempts: int
     """HTTP requests spent on this URL, so politeness is auditable after the fact."""
+    classifier_version: int = CLASSIFIER_VERSION
+    """Which version of this module's judgement produced the verdict.
+
+    Written on every check and read by the cache. An entry from an older classifier is not
+    wrong -- it is unasked, about whatever the newer one would have looked at -- so it is
+    re-checked rather than reinterpreted.
+    """
 
     @property
     def is_upgradeable(self) -> bool:
@@ -335,6 +374,7 @@ class LinkCheck:
             "detail": self.detail,
             "checked_at": self.checked_at.isoformat(),
             "attempts": self.attempts,
+            "classifier_version": self.classifier_version,
         }
 
     @classmethod
@@ -353,6 +393,10 @@ class LinkCheck:
             detail=payload["detail"],
             checked_at=datetime.fromisoformat(payload["checked_at"]),
             attempts=int(payload["attempts"]),
+            # A file written before the classifier was versioned gets 0, which is older than
+            # every version there is. That is the fail-safe direction: it costs a re-read and
+            # it cannot mistake a verdict from an unknown classifier for a current one.
+            classifier_version=int(payload.get("classifier_version", 0)),
         )
 
 
@@ -791,6 +835,11 @@ class LinkCheckCache:
             return None
         if check.url != url:
             return None
+        if check.classifier_version != CLASSIFIER_VERSION:
+            # Written by a classifier that asked a different question. Serving it would let a
+            # detector improve nothing for thirty days, which is exactly what happened to the
+            # 2026-08-05 title detector: see :data:`CLASSIFIER_VERSION`.
+            return None
         age = self._now() - check.checked_at
         return None if age > self._ttl.get(check.verdict, timedelta(0)) else check
 
@@ -1037,19 +1086,31 @@ def front_page_for(checks: Mapping[str, LinkCheck], url: str | None) -> str | No
 LinkLabel = Literal["program_page", "provider_home_page"]
 """What the link reaches, which is not always what the record said it would."""
 
-LinkNotice = Literal["page_unreachable", "domain_for_sale"]
+LinkNotice = Literal[
+    "page_unreachable",
+    "domain_for_sale",
+    "redirect_unrelated",
+    "redirect_unconfirmed",
+]
 """What must be said about a link, in the site's own voice.
 
-Two values, because there are two situations a reader does something different about. A page
-that is not there is a page that is not there, whether the server said so in its status line
-or in its title -- so a soft 404 carries ``page_unreachable`` like any other, rather than
-multiplying wording over a distinction the reader cannot act on.
+Four values, because there are four situations a reader does something different about. A
+page that is not there is a page that is not there, whether the server said so in its status
+line or in its title -- so a soft 404 carries ``page_unreachable`` like any other, rather
+than multiplying wording over a distinction the reader cannot act on.
 
 An address that is for sale is not that. "We could not reach this page" would send someone
 back to retry a URL that is never coming back, and would be false besides: we reached it
 perfectly well, and what answered was an advertisement. That is worth its own sentence, and
 it is worth it because of what it tells a reader to do instead -- look the school up by
 name, or telephone it.
+
+The last two are the off-site redirects, and they are split for the same reason.
+``redirect_unrelated`` is a hand review having found somebody else's live site at the other
+end -- three of this dataset's addresses now serve gambling, lottery and charity sites that
+have nothing to do with the school that filed them. ``redirect_unconfirmed`` is the honest
+majority case: the address goes somewhere else and nothing available here established who is
+there. Neither is linked, and neither says the provider is gone: what is gone is the address.
 """
 
 LinkSubstitution = Literal["https_upgrade", "provider_front_page"]
@@ -1081,6 +1142,23 @@ Also a statement about our reading on a date, and deliberately not one about the
 lapsed domain does not mean a closed school: the LAUSD adult centres behind the corpus's
 largest dead domain are open and teaching, at a different address. What is gone is the
 address, and that is the only thing this notice claims.
+"""
+
+NOTICE_REDIRECT_UNRELATED: Final[LinkNotice] = "redirect_unrelated"
+"""The recorded address now sends a visitor to a live site that is somebody else's.
+
+Only a hand review reaches this, recorded in ``provider-link-review.json`` with its evidence
+and its date -- no signal available to a fetch distinguishes an unrelated live site from a
+legitimate rebrand, which is exactly why three hijacked domains were published as working
+provider links until somebody opened them.
+"""
+
+NOTICE_REDIRECT_UNCONFIRMED: Final[LinkNotice] = "redirect_unconfirmed"
+"""The recorded address redirects somewhere else and nothing here established where.
+
+The commonest of the four and the one worth being careful about: it is not an accusation, it
+is an admission. It says the filed address no longer answers for itself and this project will
+not vouch for what does.
 """
 
 
@@ -1116,6 +1194,16 @@ class LinkDecision:
     indeterminate result, so an interface cannot annotate a page nobody established anything
     about."""
     substitution: LinkSubstitution | None
+    redirect: link_review.Resolution | None = None
+    """What was established about an off-site redirect, and ``None`` when the address never
+    left the site it named.
+
+    Published rather than kept internal, for the same reason ``verdict`` is: a consumer of
+    this dataset joining on ``href`` deserves to know that a link survived a review rather
+    than a build. It is also what lets a packaging gate tell a dataset built with the review
+    from one built before it -- a distinction that is otherwise invisible, since an
+    unreviewed redirect and a confirmed one looked identical in every earlier build.
+    """
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -1128,6 +1216,7 @@ class LinkDecision:
             "checked_on": self.checked_on,
             "notice": self.notice,
             "substitution": self.substitution,
+            "redirect": self.redirect,
         }
 
 
@@ -1147,7 +1236,67 @@ def _unchecked(url: str) -> LinkDecision:
     )
 
 
-def decide(checks: Mapping[str, LinkCheck], url: str | None) -> LinkDecision | None:
+NOTICE_BY_RESOLUTION: Final[Mapping[link_review.Resolution, LinkNotice]] = {
+    "unrelated": NOTICE_REDIRECT_UNRELATED,
+    "for_sale": NOTICE_FOR_SALE,
+    "unresolved": NOTICE_REDIRECT_UNCONFIRMED,
+}
+"""What to say about an off-site redirect this project will not link.
+
+``same_provider`` is absent on purpose: it is the one resolution that produces a link, and a
+link that goes where the record said it goes has nothing to annotate.
+"""
+
+
+def _offsite(
+    check: LinkCheck, *, checked_on: str, redirect: link_review.RedirectVerdict
+) -> LinkDecision:
+    """What to publish for a URL that answered from a different domain.
+
+    Confirmed same-provider redirects are published exactly as they were before this rule
+    existed: the filed URL, linked, unannotated. Everything else is published as the URL in
+    plain text with a sentence, because the alternative -- linking a destination nobody could
+    vouch for -- is how three hijacked domains came to be published as provider links.
+
+    The filed URL is what is linked for a confirmed rebrand, rather than the destination the
+    redirect ended at. The redirect is the provider's own and following it is how a reader
+    reaches them; and swapping in a destination silently would be the quiet reroute this
+    module refuses everywhere else.
+    """
+    if redirect.publishable:
+        upgraded = check.https_alternative
+        return LinkDecision(
+            url=check.url,
+            href=upgraded or check.url,
+            linked=True,
+            label=LABEL_PROGRAM_PAGE,
+            verdict=check.verdict,
+            reason=check.reason,
+            checked_on=checked_on,
+            notice=None,
+            substitution=SUBSTITUTION_HTTPS if upgraded else None,
+            redirect=redirect.resolution,
+        )
+    return LinkDecision(
+        url=check.url,
+        href=None,
+        linked=False,
+        label=LABEL_PROGRAM_PAGE,
+        verdict=check.verdict,
+        reason=check.reason,
+        checked_on=checked_on,
+        notice=NOTICE_BY_RESOLUTION[redirect.resolution],
+        substitution=None,
+        redirect=redirect.resolution,
+    )
+
+
+def decide(
+    checks: Mapping[str, LinkCheck],
+    url: str | None,
+    *,
+    redirect: link_review.RedirectVerdict | None = None,
+) -> LinkDecision | None:
     """Decide what to publish for one provider URL. ``None`` when there is no URL at all.
 
     The rule, class by class, and the reasoning for each is in
@@ -1157,6 +1306,11 @@ def decide(checks: Mapping[str, LinkCheck], url: str | None) -> LinkDecision | N
     * **alive** -- link it, swapped for a verified ``https`` equivalent where one was
       observed. A deep path that answered only at the site root is relabelled, not
       suppressed: the provider is there, the specific page is not.
+    * **alive, from another domain** (``redirected_offsite``) -- link it only where
+      :mod:`afterward.sources.link_review` establishes that the destination is still this
+      provider. ``redirect`` carries that finding; a caller that does not resolve redirects
+      gets the unresolved answer, because a redirect nobody resolved is a redirect nobody
+      vouched for, and the reader is the one who pays for the difference.
     * **indeterminate** -- link it as filed, say nothing. A 403 is a statement about the
       requester and a timeout is a statement about the wire; neither is evidence about a
       school, and printing "we could not reach this" next to a working institution's WIOA
@@ -1181,6 +1335,9 @@ def decide(checks: Mapping[str, LinkCheck], url: str | None) -> LinkDecision | N
         return _unchecked(url)
 
     checked_on = check.checked_at.date().isoformat()
+    if check.reason == "redirected_offsite":
+        return _offsite(check, checked_on=checked_on, redirect=redirect or link_review.UNRESOLVED)
+
     if check.verdict == "alive":
         upgraded = check.https_alternative
         return LinkDecision(
@@ -1247,6 +1404,10 @@ def checks_document(
     """
     return {
         "version": DOCUMENT_VERSION,
+        # The classifier this run's own results were produced by. Per-entry values are what
+        # decide anything -- a report can hold a mix, because a re-run re-reads only what the
+        # cache would no longer serve -- and this is the run's own stamp beside them.
+        "classifier_version": CLASSIFIER_VERSION,
         "checked_at": (checked_at or _utcnow()).isoformat(),
         "urls": len(checks),
         "checks": [check.as_dict() for check in checks.values()],
@@ -1266,6 +1427,17 @@ def checks_from_document(payload: Mapping[str, Any]) -> dict[str, LinkCheck]:
         raise ValueError(f"unsupported link-check document version {version!r}")
     checks = [LinkCheck.from_dict(entry) for entry in payload["checks"]]
     return {check.url: check for check in checks}
+
+
+def unasked_by_the_current_classifier(checks: Mapping[str, LinkCheck]) -> list[str]:
+    """URLs whose verdict predates the current classifier, and so was never asked its question.
+
+    Not an error and not a reason to refuse a build: an older verdict is still an observation,
+    and withholding every link over it would hide hundreds of working schools. It is a reason
+    to *say something*, which is what nothing did for the ten days the 2026-08-05 title
+    detector spent judging nothing at all.
+    """
+    return [url for url, check in checks.items() if check.classifier_version != CLASSIFIER_VERSION]
 
 
 @dataclass(frozen=True)

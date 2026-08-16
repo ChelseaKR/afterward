@@ -164,3 +164,22 @@ untouched are tested beside them (`TestTitlesThatMeanNothing`).
   human, which is what the previous document concluded and this one does not improve on.
 
 Both are named here so the next person measures the remainder rather than rediscovering it.
+
+---
+
+## 2026-08-15 — the second of those is answered, and the first is not
+
+The `redirected_offsite` queue is worked in
+[docs/offsite-redirect-review-2026-08-15.md](offsite-redirect-review-2026-08-15.md). Two things
+in this document are now out of date and are corrected there rather than rewritten here:
+
+- "nothing mechanical separates them" was the right conclusion about the *redirect*, and the
+  wrong conclusion about the *record*. What separates them is corroboration from a source the
+  holder of a lapsed domain does not control, and three such sources exist in what this
+  project already has.
+- The queue is no longer published optimistically. Until 2026-08-15 every member of this class
+  — including the three hijacked domains named above — was published as a confident
+  "Provider's website" link. Only a corroborated destination is linked now.
+
+The parking-stub half of this section stands unchanged, for the reason it gives: emptiness is
+not evidence.
