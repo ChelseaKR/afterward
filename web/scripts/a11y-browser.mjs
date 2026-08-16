@@ -36,8 +36,9 @@ const PAGES = [
   ["About", "/en/about/"],
 ];
 
-async function firstUnder(page, prefix) {
-  await page.goto(`${BASE}${prefix}`, { waitUntil: "networkidle" });
+/** The first link to a `prefix` detail page found on the page at `from`. */
+async function firstUnder(page, from, prefix) {
+  await page.goto(`${BASE}${from}`, { waitUntil: "networkidle" });
   return page.evaluate(
     (p) =>
       [...document.querySelectorAll(`a[href*="${p}"]`)]
@@ -49,16 +50,48 @@ async function firstUnder(page, prefix) {
 
 const browser = await chromium.launch();
 let failures = 0;
+/** Templates this pass was supposed to audit and could not reach. Kept apart from
+ * `failures` so the summary line stays literally true: one counts failing nodes, the other
+ * counts pages nobody looked at, and reporting them as the same number would be the
+ * softer-sounding version of the fault this whole change is about. */
+let missing = 0;
 
 try {
   const scout = await browser.newPage();
-  for (const [label, prefix] of [
-    ["Program detail", "/en/programs/"],
-    ["Occupation detail", "/en/occupations/"],
-    ["Provider detail", "/en/providers/"],
+  const found = {};
+  /*
+   * Each detail template, and a page that actually links to one.
+   *
+   * The program page is scouted from a provider page, not from `/en/programs/`, because
+   * there is no `/en/programs/` index: programs are reached from the search results, which
+   * are client-rendered, and from provider and occupation pages. Asking for `/en/programs/`
+   * returns the 404 template, which links to no program, so the lookup returned null on
+   * every run this script has ever made — and `if (href) PAGES.push(...)` dropped the site's
+   * densest template from the sample and printed a clean pass anyway. Both halves of that
+   * are fixed here: the source is a page with the links on it, and a template this pass
+   * cannot reach now fails the run instead of leaving the sample.
+   *
+   * The provider page must be found before the program page can be scouted from it, so the
+   * order below is a dependency and not a preference.
+   */
+  for (const [label, from, prefix] of [
+    ["Occupation detail", "/en/occupations/", "/en/occupations/"],
+    ["Provider detail", "/en/providers/", "/en/providers/"],
+    ["Program detail", () => found["Provider detail"], "/en/programs/"],
   ]) {
-    const href = await firstUnder(scout, prefix);
-    if (href) PAGES.push([label, href]);
+    const source = typeof from === "function" ? from() : from;
+    const href = source ? await firstUnder(scout, source, prefix) : null;
+    if (!href) {
+      console.error(
+        `a11y-browser: no ${label} page found` +
+          (source ? ` from ${BASE}${source}` : " — the page it is scouted from was not found"),
+      );
+      console.error("  A template this pass cannot reach is unaudited, not passing.");
+      missing += 1;
+      continue;
+    }
+    found[label] = href;
+    PAGES.push([label, href]);
   }
   await scout.close();
 
@@ -103,9 +136,12 @@ try {
   await browser.close();
 }
 
+if (missing > 0) {
+  console.error(`\na11y-browser: ${missing} template(s) never reached, so never audited.`);
+}
 console.log(
   failures === 0
-    ? `\na11y-browser: ${RULES.join(" and ")} pass in light and dark`
+    ? `\na11y-browser: ${RULES.join(" and ")} pass in light and dark on ${PAGES.length} pages`
     : `\na11y-browser: ${failures} node(s) failing ${RULES.join(" / ")}`,
 );
-process.exit(failures === 0 ? 0 : 1);
+process.exit(failures === 0 && missing === 0 ? 0 : 1);
