@@ -7,6 +7,7 @@ import { Measure } from "@/components/Measure";
 import { WageRangeChart } from "@/components/WageRangeChart";
 import { programCount, programCountsBySoc } from "@/lib/browse";
 import { nearestCenters, phoneParts } from "@/lib/centers";
+import { unreportedNotice } from "@/lib/etplCoverage";
 import {
   allProgramIds,
   getCoverage,
@@ -1371,12 +1372,27 @@ export default async function ProgramPage({
         /*
          * Not an error state and not an empty state. A program reporting nothing is a real,
          * useful signal, so it gets a full explanation rather than a blank panel.
+         *
+         * Two explanations, because there are two absences and only one of them is "nothing".
+         * The enrolment count above is printed whenever the record carries one, and 42 of
+         * California's 1,209 silent programs carry one -- so this panel was telling a reader
+         * that no outcomes were reported directly beneath a number that was. Which sentence
+         * applies is `unreportedNotice`'s answer, computed from the record rather than
+         * assumed, and it is the same split `/outcomes-coverage/` publishes.
          */
         <div className="panel panel-quiet">
           <p>
-            <strong>{t.outcomesUnreported}</strong>
+            <strong>
+              {unreportedNotice(outcomes) === "silentWithACohort"
+                ? t.outcomesNoFigures
+                : t.outcomesUnreported}
+            </strong>
           </p>
-          <p style={{ marginBottom: 0 }}>{t.outcomesUnreportedBody}</p>
+          <p style={{ marginBottom: 0 }}>
+            {unreportedNotice(outcomes) === "silentWithACohort"
+              ? t.outcomesNoFiguresBody
+              : t.outcomesUnreportedBody}
+          </p>
         </div>
       )}
 

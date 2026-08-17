@@ -16,11 +16,15 @@
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
+
+import { uncovered } from "./routes.mjs";
 
 const POSITIONAL = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 const OUT = POSITIONAL[1] ?? POSITIONAL[0] ?? "out";
 const SINGLE = process.env.A11Y_PAGE;
+/** An app tree to read routes from instead of this repository's, so the gate can be tested. */
+const APP_DIR_OVERRIDE = process.env.A11Y_APP_DIR;
 /** Resolve the sample, check it is all there, and print it without auditing anything. */
 const LIST_ONLY = process.argv.includes("--list");
 
@@ -184,6 +188,34 @@ if (SINGLE) {
     console.error(
       "  A page this gate is told to read and cannot is unaudited, not passing.\n" +
         "  Rebuild the site, or change the list and say why in the same commit.",
+    );
+    process.exit(1);
+  }
+
+  /*
+   * And a page the list does not name is unaudited too.
+   *
+   * The check above asks whether every page named here was built. It cannot ask the question
+   * the other way round, and that is the direction a new route arrives from: add
+   * `app/[lang]/something/page.tsx` and this gate keeps reporting "no violations" over a
+   * sample that has quietly stopped describing the site. Nothing in the build fails, nothing
+   * says the coverage shrank, and the new page — the one nobody has looked at yet — is the
+   * single page here most likely to have a violation in it.
+   *
+   * `routes.mjs` reads the app router's own file tree, which is where a route is actually
+   * declared and the only place it cannot be declared twice. Both languages are required
+   * separately: a page that exists in English and not in Spanish is half a page.
+   */
+  const uncoveredRoutes = uncovered(
+    targets.map(([, file]) => relative(OUT, file)),
+    APP_DIR_OVERRIDE ? { appDir: APP_DIR_OVERRIDE } : undefined,
+  );
+  if (uncoveredRoutes.length > 0) {
+    console.error(`a11y-audit: ${uncoveredRoutes.length} route(s) this gate never reads:`);
+    for (const route of uncoveredRoutes) console.error(`  ${route}`);
+    console.error(
+      "  Every route the app declares needs a representative in the list above.\n" +
+        "  A page no gate has read is unaudited, not accessible.",
     );
     process.exit(1);
   }

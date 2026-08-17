@@ -57,8 +57,43 @@ function buildExport(omit: string[] = []): string {
  * `--list` exists so this can be asserted without spending a minute running axe over two
  * dozen stub pages in child processes, and so a person can ask what the gate reads.
  */
-function run(root: string) {
-  return spawnSync(process.execPath, [AUDIT, root, "--list"], { encoding: "utf-8" });
+function run(root: string, appDir?: string) {
+  return spawnSync(process.execPath, [AUDIT, root, "--list"], {
+    encoding: "utf-8",
+    env: appDir === undefined ? process.env : { ...process.env, A11Y_APP_DIR: appDir },
+  });
+}
+
+/**
+ * An app router tree with the routes this repository has, plus whatever `extra` names.
+ *
+ * Stubs rather than the real `web/app`, so a test can add a route without adding a page to
+ * the site — which is the event being tested, and one that must fail the gate on the day it
+ * happens rather than on the day somebody notices.
+ */
+function buildApp(extra: string[] = []): string {
+  const root = mkdtempSync(join(tmpdir(), "a11y-app-"));
+  const routes = [
+    "page.tsx",
+    "not-found.tsx",
+    "[lang]/page.tsx",
+    "[lang]/about/page.tsx",
+    "[lang]/ctdl/page.tsx",
+    "[lang]/occupations/page.tsx",
+    "[lang]/occupations/[soc]/page.tsx",
+    "[lang]/outcomes-coverage/page.tsx",
+    "[lang]/paying-for-training/page.tsx",
+    "[lang]/programs/[id]/page.tsx",
+    "[lang]/providers/page.tsx",
+    "[lang]/providers/[slug]/page.tsx",
+    ...extra,
+  ];
+  for (const route of routes) {
+    const file = join(root, route);
+    mkdirSync(join(file, ".."), { recursive: true });
+    writeFileSync(file, "export default function Page() { return null; }\n");
+  }
+  return root;
 }
 
 describe("the audit's sample is a claim, not whatever happens to exist", () => {
@@ -99,5 +134,45 @@ describe("the audit's sample is a claim, not whatever happens to exist", () => {
     expect(result.stdout).toContain("22 pages, all present");
     expect(result.stdout).toContain("Paying for training (Spanish)");
     expect(result.stdout).toContain("Program detail (English)");
+  });
+});
+
+/**
+ * The direction the check above cannot see.
+ *
+ * It asks whether every page the list names was built. A route added to the app is the
+ * opposite shape: nothing on the list is missing, every named page is there, and the gate
+ * goes on reporting "no violations" over a sample that no longer describes the site. The new
+ * page is also the one most likely to be carrying a violation, because it is the page nobody
+ * has looked at yet.
+ */
+describe("a route the list does not name is unaudited, not passing", () => {
+  it("fails, naming the route and both languages, when a page is added to the app", () => {
+    const result = run(buildExport(), buildApp(["[lang]/scholarships/page.tsx"]));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("/[lang]/scholarships (en)");
+    expect(result.stderr).toContain("/[lang]/scholarships (es)");
+    expect(result.stderr).toContain("never reads");
+  });
+
+  it("fails for a route with no [lang] segment too", () => {
+    const result = run(buildExport(), buildApp(["health/page.tsx"]));
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("/health");
+  });
+
+  it("passes when the app declares exactly the routes the list covers", () => {
+    // The half that keeps this honest: today's list does cover today's app, so this gate
+    // starts green and only a real change can turn it red.
+    const result = run(buildExport(), buildApp());
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("22 pages, all present");
+  });
+
+  it("reads this repository's own app when nothing overrides it", () => {
+    // The override exists for the tests above; the gate that actually runs in CI must read
+    // the real tree, and this is what would notice if it stopped.
+    const result = run(buildExport());
+    expect(result.status).toBe(0);
   });
 });

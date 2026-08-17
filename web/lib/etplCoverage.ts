@@ -124,6 +124,28 @@ export function measureState(outcomes: ProgramOutcomes, key: MeasureKey): Measur
   return filedACohort(outcomes) ? "blank" : "unfiled";
 }
 
+/**
+ * Which absence a program page is looking at when all three headline measures are empty.
+ *
+ * The same split this page already publishes as `silentWithACohort` and `silentWithNoRecord`,
+ * exported because a program page needs it too and had been printing the wrong half of it.
+ * Of California's 1,209 silent programs, 42 filed a count of the people they served, exited
+ * or completed. Their pages printed that count -- "People enrolled 16" -- and then, directly
+ * underneath, "No outcomes reported for this program", which the number above it contradicts.
+ * Two of the 42 also filed how many people were working a year on.
+ *
+ * Naming what is absent is not a smaller claim than "nothing", it is a truer one: the reader
+ * is deciding whether to spend a year and several thousand dollars, and "this provider
+ * reported nothing" is a sentence about a named college that the federal record does not
+ * support. A limitation of what this project counts must not arrive on the page as a fact
+ * about a provider.
+ */
+export type UnreportedNotice = "silentWithACohort" | "silentWithNoRecord";
+
+export function unreportedNotice(outcomes: ProgramOutcomes): UnreportedNotice {
+  return filedACohort(outcomes) ? "silentWithACohort" : "silentWithNoRecord";
+}
+
 /** One measure's coverage across a set of programs. */
 export interface MeasureCoverage {
   key: MeasureKey;

@@ -202,6 +202,25 @@ jobs:
               env_file.write(f"DATASET_PROGRAMS={total}\n")
           PY
 
+      - name: Refuse to publish a dataset older than the code
+        # GUARD 1a. GUARD 1 asks whether this dataset is big enough and complete enough to be
+        # production. It cannot ask whether it is *current*, and the release handshake means
+        # the dataset and the code move on separate clocks: `dataset-2026-08-07` was cut at
+        # 18:18 UTC and `clean_length` landed four hours later, so the deploy on 2026-08-14
+        # published a snapshot in which twelve programs their providers filed as
+        # competency-based carried no such key, and twelve named providers' pages read
+        # "Length: Not reported" over a fact the source had stated.
+        #
+        # `afterward.build.length_integrity_problems` refuses that record and has since the
+        # day the fix shipped -- but it runs inside a build, over payloads that build just
+        # produced, so it only ever sees a dataset that is new by construction. This is the
+        # same question asked on the path a stale one actually arrives by.
+        #
+        # Standard library only, and shared verbatim with `make dataset-verify`, so the
+        # packaging path and the publishing path cannot form different opinions about what a
+        # current dataset looks like.
+        run: python3 scripts/dataset_shape_check.py web/public/data
+
       - name: Refuse to publish a link nobody vouched for
         # GUARD 1b. The dataset above is fetched by tag, so it can be older than the code in
         # this repository -- and on 2026-08-15 it was: production was serving a snapshot in
