@@ -156,6 +156,22 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- A front page offered in place of a page that is gone is now checked against the review
+  ledger, like every other destination this site links. The redirect path has consulted
+  `provider-link-review.json` since 2026-08-15, but the 404 fallback in
+  `afterward.sources.link_check.decide` never did: `linked` depended on one thing only,
+  whether the host's root answered, and a domain somebody has listed for sale answers as
+  readily as a school. Maiquela's Cosmetology Academy is both at once. Its two filed course
+  pages 404, its root answers, and `maiquelascosmetology.net` was reviewed `for_sale` on
+  2026-08-15 with the ledger's own rule saying not linked, tell the reader to look the school
+  up by name. The build published that root on both program pages as a working "Provider's
+  website" link while the review saying not to sat in the repository. `decide` now takes the
+  reviewer it was already being handed elsewhere and asks `OffsiteReviewer.may_link` about the
+  host before offering it, reading the same rejected-host set `scripts/provider_link_check.py`
+  reads, so the gate and the decision cannot disagree. A caller that passes no reviewer gets
+  no substitution at all rather than an unvouched-for one, which is the direction an off-site
+  redirect nobody resolved already falls in. Two program pages changed; a host the ledger says
+  nothing about still gets its front page, and 159 substitutions remain.
 - A dataset older than the code cannot be packaged or published. `clean_length` shipped on
   2026-08-07 and the dataset release tagged `dataset-2026-08-07` was cut four hours earlier,
   so the deploy on 2026-08-14 published a snapshot in which the twelve California programs

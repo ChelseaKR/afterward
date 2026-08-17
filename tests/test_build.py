@@ -1476,9 +1476,26 @@ def _with_url(uuid: str, url: str | None) -> dict:
     return {"_source": source}
 
 
-def _payload(url: str | None, checks: dict[str, LinkCheck] | None = None) -> dict:
+REVIEWED_NOTHING = link_review.OffsiteReviewer()
+"""A reviewer holding no reviews, which is what most of these tests want.
+
+Not the same as passing none at all: this one can be asked and finds nothing recorded against
+the host, which is the ordinary case and still earns a link. Omitting the reviewer entirely
+says nobody can be asked, and a build that cannot ask does not substitute a front page --
+see :func:`afterward.sources.link_check.publishable_front_page`.
+"""
+
+
+def _payload(
+    url: str | None,
+    checks: dict[str, LinkCheck] | None = None,
+    reviewer: link_review.OffsiteReviewer | None = REVIEWED_NOTHING,
+) -> dict:
     return program_payload(
-        parse_program(_with_url("u", url)), _occupations(), link_checks=checks or {}
+        parse_program(_with_url("u", url)),
+        _occupations(),
+        link_checks=checks or {},
+        reviewer=reviewer,
     )
 
 
@@ -1613,6 +1630,7 @@ class TestAnAddressThatNowAnswersFromSomewhereElse:
         link = _payload(
             self.HIJACKED,
             _checks(_check(self.HIJACKED, "redirected_offsite", final=self.HIJACK_DESTINATION)),
+            reviewer=None,
         )["provider_link"]
         assert link["linked"] is False
         assert link["redirect"] == "unresolved"
@@ -1625,6 +1643,56 @@ class TestAnAddressThatNowAnswersFromSomewhereElse:
         coverage = provider_link_coverage(payloads)
         assert coverage.programs_offsite_redirect == 2
         assert coverage.programs_offsite_confirmed == 1
+
+
+class TestAFrontPageOfferedInPlaceOfAPageThatIsGone:
+    """The second way a destination reaches a reader, against the committed review.
+
+    The redirect path above consulted the ledger from the day it existed. This one did not:
+    ``linked`` on the 404 fallback asked only whether the host's root answered, and a domain
+    somebody has listed for sale answers as readily as a school. Maiquela's Cosmetology
+    Academy filed two course pages that 404 on an address reviewed ``for_sale`` on
+    2026-08-15, and the build published that address's root on both pages as a working
+    "Provider's website" link while the review saying not to sat in the repository.
+    """
+
+    FOR_SALE_PAGE = "https://www.maiquelascosmetology.net/copy-of-manicure-classes"
+    FOR_SALE_ROOT = "https://www.maiquelascosmetology.net/"
+
+    def _link(self, reviewer: link_review.OffsiteReviewer | None) -> dict:
+        checks = _checks(_check(self.FOR_SALE_PAGE, "not_found"), _check(self.FOR_SALE_ROOT, "ok"))
+        return _payload(self.FOR_SALE_PAGE, checks, reviewer=reviewer)["provider_link"]
+
+    def test_a_reviewed_address_is_not_linked_by_way_of_its_own_front_page(self) -> None:
+        link = self._link(link_review.OffsiteReviewer.from_feed([]))
+        assert link["linked"] is False
+        assert link["href"] is None
+        assert link["substitution"] is None
+
+    def test_the_federal_records_url_and_the_date_survive(self) -> None:
+        link = self._link(link_review.OffsiteReviewer.from_feed([]))
+        assert link["url"] == self.FOR_SALE_PAGE
+        assert link["notice"] == "page_unreachable"
+        assert link["checked_on"] == "2026-08-04"
+
+    def test_an_ordinary_school_still_gets_its_front_page(self) -> None:
+        """The half that keeps this a judgement rather than a purge: nothing is recorded
+        against b.edu, so a reader whose course page is gone is still shown the front door."""
+        link = _payload(
+            MISSING,
+            _checks(_check(MISSING, "not_found"), _check(B_ROOT, "ok")),
+            reviewer=link_review.OffsiteReviewer.from_feed([]),
+        )["provider_link"]
+        assert link["linked"] is True
+        assert link["href"] == B_ROOT
+        assert link["substitution"] == SUBSTITUTION_FRONT_PAGE
+
+    def test_a_build_that_forgets_the_reviewer_substitutes_nothing(self) -> None:
+        """Same direction as the redirect path: a caller who cannot ask publishes fewer
+        front pages, never one the ledger would have refused."""
+        link = self._link(None)
+        assert link["linked"] is False
+        assert link["href"] is None
 
 
 class TestProviderLinkPages:

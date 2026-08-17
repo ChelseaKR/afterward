@@ -899,13 +899,24 @@ def provider_link(
     a populated block whose ``href`` is null and whose ``notice`` says on what date we failed
     to reach the page.
 
-    ``reviewer`` answers the one question a fetch cannot: when the address answered from
-    another domain, is the destination still this provider? Without one, every such redirect
-    is unresolved and none of them is linked -- the safe direction, and the one that keeps a
+    ``reviewer`` answers the one question a fetch cannot: is this address still this
+    provider's? It is asked twice, because there are two ways a build can put a destination in
+    front of a reader. When the address answered from another domain, it settles who is at the
+    other end. When the filed page is gone and the host's front page is about to be offered
+    instead, it settles whether that host is one a review already found is not the provider's:
+    Maiquela's Cosmetology Academy filed course pages that 404 on an address listed for sale,
+    and the substitution published the listing's host as a working link until this second
+    question was asked.
+
+    Without a reviewer, every off-site redirect is unresolved and no front page is
+    substituted, so none of either is linked -- the safe direction, and the one that keeps a
     caller who forgot to pass a reviewer from publishing a hijacked domain.
     """
     decision = link_check.decide(
-        checks, url, redirect=_redirect_verdict(url, checks, reviewer, provider_name)
+        checks,
+        url,
+        redirect=_redirect_verdict(url, checks, reviewer, provider_name),
+        reviewer=reviewer,
     )
     return None if decision is None else decision.as_dict()
 
@@ -1703,10 +1714,12 @@ def program_payload(
     it produces a record whose ``local_help.centers`` is null: nowhere was looked for, which
     is not the same as nowhere being near.
 
-    ``reviewer`` settles addresses that answered from another domain, and is built once for
-    the whole snapshot because one of its rules reads the rest of the feed. Omitting it
-    leaves every such redirect unresolved and therefore unlinked, which is the safe half of
-    the answer: a caller who forgot it publishes fewer links, never a hijacked one.
+    ``reviewer`` settles addresses that answered from another domain, and vets the host of any
+    front page offered in place of a page that is gone. It is built once for the whole
+    snapshot because one of its rules reads the rest of the feed. Omitting it leaves every
+    such redirect unresolved and offers no front page at all, so neither is linked, which is
+    the safe half of the answer: a caller who forgot it publishes fewer links, never a
+    hijacked one.
     """
     integrity = (
         cohort
