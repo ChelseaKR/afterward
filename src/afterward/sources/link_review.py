@@ -388,6 +388,31 @@ class OffsiteReviewer:
             )
         return None
 
+    def may_link(self, url: str | None) -> bool:
+        """Whether a reader may be sent to ``url``, as far as the ledger is concerned.
+
+        A narrower question than :meth:`resolve`, and the one asked about a destination that
+        is not a redirect at all: not "who is at the other end of this hop" but "did somebody
+        look at this address and write down that it is not the provider's".
+
+        Keyed on the host, over both ends of every rejected pair, exactly as
+        :func:`rejected_hosts` is and for the same reason: an ``href`` is a host, and a review
+        that found a sales listing at ``maiquelascosmetology.net`` applies to every URL under
+        it, not only to the one path the reviewer happened to open.
+
+        ``False`` for a URL with no readable host. A destination this cannot key the ledger on
+        is a destination the ledger has not cleared, and the whole asymmetry of this module is
+        that not linking costs a reader less than linking somewhere nobody vouched for.
+
+        ``True`` for a host no entry mentions, which is nearly all of them. That is not a
+        blessing -- it is the ledger having nothing to say, which is the ordinary case and
+        must not be turned into a suppression.
+        """
+        host = host_of(url)
+        if host is None:
+            return False
+        return host not in rejected_hosts(self.entries)
+
     def resolve(
         self, *, url: str, final_url: str | None, provider_name: str | None
     ) -> RedirectVerdict:

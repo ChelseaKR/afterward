@@ -1079,6 +1079,35 @@ def front_page_for(checks: Mapping[str, LinkCheck], url: str | None) -> str | No
     return front.https_alternative or front.url
 
 
+def publishable_front_page(
+    checks: Mapping[str, LinkCheck],
+    url: str | None,
+    reviewer: link_review.OffsiteReviewer | None,
+) -> str | None:
+    """A front page a reader may actually be sent to, or ``None``.
+
+    :func:`front_page_for` answers whether the host's root *answered*. That is a measurement,
+    and on its own it is the same mistake this module already refuses to make about off-site
+    redirects: an address answering is not evidence that the address is still the school's.
+    Maiquela's Cosmetology Academy is the case that proved it -- its filed course pages 404,
+    its root answers, and the address itself is listed for sale, so the substitution published
+    a confident link to a marketplace listing while the review saying so sat in the ledger.
+
+    So the ledger is asked about the host before the substitution is offered, and it is asked
+    the same way the packaging gate asks: by host, over both ends of every rejected pair. The
+    two cannot disagree, because they read the same function.
+
+    Fail closed on absence. Without a reviewer this cannot know whether the host is one of the
+    rejected ones, and a build that forgot to pass one publishes fewer front pages rather than
+    a hijacked one -- the same direction :func:`_offsite` takes when nobody resolved a
+    redirect, and the direction :func:`afterward.build.provider_link` already documents.
+    """
+    front = front_page_for(checks, url)
+    if front is None or reviewer is None:
+        return None
+    return front if reviewer.may_link(front) else None
+
+
 # --------------------------------------------------------------------------------------
 # What to publish
 # --------------------------------------------------------------------------------------
@@ -1296,6 +1325,7 @@ def decide(
     url: str | None,
     *,
     redirect: link_review.RedirectVerdict | None = None,
+    reviewer: link_review.OffsiteReviewer | None = None,
 ) -> LinkDecision | None:
     """Decide what to publish for one provider URL. ``None`` when there is no URL at all.
 
@@ -1315,11 +1345,16 @@ def decide(
       requester and a timeout is a statement about the wire; neither is evidence about a
       school, and printing "we could not reach this" next to a working institution's WIOA
       figures would be a false claim about a named organisation.
-    * **dead** -- do not link the dead path. Where the same host's front page answers, link
-      *that*, labelled as the provider's home page. Where it does not, publish no link and
-      keep the URL as plain text. A page that answered 200 while saying in its own title
-      that it is not there is dead on exactly these terms: the reader's situation is
-      identical, so the treatment is too.
+    * **dead** -- do not link the dead path. Where the same host's front page answers *and*
+      no review has found that host is not the provider's, link *that*, labelled as the
+      provider's home page. Where either half is missing, publish no link and keep the URL as
+      plain text. A page that answered 200 while saying in its own title that it is not there
+      is dead on exactly these terms: the reader's situation is identical, so the treatment
+      is too.
+
+    ``reviewer`` is what makes the second half of that answerable, and a caller who omits it
+    gets no front-page substitutions at all rather than unvouched-for ones. See
+    :func:`publishable_front_page`.
 
     A ``dead`` decision always carries a notice and a date, whether or not a front page was
     substituted: silently rerouting a reader to a different page, or silently dropping a URL
@@ -1371,7 +1406,7 @@ def decide(
             substitution=None,
         )
 
-    front = front_page_for(checks, url)
+    front = publishable_front_page(checks, url, reviewer)
     return LinkDecision(
         url=url,
         href=front,

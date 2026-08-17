@@ -67,6 +67,29 @@ OFFSITE = "https://somewhere-else.example/"
 decision and nothing about the check, so the tests that care name it."""
 NOW = datetime(2026, 8, 4, 12, 0, tzinfo=UTC)
 
+REVIEWED_NOTHING = link_review.OffsiteReviewer()
+"""A reviewer holding no reviews.
+
+Not the same thing as no reviewer at all, and the distinction is the point: this one can be
+asked and answers that nothing is recorded against the host, which is the ordinary case and
+must still produce a link. Passing ``None`` says nobody can be asked, and that withholds.
+"""
+
+LEDGER = link_review.OffsiteReviewer(entries=link_review.load_review())
+"""The committed hand-review ledger, with no feed behind it.
+
+The real file rather than a fixture, because the substitution defect it is here to pin was a
+real entry in it going unread. No feed hosts, because the front-page question never reaches
+the corroboration rules -- it asks only what a person wrote down.
+"""
+
+FOR_SALE_HOST = "maiquelascosmetology.net"
+"""Reviewed ``for_sale`` on 2026-08-15. Its filed course pages 404 and its root answers, so
+it is exactly the shape the front-page substitution was built for and exactly the shape it
+must refuse."""
+FOR_SALE_PAGE = f"https://www.{FOR_SALE_HOST}/copy-of-manicure-classes"
+FOR_SALE_ROOT = f"https://www.{FOR_SALE_HOST}/"
+
 
 def at(moment: datetime = NOW) -> Any:
     return lambda: moment
@@ -1489,7 +1512,7 @@ class TestDecideDead:
 
     def test_a_404_with_a_working_front_page_goes_to_the_front_page(self) -> None:
         checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
-        decision = decide(checks, PAGE)
+        decision = decide(checks, PAGE, reviewer=REVIEWED_NOTHING)
         assert decision is not None
         assert decision.href == ROOT
         assert decision.linked is True
@@ -1499,7 +1522,7 @@ class TestDecideDead:
         """The reader is being sent somewhere other than where the record pointed. Saying
         nothing would be a quieter lie, not an absence of one."""
         checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
-        decision = decide(checks, PAGE)
+        decision = decide(checks, PAGE, reviewer=REVIEWED_NOTHING)
         assert decision is not None
         assert decision.label == LABEL_PROVIDER_HOME
         assert decision.notice == NOTICE_UNREACHABLE
@@ -1510,7 +1533,7 @@ class TestDecideDead:
             checked("http://example.edu/p", "not_found"),
             checked("http://example.edu/", "ok", upgrade=ROOT),
         )
-        decision = decide(checks, "http://example.edu/p")
+        decision = decide(checks, "http://example.edu/p", reviewer=REVIEWED_NOTHING)
         assert decision is not None
         assert decision.href == ROOT
 
@@ -1561,7 +1584,7 @@ class TestDecideDead:
         """The reader's situation is identical -- the filed page is not there and the school
         is -- so the treatment is too, down to the wording."""
         checks = results(checked(PAGE, "soft_not_found"), checked(ROOT, "ok"))
-        decision = decide(checks, PAGE)
+        decision = decide(checks, PAGE, reviewer=REVIEWED_NOTHING)
         assert decision is not None
         assert decision.href == ROOT
         assert decision.label == LABEL_PROVIDER_HOME
@@ -1595,6 +1618,74 @@ class TestDecideDead:
         assert decision.substitution is None
 
 
+class TestASubstitutedFrontPageIsReviewedToo:
+    """The host being substituted in is asked about, not just measured.
+
+    Until this, ``linked`` on the 404 fallback depended on one thing only: whether the host's
+    root answered. It answers for a domain somebody has put up for sale as readily as for a
+    school, and Maiquela's Cosmetology Academy is both at once -- two filed course pages that
+    404, a root that answers, and a ``for_sale`` review of the address sitting unread in the
+    ledger while the build published ``https://www.maiquelascosmetology.net/`` as a working
+    "Provider's website" link on both pages.
+
+    The redirect path had consulted the ledger since 2026-08-15. This path had not, so the
+    ledger's own rule for ``for_sale`` -- not linked, tell the reader to look the school up by
+    name -- reached one of the two ways a destination gets in front of a reader and not the
+    other.
+    """
+
+    def _checks(self) -> dict[str, LinkCheck]:
+        return results(checked(FOR_SALE_PAGE, "not_found"), checked(FOR_SALE_ROOT, "ok"))
+
+    def test_a_front_page_on_a_reviewed_for_sale_host_is_not_linked(self) -> None:
+        decision = decide(self._checks(), FOR_SALE_PAGE, reviewer=LEDGER)
+        assert decision is not None
+        assert decision.linked is False
+        assert decision.href is None
+        assert decision.substitution is None
+
+    def test_the_filed_url_and_the_date_survive_the_refusal(self) -> None:
+        """Withholding the link is not the same as dropping the record's own value, and the
+        page still has to say on what date we read the address."""
+        decision = decide(self._checks(), FOR_SALE_PAGE, reviewer=LEDGER)
+        assert decision is not None
+        assert decision.url == FOR_SALE_PAGE
+        assert decision.label == LABEL_PROGRAM_PAGE
+        assert decision.notice == NOTICE_UNREACHABLE
+        assert decision.checked_on == "2026-08-04"
+
+    def test_a_host_the_ledger_says_nothing_about_still_gets_its_front_page(self) -> None:
+        """The correction has to stop where the evidence does. Nearly every dead page in the
+        corpus is a school whose site is fine and whose catalogue moved, and suppressing those
+        would cost a reader far more than the one entry this fixes."""
+        checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
+        decision = decide(checks, PAGE, reviewer=LEDGER)
+        assert decision is not None
+        assert decision.linked is True
+        assert decision.href == ROOT
+        assert decision.substitution == SUBSTITUTION_FRONT_PAGE
+
+    def test_a_build_with_no_reviewer_substitutes_nothing(self) -> None:
+        """Fail closed, the same direction an unresolved redirect takes. A caller with no
+        reviewer cannot tell a school's front door from a marketplace listing, and publishing
+        fewer front pages is the cheaper of the two mistakes."""
+        decision = decide(self._checks(), FOR_SALE_PAGE)
+        assert decision is not None
+        assert decision.linked is False
+        assert decision.href is None
+
+    def test_a_rejected_host_is_refused_whichever_end_of_the_pair_it_is(self) -> None:
+        """``rejected_hosts`` keys both the filed address and where it landed, and the
+        substitution reads that same set, so the gate and the decision cannot disagree."""
+        assert LEDGER.may_link("https://www.giligiacollege.com/") is False
+        assert LEDGER.may_link("https://seinquote.com/") is False
+        assert LEDGER.may_link(ROOT) is True
+
+    def test_an_address_with_no_readable_host_is_not_cleared(self) -> None:
+        assert LEDGER.may_link(None) is False
+        assert LEDGER.may_link("not a url") is False
+
+
 class TestFrontPageFor:
     def test_an_unchecked_url_has_no_front_page(self) -> None:
         assert front_page_for({}, PAGE) is None
@@ -1606,10 +1697,21 @@ class TestFrontPageFor:
     def test_no_url_at_all_has_no_front_page(self) -> None:
         assert front_page_for(results(checked(PAGE, "not_found")), None) is None
 
+    def test_the_measurement_and_the_permission_are_different_questions(self) -> None:
+        """``front_page_for`` still reports that the root answered. What changed is that
+        answering is no longer on its own enough to publish."""
+        checks = results(checked(FOR_SALE_PAGE, "not_found"), checked(FOR_SALE_ROOT, "ok"))
+        assert front_page_for(checks, FOR_SALE_PAGE) == FOR_SALE_ROOT
+        assert link_check.publishable_front_page(checks, FOR_SALE_PAGE, LEDGER) is None
+
 
 class TestDecisionSerialisation:
     def test_every_field_the_interface_needs_is_published(self) -> None:
-        decision = decide(results(checked(PAGE, "not_found"), checked(ROOT, "ok")), PAGE)
+        decision = decide(
+            results(checked(PAGE, "not_found"), checked(ROOT, "ok")),
+            PAGE,
+            reviewer=REVIEWED_NOTHING,
+        )
         assert decision is not None
         assert decision.as_dict() == {
             "url": PAGE,
