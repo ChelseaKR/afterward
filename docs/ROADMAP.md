@@ -42,6 +42,11 @@ user-behavior telemetry is out of scope permanently, not deferred). What exists 
   CloudFront, asserts the published dataset snapshot end-to-end, and verifies every built
   file object-by-object in S3 (`.github/workflows/deploy.yml`, guards 1 through 5).
 - `make deploy-check` asks the live site whether every asset its pages reference resolves.
+- `make live-check` asks the live site whether the dataset it is serving is one this
+  repository would still publish, and a weekly scheduled CI job runs it. Everything above is
+  a deploy-time check, and the deploy path is dispatch-only, so between a repair landing here
+  and someone choosing to publish nothing was watching at all. That interval is where the
+  provider-link review sat while production went on serving the addresses it rejected.
 - A quarterly scheduled CI job checks the upstream government feeds still respond and still
   contain California data, so a broken source surfaces before the next refresh is due.
 

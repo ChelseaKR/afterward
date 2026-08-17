@@ -12,10 +12,15 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
+import subprocess
+import sys
 from pathlib import Path
+from textwrap import dedent
 from typing import Any
 
-SCRIPTS = Path(__file__).resolve().parent.parent / "scripts"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS = REPO_ROOT / "scripts"
 
 
 def _script(name: str) -> Any:
@@ -97,6 +102,96 @@ class TestTheDatasetGate:
     def test_the_gate_reports_success_only_after_reading_something(self, tmp_path: Path) -> None:
         clean = _link(url="https://a.edu/", href="https://a.edu/")
         assert provider_link_check.main([str(_dataset(tmp_path, clean))]) == 0
+
+    def test_a_dataset_with_no_programs_is_refused_rather_than_cleared(
+        self, tmp_path: Path
+    ) -> None:
+        """Both checks here are searches, and a search over nothing finds nothing. Until
+        this refusal existed the gate printed "every published provider link is vouched for"
+        over a file with no links in it -- the same sentence it prints for a real dataset,
+        with only a count to tell them apart, and the count was not printed either."""
+        assert provider_link_check.main([str(_dataset(tmp_path))]) == 1
+
+    def test_the_success_line_says_how_many_records_it_read(self, tmp_path: Path) -> None:
+        """So the difference between a pass and a pass over nothing is visible in the log
+        rather than only in the exit code."""
+        clean = _link(url="https://a.edu/", href="https://a.edu/")
+        assert provider_link_check.read_programs(_dataset(tmp_path, clean, clean)) == [
+            {"provider_name": "Provider 0", "provider_link": clean},
+            {"provider_name": "Provider 1", "provider_link": clean},
+        ]
+
+
+class TestTheGuardInTheDeployWorkflow:
+    """GUARD 1b, extracted from the YAML and actually run.
+
+    It is the last thing standing between a rejected address and a reader on the publishing
+    path, it is thirty lines of Python inside a workflow file, and until now nothing
+    exercised it at all -- the only test touching `deploy.yml` asserts that a string appears
+    in it. A guard nobody has watched fail is a guard nobody has tested, and this one had
+    diverged from the script it is written to agree with: it took the host from
+    `urlsplit(...).netloc`, which keeps userinfo and a port, where
+    `afterward.sources.link_review.host_of` strips both. `http://giligiacollege.com:8080/`
+    passed the workflow and failed the script.
+    """
+
+    GUARD = "Refuse to publish a link nobody vouched for"
+
+    def _inline_guard(self) -> str:
+        """The workflow step's heredoc, as a runnable program."""
+        workflow = (REPO_ROOT / ".github" / "workflows" / "deploy.yml").read_text(encoding="utf-8")
+        step = workflow.index(self.GUARD)
+        body = workflow[step : workflow.index("python3 - <<'PY'", step)]
+        assert "GUARD 1b" in body
+        start = workflow.index("python3 - <<'PY'", step) + len("python3 - <<'PY'\n")
+        end = workflow.index("\n          PY\n", start)
+        return dedent(workflow[start:end])
+
+    def _run_guard(self, tmp_path: Path, *links: dict[str, Any] | None) -> int:
+        """The guard, run where it runs: a checkout with a dataset extracted into it."""
+        (tmp_path / "src" / "afterward" / "sources").mkdir(parents=True)
+        shutil.copy(
+            REPO_ROOT / "src" / "afterward" / "sources" / "provider-link-review.json",
+            tmp_path / "src" / "afterward" / "sources" / "provider-link-review.json",
+        )
+        data = tmp_path / "web" / "public" / "data"
+        data.mkdir(parents=True)
+        _dataset(data, *links)
+        guard = tmp_path / "guard.py"
+        guard.write_text(self._inline_guard(), encoding="utf-8")
+        return subprocess.run(  # noqa: S603 - a file this test just wrote
+            [sys.executable, str(guard)], cwd=tmp_path, capture_output=True, text=True, check=False
+        ).returncode
+
+    def test_it_refuses_the_dataset_that_was_live(self, tmp_path: Path) -> None:
+        assert self._run_guard(tmp_path, _link(redirect=None)) != 0
+
+    def test_it_refuses_a_rejected_host_carrying_a_port(self, tmp_path: Path) -> None:
+        """The divergence. `netloc` on this URL is `giligiacollege.com:8080`, which is in no
+        review, so the workflow published it while `scripts/provider_link_check.py` refused
+        the same record."""
+        ported = _link(
+            url="http://giligiacollege.com:8080/",
+            href="http://giligiacollege.com:8080/",
+            redirect="same_provider",
+        )
+        assert self._run_guard(tmp_path, ported) != 0
+        assert provider_link_check.problems_in(
+            [{"provider_name": "Giligia College", "provider_link": ported}]
+        )
+
+    def test_it_refuses_a_rejected_host_behind_userinfo(self, tmp_path: Path) -> None:
+        credentialed = _link(
+            url="http://someone@giligiacollege.com/",
+            href="http://someone@giligiacollege.com/",
+            redirect="same_provider",
+        )
+        assert self._run_guard(tmp_path, credentialed) != 0
+
+    def test_it_accepts_a_confirmed_rebrand(self, tmp_path: Path) -> None:
+        """The other direction, without which this is a gate that cannot pass."""
+        clean = _link(url="https://a.edu/", href="https://a.edu/")
+        assert self._run_guard(tmp_path, clean) == 0
 
 
 class TestThePageGate:

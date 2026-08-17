@@ -176,3 +176,50 @@ describe("a route the list does not name is unaudited, not passing", () => {
     expect(result.status).toBe(0);
   });
 });
+
+/**
+ * An environment variable must not be able to turn the gate into a printer.
+ *
+ * `A11Y_PAGE` names one page and puts the script in child mode. It used to select that mode
+ * on its own: `if (process.env.A11Y_PAGE)`, checked before the missing-page check, before the
+ * uncovered-route check, and before the loop. The parent hands its whole environment to each
+ * child, so exporting the variable to look at a single page is an ordinary thing to do — and
+ * from then on every `npm run a11y`, a step of `npm run verify`, printed one page's findings
+ * as JSON on stdout and exited 0. Not "no violations". No verdict at all, and no message
+ * saying the other 21 pages had been skipped.
+ *
+ * So the flag decides and the variable only carries the path. These two tests are the pair:
+ * a stray variable no longer disables anything, and child mode still works when asked for.
+ */
+describe("the gate cannot be switched off from the environment", () => {
+  function runWith(env: Record<string, string>, args: string[] = ["--list"]) {
+    return spawnSync(process.execPath, [AUDIT, buildExport(), ...args], {
+      encoding: "utf-8",
+      env: { ...process.env, ...env },
+    });
+  }
+
+  it("audits the whole sample even when A11Y_PAGE is set in the environment", () => {
+    const result = runWith({ A11Y_PAGE: join(buildExport(), "en", "index.html") });
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("22 pages, all present");
+    expect(result.stderr).toContain("ignoring A11Y_PAGE");
+  });
+
+  it("still refuses a build with a page missing, with the variable set", () => {
+    // The check that matters: the stray variable must not skip the sample check either.
+    const root = buildExport(["es/ctdl/index.html"]);
+    const result = spawnSync(process.execPath, [AUDIT, root, "--list"], {
+      encoding: "utf-8",
+      env: { ...process.env, A11Y_PAGE: join(root, "en", "index.html") },
+    });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("CTDL export (Spanish)");
+  });
+
+  it("refuses --child with no page to audit rather than auditing nothing", () => {
+    const result = runWith({}, ["--child"]);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("needs A11Y_PAGE");
+  });
+});

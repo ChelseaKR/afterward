@@ -36,6 +36,7 @@ from afterward.ctdl.export import (
     project_graph,
     project_program,
     projection_problems,
+    source_expectations,
     unknown_term_problems,
     unprojected_field_counts,
 )
@@ -375,6 +376,78 @@ class TestCoverageStatement:
             "employment_rate_q2": 1,
         }
         assert coverage["entities"]["qdata:DataSetProfile"] == 1
+
+    def test_a_graph_missing_every_organization_refuses(self) -> None:
+        """The check this class is named for could not fail where it actually runs.
+
+        ``export_ctdl`` writes ``coverage = ctdl_coverage(document, payloads, snapshot)`` and
+        then hands the same three arguments to ``check_ctdl_coverage``, which calls the same
+        pure function again and compares the answer to itself. Measured on the fixture before
+        this test existed: delete every ``ceterms:CredentialOrganization``, recount, and the
+        statement published ``CredentialOrganization: 0`` beside 60 programs whose
+        ``ceterms:offeredBy`` resolved to nothing -- and every guard passed. The recomputation
+        is still worth keeping for a statement that arrived from elsewhere; what makes this a
+        gate is the second derivation, from the source records, which cannot agree by
+        construction.
+        """
+        payloads = [make_payload(), make_payload(uuid=str(uuid.uuid4()))]
+        document = project_graph(payloads)
+        document["@graph"] = [
+            entity
+            for entity in document["@graph"]
+            if entity.get("@type") != "ceterms:CredentialOrganization"
+        ]
+        coverage = ctdl_coverage(document, payloads, "2026-08-04")
+        assert coverage["entities"]["ceterms:CredentialOrganization"] == 0
+        with pytest.raises(ValueError, match="source records call for"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_an_empty_graph_refuses(self) -> None:
+        """The same shape at its limit, and the one a coverage statement makes look tidy:
+        every entity count zero, every measure zero, nothing to contradict."""
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        document["@graph"] = []
+        coverage = ctdl_coverage(document, payloads, "2026-08-04")
+        with pytest.raises(ValueError, match="source records call for"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_a_missing_statistics_profile_refuses(self) -> None:
+        """One program's outcomes dropped out of the graph. The recomputation agrees with
+        itself that there are no profiles; the source says there is one to be had."""
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        document["@graph"] = [
+            entity for entity in document["@graph"] if entity.get("@type") != "qdata:DataSetProfile"
+        ]
+        coverage = ctdl_coverage(document, payloads, "2026-08-04")
+        with pytest.raises(ValueError, match="source records call for"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_the_source_expectation_is_read_from_the_records_alone(self) -> None:
+        """No graph anywhere in it. That is the whole reason it can disagree with one."""
+        payloads = [make_payload(), make_payload(uuid=str(uuid.uuid4()))]
+        expected = source_expectations(payloads)
+        assert expected["source_programs"] == 2
+        assert expected["entities"]["ceterms:LearningProgram"] == 2
+        assert expected["entities"]["ceterms:CredentialOrganization"] == 1
+        assert expected["entities"]["qdata:DataSetProfile"] == 2
+
+    def test_a_program_reporting_nothing_expects_no_profile(self) -> None:
+        """The rule stated in the source's own terms: all measures suppressed means no
+        statistics entity, because an empty one would read as "measured, and empty"."""
+        silent = make_payload(
+            outcomes={
+                "median_earnings": None,
+                "credentials_earned": None,
+                "employed_q2": None,
+                "completion_rate": None,
+                "employment_rate_q2": None,
+            }
+        )
+        expected = source_expectations([silent])
+        assert expected["entities"]["qdata:DataSetProfile"] == 0
+        assert set(expected["observation_measures"].values()) == {0}
 
     def test_the_note_claims_nothing_about_a_registry_holding_these(self, tmp_path: Path) -> None:
         export_ctdl(FIXTURE_DIR, tmp_path)

@@ -8,6 +8,22 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `make live-check`, and a weekly CI job that runs it: the first gate here that reads
+  production rather than an artifact on its way there. Every dataset gate this project has
+  runs on the way out — `dataset-verify` before packaging, three guards in the deploy
+  workflow before uploading, `publish-preflight` before a hand sync — and none of them runs
+  unless somebody deploys. That leaves the interval between a repair landing in the
+  repository and a person choosing to publish completely unwatched, and it is the interval
+  the last two data faults lived in. The provider-link review landed on 2026-08-15 and
+  established that `giligiacollege.com` is no longer the college's; it answers 302 to a
+  domain now serving an Indonesian slot-gambling page. Every gate here has refused that
+  dataset since. On 2026-08-17 the live site was still serving it, on four program pages
+  under that college's name, because no deploy had run and nothing else was looking. The new
+  check fetches the dataset the site actually serves and runs the same two gates over it —
+  imported, not reimplemented — and refuses rather than reports success when it could not
+  measure anything: an empty programs list, or the site's two published documents disagreeing
+  about how many programs there are.
+
 - `/ctdl/`, in both languages: the CTDL export's own account of itself, so a mapping nobody
   can check stops being a claim. Which classes and properties it fills in and how often, which
   outcome measures become metrics and observations, what an independent validator found, and —

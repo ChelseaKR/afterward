@@ -68,10 +68,38 @@ def linking_a_reviewed_destination(
     return found
 
 
-def problems(dataset_dir: Path) -> list[str]:
-    programs = json.loads((dataset_dir / "programs.json").read_text(encoding="utf-8"))["programs"]
+def problems_in(programs: list[dict[str, Any]]) -> list[str]:
+    """Both refusals, over records already in hand.
+
+    Separate from :func:`problems` so the same two rules can be applied to a dataset that
+    never came off this disk -- see ``scripts/live_check.py``, which asks them of the copy
+    the site is actually serving.
+    """
     hosts = rejected_hosts(load_review())
     return unvouched(programs) + linking_a_reviewed_destination(programs, hosts)
+
+
+def problems(dataset_dir: Path) -> list[str]:
+    programs = json.loads((dataset_dir / "programs.json").read_text(encoding="utf-8"))["programs"]
+    return problems_in(programs)
+
+
+def read_programs(dataset_dir: Path) -> list[dict[str, Any]]:
+    """The dataset's programs, or a refusal if there are none to read.
+
+    An empty list is not a dataset with no bad links in it; it is a file this gate could not
+    learn anything from. Both of the checks above are searches, and a search over nothing
+    finds nothing, so without this the gate prints "every published provider link is vouched
+    for" over a file with no links in it at all -- word for word what it prints when a real
+    dataset passes.
+    """
+    programs = json.loads((dataset_dir / "programs.json").read_text(encoding="utf-8"))["programs"]
+    if not isinstance(programs, list) or not programs:
+        raise ValueError(
+            f"{dataset_dir}/programs.json carries no programs. Both checks here are searches, "
+            "and a search over nothing passes without reading anything."
+        )
+    return programs
 
 
 def main(argv: list[str]) -> int:
@@ -79,7 +107,12 @@ def main(argv: list[str]) -> int:
     if not (dataset_dir / "programs.json").exists():
         print(f"provider-link-check: no dataset at {dataset_dir}/programs.json")
         return 1
-    found = problems(dataset_dir)
+    try:
+        programs = read_programs(dataset_dir)
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        print(f"provider-link-check: REFUSING — {exc}")
+        return 1
+    found = problems_in(programs)
     if found:
         print("provider-link-check: REFUSING — links nothing has vouched for")
         for line in found[:20]:
@@ -89,7 +122,10 @@ def main(argv: list[str]) -> int:
         print("  Rebuild with `make data` so the review is applied, or review the redirect")
         print("  in src/afterward/sources/provider-link-review.json.")
         return 1
-    print(f"provider-link-check: every published provider link in {dataset_dir} is vouched for")
+    print(
+        f"provider-link-check: {len(programs)} programs read from {dataset_dir}, "
+        "every published provider link vouched for"
+    )
     return 0
 
 

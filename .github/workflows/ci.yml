@@ -12,6 +12,11 @@ on:
     # Quarterly-ish freshness check on the upstream feeds. Source data updates annually,
     # but a broken endpoint should surface long before the next refresh is due.
     - cron: "17 9 1 */3 *"
+    # Weekly, and on a cadence of its own because it asks a different question: not "are the
+    # sources still there" but "is the site still serving something this code would publish".
+    # That answer can change without anybody touching the sources, and it does -- it changes
+    # the moment a repair lands here, because the artifact in production was built before it.
+    - cron: "23 14 * * 1"
 
 permissions:
   contents: read
@@ -91,11 +96,50 @@ jobs:
             echo "::error::A CI build carrying a real site URL is a publishable artifact."; exit 1; }
           echo "CI artifact is fixture-backed and placeholder-hosted, as it must be."
 
+  live-dataset:
+    # Does production still serve a dataset this repository would publish?
+    #
+    # Every other dataset gate runs on the way out and only when somebody deploys. That
+    # leaves the interval between a repair landing here and a person choosing to publish
+    # completely unwatched, and it is the interval the last two data faults lived in: the
+    # provider-link review landed 2026-08-15, refused three hijacked domains, and the site
+    # was still serving all three two days later because no deploy had run.
+    #
+    # Not `continue-on-error`, unlike data-freshness below. That job is informational
+    # because DOL being unreachable is not this repository's fault. This one asks about this
+    # project's own site, and its answer is always actionable: rebuild with `make data`,
+    # publish with `make dataset-publish`, deploy. A red run here means a reader is being
+    # shown something this code refuses, which is exactly what it should look like.
+    # Its own cron, and matched on the expression rather than on `event_name`, so the two
+    # scheduled jobs in this file keep their own cadences. Deliberately NOT run on
+    # workflow_dispatch: that dispatch exists so a commit can be made deployable
+    # (see deploy.yml's "Require CI success on this exact commit"), and a job that goes red
+    # because production is stale would then refuse the deploy that fixes it.
+    if: github.event.schedule == '23 14 * * 1'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: make install
+
+      - name: Ask the live site what it is serving
+        run: make live-check
+
   data-freshness:
     # Confirms the public sources still respond and still contain California data.
     # Never blocks a pull request; upstream outages are not this repo's fault, and DOL is
     # known to refuse GitHub Actions runners outright, so this is informational only.
-    if: github.event_name == 'schedule'
+    #
+    # Matched on the cron expression rather than on `event_name`, because this file now has
+    # two schedules: a plain `event_name == 'schedule'` would run this quarterly job every
+    # week alongside the live-dataset one.
+    if: github.event.schedule == '17 9 1 */3 *'
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

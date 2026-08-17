@@ -256,8 +256,14 @@ jobs:
               for end in ("filed_host", "destination")
           }
 
+          # `.hostname`, not `.netloc`: netloc keeps any userinfo and port, so
+          # `http://x@giligiacollege.com/` and `http://giligiacollege.com:8080/` would both
+          # miss the rejected set here while `afterward.sources.link_review.host_of` -- which
+          # scripts/provider_link_check.py uses -- strips both and catches them. Two gates
+          # written to hold the same opinion have to extract the host the same way, or the
+          # weaker one is the one that runs last.
           def host(url):
-              return urlsplit(url or "").netloc.lower().removeprefix("www.")
+              return (urlsplit(url or "").hostname or "").removeprefix("www.")
 
           programs = json.loads(
               pathlib.Path("web/public/data/programs.json").read_text(encoding="utf-8")

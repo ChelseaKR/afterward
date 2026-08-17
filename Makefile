@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
-	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
+	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
 	ctdl-statements ctdl-package
 
@@ -14,8 +14,14 @@ MIN_PROGRAMS ?= 2000
 help:
 	@uv run afterward --help
 
+# `--locked`, not a plain sync. Without it `uv sync` quietly re-resolves and rewrites uv.lock
+# whenever pyproject.toml has moved on, and exits 0 having done so -- proven here on
+# 2026-08-17 by adding a dependency and running it: `uv lock --check` exited 1, `make install`
+# exited 0 and edited the lockfile. In CI that rewrite is thrown away with the runner, so
+# every later step tests a resolution the committed lockfile does not describe and nothing
+# ever says the two parted company. `--locked` fails instead; the fix is `uv lock`.
 install:
-	uv sync --all-groups
+	uv sync --locked --all-groups
 
 format:
 	uv run ruff format .
@@ -131,6 +137,23 @@ publish-preflight:
 SITE_URL ?= https://afterward.chelseakr.com
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
+
+# Ask the live site whether the dataset it is serving is one this repository would still
+# publish. The only gate here that reads production rather than an artifact on the way to it.
+#
+# Every other dataset gate runs on the way out: `dataset-verify` before packaging, three
+# guards in deploy.yml before uploading, `publish-preflight` before a hand sync. None of them
+# runs unless somebody deploys, and the deploy path is dispatch-only. So a review that lands
+# here changes nothing a reader sees until a person chooses to publish -- and between those
+# two moments the site goes on serving whatever the last release carried, with nothing
+# anywhere asking whether it should.
+#
+# That gap is not hypothetical: the provider-link review landed 2026-08-15 and the site was
+# still serving the pre-review snapshot on 2026-08-17, four program pages linking an address
+# that now answers from an Indonesian gambling site. Network-bound, so never part of
+# `verify`; it belongs to the schedule in ci.yml and to a person.
+live-check:
+	uv run python scripts/live_check.py "$(SITE_URL)"
 
 # Is the working dataset the real one, or the 60-program fixture?
 #

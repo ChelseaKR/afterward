@@ -961,12 +961,70 @@ def ctdl_coverage(
     }
 
 
+def source_expectations(payloads: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """What the coverage figures must be, read off the source rather than off the graph.
+
+    Derived from ``payloads`` alone, touching neither :func:`project_graph` nor anything it
+    produced. That independence is the entire point of the function: it is the second
+    opinion :func:`ctdl_coverage_problems` needs in order to be a check at all.
+
+    Each rule restates a projection commitment in the terms of the source. One
+    ``LearningProgram`` per record, because :func:`project_graph` refuses two records that
+    derive the same CTID. One ``CredentialOrganization`` per distinct provider CTID, which is
+    how the organization block is keyed. One ``DataSetProfile`` per record reporting at least
+    one projected measure, and no profile for a record reporting none -- the rule
+    :func:`dataset_profile` states and the one a reader is owed, because an empty statistics
+    entity would read as "measured, and empty". And one observation per reported measure,
+    per measure.
+    """
+    reported_by_measure = {
+        measure.field: sum(
+            1 for p in payloads if (p.get("outcomes") or {}).get(measure.field) is not None
+        )
+        for measure in MEASURES
+    }
+    with_any_measure = sum(
+        1
+        for p in payloads
+        if any((p.get("outcomes") or {}).get(m.field) is not None for m in MEASURES)
+    )
+    return {
+        "source_programs": len(payloads),
+        "entities": {
+            "ceterms:LearningProgram": len(payloads),
+            "ceterms:CredentialOrganization": len(
+                {organization_ctid(str(p["provider_name"])) for p in payloads}
+            ),
+            "qdata:DataSetProfile": with_any_measure,
+        },
+        "observation_measures": reported_by_measure,
+    }
+
+
 def ctdl_coverage_problems(
     coverage: Mapping[str, Any],
     document: Mapping[str, Any],
     payloads: Sequence[Mapping[str, Any]],
 ) -> list[str]:
-    """Every figure in a coverage statement that the export beside it contradicts."""
+    """Every figure in a coverage statement that the export or the source contradicts.
+
+    Two comparisons, and the second is the one that makes this a gate.
+
+    The first recomputes the statement from the emitted graph. On the publishing path that
+    is worth nothing at all, and said plainly here because it read as a real check for as
+    long as it was the only one: ``export_ctdl`` writes ``coverage = ctdl_coverage(document,
+    payloads, snapshot)`` and then hands the same three arguments to this function, which
+    calls the same pure function again and compares the answer to itself. Measured on the
+    committed fixture: delete every ``ceterms:CredentialOrganization`` from the graph,
+    recount, and the statement says ``CredentialOrganization: 0`` beside 60 programs whose
+    ``ceterms:offeredBy`` now resolves to nothing -- and this returns ``[]``. Empty the graph
+    entirely and it still returns ``[]``. It is kept because it does catch a statement that
+    arrived from somewhere else, which is what a committed ``ctdl-coverage.json`` is.
+
+    The second compares the same figures against :func:`source_expectations`, which reads
+    the dataset and never looks at the graph. Two derivations from two inputs can disagree,
+    which is the only arrangement in which agreement means anything.
+    """
     expected = ctdl_coverage(document, payloads, str(coverage.get("snapshot_date")))
     problems: list[str] = []
     for key in (
@@ -979,6 +1037,13 @@ def ctdl_coverage_problems(
         if coverage.get(key) != expected[key]:
             problems.append(
                 f"{key}: says {coverage.get(key)!r}, the export gives {expected[key]!r}"
+            )
+
+    for key, wanted in source_expectations(payloads).items():
+        if coverage.get(key) != wanted:
+            problems.append(
+                f"{key}: says {coverage.get(key)!r}, the {len(payloads)} source records "
+                f"call for {wanted!r}"
             )
     return problems
 
