@@ -8,6 +8,18 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- The README's Standards Conformance table now declares all fifteen standards.
+  Performance, AI Development Measurement, Incident Response, and Data
+  Governance had no row at all. Performance is declared with its gap stated:
+  no budget is measured and none is gated.
+- `docs/I18N.md` carries an explicit `implementation:` line naming the typed
+  per-locale modules and the compile-time parity check. The mechanism was
+  already described at length further down the page; what was missing was the
+  one line that says which mechanism satisfies the standard.
+
+
+### Added
+
 - `/ctdl/`, in both languages: the CTDL export's own account of itself, so a mapping nobody
   can check stops being a claim. Which classes and properties it fills in and how often, which
   outcome measures become metrics and observations, what an independent validator found, and —
