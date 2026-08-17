@@ -182,6 +182,17 @@ const en = {
   outcomesUnreported: "No outcomes reported for this program",
   outcomesUnreportedBody:
     "About a third of California programs report nothing. That is a fact about the program's reporting, not evidence that it works or does not.",
+  /*
+   * The other absence, and the reason there are two.
+   *
+   * 42 of the 1,209 silent California programs filed a count of the people they served. Their
+   * pages printed that count and then said "No outcomes reported for this program" directly
+   * beneath it, which the number above it contradicts. This says what is actually missing --
+   * the three measures, named -- over a record that does exist.
+   */
+  outcomesNoFigures: "No completion rate, employment rate or earnings figure for this program",
+  outcomesNoFiguresBody:
+    "The federal record for this program carries a count of people and no figures beside it. That is a fact about the program's reporting, not evidence that it works or does not.",
   basedOn: (n: number) => `Based on ${fmt(n)} people`,
   smallSample: "Small group — treat with caution",
 
@@ -1255,6 +1266,10 @@ const es: Dictionary = {
   outcomesUnreported: "Este programa no reportó resultados",
   outcomesUnreportedBody:
     "Cerca de un tercio de los programas de California no reportan nada. Eso dice algo sobre su reporte, no sobre si el programa funciona.",
+  outcomesNoFigures:
+    "Este programa no reportó tasa de finalización, tasa de empleo ni cifra de ingresos",
+  outcomesNoFiguresBody:
+    "El registro federal de este programa incluye un conteo de personas y ninguna cifra junto a él. Eso dice algo sobre su reporte, no sobre si el programa funciona.",
   basedOn: (n: number) => `Con base en ${fmt(n)} personas`,
   smallSample: "Grupo pequeño — interprete con cuidado",
 

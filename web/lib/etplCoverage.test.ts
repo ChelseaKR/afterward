@@ -1,4 +1,9 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
+
+import { LANGUAGES, dict } from "./i18n";
 
 import {
   COHORT_BANDS,
@@ -20,6 +25,7 @@ import {
   providerSilence,
   reportingRouteSplit,
   share,
+  unreportedNotice,
 } from "./etplCoverage";
 import type { Program, ProgramOutcomes } from "./types";
 
@@ -494,5 +500,57 @@ describe("etplCoverageReport", () => {
     expect(report.headline.silentShare).toBeNull();
     expect(report.byEntityType).toEqual([]);
     expect(report.measures.every((m) => m.missingShare === null)).toBe(true);
+  });
+});
+
+/**
+ * The sentence a program page prints where the three headline measures are all empty.
+ *
+ * Asserted against the real dictionaries rather than against key names, because the failure
+ * was a sentence, not a lookup: 42 of California's 1,209 silent programs filed a count of the
+ * people they served, their pages printed that count, and the panel underneath said "No
+ * outcomes reported for this program". Two of those 42 also filed how many people were
+ * working a year on. A reader deciding whether to spend a year and several thousand dollars
+ * was being told a named college reported nothing, over a record that says otherwise.
+ */
+describe("what a page says over an absent measure is what the record supports", () => {
+  const withACohort = outcomes({ total_served: 16, employed_q4: 3 });
+  const withNoRecord = outcomes();
+
+  it("separates a record with a cohort from a record that does not exist", () => {
+    expect(unreportedNotice(withACohort)).toBe("silentWithACohort");
+    expect(unreportedNotice(withNoRecord)).toBe("silentWithNoRecord");
+  });
+
+  it("counts a cohort filed as exits or completions, not only as enrolments", () => {
+    expect(unreportedNotice(outcomes({ total_exited: 4 }))).toBe("silentWithACohort");
+    expect(unreportedNotice(outcomes({ total_completed: 4 }))).toBe("silentWithACohort");
+  });
+
+  it.each(LANGUAGES)("does not tell a %s reader nothing was reported over a count", (lang) => {
+    const t = dict(lang);
+    const notice = unreportedNotice(withACohort);
+    expect(notice).toBe("silentWithACohort");
+    // The sentence for a record that does not exist must not be reused for one that does.
+    expect(t.outcomesNoFigures).not.toBe(t.outcomesUnreported);
+    expect(t.outcomesNoFiguresBody).not.toBe(t.outcomesUnreportedBody);
+  });
+
+  it("names the three measures rather than claiming silence, in English", () => {
+    expect(dict("en").outcomesNoFigures).toMatch(/completion rate/i);
+    expect(dict("en").outcomesNoFigures).toMatch(/earnings/i);
+    expect(dict("en").outcomesNoFigures).not.toMatch(/no outcomes/i);
+  });
+
+  it("is the sentence the program page actually chooses between", () => {
+    // The two strings above are worth nothing if the page prints one of them unconditionally,
+    // which is exactly what it did. Nothing else here can see a server component.
+    const page = readFileSync(
+      fileURLToPath(new URL("../app/[lang]/programs/[id]/page.tsx", import.meta.url)),
+      "utf-8",
+    );
+    expect(page).toContain("unreportedNotice(outcomes)");
+    expect(page).toContain("t.outcomesNoFigures");
+    expect(page).toContain("t.outcomesNoFiguresBody");
   });
 });

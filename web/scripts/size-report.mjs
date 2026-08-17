@@ -87,9 +87,13 @@ import { readdirSync, readFileSync, statSync, unlinkSync, existsSync } from "nod
 import { join } from "node:path";
 import { brotliCompressSync, constants } from "node:zlib";
 
+import { APP_DIR as REPO_APP_DIR, routeTemplates } from "./routes.mjs";
+
 const args = process.argv.slice(2);
 const PRUNE = args.includes("--prune");
 const OUT = args.find((a) => !a.startsWith("--")) ?? "out";
+/** An app tree to read routes from instead of this repository's, so the gate can be tested. */
+const APP_DIR = process.env.SIZE_REPORT_APP_DIR ?? REPO_APP_DIR;
 
 const DUPLICATE = "__next._full.txt";
 /** The sibling whose bytes must match before a duplicate is removed. */
@@ -225,22 +229,44 @@ const kib = (bytes) => (bytes / KiB).toFixed(1).padStart(8);
 const MAX_ROUTE_TRANSFER = 420 * KiB;
 
 /**
- * Routes to measure. One per shape the site has, not one per page: 9,000 pages come out of
- * seven templates, so seven representatives describe all of them, and the two indexes and
+ * Routes to measure. One per shape the site has, not one per page: 9,000 pages come out of a
+ * dozen templates, so a dozen representatives describe all of them, and the two indexes and
  * the search page are where the weight has ever actually been.
  *
- * `sample` picks the first page under a directory, so the program and occupation rows follow
- * the dataset instead of naming a UUID that a rebuild can retire.
+ * `sample` picks the first page under a directory, so the program, occupation and provider
+ * rows follow the dataset instead of naming a UUID that a rebuild can retire.
+ *
+ * The list is checked against the app router's own file tree below rather than trusted, for
+ * the reason the accessibility audit gives at more length: a hand-written sample is a claim
+ * about the site, the site is what changes, and a route added to `app/` would otherwise
+ * arrive with no budget on it at all. Two shapes were missing exactly that way when the check
+ * was added — the provider detail page and `/ctdl/`, both table-heavy, neither measured.
  */
 const ROUTES = [
-  { label: "/en/ (search)", path: "en" },
-  { label: "/en/occupations/", path: "en/occupations" },
-  { label: "/en/providers/", path: "en/providers" },
-  { label: "/en/paying-for-training/", path: "en/paying-for-training" },
-  { label: "/en/about/", path: "en/about" },
-  { label: "/en/outcomes-coverage/", path: "en/outcomes-coverage" },
-  { label: "/en/programs/<id>/", sample: "en/programs" },
-  { label: "/en/occupations/<soc>/", sample: "en/occupations" },
+  { template: "/", label: "/ (root)", path: "" },
+  { template: "/404", label: "/404.html", file: "404.html" },
+  { template: "/[lang]", label: "/en/ (search)", path: "en" },
+  { template: "/[lang]/occupations", label: "/en/occupations/", path: "en/occupations" },
+  { template: "/[lang]/providers", label: "/en/providers/", path: "en/providers" },
+  {
+    template: "/[lang]/paying-for-training",
+    label: "/en/paying-for-training/",
+    path: "en/paying-for-training",
+  },
+  { template: "/[lang]/about", label: "/en/about/", path: "en/about" },
+  {
+    template: "/[lang]/outcomes-coverage",
+    label: "/en/outcomes-coverage/",
+    path: "en/outcomes-coverage",
+  },
+  { template: "/[lang]/ctdl", label: "/en/ctdl/", path: "en/ctdl" },
+  { template: "/[lang]/programs/[id]", label: "/en/programs/<id>/", sample: "en/programs" },
+  {
+    template: "/[lang]/occupations/[soc]",
+    label: "/en/occupations/<soc>/",
+    sample: "en/occupations",
+  },
+  { template: "/[lang]/providers/[slug]", label: "/en/providers/<slug>/", sample: "en/providers" },
 ];
 
 const brotliCache = new Map();
@@ -283,26 +309,45 @@ function firstPageUnder(dir) {
  * ever switched back on.
  */
 function transferOf(route) {
+  if (route.file) {
+    const file = join(OUT, route.file);
+    return existsSync(file) ? weigh(file) : null;
+  }
   const dir = route.sample ? firstPageUnder(route.sample) : route.path;
   if (dir === null) return null;
 
   const document = join(OUT, dir, "index.html");
   if (!existsSync(document)) return null;
+  return weigh(document);
+}
 
+/**
+ * One document plus everything it references, brotli-compressed.
+ *
+ * An asset the document names and the export does not contain is returned rather than
+ * skipped. Skipping it weighed that asset as zero, so the one build where a chunk went
+ * missing is the one build this budget would have called lightest — and a page referencing a
+ * chunk that is not there is the exact failure `scripts/deploy_check.py` was written after.
+ */
+function weigh(document) {
   const html = readFileSync(document, "utf-8");
   const assets = new Set(html.match(/\/_next\/static\/[A-Za-z0-9_\-./]+\.(?:js|css)/g) ?? []);
 
   let js = 0;
   let css = 0;
+  const missing = [];
   for (const asset of assets) {
     const path = join(OUT, asset.replace(/^\//, ""));
-    if (!existsSync(path)) continue;
+    if (!existsSync(path)) {
+      missing.push(asset);
+      continue;
+    }
     if (asset.endsWith(".css")) css += brotli(path);
     else js += brotli(path);
   }
 
   const documentBytes = brotli(document);
-  return { document: documentBytes, js, css, total: documentBytes + js + css };
+  return { document: documentBytes, js, css, total: documentBytes + js + css, missing };
 }
 
 /**
@@ -335,16 +380,46 @@ function chromeWeight() {
   return bytes;
 }
 
-/** Returns the number of routes over budget, having reported all of them. */
+/**
+ * Every route this budget failed to weigh, and why.
+ *
+ * A route in `ROUTES` that is not in the build, and a route in the app that is not in
+ * `ROUTES`, are the same finding stated from either end: nobody knows what that page costs a
+ * reader. Both used to be silent. The first printed "(not built)" and carried on, so an
+ * export missing half its routes reported every remaining route inside budget and exited 0;
+ * the second could not be noticed at all, because the list was the only description of the
+ * site this file had.
+ */
+function unmeasurable(measurements) {
+  const found = measurements
+    .filter(({ measured }) => measured === null)
+    .map(({ route }) => `${route.label} — not in ${OUT}/`);
+
+  for (const { route, measured } of measurements) {
+    for (const asset of measured?.missing ?? []) {
+      found.push(`${route.label} — references ${asset}, which is not in ${OUT}/`);
+    }
+  }
+
+  const declared = new Set(ROUTES.map((route) => route.template));
+  for (const template of routeTemplates(APP_DIR)) {
+    if (!declared.has(template)) {
+      found.push(`${template} — the app declares this route and no entry in ROUTES measures it`);
+    }
+  }
+  return found;
+}
+
+/** Returns how many routes are over budget or unmeasured, having reported all of them. */
 function reportTransfer() {
   console.log(`\nTransfer size of a first visit, brotli (what CloudFront serves): ${OUT}`);
   console.log("     KiB      doc       js      css  route");
 
   let over = 0;
-  for (const route of ROUTES) {
-    const measured = transferOf(route);
+  const measurements = ROUTES.map((route) => ({ route, measured: transferOf(route) }));
+  for (const { route, measured } of measurements) {
     if (measured === null) {
-      console.log(`${"—".padStart(8)}                             ${route.label} (not built)`);
+      console.log(`${"—".padStart(8)}                             ${route.label} (NOT BUILT)`);
       continue;
     }
     const flag = measured.total > MAX_ROUTE_TRANSFER ? "  << OVER BUDGET" : "";
@@ -360,7 +435,17 @@ function reportTransfer() {
       `Masthead routes would add ${(chromeWeight() / KiB).toFixed(1)} KiB per page if their ` +
       `links prefetched; they do not.`,
   );
-  return over;
+
+  const unweighed = unmeasurable(measurements);
+  if (unweighed.length > 0) {
+    console.error(`\n${unweighed.length} route(s) this budget did not weigh:`);
+    for (const line of unweighed) console.error(`  ${line}`);
+    console.error(
+      "  A route nobody weighed is unmeasured, not within budget. Build the whole site, or\n" +
+        "  add the route to ROUTES in the same commit that adds the page.",
+    );
+  }
+  return over + unweighed.length;
 }
 
 if (!existsSync(OUT)) {
@@ -382,11 +467,12 @@ if (PRUNE) {
 
 // Last, and the only thing here that can fail a build. Everything above is a bill we pay;
 // this is one a reader pays, on a connection they may be metering.
-const over = reportTransfer();
-if (over > 0) {
+const failures = reportTransfer();
+if (failures > 0) {
   console.error(
-    `\n${over} route(s) exceed the ${(MAX_ROUTE_TRANSFER / KiB).toFixed(0)} KiB first-visit ` +
-      `budget. Find what grew before raising it: the usual cause is data being inlined into ` +
+    `\n${failures} route(s) failed the first-visit budget of ` +
+      `${(MAX_ROUTE_TRANSFER / KiB).toFixed(0)} KiB, by exceeding it or by not being weighed ` +
+      `at all. Find what grew before raising it: the usual cause is data being inlined into ` +
       `a page instead of fetched from it.`,
   );
   process.exit(1);

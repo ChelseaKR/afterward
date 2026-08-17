@@ -144,6 +144,44 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- A dataset older than the code cannot be packaged or published. `clean_length` shipped on
+  2026-08-07 and the dataset release tagged `dataset-2026-08-07` was cut four hours earlier,
+  so the deploy on 2026-08-14 published a snapshot in which the twelve California programs
+  whose providers filed them as competency-based carried no `competency_based` key at all —
+  and twelve named providers' pages read "Length: Not reported" over a fact the federal record
+  had stated. That is the third time this shape has landed (#28's row-id leak, #34's provider
+  links), and each previous time it was answered with a check written for that one fix.
+  `afterward.build.length_integrity_problems` already refuses exactly that record, and answers
+  "3,266 problems" when pointed at that release; it runs inside a build, over payloads the
+  build just produced, so it can only ever see a dataset that is new by construction.
+  `scripts/dataset_shape_check.py` asks the same question of an artifact instead, standard
+  library only so the deploy workflow can run it with no Python toolchain, and it now runs on
+  both paths a dataset reaches a reader by: `make dataset-verify` before packaging and
+  GUARD 1a before the export is built. The row-id check that used to be a Makefile shell
+  one-liner moved into it and gained the tests it never had.
+- A program that filed a cohort count is no longer told it reported nothing. 42 of
+  California's 1,209 silent programs filed a count of the people they served, exited or
+  completed; their pages printed that count — "People enrolled 16" — and then, directly
+  underneath, "No outcomes reported for this program". Two of the 42 also filed how many
+  people were working a year on. `/outcomes-coverage/` has always published the distinction
+  (`silentWithACohort` against `silentWithNoRecord`) and the program page was printing the
+  wrong half of it, which is a limitation of what this project counts arriving on the page as
+  a fact about a named college. The panel now names what is actually absent — no completion
+  rate, no employment rate, no earnings figure — where a record exists, and keeps "reported
+  nothing" for the 1,167 records that do not.
+- A route the app declares and no gate reads is unaudited and unmeasured, not passing. Both
+  the accessibility audit and the first-visit transfer budget walked hand-written lists of
+  pages, which are claims about a site that changes: adding `app/[lang]/something/page.tsx`
+  left both gates green over a sample that had quietly stopped describing what is published,
+  and the new page is the one most likely to be carrying a violation because nobody has looked
+  at it yet. `web/scripts/routes.mjs` reads the app router's own file tree, which is where a
+  route is actually declared and the only place it cannot be declared twice, and both gates
+  now fail naming any route their list does not cover — the audit in every language, the
+  budget once per template. Two templates were uncovered by the budget when this was written:
+  the provider detail page and `/ctdl/`, both table-heavy. The budget also stopped treating a
+  page it could not find as a line of output (`(not built)`, then on to the next one), and
+  stopped weighing an asset missing from the export as zero bytes, which made the one broken
+  build the lightest one it had ever measured.
 - Neither accessibility gate can shrink its own sample and still report a pass. `npm run
   a11y` filtered its list of 22 named pages through `existsSync` before using it, so a route
   renamed, removed, or not emitted in one language simply left the sample and the run
@@ -325,6 +363,24 @@ All notable changes to this project are documented here. The format follows
 
 ### Known limitations
 
+- **The live site is serving a dataset the gates above now refuse, and only a refresh fixes
+  it.** `dataset-2026-08-07` is what production has served since the 2026-08-14 deploy, and it
+  predates two things in this repository: `clean_length` (so twelve programs read "Length: Not
+  reported" instead of competency-based) and the provider-link review (so 109 program pages
+  link an address that answers from another domain, twenty of them hosts the committed review
+  recorded as somebody else's live site or as advertised for sale — an Indonesian gambling
+  site, an Indonesian lottery site, a Baltimore charity, and five domain listings). Neither is
+  fixable from the repository: `make data` reads the DOL endpoint, which refuses CI, so the
+  dataset has to be rebuilt on a workstation, republished with `make dataset-publish`, and
+  deployed. Until then the deploy workflow refuses that tag, which is the correct behaviour
+  and not a substitute for the refresh. The committed `web/public/ctdl/*.json` statements were
+  produced from a locally rebuilt 2026-08-07 dataset that does carry the length fix, so
+  `snapshot_date` alone does not identify which bytes a statement describes.
+- Provider pages are grouped by a slug truncated to 80 characters, so two providers whose
+  names agree for that long would be published as one. The longest provider slug in the
+  2026-08-07 snapshot is 67 characters and nothing collides today, but nothing checks it
+  either; the three slugs that do collide are case and punctuation variants of one name,
+  which is the merge the grouping intends.
 - Program descriptions and program and provider names render in English on Spanish pages —
   the feed publishes no Spanish counterpart for any of them — and so do the occupation titles
   for the 70 of 670 occupations Mi Próximo Paso does not carry. The controlled vocabularies
