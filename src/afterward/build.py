@@ -633,6 +633,140 @@ def check_length_integrity(payloads: Sequence[Mapping[str, Any]]) -> None:
         raise ValueError("emitted lengths misreport the source: " + "; ".join(shown) + more)
 
 
+COST_COMPONENTS: Final = ("tuition", "supplies")
+"""The two out-of-pocket components whose sum is ``total_out_of_pocket``."""
+
+COST_FIELDS: Final = (*COST_COMPONENTS, "total_out_of_pocket", "wioa_funded_cost")
+"""Every emitted cost field that carries a dollar figure."""
+
+COST_TOLERANCE: Final = 0.005
+"""Half a cent, for comparing a total against the sum of its own parts.
+
+The components are dollars-and-cents floats -- 1,029 of California's 3,266 programs file a
+fractional one -- and the total is their sum, so an exact ``==`` would eventually fail on
+ordinary binary-float rounding rather than on anything wrong. A total corrupted enough to
+mislead a reader is wrong by whole dollars, not by half a cent.
+"""
+
+
+def _cost_arithmetic_problems(cost: Mapping[str, Any], where: str) -> list[str]:
+    """Whether the total and its completeness flag agree with the components beside them.
+
+    Split from :func:`cost_integrity_problems` so that function stays under the complexity
+    limit, and because this is the half worth reading on its own: the sentinel and negative
+    checks catch a value that is visibly not money, while these two catch a cost block whose
+    numbers are individually plausible and collectively impossible.
+    """
+    problems: list[str] = []
+    parts = [cost.get(name) for name in COST_COMPONENTS]
+    reported = [value for value in parts if value is not None]
+
+    expected = sum(reported) if reported else None
+    total = cost.get("total_out_of_pocket")
+    if expected is None or total is None:
+        if expected != total:
+            problems.append(
+                f"{where}.cost.total_out_of_pocket: {total!r}, its own components give {expected!r}"
+            )
+    elif abs(total - expected) > COST_TOLERANCE:
+        problems.append(
+            f"{where}.cost.total_out_of_pocket: {total!r}, its own components sum to {expected!r}"
+        )
+
+    complete = len(reported) == len(COST_COMPONENTS)
+    if cost.get("total_is_complete") != complete:
+        problems.append(
+            f"{where}.cost.total_is_complete: says {cost.get('total_is_complete')!r}, "
+            "which its own components contradict"
+        )
+    return problems
+
+
+def cost_integrity_problems(payloads: Sequence[Mapping[str, Any]]) -> list[str]:
+    """Every emitted cost that says something the source did not.
+
+    The third of these blocks, and needed for the same reason as
+    :func:`length_integrity_problems` rather than :func:`outcome_integrity_problems`: the
+    offline build re-emits a committed fixture's payloads without re-cleaning them, so a
+    fixture written against older code carries whatever that code put in it straight to the
+    page. ``cost`` had no check at the emit boundary at all until this one.
+
+    Cost earns the check because of what the site does with it. It is the number a
+    prospective student looks at first, and it is the only measure on the page that is also a
+    *filter* and a *sort key* -- ``maxCost`` in the search UI, and the ``cost`` comparator
+    that orders cheapest first. So a ``-1`` here does not merely render wrong: it makes the
+    corrupted program the cheapest training in California and floats it to the top of the
+    list, which is the one place a reader is most likely to act on it.
+
+    Four ways a cost block can be wrong:
+
+    * the ``-1`` sentinel reached output as a price. Reported first, and the fields it names
+      are then left alone, for the reason :func:`outcome_integrity_problems` gives: ``-1`` is
+      also a negative cost, and saying so twice about one value buries what happened;
+    * a cost is negative, which no program's is;
+    * ``total_out_of_pocket`` disagrees with the components beside it. This is the quiet one.
+      A sentinel folded into the sum does not surface as a sentinel -- ``-1 + 500`` is 499,
+      a plausible price for a real school that nobody charged -- so the total is checked
+      against its own parts rather than only for being a number;
+    * ``total_is_complete`` disagrees with which components are actually present. The UI keys
+      the "at least" caveat off this flag, so a wrong one presents a floor as the price. One
+      California program has a suppressed supplies figure, so this is a live path, not a
+      hypothetical.
+
+    A missing ``total_is_complete`` is caught here rather than left to fail later, on the
+    same reasoning as ``competency_based``: the site bundle reads that key directly, so a
+    record predating it would otherwise stop the build with a ``KeyError`` from inside the
+    emit step instead of a sentence naming the record and the reason.
+    """
+    problems: list[str] = []
+    for payload in payloads:
+        cost = payload["cost"]
+        where = payload.get("uuid", "<no uuid>")
+
+        if "total_is_complete" not in cost:
+            problems.append(f"{where}.cost: no total_is_complete key; this record predates it")
+
+        sentinels = {
+            name
+            for name in COST_FIELDS
+            # `isinstance` before the comparison because `True` equals 1; a boolean in a
+            # dollar field is its own kind of wrong and is not a suppressed measure.
+            if isinstance(cost.get(name), int | float)
+            and not isinstance(cost.get(name), bool)
+            and cost.get(name) == dol_etp.SUPPRESSED
+        }
+        problems += [
+            f"{where}.cost.{name}: the {dol_etp.SUPPRESSED} sentinel reached output as a price"
+            for name in sorted(sentinels)
+        ]
+        for name in COST_FIELDS:
+            value = cost.get(name)
+            if name not in sentinels and value is not None and value < 0:
+                problems.append(f"{where}.cost.{name}: {value!r} is a negative cost")
+
+        problems += _cost_arithmetic_problems(cost, where)
+    return problems
+
+
+def check_cost_integrity(payloads: Sequence[Mapping[str, Any]]) -> None:
+    """Refuse to emit a price nobody charged.
+
+    Its own check rather than a branch of the two beside it, for the reason those two are
+    separate from each other: a cost is not an outcome and not a duration. It is filed by the
+    provider, it is the figure the site lets a reader filter and sort on, and its components
+    have an arithmetic relationship to their total that neither of the other blocks has.
+
+    Like them, a wrong value stops the build rather than being corrected here. Repairing a
+    total in this function would publish a price computed in the guard instead of one filed
+    at the source, which is the failure the guard exists to catch.
+    """
+    problems = cost_integrity_problems(payloads)
+    if problems:
+        shown = problems[:10]
+        more = f" (and {len(problems) - len(shown)} more)" if len(problems) > len(shown) else ""
+        raise ValueError("emitted costs misreport the source: " + "; ".join(shown) + more)
+
+
 def detailed_soc_codes(projections: Iterable[edd_lmi.OccupationProjection]) -> list[str]:
     """The SOC codes this build will publish an occupation record for.
 
@@ -2177,6 +2311,10 @@ def build_offline(
     # A fixture predating `length.competency_based` cannot say whether its null lengths are a
     # design decision or an absence, and this build would republish them as the latter.
     check_length_integrity(payloads)
+    # And the same argument a third time, for the block the other two left unguarded: a
+    # fixture carries whatever arithmetic the code that wrote it produced, and a total that
+    # no longer matches its own components is a price nobody charged.
+    check_cost_integrity(payloads)
 
     for name, document in (
         ("programs.json", programs_doc),
@@ -2267,6 +2405,7 @@ def build(
     # the coverage check at the end of this function to fail behind it.
     check_outcome_integrity(payloads)
     check_length_integrity(payloads)
+    check_cost_integrity(payloads)
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
     # aggregation those are no longer the same set, and the emitted records are the ones a
     # reader can check.
