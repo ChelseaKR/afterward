@@ -8,6 +8,27 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `check_cost_integrity`: the emit-boundary guard the `cost` block never had. `outcomes` and
+  `length` have each been checked at the point of writing since the `-1` sentinel work;
+  `cost` was cleaned at the source boundary and then trusted, which leaves the offline build
+  unguarded — it re-emits a committed fixture's payloads without re-cleaning them, so a
+  fixture carries whatever the code that wrote it produced. Cost is worth the third check
+  because of what the site does with it: it is the only measure that is also a filter
+  (`maxCost`) and a sort key (cheapest first), so a corrupted figure does not merely render
+  wrong, it sorts itself to the top of the list where a reader is most likely to act on it.
+  Four failures stop the build: the `-1` sentinel reaching a dollar field; a negative cost;
+  `total_out_of_pocket` disagreeing with the components beside it; and `total_is_complete`
+  disagreeing with which components are actually present. The third is the quiet one — a
+  sentinel folded into a sum does not surface as a sentinel, because `-1 + 500` is 499, a
+  plausible price for a real school that nobody charged — so the total is checked against
+  its own parts rather than only for being a number. The fourth is a live path rather than a
+  hypothetical: one California program files tuition with its supplies figure suppressed, and
+  the UI keys its "at least" caveat off that flag, so a wrong one presents a floor as the
+  price. A missing `total_is_complete` is named here rather than left to fail as a `KeyError`
+  from inside the emit step, on the same reasoning as `length.competency_based`. Nothing is
+  repaired: a total recomputed in the guard would publish a price chosen here instead of one
+  filed at the source, which is the failure the guard exists to catch. Both build paths run
+  it, and it is clean on all 3,266 California programs and on the fixture.
 - The README's Standards Conformance table now declares all fifteen standards.
   Performance, AI Development Measurement, Incident Response, and Data
   Governance had no row at all. Performance is declared with its gap stated:

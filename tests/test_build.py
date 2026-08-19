@@ -23,12 +23,14 @@ from afterward.build import (
     aggregate_match_coverage,
     area_coverage,
     build_offline,
+    check_cost_integrity,
     check_coverage_counts,
     check_coverage_shape,
     check_length_integrity,
     check_outcome_integrity,
     check_provider_links,
     cohort_integrity_coverage,
+    cost_integrity_problems,
     coverage_count_problems,
     coverage_shape_problems,
     detailed_soc_codes,
@@ -1236,6 +1238,156 @@ class TestLengthIntegrity:
         build_offline(FIXTURE_DIR, output_dir=tmp_path)
         payloads = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
         assert length_integrity_problems(payloads) == []
+
+
+def _cost_payload(uuid: str = "p1", **overrides: object) -> dict:
+    """A cost block whose parts agree, so each test can break exactly one thing.
+
+    Fractional by default because 1,029 of California's 3,266 programs file a
+    dollars-and-cents figure, and a helper using round numbers would never exercise the
+    tolerance the total comparison needs.
+    """
+    cost = {
+        "tuition": 1200.50,
+        "supplies": 300.25,
+        "total_out_of_pocket": 1500.75,
+        "total_is_complete": True,
+        "wioa_funded_cost": 900.0,
+        **overrides,
+    }
+    return {"uuid": uuid, "cost": cost}
+
+
+class TestCostIntegrity:
+    """A price on the page that nobody charged.
+
+    The third integrity block, guarding the one measure the site also filters and sorts on:
+    a corrupted cost does not just render wrong, it sorts the corrupted program to the top
+    of "cheapest first" where a reader is most likely to act on it.
+    """
+
+    def test_a_clean_record_passes(self) -> None:
+        assert cost_integrity_problems([_cost_payload()]) == []
+        check_cost_integrity([_cost_payload()])
+
+    def test_a_record_reporting_no_cost_passes(self) -> None:
+        """Nothing filed is not a problem; it is the honest state for a program with no price."""
+        payload = _cost_payload(
+            tuition=None,
+            supplies=None,
+            total_out_of_pocket=None,
+            total_is_complete=False,
+            wioa_funded_cost=None,
+        )
+        assert cost_integrity_problems([payload]) == []
+
+    def test_a_suppressed_component_makes_a_floor_and_passes(self) -> None:
+        """The live case: one California program files tuition with supplies suppressed."""
+        payload = _cost_payload(supplies=None, total_out_of_pocket=1200.50, total_is_complete=False)
+        assert cost_integrity_problems([payload]) == []
+
+    def test_the_suppression_sentinel_reaching_output_is_caught(self) -> None:
+        """And is caught by the sentinel rule alone, because the arithmetic agrees with it.
+
+        `-1 + 300.25` really is 299.25, so a sentinel that reached the components before the
+        total was summed leaves a block that is internally consistent and externally false.
+        The total check cannot see this one; that is why the sentinel is checked directly.
+        """
+        payload = _cost_payload(tuition=-1, total_out_of_pocket=299.25)
+        assert cost_integrity_problems([payload]) == [
+            "p1.cost.tuition: the -1 sentinel reached output as a price",
+        ]
+
+    def test_the_sentinel_is_reported_once_not_also_as_a_negative(self) -> None:
+        """`-1` is a negative cost too, and saying so twice buries what actually happened."""
+        payload = _cost_payload(
+            tuition=None,
+            supplies=None,
+            total_out_of_pocket=None,
+            total_is_complete=False,
+            wioa_funded_cost=-1,
+        )
+        assert cost_integrity_problems([payload]) == [
+            "p1.cost.wioa_funded_cost: the -1 sentinel reached output as a price"
+        ]
+
+    def test_a_negative_cost_is_caught(self) -> None:
+        payload = _cost_payload(supplies=-40.0, total_out_of_pocket=1160.50)
+        assert cost_integrity_problems([payload]) == ["p1.cost.supplies: -40.0 is a negative cost"]
+
+    def test_a_total_that_its_own_components_contradict_is_caught(self) -> None:
+        """The quiet failure: a plausible price that nobody charged.
+
+        A sentinel folded into a sum does not surface as a sentinel. This is what notices.
+        """
+        assert cost_integrity_problems([_cost_payload(total_out_of_pocket=499.0)]) == [
+            "p1.cost.total_out_of_pocket: 499.0, its own components sum to 1500.75"
+        ]
+
+    def test_a_total_present_where_no_component_was_reported_is_caught(self) -> None:
+        payload = _cost_payload(tuition=None, supplies=None, total_is_complete=False)
+        assert cost_integrity_problems([payload]) == [
+            "p1.cost.total_out_of_pocket: 1500.75, its own components give None"
+        ]
+
+    def test_a_missing_total_where_components_were_reported_is_caught(self) -> None:
+        assert cost_integrity_problems([_cost_payload(total_out_of_pocket=None)]) == [
+            "p1.cost.total_out_of_pocket: None, its own components give 1500.75"
+        ]
+
+    def test_binary_float_rounding_is_not_mistaken_for_a_wrong_total(self) -> None:
+        """0.1 + 0.2 is not 0.3, and that is arithmetic rather than a corrupted price."""
+        payload = _cost_payload(tuition=0.1, supplies=0.2, total_out_of_pocket=0.3)
+        assert cost_integrity_problems([payload]) == []
+
+    def test_a_completeness_flag_that_presents_a_floor_as_the_price_is_caught(self) -> None:
+        """The UI keys its "at least" caveat off this flag, so a wrong one drops the caveat."""
+        payload = _cost_payload(supplies=None, total_out_of_pocket=1200.50, total_is_complete=True)
+        assert cost_integrity_problems([payload]) == [
+            "p1.cost.total_is_complete: says True, which its own components contradict"
+        ]
+
+    def test_a_completeness_flag_understating_a_full_total_is_caught(self) -> None:
+        assert cost_integrity_problems([_cost_payload(total_is_complete=False)]) == [
+            "p1.cost.total_is_complete: says False, which its own components contradict"
+        ]
+
+    def test_a_record_predating_the_flag_is_caught_rather_than_defaulted(self) -> None:
+        """The site bundle reads this key directly; without this it fails as a KeyError."""
+        payload = {
+            "uuid": "p1",
+            "cost": {
+                "tuition": 1200.50,
+                "supplies": 300.25,
+                "total_out_of_pocket": 1500.75,
+                "wioa_funded_cost": 900.0,
+            },
+        }
+        assert cost_integrity_problems([payload]) == [
+            "p1.cost: no total_is_complete key; this record predates it",
+            "p1.cost.total_is_complete: says None, which its own components contradict",
+        ]
+
+    def test_a_genuine_zero_cost_is_not_a_problem(self) -> None:
+        """Free training is a fact worth publishing, and is not a suppressed cell."""
+        payload = _cost_payload(
+            tuition=0.0, supplies=0.0, total_out_of_pocket=0.0, wioa_funded_cost=0.0
+        )
+        assert cost_integrity_problems([payload]) == []
+
+    def test_the_build_refuses_rather_than_recomputing_the_total(self) -> None:
+        with pytest.raises(ValueError, match="sentinel reached output as a price"):
+            check_cost_integrity([_cost_payload(tuition=-1, total_out_of_pocket=299.25)])
+
+    def test_the_message_names_the_program_and_caps_the_list(self) -> None:
+        payloads = [_cost_payload(f"p{i}", total_out_of_pocket=1.0) for i in range(14)]
+        with pytest.raises(ValueError, match=r"and 4 more"):
+            check_cost_integrity(payloads)
+
+    def test_an_offline_build_emits_no_price_nobody_charged(self, tmp_path: Path) -> None:
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        payloads = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        assert cost_integrity_problems(payloads) == []
 
 
 class TestCompetencyBasedReachesTheSite:
