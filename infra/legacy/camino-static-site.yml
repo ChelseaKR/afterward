@@ -1,0 +1,326 @@
+# Retrieved from the live `camino-static-site` CloudFormation stack (us-east-1) on 2026-08-08
+# via `aws cloudformation get-template`, since no source-controlled copy existed anywhere —
+# the rename to `afterward` (2026-08-05) moved the working site but left this predecessor
+# stack orphaned. See issue #24 for the other rename leftovers. This template carries one of
+# its own: the CloudFront distribution's Comment (below) reads "Public NearMiss evidence site
+# at ${DomainName}", copy-pasted from that stack's template when this one was bootstrapped.
+# One occurrence, in a Comment -- the Description and the resource names are camino's own.
+#
+# This copy exists so the redirect below has a reviewable diff and a place to apply future
+# changes from — nothing in this repo's CI deploys it. Apply by hand:
+#   aws cloudformation deploy --region us-east-1 --stack-name camino-static-site \
+#     --template-file infra/legacy/camino-static-site.yml --capabilities CAPABILITY_NAMED_IAM
+#
+# STATUS: camino.chelseakr.com now 301s every request to https://afterward.chelseakr.com,
+# via RouteRewriteFunction below (repurposed, not renamed, to keep the CFN diff minimal).
+# The bucket is emptied but retained (DeletionPolicy: Retain) in case the redirect needs to
+# be reverted. See AWS-WASTE-IDEATION-2026-08-07.md for the traffic numbers that motivated
+# this instead of an outright teardown: 22,930 requests/14d at retirement time were real
+# inbound links or crawlers, not noise.
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Private S3 and CloudFront origin for camino.chelseakr.com, including
+  Route 53 DNS, an ACM certificate, and a least-privilege GitHub OIDC deploy role.
+  Retired 2026-08-08: serves a 301 redirect to afterward.chelseakr.com; publishes no content.
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: camino.chelseakr.com
+    AllowedPattern: ^[a-z0-9.-]+$
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+    Default: Z09063681IX9IVZF7L6YB
+  SiteBucketName:
+    Type: String
+    Default: camino.chelseakr.com
+  GitHubRepository:
+    Type: String
+    Default: ChelseaKR/camino
+    AllowedPattern: ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$
+  PublishDns:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+
+Conditions:
+  PublishDnsRecords: !Equals [!Ref PublishDns, "true"]
+
+Resources:
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref SiteBucketName
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          # Was: ExpireNoncurrentVersions, NoncurrentDays: 30. Superseded 2026-08-08 -- a rule
+          # only needs to be as aggressive as the most aggressive one that applies, and this one
+          # subsumes it. camino.chelseakr.com now serves a 301 redirect (see RouteRewriteFunction)
+          # and publishes no content, so the ~742k objects / 20.2 GB this bucket held are pure
+          # storage cost with nothing reading them. 1 day is the practical minimum S3 accepts;
+          # letting lifecycle expiration do this asynchronously avoids 742k individual
+          # DeleteObject calls (and their request charges) from any client. The bucket itself
+          # keeps DeletionPolicy: Retain -- this empties it, it doesn't remove it, so reverting
+          # the redirect and restoring old content stays possible.
+          - Id: EmptyRetiredBucket
+            Status: Enabled
+            ExpirationInDays: 1
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  SiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+      ValidationMethod: DNS
+
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Description: !Sub "Private ${DomainName} S3 origin"
+        Name: !Sub "${AWS::StackName}-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  RouteRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      AutoPublish: true
+      # Repurposed 2026-08-08 (was: resolve directory-style routes to their index.html — moot,
+      # nothing serves content from this origin anymore). Logical ID and Name kept unchanged so
+      # this is a CloudFormation in-place update, not a resource replacement. Preserves path and
+      # query string so an old bookmark or search-indexed URL lands on the equivalent afterward
+      # page rather than its homepage.
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          var params = [];
+          for (var key in request.querystring) {
+            var q = request.querystring[key];
+            if (q.multiValue) {
+              q.multiValue.forEach(function (mv) {
+                params.push(encodeURIComponent(key) + '=' + encodeURIComponent(mv.value));
+              });
+            } else {
+              params.push(encodeURIComponent(key) + '=' + encodeURIComponent(q.value));
+            }
+          }
+          var qs = params.length ? '?' + params.join('&') : '';
+          return {
+            statusCode: 301,
+            statusDescription: 'Moved Permanently',
+            headers: {
+              location: { value: 'https://afterward.chelseakr.com' + request.uri + qs }
+            }
+          };
+        }
+      FunctionConfig:
+        Comment: Retired camino.chelseakr.com — 301 every request to afterward.chelseakr.com, path and query string preserved.
+        Runtime: cloudfront-js-2.0
+      Name: !Sub "${AWS::StackName}-route-rewrite"
+
+  SiteResponseHeaders:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Comment: Security headers for a static site that collects nothing and embeds nothing.
+        CustomHeadersConfig:
+          Items:
+            - Header: Cache-Control
+              Override: true
+              Value: public, max-age=0, must-revalidate
+            # This site asks for no device capability at all. Denying the lot is not
+            # defensive posturing; there is genuinely nothing here that needs any of it.
+            - Header: Permissions-Policy
+              Override: true
+              Value: camera=(), geolocation=(), microphone=(), payment=(), usb=(), interest-cohort=()
+        Name: !Sub "${AWS::StackName}-security-headers"
+        SecurityHeadersConfig:
+          # CloudFront rejects Content-Security-Policy as a custom header ? it owns the
+          # recognised security headers and wants them declared here instead.
+          #
+          # Everything is first-party and static: no third-party scripts, no remote fonts,
+          # no analytics, no form posts. 'unsafe-inline' covers the framework's hydration
+          # payload and the ten-line nav script in the layout.
+          ContentSecurityPolicy:
+            Override: true
+            ContentSecurityPolicy: >-
+              default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self'
+              'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self';
+              form-action 'none'; frame-ancestors 'none'; base-uri 'self';
+              object-src 'none'; upgrade-insecure-requests
+          ContentTypeOptions:
+            Override: true
+          # Nothing here is meant to be framed, and a site wearing California's design
+          # system is exactly the sort of thing worth refusing to let someone else reframe.
+          FrameOptions:
+            FrameOption: DENY
+            Override: true
+          ReferrerPolicy:
+            Override: true
+            ReferrerPolicy: strict-origin-when-cross-origin
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 63072000
+            IncludeSubdomains: true
+            Override: true
+            Preload: true
+          XSSProtection:
+            ModeBlock: true
+            Override: true
+            Protection: true
+
+  SiteCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: >-
+          Cache public assets at the edge while keeping verifier query tokens distinct.
+        DefaultTTL: 300
+        MaxTTL: 86400
+        MinTTL: 0
+        Name: !Sub "${AWS::StackName}-public-cache"
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: whitelist
+            QueryStrings:
+              - verify
+
+  SiteDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref DomainName
+        Comment: !Sub "Public NearMiss evidence site at ${DomainName}"
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+          - ErrorCachingMinTTL: 0
+            ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /404.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachePolicyId: !Ref SiteCachePolicy
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt RouteRewriteFunction.FunctionMetadata.FunctionARN
+          ResponseHeadersPolicyId: !Ref SiteResponseHeaders
+          TargetOriginId: private-site-bucket
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        Origins:
+          - DomainName: !GetAtt SiteBucket.RegionalDomainName
+            Id: private-site-bucket
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SiteCertificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontReadOnly
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub >-
+                  arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${SiteDistribution}
+
+  SiteDnsA:
+    Type: AWS::Route53::RecordSet
+    Condition: PublishDnsRecords
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt SiteDistribution.DomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: Z2FDTNDATAQYW2
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+
+  SiteDnsAAAA:
+    Type: AWS::Route53::RecordSet
+    Condition: PublishDnsRecords
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt SiteDistribution.DomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: Z2FDTNDATAQYW2
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: AAAA
+
+  # GitHubDeployRole removed 2026-08-08. Its physical role (camino-static-site-github-deploy)
+  # was already gone from IAM before this change -- confirmed via `aws iam get-role` (NoSuchEntity)
+  # -- and blocked this very update: CloudFormation's drift check on an untouched resource failed
+  # trying to read its Arn, which rolled the whole stack (including the redirect function change
+  # below) back. Its OIDC trust subject (repo:ChelseaKR/camino:...) is also one GitHub can no
+  # longer issue post-rename, so nothing could have assumed it even if it still existed. This is
+  # issue #24 item 1 in the afterward repo, done as a side effect of unblocking this deploy rather
+  # than as its own PR.
+
+Outputs:
+  CloudFrontDistributionId:
+    Value: !Ref SiteDistribution
+  CloudFrontDomainName:
+    Value: !GetAtt SiteDistribution.DomainName
+  ProductionUrl:
+    Value: !Sub "https://${DomainName}"
+  SiteBucketName:
+    Value: !Ref SiteBucket
+
