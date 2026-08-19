@@ -15,7 +15,7 @@ help:
 	@uv run afterward --help
 
 install:
-	uv sync --all-groups
+	uv sync --locked --all-groups
 
 format:
 	uv run ruff format .
