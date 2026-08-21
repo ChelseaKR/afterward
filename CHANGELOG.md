@@ -253,11 +253,11 @@ All notable changes to this project are documented here. The format follows
   `fail_under = 85` and never set a mode, so coverage.py ran in its default statement mode
   while `docs/ROADMAP.md` cited CQ-08, which names **branch** coverage and a `branch = true`
   setting. The floor was right; the thing measured was not the thing claimed. `branch = true`
-  is now set; re-measured, branch coverage is 91.62% against 92.05% statement, so the 85%
-  floor holds without being relaxed, and the ROADMAP row, the README standards table and the
-  `fail_under` comment all say "branch" and carry the re-measured figure and its date. The
-  distinction is not academic in this pipeline: its hardest code is branchy by nature — the
-  negative sentinels, suppressed versus reported versus not-applicable, and the
+  is now set; re-measured on 2026-08-21, branch coverage is 92.12% against 92.57% statement,
+  so the 85% floor holds without being relaxed, and the ROADMAP row, the README standards
+  table and the `fail_under` comment all say "branch" and carry the re-measured figure and
+  its date. The distinction is not academic in this pipeline: its hardest code is branchy by
+  nature — the negative sentinels, suppressed versus reported versus not-applicable, and the
   competency-based `-1` immediately below — and statement coverage reports a branchy function
   as fully covered when only one side of each test was ever taken.
 

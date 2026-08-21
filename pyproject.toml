@@ -94,9 +94,11 @@ addopts = "-q --strict-markers --strict-config --import-mode=importlib"
 branch = true
 
 [tool.coverage.report]
-# Floor, not target: measured 91.62% branch on 2026-08-15 (92.05% statement, for comparison
-# with the pre-2026-08-15 figure). Applies when tests run with coverage (`make test`);
-# raising it is welcome, lowering it needs a reason. 85 is CQ-08's floor for an application.
+# Floor, not target: measured 92.12% branch on 2026-08-21 (92.57% statement, for comparison;
+# 91.62%/92.05% on 2026-08-15, when branch mode was first turned on -- the pipeline gained
+# code and tests between the two measurements). Applies when tests run with coverage
+# (`make test`); raising it is welcome, lowering it needs a reason. 85 is CQ-08's floor for
+# an application.
 fail_under = 85
 
 [tool.bandit]

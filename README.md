@@ -302,7 +302,7 @@ silently.
 | Standard | State |
 |----------|-------|
 | Responsible-Tech Framework | Applies (honest record: [docs/RESPONSIBLE-TECH-AUDITS.md](docs/RESPONSIBLE-TECH-AUDITS.md)) |
-| Code Quality | Applies (ruff, mypy --strict, pytest with an 85% branch-coverage floor at 91.62% measured, uv.lock, pre-commit) |
+| Code Quality | Applies (ruff, mypy --strict, pytest with an 85% branch-coverage floor at 92.12% measured, uv.lock, pre-commit) |
 | Security & Supply-Chain | Applies (SHA-pinned actions, gitleaks, bandit, pip-audit, Dependabot, OIDC-only deploy with no static keys) |
 | CI/CD | Applies (`make verify` and `make web-verify` run identically in CI; deploys are dispatch-only and refuse to run without CI green on the exact commit) |
 | Observability | Applies (static-site tier: deploy-time guards, live-site smoke tests, quarterly upstream freshness checks; declared in [docs/ROADMAP.md](docs/ROADMAP.md)) |
