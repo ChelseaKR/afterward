@@ -175,6 +175,24 @@ All notable changes to this project are documented here. The format follows
   actually fetches, prefetches included — the only way to see traffic that no built file
   records.
 
+### Changed
+
+- The last six `TODO(i18n)` markers are gone (#33). Six files carried local `COPY`
+  constants under a standing note that the strings belonged in `web/lib/i18n.ts` — left
+  there because that file was owned by a concurrent change whenever each one landed. All six
+  are now moved: the About page's jump-nav labels, `Measure`'s benchmark-population note,
+  `Compare`'s per-occupation row copy, the program page's regional-figure block,
+  `web/lib/compare.ts`'s shared cohort-not-own badge and note (now `t.cohortNotOwn` /
+  `t.cohortNotOwnNote`, read from three call sites instead of an exported record), and
+  `SearchApp`'s entire local dictionary — the largest of the six, including several strings
+  whose names collided with existing, unused global keys (`filterOutlook`, `outlookAny`,
+  `areaNote`, `sortEarnings`, and others) left over from before `SearchApp` grew its own
+  richer copy for the same UI. Those global keys carried stale text nothing read; they now
+  carry the real, live wording, and `SearchApp` reads it back by the same name instead of
+  shadowing it locally. Nothing here changes what a page says: `make web-verify` is green in
+  both languages on the fixture build, including the rendered axe pass over populated search
+  results and the comparison table.
+
 ### Fixed
 
 - A front page offered in place of a page that is gone is now checked against the review

@@ -10,7 +10,7 @@ import {
   occupationTitleLang,
   programsForOccupation,
 } from "@/lib/data";
-import { COHORT_NOT_OWN, isOwnCohort } from "@/lib/compare";
+import { isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
 import type { OccupationSkill, RelatedSource } from "@/lib/types";
@@ -549,8 +549,8 @@ export default async function OccupationPage({
                   */}
                 {entry.r && !isOwnCohort(entry) && (
                   <p className="cohort-note">
-                    <span className="badge badge-small">{COHORT_NOT_OWN[lang].badge}</span>{" "}
-                    {COHORT_NOT_OWN[lang].note}
+                    <span className="badge badge-small">{t.cohortNotOwn}</span>{" "}
+                    {t.cohortNotOwnNote}
                   </p>
                 )}
               </li>

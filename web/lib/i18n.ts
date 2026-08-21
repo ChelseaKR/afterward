@@ -63,26 +63,69 @@ const en = {
     "Not a California state website. An independent project built from public data.",
   skipToContent: "Skip to main content",
 
+  searchIntroHeading: "Search California training programs",
+  searchIntroBody:
+    "Every California training program in the federal record: what it costs, how long it " +
+    "takes, and — where the provider reported it — how many people finished, how many " +
+    "were working six months later, and what they earned. Free to use, no account, and " +
+    "the roughly one program in three that reported nothing is listed here too, saying so.",
+  resultsRegion: "Search results",
   searchLabel: "Search programs, providers, or jobs",
   searchPlaceholder: "medical assistant, welding, Fresno…",
+  searchEnglishOnly:
+    "Program names and job titles here are recorded in English only, exactly as the " +
+    "provider filed them and the state published them. A search term in another language " +
+    "will not match one.",
   filters: "Filters",
   clearFilters: "Clear filters",
   resultsCount: (n: number, total: number) => `${fmt(n)} of ${fmt(total)} programs`,
   noResults: "No programs match these filters.",
   noResultsHint: "Try removing a filter or searching for a broader term.",
+  noResultsRelaxLead: "Removing any one of these would find programs:",
+  noResultsRelaxOption: (label: string, n: number) =>
+    n === 1
+      ? `Remove ${label} — 1 program matches`
+      : `Remove ${label} — ${fmt(n)} programs match`,
+  noResultsNothingHelps:
+    "Removing any single one of them still finds nothing, so more than one is doing the " +
+    "excluding.",
+
+  filterUnreportedLegend: "Programs that reported nothing",
+  filterHideUnreported: (missing: number) =>
+    `Hide the ${fmt(missing)} programs that reported nothing`,
+  filterHideUnreportedNote: (missing: number) =>
+    `Hiding them is not the same as hiding bad programs. Nobody knows how those ` +
+    `${fmt(missing)} did — only that they did not say: some filed nothing, and for others ` +
+    `the figure was withheld to protect the privacy of a small group.`,
 
   filterOutcomes: "Only programs with reported outcomes",
-  filterOutlook: "Job outlook",
-  outlookAny: "Any outlook",
-  outlookGrowing: "Only growing jobs",
-  outlookShrinking: "Only shrinking jobs",
-  statShrinking: (n: number) => `${fmt(n)} train for jobs California expects to shrink`,
-  statReported: (n: number, total: number) =>
-    `${fmt(n)} of ${fmt(total)} report what happened to their students`,
+  filterOutlook: "What California expects of the job",
+  outlookAny: "All jobs",
+  outlookGrowing: "Only jobs California expects to grow",
+  outlookShrinking: "Only jobs California expects to shrink",
+  filterOutlookNoProjection: (n: number) =>
+    `This filter also leaves out ${fmt(n)} of the programs that match the rest of your ` +
+    `search: California publishes no ten-year projection for the work they train for, so ` +
+    `there is nothing here for the filter to test. Missing information is not a ` +
+    `projection of zero.`,
+  statShrinking: (n: number) =>
+    `${fmt(n)} of these programs train for work California expects there to be less of ` +
+    `in ten years.`,
+  statReported: (reported: number, total: number) =>
+    `${fmt(reported)} of these ${fmt(total)} programs reported what happened to their ` +
+    `students. The other ${fmt(total - reported)} reported nothing at all, which is not ` +
+    `evidence that they are worse.`,
   showThese: "Show these",
+  /** i18n key naming: replaces `showThese` where the button carries a count. */
+  showTheseN: (n: number) => (n === 1 ? "Show that one" : `Show those ${fmt(n)}`),
+  showOnlyReported: (n: number) => `Show only the ${fmt(n)} that reported`,
   filterCity: "City",
   filterAnyCity: "Anywhere in California",
-  filterMaxCost: "Maximum out-of-pocket cost",
+  filterMaxCost: "Most you can pay",
+  costAtMost: (value: string) => `${value} or less`,
+  filterMaxCostNote:
+    "Tuition and supplies as the provider reported them, for someone paying without public " +
+    "workforce funding. No grant or aid you might qualify for is taken off it.",
   filterAnyCost: "Any cost",
 
   /* ---- How long you can give it ----
@@ -145,13 +188,20 @@ const en = {
    * to the documented home rather than growing the block that is on its way out.
    */
   filterNameLength: (label: string): string => `the time limit “${label}”`,
+  filterNameQuery: (query: string) => `your search for “${query}”`,
+  filterNameReported: "the filter hiding programs that reported nothing",
+  filterNameOutlook: (option: string) => `the job filter “${option}”`,
+  filterNameCost: (cap: string) => `the price limit “${cap}”`,
+  filterNameArea: (area: string) => `the region “${area}”`,
+  filterNameUnplaced: "the choice to show only programs California places in no region",
+  filterNameCity: (city: string) => `the city “${city}”`,
 
   sortBy: "Sort by",
   sortRelevance: "Best match",
-  sortEarnings: "Highest reported earnings",
+  sortEarnings: "Highest reported earnings (one quarter)",
   sortCost: "Lowest cost",
   sortLength: "Shortest first",
-  sortOpenings: "Most job openings",
+  sortOpenings: "Most openings projected for the job",
 
   cost: "Cost",
   costAtLeast: (v: string) => `At least ${v}`,
@@ -212,6 +262,39 @@ const en = {
   byRegion: "Pay by region",
   region: "Region",
 
+  /**
+   * The program page's regional-figure block: where California publishes a separate figure
+   * for the area a program's city sits in, shown beneath the statewide one. Statewide stays
+   * the headline — people who train here do not necessarily work here.
+   */
+  regionIntro: (area: string) =>
+    `Where California publishes a separate figure for ${area}, it appears beneath the ` +
+    `statewide one. Statewide stays the headline: people who train here do not ` +
+    `necessarily work here.`,
+  /** Title attribute on each regional figure. */
+  regionFigureNote: (area: string) =>
+    `California's published figure for ${area}, the area this program's city sits in. ` +
+    `Shown alongside the statewide figure, not instead of it.`,
+  /**
+   * The row exists but this one measure is blank inside it. Not a zero, and not the
+   * provider's omission, so it cannot borrow the page's usual not-reported explanation.
+   */
+  regionFigureBlank:
+    "California publishes figures for this area but not this one. That is missing " +
+    "information, not a zero.",
+  /** The area is known, but this occupation has no published row in it. */
+  regionNoRow: (area: string) =>
+    `California publishes no separate figure for this job in ${area}. The statewide ` +
+    `figures above are the only ones there are.`,
+  /** The city could not be placed in a published area at all. */
+  regionUnplaced: "No regional figures for this program's city",
+  regionUnplacedBody: (city: string | null) =>
+    `${city ?? "This program's city"} is not one of the metropolitan or rural areas ` +
+    `California names when it publishes wages and openings. A neighbouring area's ` +
+    `figures would look exactly like a correct answer, so none are shown and the ` +
+    `statewide figures stand alone. About half of California's programs are in this ` +
+    `position.`,
+
   compareTitle: "Side by side",
   /**
    * Accessible name for the sticky tray, distinct from `compareTitle`. Both used to say
@@ -268,32 +351,56 @@ const en = {
     "shortest, not which is best. The rates themselves are unchanged, and completion is still " +
     "marked when the programs being compared run for the same sort of time.",
 
+  /**
+   * The comparison table's per-occupation row: each program's jobs, and California's figures
+   * for each one, listed under the job rather than pooled — so a high salary from one job and
+   * a weak outlook from another are never read as a single profile.
+   */
+  occupationRow: "Jobs this leads to, and California's figures for each",
+  occupationRowNote:
+    "Pay, projected change, and openings describe a job, not a program, and many programs " +
+    "lead to more than one job. Each job's figures are listed under that job, so a high " +
+    "salary from one and a weak outlook from another are never read as a single profile.",
+  occupationFiguresLoading: "Loading each job's figures…",
+  occupationFiguresUnavailable: "Each job's own figures are on the program page above.",
+  unnamedOccupationShort: "Occupation not named",
+
   vsState: "Typical California program",
-  vsStateAbove: "Better than typical",
-  vsStateBelow: "Worse than typical",
+  /**
+   * What the statewide median in `vsState` pools, stated in visible text rather than a
+   * `title` attribute — unreachable on a phone, which is how most of this site's readers
+   * meet it. Not a verdict: see the block comment on `benchmark` rendering in Measure.tsx
+   * for why "Better/worse than typical" was withdrawn.
+   */
+  benchmarkPopulation:
+    "That median pools every California program that reported this measure, whatever its " +
+    "length, credential, or field, and leaves out the ones that reported nothing. It is a " +
+    "reference point, not a rating of this program.",
   ofReporting: (n: number) => `of ${fmt(n)} reporting`,
   benchmarkNote:
     "Compared with the median California program that reported this same measure. Programs reporting nothing are not in the comparison, so this is a comparison among those willing to publish.",
 
-areaNote: (unplaced: number, total: number) =>
-      `Regions are California's own labour-market areas. A program joins one only when its ` +
-      `city is named in that region's title, so ${fmt(unplaced)} of ${fmt(total)} programs — ` +
-      `some of them inside these regions' own counties — belong to no region here. Picking a ` +
-      `region hides those programs; it does not place them somewhere else.`,
-    unplacedOption: (n: number) => `Not placed in a region (${fmt(n)})`,
-    anyCityInArea: "Any city in this region",
-    anyCityUnplaced: "Any city with no region",
-    areaHidesUnplaced: (n: number) =>
-      `${fmt(n)} more programs match this search but are in cities California places in no ` +
-      `region. They are not shown here, and they are not somewhere else.`,
-    unplacedHeading: "Programs California places in no region",
-    unplacedBody:
-      "Their cities are not named in any published labour-market area, so no region's pay " +
-      "figures are claimed for them. That is a gap in the state's geography rather than a " +
-      "judgement about the programs, and it covers cities inside the regions listed above as " +
-      "well as cities far from any of them.",
-    statUnplaced: (n: number, total: number) =>
-      `${fmt(n)} of ${fmt(total)} are in cities California places in no region`,
+  areaNote: (unplaced: number, total: number) =>
+    `California's labour-market regions are each named after two or three cities, and a ` +
+    `program counts as being in one only when its city is one of those. That leaves ` +
+    `${fmt(unplaced)} of these ${fmt(total)} programs in no region at all — some in the ` +
+    `same county as a region listed here, some right next door to one. Choosing a region ` +
+    `hides those ${fmt(unplaced)}; it does not move them somewhere else.`,
+  unplacedOption: (n: number) => `Not placed in a region (${fmt(n)})`,
+  anyCityInArea: "Any city in this region",
+  anyCityUnplaced: "Any city with no region",
+  areaHidesUnplaced: (n: number) =>
+    `${fmt(n)} more programs match this search but are in cities California places in no ` +
+    `region. They are not shown here, and they are not somewhere else.`,
+  unplacedHeading: "Programs California places in no region",
+  unplacedBody:
+    "Their cities are not named in any published labour-market area, so no region's pay " +
+    "figures are claimed for them. That is a gap in the state's geography rather than a " +
+    "judgement about the programs, and it covers cities inside the regions listed above as " +
+    "well as cities far from any of them.",
+  statUnplaced: (unplaced: number, total: number) =>
+    `${fmt(unplaced)} of the ${fmt(total)} are in cities California's own published ` +
+    `regions do not name, so no region's pay or openings figures are claimed for them.`,
 
   onetCredit:
     "This site incorporates information from O*NET Web Services by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). O*NET\u00ae is a trademark of USDOL/ETA.",
@@ -514,6 +621,16 @@ areaNote: (unplaced: number, total: number) =>
     "Rows marked \u2020 carry figures the provider filed against more than the program named \u2014 " +
     "several of its programs, or the whole institution. They are shown because they are real. " +
     "They cannot be read against the rows beside them, because they do not describe one course.",
+  /**
+   * The badge-and-note pair for the same fact outside a table \u2014 a result card, an occupation
+   * page's program list, and the comparison header \u2014 where "\u2020" and a caption beneath a table
+   * have nothing to attach to. Shared across those call sites so the wording cannot drift.
+   */
+  cohortNotOwn: "Outcomes cover more than this program",
+  cohortNotOwnNote:
+    "The provider filed these figures against more than the program named \u2014 several of " +
+    "its programs, or the whole institution. They are shown because they are real, and " +
+    "nothing here ranks or rates them, because they do not describe this program.",
   aggregateBroadGroup: (group: string, codes: string) =>
     `California publishes no separate pay or openings figures for the occupation this program trains for (${codes}). It reports that work only inside ${group}, the larger category the occupation classification files it under, so the pay, openings and projected change below belong to that whole category. Read them as the range this job sits inside, not as a figure for the job itself.`,
   aggregateHybrid: (group: string, codes: string) =>
@@ -533,6 +650,23 @@ areaNote: (unplaced: number, total: number) =>
   aboutProgramsCounted: "Programs described here",
   aboutProvidersNamed: "Providers named here",
   aboutProgramsReporting: "Programs that report any outcome",
+
+  /* ---- About page jump nav ----
+   *
+   * Five short forms of headings that are, correctly, long: this page is two and a half
+   * thousand words of prose and it is read on a phone by people who do not have two and a
+   * half thousand words of time. The jump list has to be scannable in one screen, and a list
+   * that repeated "The outcomes are self-reported, and this site does not check them"
+   * verbatim would be a second wall of text standing in front of the first. Other jump-list
+   * entries reuse a section's real heading, and are reused rather than restated so the nav
+   * and the heading cannot drift apart.
+   */
+  aboutOnThisPageNav: "Jump to a section of this page",
+  aboutShortSelfReported: "Providers report their own results, and nobody audits them",
+  aboutShortMissing: "A blank means not reported — never zero",
+  aboutShortQuarter: "The earnings figure covers three months",
+  aboutShortAggregate: "When a job's figures cover more jobs than one",
+  aboutShortLimits: "What this site gets wrong",
 
   aboutSourcesHeading: "Where every figure comes from",
   aboutSourcesBody:
@@ -1165,29 +1299,73 @@ const es: Dictionary = {
     "No es un sitio del estado de California. Es un proyecto independiente hecho con datos públicos.",
   skipToContent: "Saltar al contenido principal",
 
+  searchIntroHeading: "Busque programas de capacitación en California",
+  searchIntroBody:
+    "Aquí está cada programa de capacitación de California que consta en el registro " +
+    "federal: cuánto cuesta, cuánto dura y —cuando la institución lo reportó— cuántas " +
+    "personas terminaron, cuántas estaban trabajando seis meses después y cuánto ganaron. " +
+    "Es gratis y sin cuenta, y alrededor de uno de cada tres programas no reportó nada: " +
+    "esos también aparecen aquí, y lo dicen.",
+  resultsRegion: "Resultados de la búsqueda",
   searchLabel: "Busque programas, instituciones u ocupaciones",
   // Program and occupation names in the source data are English only, so a Spanish
   // example would return nothing. These terms actually match.
   searchPlaceholder: "medical assistant, welding, Fresno…",
+  searchEnglishOnly:
+    "Los nombres de los programas y de las ocupaciones están registrados solo en inglés, " +
+    "tal como los presentó la institución y los publicó el estado. Un término en español " +
+    "no va a coincidir con ninguno: pruebe la palabra en inglés — «welding» en lugar de " +
+    "«soldadura», «medical assistant» en lugar de «asistente médico».",
   filters: "Filtros",
   clearFilters: "Borrar filtros",
   resultsCount: (n: number, total: number) => `${fmt(n)} de ${fmt(total)} programas`,
   noResults: "Ningún programa coincide con estos filtros.",
   noResultsHint: "Quite un filtro o busque un término más general.",
+  noResultsRelaxLead: "Quitar cualquiera de estos sí encontraría programas:",
+  noResultsRelaxOption: (label: string, n: number) =>
+    n === 1
+      ? `Quitar ${label}: coincide 1 programa`
+      : `Quitar ${label}: coinciden ${fmt(n)} programas`,
+  noResultsNothingHelps:
+    "Quitar uno solo de ellos sigue sin encontrar nada, así que hay más de uno dejando " +
+    "programas fuera.",
+
+  filterUnreportedLegend: "Programas que no reportaron nada",
+  filterHideUnreported: (missing: number) =>
+    `Ocultar los ${fmt(missing)} programas que no reportaron nada`,
+  filterHideUnreportedNote: (missing: number) =>
+    `Ocultarlos no es lo mismo que ocultar los programas malos. Nadie sabe cómo les fue a ` +
+    `esos ${fmt(missing)}; solo que no lo dijeron: unos no presentaron nada y a otros se ` +
+    `les omitió la cifra para proteger la privacidad de un grupo pequeño.`,
 
   filterOutcomes: "Solo programas con resultados reportados",
-  filterOutlook: "Perspectiva laboral",
-  outlookAny: "Cualquier perspectiva",
-  outlookGrowing: "Solo ocupaciones en crecimiento",
-  outlookShrinking: "Solo ocupaciones en declive",
+  filterOutlook: "Qué espera California de la ocupación",
+  outlookAny: "Todas las ocupaciones",
+  outlookGrowing: "Solo ocupaciones que California espera que crezcan",
+  outlookShrinking: "Solo ocupaciones que California espera que se reduzcan",
+  filterOutlookNoProjection: (n: number) =>
+    `Este filtro también deja fuera ${fmt(n)} de los programas que coinciden con el resto ` +
+    `de su búsqueda: California no publica una proyección a diez años para el trabajo que ` +
+    `enseñan, así que el filtro no tiene nada que evaluar. Que falte el dato no es una ` +
+    `proyección de cero.`,
   statShrinking: (n: number) =>
-    `${fmt(n)} preparan para ocupaciones que California espera que se reduzcan`,
-  statReported: (n: number, total: number) =>
-    `${fmt(n)} de ${fmt(total)} reportan qué pasó con sus estudiantes`,
+    `${fmt(n)} de estos programas preparan para trabajos de los que California espera que ` +
+    `haya menos dentro de diez años.`,
+  statReported: (reported: number, total: number) =>
+    `${fmt(reported)} de estos ${fmt(total)} programas reportaron qué pasó con sus ` +
+    `estudiantes. Los otros ${fmt(total - reported)} no reportaron nada, lo cual no es ` +
+    `prueba de que sean peores.`,
   showThese: "Ver estos",
+  showTheseN: (n: number) => (n === 1 ? "Ver ese" : `Ver esos ${fmt(n)}`),
+  showOnlyReported: (n: number) => `Ver solo los ${fmt(n)} que reportaron`,
   filterCity: "Ciudad",
   filterAnyCity: "Cualquier lugar de California",
-  filterMaxCost: "Costo máximo de su bolsillo",
+  filterMaxCost: "Lo máximo que puede pagar",
+  costAtMost: (value: string) => `${value} o menos`,
+  filterMaxCostNote:
+    "La colegiatura y los materiales tal como los reportó la institución, para quien paga " +
+    "sin fondos públicos de capacitación. No se le descuenta ninguna beca ni ayuda a la " +
+    "que usted pudiera calificar.",
   filterAnyCost: "Cualquier costo",
 
   filterLength: "Lo máximo que puede dedicarle",
@@ -1227,13 +1405,20 @@ const es: Dictionary = {
     "persona ya sabe hacer el trabajo, así que no tiene un número fijo de semanas. Eso es lo " +
     "que reportó la institución, no un vacío en el registro.",
   filterNameLength: (label: string): string => `el límite de tiempo «${label}»`,
+  filterNameQuery: (query: string) => `su búsqueda de «${query}»`,
+  filterNameReported: "el filtro que oculta los programas que no reportaron nada",
+  filterNameOutlook: (option: string) => `el filtro de ocupación «${option}»`,
+  filterNameCost: (cap: string) => `el límite de precio «${cap}»`,
+  filterNameArea: (area: string) => `la región «${area}»`,
+  filterNameUnplaced: "la opción de ver solo los programas que California no ubica en ninguna región",
+  filterNameCity: (city: string) => `la ciudad «${city}»`,
 
   sortBy: "Ordenar por",
   sortRelevance: "Más relevante",
-  sortEarnings: "Mayores ingresos reportados",
+  sortEarnings: "Mayores ingresos reportados (un trimestre)",
   sortCost: "Menor costo",
   sortLength: "Más corto primero",
-  sortOpenings: "Más vacantes",
+  sortOpenings: "Más vacantes proyectadas para la ocupación",
 
   cost: "Costo",
   costAtLeast: (v: string) => `Al menos ${v}`,
@@ -1289,6 +1474,27 @@ const es: Dictionary = {
   byRegion: "Pago por región",
   region: "Región",
 
+  regionIntro: (area: string) =>
+    `Donde California publica una cifra aparte para ${area}, aparece debajo de la cifra ` +
+    `estatal. La cifra estatal sigue siendo la principal: quienes se capacitan aquí no ` +
+    `necesariamente trabajan aquí.`,
+  regionFigureNote: (area: string) =>
+    `Cifra publicada por California para ${area}, el área donde está la ciudad de este ` +
+    `programa. Se muestra junto a la cifra estatal, no en su lugar.`,
+  regionFigureBlank:
+    "California publica cifras para esta área, pero no esta. Es información que falta, " +
+    "no un cero.",
+  regionNoRow: (area: string) =>
+    `California no publica una cifra aparte para esta ocupación en ${area}. Las cifras ` +
+    `estatales de arriba son las únicas que existen.`,
+  regionUnplaced: "Sin cifras regionales para la ciudad de este programa",
+  regionUnplacedBody: (city: string | null) =>
+    `${city ?? "La ciudad de este programa"} no es una de las áreas metropolitanas o ` +
+    `rurales que California nombra al publicar salarios y vacantes. Las cifras de un ` +
+    `área vecina se verían igual que una respuesta correcta, así que no se muestra ` +
+    `ninguna y las cifras estatales quedan solas. Cerca de la mitad de los programas de ` +
+    `California están en esta situación.`,
+
   compareTitle: "Lado a lado",
   compareTrayLabel: "Programas seleccionados para comparar",
   compareMeasure: "Medida",
@@ -1321,32 +1527,48 @@ const es: Dictionary = {
     "de estos es más corto, no cuál es mejor. Las tasas no cambian, y la finalización se " +
     "sigue marcando cuando los programas comparados duran más o menos lo mismo.",
 
+  occupationRow: "Empleos a los que lleva, y las cifras de California para cada uno",
+  occupationRowNote:
+    "El pago, el cambio proyectado y las vacantes describen un empleo, no un programa, y " +
+    "muchos programas llevan a más de un empleo. Las cifras de cada empleo se listan bajo " +
+    "ese empleo, para que un salario alto de uno y un panorama débil de otro nunca se lean " +
+    "como un solo perfil.",
+  occupationFiguresLoading: "Cargando las cifras de cada empleo…",
+  occupationFiguresUnavailable: "Las cifras propias de cada empleo están en la página del programa, arriba.",
+  unnamedOccupationShort: "Ocupación sin nombre",
+
   vsState: "Programa típico de California",
-  vsStateAbove: "Mejor que lo típico",
-  vsStateBelow: "Peor que lo típico",
+  benchmarkPopulation:
+    "Esa mediana agrupa todos los programas de California que reportaron esta medida, sin " +
+    "importar su duración, credencial o campo, y deja fuera los que no reportaron nada. Es " +
+    "un punto de referencia, no una calificación de este programa.",
   ofReporting: (n: number) => `de ${fmt(n)} que reportan`,
   benchmarkNote:
     "Comparado con el programa típico de California que reportó esta misma medida. Los programas que no reportan nada no entran en la comparación.",
 
-areaNote: (unplaced, total) =>
-      `Las regiones son las áreas laborales que publica California. Un programa entra en una ` +
-      `solo si su ciudad aparece en el título de esa región, así que ${fmt(unplaced)} de ` +
-      `${fmt(total)} programas —algunos dentro de los condados de esas mismas regiones— aquí ` +
-      `no pertenecen a ninguna. Elegir una región los oculta; no los coloca en otro lugar.`,
-    unplacedOption: (n) => `Sin región asignada (${fmt(n)})`,
-    anyCityInArea: "Cualquier ciudad de esta región",
-    anyCityUnplaced: "Cualquier ciudad sin región",
-    areaHidesUnplaced: (n) =>
-      `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero están en ciudades que ` +
-      `California no ubica en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
-    unplacedHeading: "Programas que California no ubica en ninguna región",
-    unplacedBody:
-      "Sus ciudades no aparecen en ninguna área laboral publicada, así que no se les atribuye " +
-      "el pago de ninguna región. Es un vacío en la geografía del estado, no un juicio sobre " +
-      "los programas, y abarca tanto ciudades dentro de las regiones de arriba como ciudades " +
-      "lejos de todas ellas.",
-    statUnplaced: (n, total) =>
-      `${fmt(n)} de ${fmt(total)} están en ciudades que California no ubica en ninguna región`,
+  areaNote: (unplaced: number, total: number) =>
+    `Las regiones laborales de California llevan el nombre de dos o tres ciudades cada ` +
+    `una, y un programa cuenta como parte de una región solo si su ciudad es una de esas. ` +
+    `Por eso ${fmt(unplaced)} de estos ${fmt(total)} programas no quedan en ninguna ` +
+    `región: algunos están en el mismo condado que una región de esta lista, y algunos ` +
+    `justo al lado de una. Elegir una región oculta esos ${fmt(unplaced)}; no los coloca ` +
+    `en otro lugar.`,
+  unplacedOption: (n: number) => `Sin región asignada (${fmt(n)})`,
+  anyCityInArea: "Cualquier ciudad de esta región",
+  anyCityUnplaced: "Cualquier ciudad sin región",
+  areaHidesUnplaced: (n: number) =>
+    `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero están en ciudades que ` +
+    `California no ubica en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
+  unplacedHeading: "Programas que California no ubica en ninguna región",
+  unplacedBody:
+    "Sus ciudades no aparecen en ninguna área laboral publicada, así que no se les atribuye " +
+    "el pago de ninguna región. Es un vacío en la geografía del estado, no un juicio sobre " +
+    "los programas, y abarca tanto ciudades dentro de las regiones de arriba como ciudades " +
+    "lejos de todas ellas.",
+  statUnplaced: (unplaced: number, total: number) =>
+    `${fmt(unplaced)} de los ${fmt(total)} están en ciudades que las regiones publicadas ` +
+    `de California no nombran, así que no se les atribuye el pago ni las vacantes de ` +
+    `ninguna región.`,
 
   onetCredit:
     "Este sitio incorpora información de O*NET Web Services del Departamento de Trabajo de Estados Unidos, Administración de Empleo y Capacitación (USDOL/ETA). O*NET\u00ae es una marca registrada de USDOL/ETA.",
@@ -1508,6 +1730,11 @@ areaNote: (unplaced, total) =>
     "Las filas marcadas con \u2020 llevan cifras que el proveedor presentó por un grupo más amplio " +
     "que el programa nombrado: varios de sus programas, o toda la institución. Se muestran porque " +
     "son reales. No pueden compararse con las filas contiguas, porque no describen un solo curso.",
+  cohortNotOwn: "Los resultados abarcan más que este programa",
+  cohortNotOwnNote:
+    "El proveedor presentó estas cifras para más que el programa nombrado — varios de sus " +
+    "programas, o toda la institución. Se muestran porque son reales, y aquí nada las " +
+    "clasifica ni las califica, porque no describen este programa.",
   aggregateBroadGroup: (group: string, codes: string) =>
     `California no publica cifras de pago ni de vacantes por separado para la ocupación que enseña este programa (${codes}). Solo reporta ese trabajo dentro de ${group}, la categoría más amplia en la que lo coloca la clasificación ocupacional, así que el pago, las vacantes y el cambio proyectado que aparecen abajo son los de esa categoría completa. Léalos como el rango en el que cae esta ocupación, no como una cifra de la ocupación misma.`,
   aggregateHybrid: (group: string, codes: string) =>
@@ -1527,6 +1754,13 @@ areaNote: (unplaced, total) =>
   aboutProgramsCounted: "Programas descritos aquí",
   aboutProvidersNamed: "Instituciones nombradas aquí",
   aboutProgramsReporting: "Programas que reportan algún resultado",
+
+  aboutOnThisPageNav: "Ir a una sección de esta página",
+  aboutShortSelfReported: "Las instituciones reportan sus propios resultados y nadie los audita",
+  aboutShortMissing: "Un espacio en blanco significa no reportado, nunca cero",
+  aboutShortQuarter: "La cifra de ingresos cubre tres meses",
+  aboutShortAggregate: "Cuando la cifra de una ocupación abarca más de una",
+  aboutShortLimits: "Lo que este sitio hace mal",
 
   aboutSourcesHeading: "De dónde sale cada cifra",
   aboutSourcesBody:
