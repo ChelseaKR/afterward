@@ -299,6 +299,18 @@ Both fields stay published, unreconciled, and undocumented as the same quantity 
 downstream of the parse — `build.py`'s `search_entry` and the emitted `outcomes` block carry
 a comment recording this finding beside both fields.
 
+Postscript, 2026-08-15: the finding now travels with the data. Everything above lives in this
+file and in source comments, neither of which arrives with `programs.json`, so a consumer
+downloading the dataset had the two fields and no way to tell which was the rate. `coverage.json`
+carries an `employment_measures` block naming `employment_rate_q2` as the measure to use,
+stating that it cannot be reconstructed from anything published here, and counting — from the
+emitted records, at build time, rather than typed — how far `employed_q2 / total_exited` is
+from it, with `completion_rate` beside it as the control that does reconcile.
+`scripts/outcome_claims_check.py` re-derives those counts from the packaged dataset and
+refuses to let `make dataset-verify` pass one where the statement and the data disagree,
+which is the failure this project has now met twice: a repository that was right and a
+published file that was old.
+
 ## Design inputs
 
 | # | Input | Date | What it informed |

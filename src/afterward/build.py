@@ -138,6 +138,57 @@ class CohortIntegrityCoverage:
 
 
 @dataclass(frozen=True)
+class EmploymentMeasureCoverage:
+    """Which of the two employment figures this dataset publishes can be trusted as a rate.
+
+    ``employed_q2`` and ``employment_rate_q2`` sit next to each other in every program record
+    and are not a numerator and a denominator of each other. A consumer who divides the count
+    by ``total_exited`` gets a different answer from the published rate on two thirds of the
+    programs where both exist, and 65 records report more people employed than exited at all.
+
+    The reason is in the federal form and is not looseness in the feed: the rate's actual
+    denominator is ETA-9171 DE129, exiters *whose second quarter after exit had arrived*,
+    while ``total_exited`` is DE121, everyone who exited in the reporting period. DE129 is not
+    published on this feed. PROVENANCE.md "Notes on D1" carries the definitions and the
+    citations.
+
+    That was recorded in `PROVENANCE.md` and in comments beside both fields, and neither
+    travels with the data. This block does: it ships inside ``coverage.json`` next to the
+    dataset it describes, so a consumer reading ``programs.json`` has the answer in the same
+    download rather than in a repository they may never see. Every count is measured from the
+    emitted records at build time rather than typed here, so it cannot go stale against the
+    data it describes, and ``scripts/outcome_claims_check.py`` re-derives it from the packaged
+    dataset and refuses one where the two disagree.
+    """
+
+    authoritative: str
+    """The field a reader or consumer should use for "how many got work". One value, named
+    rather than implied, because "which do I trust" is the question the pair provokes."""
+    derivable_from_published_counts: bool
+    """Whether the authoritative rate can be reconstructed from anything else in this dataset.
+    ``False``: its denominator is not published here, so the rate is a figure to carry, never
+    to recompute."""
+    # Populations. `both` is over programs where a rate, a count and a non-zero exit count all
+    # exist -- the only programs on which the arithmetic below is even attemptable.
+    programs_publishing_rate: int
+    programs_publishing_count: int
+    programs_publishing_both: int
+    # What happens if a consumer does the obvious thing anyway.
+    count_over_exited_within_a_rounding_step: int
+    count_over_exited_differs_by_over_10_points: int
+    count_exceeds_exited: int
+    """Programs reporting more people employed at two quarters than exited at all. Impossible
+    as a subset relationship, ordinary once the two are understood to count different
+    cohorts, and the clearest single sign that they do."""
+    # The control. `completion_rate` is DE122/DE121 -- the same denominator this dataset
+    # publishes -- so it does reconcile, and that is what makes the employment pair a finding
+    # about those two fields rather than about the feed's general looseness.
+    completion_rate_checked: int
+    completion_rate_reconciles: int
+    citation: str
+
+
+@dataclass(frozen=True)
 class ProviderLinkCoverage:
     """What this build does with the "Provider's website" link on each program page.
 
@@ -244,6 +295,9 @@ class CoverageReport:
     programs_with_regional_projection: int
     # How many outcome figures this build declines to attribute to the program they sit on.
     cohort_integrity: CohortIntegrityCoverage
+    # Which of the two published employment figures is a rate, and how far the other is from
+    # being one. Travels with the data because the answer is useless anywhere else.
+    employment_measures: EmploymentMeasureCoverage
     # Occupation-side coverage from CareerOneStop (D6). Zeroed, not absent, when the build
     # ran without credentials.
     enrichment: EnrichmentCoverage
@@ -1091,6 +1145,82 @@ def _attach_provider_links(
             reviewer=reviewer,
             provider_name=payload.get("provider_name"),
         )
+
+
+AUTHORITATIVE_EMPLOYMENT_MEASURE: Final = "employment_rate_q2"
+"""The employment figure to trust, and the one the site renders.
+
+It is the figure DOL computed, from a denominator DOL holds. ``employed_q2`` is also real and
+also filed -- it is the rate's numerator, over that same unpublished denominator -- so it is
+carried rather than dropped. What it is not is a figure anything in this dataset can turn back
+into a rate.
+"""
+
+EMPLOYMENT_MEASURE_CITATION: Final = (
+    "ETA-9171 data element definitions (PY21+, OMB 1205-0526): DE123 is the numerator, DE129 "
+    "the denominator, and DE121 (total_exited) is neither. See PROVENANCE.md, 'Notes on D1'."
+)
+
+RATE_ROUNDING_STEP: Final = 0.005
+"""Half of the last published digit. The source publishes rates to two decimals, so a
+reconstruction landing within this is agreement rather than a discrepancy.
+
+The epsilon below it exists because the fixture and the real feed both contain rates whose
+gap is exactly this value in decimal and a hair above it in binary; without it, 26 of the
+2,047 programs whose completion rate reconciles exactly would be reported as disagreeing,
+which would understate the control that makes this whole block a finding.
+"""
+
+_RATE_EPSILON: Final = 1e-9
+
+
+def _reconciles(count: float, denominator: float, published: float) -> bool:
+    return abs(count / denominator - published) <= RATE_ROUNDING_STEP + _RATE_EPSILON
+
+
+def employment_measure_coverage(payloads: Sequence[Mapping[str, Any]]) -> EmploymentMeasureCoverage:
+    """Measure how far the published employment count is from the published employment rate.
+
+    Counted from the emitted records rather than asserted, for the same reason every other
+    coverage figure is: a number typed into a document is a number nothing rechecks. If a
+    refresh upstream ever makes these two reconcile, this block says so on the next build
+    without anybody remembering to look.
+    """
+    rate_published = count_published = both = 0
+    agree = differ = impossible = 0
+    completion_checked = completion_reconciles = 0
+    for payload in payloads:
+        outcomes = payload["outcomes"]
+        rate = outcomes.get(AUTHORITATIVE_EMPLOYMENT_MEASURE)
+        count = outcomes.get("employed_q2")
+        exited = outcomes.get("total_exited")
+        rate_published += rate is not None
+        count_published += count is not None
+        if count is not None and exited is not None and count > exited:
+            impossible += 1
+        if rate is not None and count is not None and exited:
+            both += 1
+            if _reconciles(count, exited, rate):
+                agree += 1
+            elif abs(count / exited - rate) > 0.10:
+                differ += 1
+        completed, completion = outcomes.get("total_completed"), outcomes.get("completion_rate")
+        if completion is not None and completed is not None and exited:
+            completion_checked += 1
+            completion_reconciles += _reconciles(completed, exited, completion)
+    return EmploymentMeasureCoverage(
+        authoritative=AUTHORITATIVE_EMPLOYMENT_MEASURE,
+        derivable_from_published_counts=False,
+        programs_publishing_rate=rate_published,
+        programs_publishing_count=count_published,
+        programs_publishing_both=both,
+        count_over_exited_within_a_rounding_step=agree,
+        count_over_exited_differs_by_over_10_points=differ,
+        count_exceeds_exited=impossible,
+        completion_rate_checked=completion_checked,
+        completion_rate_reconciles=completion_reconciles,
+        citation=EMPLOYMENT_MEASURE_CITATION,
+    )
 
 
 def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCoverage:
@@ -2293,6 +2423,7 @@ def build_offline(
     # the statewide finder, and claim nothing about what is near any particular city.
     _attach_local_help(payloads, None)
     coverage["cohort_integrity"] = asdict(cohort_integrity_coverage(payloads))
+    coverage["employment_measures"] = asdict(employment_measure_coverage(payloads))
     coverage["provider_links"] = asdict(provider_link_coverage(payloads))
     coverage["local_help"] = local_help_document(
         local_help_coverage(payloads, None), None, payloads
@@ -2434,6 +2565,7 @@ def build(
             1 for p in payloads if any(o["region"] is not None for o in p["occupations"])
         ),
         cohort_integrity=cohort_integrity_coverage(payloads),
+        employment_measures=employment_measure_coverage(payloads),
         enrichment=enrichment_coverage(occupations),
         spanish=spanish_coverage(occupations),
         provider_links=provider_link_coverage(payloads),
