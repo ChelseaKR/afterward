@@ -100,79 +100,6 @@ export async function generateMetadata({
   };
 }
 
-/*
- * TODO(i18n): these five strings belong in `web/lib/i18n.ts` alongside every other piece of
- * user-facing copy. They are defined here only because that file was owned by a concurrent
- * change when this landed, and shipping the regional figures with no explanation at all
- * would have been worse than shipping the explanation in the wrong file. Lift the block
- * across verbatim as `regionIntro` / `regionFigureNote` / `regionNoRow` / `regionUnplaced` /
- * `regionUnplacedBody` and delete it from here.
- *
- * Both languages are present so that no page ships half-translated, which is the one failure
- * mode a temporary home like this could otherwise cause.
- */
-interface RegionCopy {
-  /** Said once, where a program's city was placed in a published area. */
-  intro: (area: string) => string;
-  /** Title attribute on each regional figure. */
-  figureNote: (area: string) => string;
-  /** The row exists but this one measure is blank inside it. Not a zero, and not the
-   * provider's omission, so it cannot borrow the page's usual not-reported explanation. */
-  figureBlank: string;
-  /** The area is known, but this occupation has no published row in it. */
-  noRow: (area: string) => string;
-  /** The city could not be placed in a published area at all. */
-  unplacedTitle: string;
-  unplacedBody: (city: string | null) => string;
-}
-
-const REGION_COPY: Record<Lang, RegionCopy> = {
-  en: {
-    intro: (area) =>
-      `Where California publishes a separate figure for ${area}, it appears beneath the ` +
-      `statewide one. Statewide stays the headline: people who train here do not ` +
-      `necessarily work here.`,
-    figureNote: (area) =>
-      `California's published figure for ${area}, the area this program's city sits in. ` +
-      `Shown alongside the statewide figure, not instead of it.`,
-    figureBlank:
-      "California publishes figures for this area but not this one. That is missing " +
-      "information, not a zero.",
-    noRow: (area) =>
-      `California publishes no separate figure for this job in ${area}. The statewide ` +
-      `figures above are the only ones there are.`,
-    unplacedTitle: "No regional figures for this program's city",
-    unplacedBody: (city) =>
-      `${city ?? "This program's city"} is not one of the metropolitan or rural areas ` +
-      `California names when it publishes wages and openings. A neighbouring area's ` +
-      `figures would look exactly like a correct answer, so none are shown and the ` +
-      `statewide figures stand alone. About half of California's programs are in this ` +
-      `position.`,
-  },
-  es: {
-    intro: (area) =>
-      `Donde California publica una cifra aparte para ${area}, aparece debajo de la cifra ` +
-      `estatal. La cifra estatal sigue siendo la principal: quienes se capacitan aquí no ` +
-      `necesariamente trabajan aquí.`,
-    figureNote: (area) =>
-      `Cifra publicada por California para ${area}, el área donde está la ciudad de este ` +
-      `programa. Se muestra junto a la cifra estatal, no en su lugar.`,
-    figureBlank:
-      "California publica cifras para esta área, pero no esta. Es información que falta, " +
-      "no un cero.",
-    noRow: (area) =>
-      `California no publica una cifra aparte para esta ocupación en ${area}. Las cifras ` +
-      `estatales de arriba son las únicas que existen.`,
-    unplacedTitle: "Sin cifras regionales para la ciudad de este programa",
-    unplacedBody: (city) =>
-      `${city ?? "La ciudad de este programa"} no es una de las áreas metropolitanas o ` +
-      `rurales que California nombra al publicar salarios y vacantes. Las cifras de un ` +
-      `área vecina se verían igual que una respuesta correcta, así que no se muestra ` +
-      `ninguna y las cifras estatales quedan solas. Cerca de la mitad de los programas de ` +
-      `California están en esta situación.`,
-  },
-};
-
 /**
  * The occupation this program's figures actually describe, in words a reader can check.
  *
@@ -1084,7 +1011,6 @@ export default async function ProgramPage({
   if (!program) notFound();
 
   const t = dict(lang);
-  const region = REGION_COPY[lang];
   const coverage = getCoverage();
   const peers = coverage.peer_medians;
   /*
@@ -1481,13 +1407,13 @@ export default async function ProgramPage({
             * that California is silent about Fresno.
             */}
           {placed ? (
-            <p className="compare-note">{region.intro(areaName)}</p>
+            <p className="compare-note">{t.regionIntro(areaName)}</p>
           ) : (
             <div className="panel panel-quiet">
               <p>
-                <strong>{region.unplacedTitle}</strong>
+                <strong>{t.regionUnplaced}</strong>
               </p>
-              <p style={{ marginBottom: 0 }}>{region.unplacedBody(location.city)}</p>
+              <p style={{ marginBottom: 0 }}>{t.regionUnplacedBody(location.city)}</p>
             </div>
           )}
 
@@ -1502,8 +1428,8 @@ export default async function ProgramPage({
                 : {
                     area: areaShort,
                     value,
-                    title: region.figureNote(areaName ?? areaShort),
-                    unreportedTitle: region.figureBlank,
+                    title: t.regionFigureNote(areaName ?? areaShort),
+                    unreportedTitle: t.regionFigureBlank,
                   };
 
             return (
@@ -1661,7 +1587,7 @@ export default async function ProgramPage({
                 </dl>
                 {placed && occupation.region === null && (
                   <p className="compare-note" style={{ marginTop: "0.5rem" }}>
-                    {region.noRow(areaShort)}
+                    {t.regionNoRow(areaShort)}
                   </p>
                 )}
 

@@ -1,26 +1,5 @@
 import { dict, type Lang } from "@/lib/i18n";
 
-/*
- * TODO(i18n): `benchmarkPopulation` belongs in `web/lib/i18n.ts` beside every other
- * user-facing string, under exactly that name. It lives here only because that file was
- * owned by a concurrent change when this landed, and the alternative — leaving the statewide
- * median on screen with no visible statement of what it pools — is the defect this change
- * exists to remove. Both languages are complete so no page ships half-translated.
- *
- * `vsStateAbove` and `vsStateBelow` are now unused and should be deleted from `i18n.ts` in
- * the same pass. See the note on `Measure`'s `benchmark` prop for why.
- */
-const BENCHMARK_POPULATION: Record<Lang, string> = {
-  en:
-    "That median pools every California program that reported this measure, whatever its " +
-    "length, credential, or field, and leaves out the ones that reported nothing. It is a " +
-    "reference point, not a rating of this program.",
-  es:
-    "Esa mediana agrupa todos los programas de California que reportaron esta medida, sin " +
-    "importar su duración, credencial o campo, y deja fuera los que no reportaron nada. Es " +
-    "un punto de referencia, no una calificación de este programa.",
-};
-
 /**
  * The same measure as published for one named area, shown beneath the headline figure.
  *
@@ -165,7 +144,7 @@ export function Measure({
               <small>
                 {t.vsState}: {benchmark.formatted}
               </small>
-              <small>{BENCHMARK_POPULATION[lang]}</small>
+              <small>{t.benchmarkPopulation}</small>
             </>
           ) : null}
           {regional ? <Regional figure={regional} lang={lang} /> : null}

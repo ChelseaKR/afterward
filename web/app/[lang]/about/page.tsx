@@ -22,53 +22,6 @@ const REPO = "https://github.com/ChelseaKR/afterward";
 const PROVENANCE_URL = `${REPO}/blob/main/PROVENANCE.md`;
 const ISSUES_URL = `${REPO}/issues`;
 
-/*
- * TODO(i18n): the strings in `COPY` belong in `web/lib/i18n.ts` under the keys named beside
- * them. They live here because that file was owned by a concurrent change when this landed.
- * Both languages are complete.
- *
- * Five of them are short forms of headings that are, correctly, long: this page is two and a
- * half thousand words of prose and it is read on a phone by people who do not have two and a
- * half thousand words of time. The jump list has to be scannable in one screen, and a list
- * that repeated "The outcomes are self-reported, and this site does not check them" verbatim
- * would be a second wall of text standing in front of the first. The four remaining sections
- * already have headings short enough to reuse, and are reused rather than restated so the nav
- * and the heading cannot drift apart.
- */
-interface AboutCopy {
-  /** i18n key: aboutOnThisPageNav */
-  jumpLabel: string;
-  /** i18n key: aboutShortSelfReported */
-  shortSelfReported: string;
-  /** i18n key: aboutShortMissing */
-  shortMissing: string;
-  /** i18n key: aboutShortQuarter */
-  shortQuarter: string;
-  /** i18n key: aboutShortAggregate */
-  shortAggregate: string;
-  /** i18n key: aboutShortLimits */
-  shortLimits: string;
-}
-
-const COPY: Record<Lang, AboutCopy> = {
-  en: {
-    jumpLabel: "Jump to a section of this page",
-    shortSelfReported: "Providers report their own results, and nobody audits them",
-    shortMissing: "A blank means not reported — never zero",
-    shortQuarter: "The earnings figure covers three months",
-    shortAggregate: "When a job's figures cover more jobs than one",
-    shortLimits: "What this site gets wrong",
-  },
-  es: {
-    jumpLabel: "Ir a una sección de esta página",
-    shortSelfReported: "Las instituciones reportan sus propios resultados y nadie los audita",
-    shortMissing: "Un espacio en blanco significa no reportado, nunca cero",
-    shortQuarter: "La cifra de ingresos cubre tres meses",
-    shortAggregate: "Cuando la cifra de una ocupación abarca más de una",
-    shortLimits: "Lo que este sitio hace mal",
-  },
-};
-
 /**
  * A count of records, formatted for prose.
  *
@@ -161,7 +114,6 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
   if (!isLang(lang)) notFound();
 
   const t = dict(lang);
-  const copy = COPY[lang];
   const coverage = getCoverage();
   const facts = corpusFacts();
   // Programs with no occupation panel at all: matched is a subset of total, so this is a
@@ -181,12 +133,12 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
   */
   const sections: { id: string; label: string }[] = [
     { id: "sources", label: t.aboutSourcesHeading },
-    { id: "self-reported", label: copy.shortSelfReported },
-    { id: "blank", label: copy.shortMissing },
-    { id: "quarter", label: copy.shortQuarter },
+    { id: "self-reported", label: t.aboutShortSelfReported },
+    { id: "blank", label: t.aboutShortMissing },
+    { id: "quarter", label: t.aboutShortQuarter },
     { id: "comparisons", label: t.aboutComparisonsHeading },
-    { id: "wider-occupation", label: copy.shortAggregate },
-    { id: "limits", label: copy.shortLimits },
+    { id: "wider-occupation", label: t.aboutShortAggregate },
+    { id: "limits", label: t.aboutShortLimits },
     { id: "corrections", label: t.aboutCorrectionsHeading },
     { id: "advice", label: t.aboutAdviceHeading },
   ];
@@ -226,7 +178,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       <p className="compare-note">{t.snapshot(coverage.snapshot_date)}</p>
 
       <h2 id="on-this-page">{t.onThisPage}</h2>
-      <nav className="jump-nav" aria-label={copy.jumpLabel}>
+      <nav className="jump-nav" aria-label={t.aboutOnThisPageNav}>
         <ul>
           {sections.map((section) => (
             <li key={section.id}>

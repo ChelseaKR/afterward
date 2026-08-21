@@ -14,59 +14,13 @@ import {
   occupationFigures,
   ownCohortOnly,
   programRecordUrl,
-  COHORT_NOT_OWN,
   MAX_COMPARE,
 } from "@/lib/compare";
 
 export { MAX_COMPARE };
 
-/*
- * TODO(i18n): these five strings belong in `web/lib/i18n.ts` under the names given here —
- * `occupationRow`, `occupationRowNote`, `occupationFiguresLoading`,
- * `occupationFiguresUnavailable`, `unnamedOccupationShort`. They are defined here only
- * because that file was owned by a concurrent change when this landed, and the alternative
- * was leaving a table that reads a top salary off one job and a weak outlook off another and
- * prints them as one program. Both languages are complete so no page ships half-translated.
- *
- * `t.leadsTo` is no longer used by this component; the row it labelled has been replaced by
- * one that carries each job's own figures.
- */
-interface OccupationCopy {
-  /** Row header for the per-occupation block. */
-  row: string;
-  /** Said once above the table, before any figure is read. */
-  note: string;
-  /** The record is on its way. */
-  loading: string;
-  /** The record could not be read, so the names are all this cell can honestly show. */
-  unavailable: string;
-  /** An occupation with neither a title nor a code published. */
-  unnamed: string;
-}
-
-const OCCUPATION_COPY: Record<Lang, OccupationCopy> = {
-  en: {
-    row: "Jobs this leads to, and California's figures for each",
-    note:
-      "Pay, projected change, and openings describe a job, not a program, and many programs " +
-      "lead to more than one job. Each job's figures are listed under that job, so a high " +
-      "salary from one and a weak outlook from another are never read as a single profile.",
-    loading: "Loading each job's figures…",
-    unavailable: "Each job's own figures are on the program page above.",
-    unnamed: "Occupation not named",
-  },
-  es: {
-    row: "Empleos a los que lleva, y las cifras de California para cada uno",
-    note:
-      "El pago, el cambio proyectado y las vacantes describen un empleo, no un programa, y " +
-      "muchos programas llevan a más de un empleo. Las cifras de cada empleo se listan bajo " +
-      "ese empleo, para que un salario alto de uno y un panorama débil de otro nunca se lean " +
-      "como un solo perfil.",
-    loading: "Cargando las cifras de cada empleo…",
-    unavailable: "Las cifras propias de cada empleo están en la página del programa, arriba.",
-    unnamed: "Ocupación sin nombre",
-  },
-};
+// `t.leadsTo` is not used by this component; the row it labelled has been replaced by one
+// that carries each job's own figures (still used by the provider page and search results).
 
 /**
  * Sticky tray showing what has been picked for comparison.
@@ -284,7 +238,6 @@ function OccupationCell({
   lang: Lang;
 }) {
   const t = dict(lang);
-  const copy = OCCUPATION_COPY[lang];
 
   const figures = record ? occupationFigures(record) : null;
   const jobs: (string | null)[] = figures ? figures.map((job) => job.title) : entry.o;
@@ -302,7 +255,7 @@ function OccupationCell({
       {jobs.map((title, index) => {
         const job = figures?.[index];
         const soc = job?.socCode ?? null;
-        const name = title ?? soc ?? copy.unnamed;
+        const name = title ?? soc ?? t.unnamedOccupationShort;
         const change = job ? signedPercent(job.change, lang) : null;
 
         return (
@@ -331,7 +284,7 @@ function OccupationCell({
       {figures === null && (
         <li style={JOB_NEXT}>
           <small style={JOB_FIGURE}>
-            {record === null ? copy.unavailable : copy.loading}
+            {record === null ? t.occupationFiguresUnavailable : t.occupationFiguresLoading}
           </small>
         </li>
       )}
@@ -341,7 +294,6 @@ function OccupationCell({
 
 export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: Lang }) {
   const t = dict(lang);
-  const copy = OCCUPATION_COPY[lang];
   const records = useProgramRecords(entries.map((entry) => entry.i));
   const completion = completionMark(entries);
 
@@ -349,10 +301,10 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
     <section className="compare-panel" aria-label={t.compareTitle}>
       <h2>{t.compareTitle}</h2>
       <p className="compare-note">{t.compareNote}</p>
-      <p className="compare-note">{copy.note}</p>
+      <p className="compare-note">{t.occupationRowNote}</p>
       {/* Only when it applies to something on screen, and in full words rather than a badge. */}
       {entries.some((entry) => entry.r && !isOwnCohort(entry)) && (
-        <p className="compare-note">{COHORT_NOT_OWN[lang].note}</p>
+        <p className="compare-note">{t.cohortNotOwnNote}</p>
       )}
       {/*
         * Up here with the other notes rather than beside the row it governs, for the same
@@ -388,7 +340,7 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
                     */}
                   {entry.r && !isOwnCohort(entry) && (
                     <small>
-                      <span className="badge badge-small">{COHORT_NOT_OWN[lang].badge}</span>
+                      <span className="badge badge-small">{t.cohortNotOwn}</span>
                     </small>
                   )}
                 </th>
@@ -462,7 +414,7 @@ export function CompareTable({ entries, lang }: { entries: SearchEntry[]; lang: 
               */}
             <tr>
               <th scope="row" style={{ whiteSpace: "normal", minWidth: "10rem" }}>
-                {copy.row}
+                {t.occupationRow}
               </th>
               {entries.map((entry) => (
                 <td key={entry.i} style={{ verticalAlign: "top" }}>

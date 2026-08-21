@@ -6,7 +6,6 @@
  * advice, so it has to be conservative about what it claims.
  */
 
-import type { Lang } from "./i18n";
 import { clockWeeks } from "./search";
 import type { Program, SearchEntry } from "./types";
 
@@ -89,29 +88,6 @@ export function oneLengthBand(entries: SearchEntry[]): boolean {
   const bands = entries.map((entry) => lengthBand(clockWeeks(entry)));
   return bands.every((band) => band !== null) && new Set(bands).size <= 1;
 }
-
-/*
- * TODO(i18n): `cohortNotOwn` and `cohortNotOwnNote` belong in `web/lib/i18n.ts` under those
- * names. They live here because that file was owned by a concurrent change when this landed,
- * and here rather than in either component because both the result card and the comparison
- * header need the same words for the same fact. Both languages are complete.
- */
-export const COHORT_NOT_OWN: Record<Lang, { badge: string; note: string }> = {
-  en: {
-    badge: "Outcomes cover more than this program",
-    note:
-      "The provider filed these figures against more than the program named — several of " +
-      "its programs, or the whole institution. They are shown because they are real, and " +
-      "nothing here ranks or rates them, because they do not describe this program.",
-  },
-  es: {
-    badge: "Los resultados abarcan más que este programa",
-    note:
-      "El proveedor presentó estas cifras para más que el programa nombrado — varios de sus " +
-      "programas, o toda la institución. Se muestran porque son reales, y aquí nada las " +
-      "clasifica ni las califica, porque no describen este programa.",
-  },
-};
 
 /**
  * Index of the strongest reported value among the entries, or null when highlighting one
