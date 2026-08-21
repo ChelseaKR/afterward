@@ -80,9 +80,25 @@ files = ["src"]
 testpaths = ["tests"]
 addopts = "-q --strict-markers --strict-config --import-mode=importlib"
 
+[tool.coverage.run]
+# Branch coverage, because that is what CQ-08 asks for and what this pipeline needs.
+#
+# Until 2026-08-15 this file set a floor and never set a mode, so coverage.py measured
+# statements while `docs/ROADMAP.md` cited a control that names branches. The gap was not
+# academic here: this pipeline's job is classification and its hardest code is branchy --
+# the IPEDS-style negative sentinels, suppressed versus reported versus not-applicable, and
+# the competency-based `-1` that produced a real bug (commit 904c231, "-1 on program length
+# means competency-based, not suppressed"). Statement coverage reports a branchy function as
+# fully covered when only one side of each test was ever taken, which is exactly how that
+# bug's shape hides.
+branch = true
+
 [tool.coverage.report]
-# Floor, not target: measured 92% on 2026-08-07. Applies when tests run with
-# coverage (`make test`); raising it is welcome, lowering it needs a reason.
+# Floor, not target: measured 92.12% branch on 2026-08-21 (92.57% statement, for comparison;
+# 91.62%/92.05% on 2026-08-15, when branch mode was first turned on -- the pipeline gained
+# code and tests between the two measurements). Applies when tests run with coverage
+# (`make test`); raising it is welcome, lowering it needs a reason. 85 is CQ-08's floor for
+# an application.
 fail_under = 85
 
 [tool.bandit]
