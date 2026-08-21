@@ -14,6 +14,6 @@ export default async function SearchPage({ params }: { params: Promise<{ lang: s
 
   // Embedded at build time rather than fetched: the index is ~150 KB gzipped, and shipping
   // it with the document means search works on the first paint instead of after a round trip.
-  const { programs } = getSearchIndex();
-  return <SearchApp programs={programs} lang={lang} />;
+  const { programs, altTitles } = getSearchIndex();
+  return <SearchApp programs={programs} altTitles={altTitles} lang={lang} />;
 }

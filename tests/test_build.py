@@ -20,7 +20,9 @@ from afterward.build import (
     LinkCheckRun,
     SpanishCoverage,
     _attach_local_help,
+    _search_alternate_titles,
     aggregate_match_coverage,
+    alternate_title_index,
     area_coverage,
     build_offline,
     check_cost_integrity,
@@ -830,6 +832,82 @@ class TestSearchEntryArea:
     def test_the_key_is_always_written(self) -> None:
         # So a consumer can tell an unplaced program from an index built before this field.
         assert "a" in self._entry(None)
+
+
+class TestSearchAlternateTitles:
+    """The cleaning rule alone: strip, de-duplicate, drop a title identical to the occupation's own."""
+
+    def test_drops_a_title_identical_to_the_occupations_own(self) -> None:
+        assert _search_alternate_titles(["Registered Nurse", "RN"], "Registered Nurse") == ["RN"]
+
+    def test_the_own_title_comparison_is_case_and_whitespace_insensitive(self) -> None:
+        assert _search_alternate_titles([" registered nurse ", "RN"], "Registered Nurse") == ["RN"]
+
+    def test_de_duplicates_case_insensitively_keeping_first_seen(self) -> None:
+        assert _search_alternate_titles(["RN", "rn", "Staff Nurse"], "Registered Nurse") == [
+            "RN",
+            "Staff Nurse",
+        ]
+
+    def test_drops_blank_entries(self) -> None:
+        assert _search_alternate_titles(["  ", "RN"], "Registered Nurse") == ["RN"]
+
+    def test_a_non_string_entry_is_skipped_rather_than_raising(self) -> None:
+        # The source is CareerOneStop's own JSON; a malformed entry should not crash a build.
+        assert _search_alternate_titles([None, "RN"], "Registered Nurse") == ["RN"]  # type: ignore[list-item]
+
+    def test_no_own_title_keeps_everything_after_cleaning(self) -> None:
+        assert _search_alternate_titles(["RN", "Staff Nurse"], None) == ["RN", "Staff Nurse"]
+
+
+class TestAlternateTitleIndex:
+    """The search-only lookup table: every occupation a program actually feeds, and no other."""
+
+    def _payload(self, socs: list[str]) -> dict:
+        return {"soc_codes": socs}
+
+    def _occupations(self) -> dict[str, dict]:
+        return {
+            "29-1141": {
+                "title": "Registered Nurses",
+                "alternate_titles": ["RN", "Staff Nurse", "Registered Nurses"],
+            },
+            "31-9092": {"title": "Medical Assistants", "alternate_titles": []},
+            "17-3029": {"title": "Drafters, All Other", "alternate_titles": None},
+        }
+
+    def test_only_socs_a_program_actually_feeds_are_indexed(self) -> None:
+        table = alternate_title_index([self._payload(["29-1141"])], self._occupations())
+        assert set(table) == {"29-1141"}
+
+    def test_own_title_is_excluded_from_the_terms(self) -> None:
+        table = alternate_title_index([self._payload(["29-1141"])], self._occupations())
+        assert table["29-1141"] == ["RN", "Staff Nurse"]
+
+    def test_an_occupation_with_no_alternate_titles_gets_no_entry(self) -> None:
+        # An empty list and a missing key mean the same thing here, so the smaller file wins.
+        table = alternate_title_index([self._payload(["31-9092"])], self._occupations())
+        assert "31-9092" not in table
+
+    def test_a_null_alternate_titles_field_does_not_raise(self) -> None:
+        table = alternate_title_index([self._payload(["17-3029"])], self._occupations())
+        assert "17-3029" not in table
+
+    def test_a_soc_no_program_feeds_is_not_in_the_table_even_if_occupations_has_it(self) -> None:
+        table = alternate_title_index([self._payload(["31-9092"])], self._occupations())
+        assert "29-1141" not in table
+
+    def test_a_soc_on_a_program_but_missing_from_occupations_is_skipped_not_raised(self) -> None:
+        table = alternate_title_index([self._payload(["99-9999"])], self._occupations())
+        assert table == {}
+
+    def test_keys_are_sorted_for_a_deterministic_rebuild(self) -> None:
+        payloads = [self._payload(["31-9092", "29-1141"])]
+        # Overwrite Medical Assistants with a real alternate title so both codes qualify.
+        occupations = self._occupations()
+        occupations["31-9092"]["alternate_titles"] = ["Med Assistant"]
+        table = alternate_title_index(payloads, occupations)
+        assert list(table.keys()) == sorted(table.keys())
 
 
 class TestAreaCoverageReporting:

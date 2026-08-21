@@ -5,6 +5,16 @@
 > because this note records what was true on the date in its title; substitute
 > `src/afterward/` and `afterward.` when running anything from it.
 
+> **Correction, 2026-08-21.** "For whoever integrates this" item 5 — alternate titles belong
+> in the search index, not on the page — is carried out. `alternate_title_index` in
+> `src/afterward/build.py` writes a SOC-code -> colloquial-title table into
+> `search-index.json` (`altTitles`, separate from the per-row fields, because folding each
+> program's occupations' full lists into every row that feeds them was measured to more than
+> double the index — see that function's docstring for the numbers), and `web/lib/search.ts`
+> matches a query term against it at the same weight as the occupation's own title. "RN" now
+> finds Registered Nurses programs; it did not before. Nothing renders the terms themselves,
+> per this doc's own instruction two lines up.
+
 `src/camino/sources/careeronestop.py` asked source D6 for two things: `relatedOnetTitles`
 and `skills`. The endpoint returns considerably more. This is the record of what was taken,
 what was refused, what it measures out at across all 670 California occupations, and one

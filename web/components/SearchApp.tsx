@@ -23,6 +23,7 @@ import {
   terms,
   unmeasuredLength,
   unplacedMatches,
+  type AltTitleIndex,
   type AreaFilter,
   type Filters,
   type Outlook,
@@ -83,7 +84,16 @@ interface Relaxation {
   apply: () => void;
 }
 
-export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: Lang }) {
+export function SearchApp({
+  programs,
+  altTitles,
+  lang,
+}: {
+  programs: SearchEntry[];
+  /** SOC code -> colloquial job titles ("RN", "CDL"), for search matching only. */
+  altTitles?: AltTitleIndex;
+  lang: Lang;
+}) {
   const t = dict(lang);
   const [query, setQuery] = useState("");
   const [onlyReported, setOnlyReported] = useState(false);
@@ -134,7 +144,10 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     setRestored(true);
   }, []);
 
-  const results = useMemo(() => runSearch(programs, filters), [programs, filters]);
+  const results = useMemo(
+    () => runSearch(programs, filters, altTitles),
+    [programs, filters, altTitles],
+  );
 
   const stats = useMemo(() => summarise(programs), [programs]);
   const areaOptions = useMemo(() => areas(programs), [programs]);
@@ -154,10 +167,13 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     course that a reader may well be looking for, and describing it as unreported hid it
     inside a bucket labelled "the provider did not say".
   */
-  const hiddenNoLength = useMemo(() => unmeasuredLength(programs, filters), [programs, filters]);
+  const hiddenNoLength = useMemo(
+    () => unmeasuredLength(programs, filters, altTitles),
+    [programs, filters, altTitles],
+  );
   const hiddenCompetency = useMemo(
-    () => competencyBasedLength(programs, filters),
-    [programs, filters],
+    () => competencyBasedLength(programs, filters, altTitles),
+    [programs, filters, altTitles],
   );
 
   /*
@@ -191,8 +207,8 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
   // Only asked for a named region: under "any" nothing is hidden, and under "unplaced" these
   // programs are the result set rather than the omission from it.
   const hiddenUnplaced = useMemo(
-    () => (area.kind === "area" ? unplacedMatches(programs, filters) : 0),
-    [programs, filters, area.kind],
+    () => (area.kind === "area" ? unplacedMatches(programs, filters, altTitles) : 0),
+    [programs, filters, area.kind, altTitles],
   );
 
   /*
@@ -214,12 +230,12 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     let found = 0;
     for (const entry of programs) {
       if (entry.g !== null) continue;
-      if (score(entry, searchTerms) < 0) continue;
+      if (score(entry, searchTerms, altTitles) < 0) continue;
       if (!matchesFilters(entry, ignoringOutlook)) continue;
       found += 1;
     }
     return found;
-  }, [programs, filters]);
+  }, [programs, filters, altTitles]);
 
   function selectArea(next: AreaFilter) {
     setArea(next);
@@ -242,7 +258,8 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     if (results.length > 0) return [];
 
     const options: Relaxation[] = [];
-    const found = (override: Partial<Filters>) => runSearch(programs, { ...filters, ...override }).length;
+    const found = (override: Partial<Filters>) =>
+      runSearch(programs, { ...filters, ...override }, altTitles).length;
 
     if (filters.query.trim() !== "") {
       options.push({
@@ -317,6 +334,7 @@ export function SearchApp({ programs, lang }: { programs: SearchEntry[]; lang: L
     results.length,
     programs,
     filters,
+    altTitles,
     t,
     lang,
     onlyReported,

@@ -8,6 +8,24 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- Search now finds a program by the colloquial name of the job it leads to, not only the
+  official one. Someone typing "RN", "CNA", "CDL", or "IT Manager" found nothing before,
+  because the search index carried only O\*NET's formal occupation titles
+  ("Registered Nurses") and never the everyday names CareerOneStop separately publishes.
+  `docs/enrichment-expansion-2026-08-04.md` and `docs/onet-assessment-2026-08-04.md`
+  independently recommended this, both calling it out as the cheapest large improvement
+  available: the data was already sitting in the built dataset, parsed and typed, reaching
+  nothing but a display-only "also called" line on the program page. `alternate_title_index`
+  in `src/afterward/build.py` builds a SOC-code -> colloquial-title lookup (487 occupations a
+  program actually feeds, 379 with at least one usable term, 3,473 terms total on the
+  2026-08-17 snapshot) as a table beside the search rows rather than a field folded into each
+  one — folding each program's occupations' titles directly into its own row was measured to
+  more than double the search index (176.4 KB gzipped to 360.0 KB), because occupations
+  repeat across many programs (Computer Support Specialists alone feeds 160). The table costs
+  23.2 KB gzipped once. `web/lib/search.ts`'s `score` matches a query term against it at the
+  same weight as the occupation's own title, since both answer the same question. Nothing new
+  renders: the terms are for matching only, exactly as both source documents specified, and
+  the existing four-title "also called" line on the program page is untouched.
 - `check_cost_integrity`: the emit-boundary guard the `cost` block never had. `outcomes` and
   `length` have each been checked at the point of writing since the `-1` sentinel work;
   `cost` was cleaned at the source boundary and then trusted, which leaves the offline build

@@ -22,6 +22,7 @@ import {
   unmeasuredLength,
   unplacedMatches,
   unplacedTotal,
+  type AltTitleIndex,
 } from "./search";
 import type { SearchEntry } from "./types";
 
@@ -81,6 +82,52 @@ describe("score", () => {
 
   it("is case insensitive", () => {
     expect(score(entry({ n: "WELDING" }), ["welding"])).toBeGreaterThan(0);
+  });
+});
+
+describe("score with altTitles", () => {
+  const nursingAltTitles: AltTitleIndex = {
+    "29-1141": ["RN", "Staff Nurse"],
+  };
+
+  it("finds an entry by a colloquial title its official name does not contain", () => {
+    const nurse = entry({ n: "Nursing Program", s: ["29-1141"], o: ["Registered Nurses"] });
+    expect(score(nurse, ["rn"])).toBe(-1);
+    expect(score(nurse, ["rn"], nursingAltTitles)).toBeGreaterThan(0);
+  });
+
+  it("scores an alternate-title match the same as an official-title match", () => {
+    const byOfficial = score(entry({ n: "Program", o: ["RN"] }), ["rn"]);
+    const byAlternate = score(
+      entry({ n: "Program", s: ["29-1141"], o: ["Registered Nurses"] }),
+      ["rn"],
+      nursingAltTitles,
+    );
+    expect(byAlternate).toBe(byOfficial);
+  });
+
+  it("only matches alternate titles for SOC codes the entry actually carries", () => {
+    const other = entry({ n: "Program", s: ["31-9092"], o: ["Medical Assistants"] });
+    expect(score(other, ["rn"], nursingAltTitles)).toBe(-1);
+  });
+
+  it("does not require a term to match every occupation's alternate titles, only one", () => {
+    const multi = entry({
+      n: "Program",
+      s: ["29-1141", "31-9092"],
+      o: ["Registered Nurses", "Medical Assistants"],
+    });
+    expect(score(multi, ["rn"], nursingAltTitles)).toBeGreaterThan(0);
+  });
+
+  it("an entry with no SOC codes in the table is unaffected", () => {
+    const plain = entry({ s: ["99-9999"] });
+    expect(score(plain, ["medical"], nursingAltTitles)).toBeGreaterThan(0);
+  });
+
+  it("an absent table behaves exactly as no third argument", () => {
+    const nurse = entry({ n: "Program", s: ["29-1141"], o: ["Registered Nurses"] });
+    expect(score(nurse, ["rn"], undefined)).toBe(score(nurse, ["rn"]));
   });
 });
 
@@ -235,6 +282,34 @@ describe("competency-based programs and the length filter", () => {
     expect(isCompetencyBased(legacy)).toBe(false);
     expect(clockWeeks(legacy)).toBe(4);
     expect(runSearch([legacy], { ...DEFAULT_FILTERS, maxWeeks: 4 })).toHaveLength(1);
+  });
+});
+
+describe("runSearch with altTitles", () => {
+  const altTitles: AltTitleIndex = { "29-1141": ["RN"] };
+  const nurse = entry({ i: "nurse", n: "Nursing Program", s: ["29-1141"], o: ["Registered Nurses"] });
+  const other = entry({ i: "other", n: "Welding", s: ["51-4121"], o: ["Welders"] });
+
+  it("a query the official title does not contain finds nothing without the table", () => {
+    const ids = runSearch([nurse, other], { ...DEFAULT_FILTERS, query: "rn" }).map((e) => e.i);
+    expect(ids).toEqual([]);
+  });
+
+  it("the same query finds the program once the table is supplied", () => {
+    const ids = runSearch([nurse, other], { ...DEFAULT_FILTERS, query: "rn" }, altTitles).map(
+      (e) => e.i,
+    );
+    expect(ids).toEqual(["nurse"]);
+  });
+
+  it("still applies every other filter to an alternate-title match", () => {
+    const suppressed = { ...nurse, r: false };
+    const ids = runSearch(
+      [suppressed],
+      { ...DEFAULT_FILTERS, query: "rn", onlyReported: true },
+      altTitles,
+    ).map((e) => e.i);
+    expect(ids).toEqual([]);
   });
 });
 
