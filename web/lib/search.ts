@@ -7,6 +7,25 @@
 
 import type { SearchEntry } from "./types";
 
+/** SOC code -> colloquial job titles, for search matching only. See `SearchIndex.altTitles`. */
+export type AltTitleIndex = Record<string, string[]>;
+
+/**
+ * The alternate-title terms reachable from an entry's occupations, joined for substring
+ * matching. Looked up fresh per call rather than cached on the entry: the table itself is
+ * loaded once per session, and a program feeds at most three occupations, so this is a few
+ * array lookups on a dataset already re-scanned in full on every keystroke.
+ */
+function altTitleText(entry: SearchEntry, altTitles: AltTitleIndex | undefined): string {
+  if (!altTitles) return "";
+  const terms: string[] = [];
+  for (const soc of entry.s) {
+    const titles = altTitles[soc];
+    if (titles) terms.push(...titles);
+  }
+  return terms.join(" ").toLowerCase();
+}
+
 
 export type Sort = "relevance" | "earnings" | "cost" | "length" | "openings";
 
@@ -187,13 +206,25 @@ export function terms(query: string): string[] {
 /**
  * Rank an entry against the search terms. Returns -1 when any term matches nothing, so
  * multi-word queries narrow rather than widen.
+ *
+ * `altTitles`, when given, extends the occupation match to colloquial names nobody's official
+ * title uses — "RN" finds Registered Nurses programs, "CDL" finds ones training for a
+ * commercial driver's license — at the same weight as the occupation's own title, since both
+ * are the same fact (what job this program leads to) said two different ways. Optional so
+ * tests and any caller without the table still get name/provider/city matching.
  */
-export function score(entry: SearchEntry, searchTerms: string[]): number {
+export function score(
+  entry: SearchEntry,
+  searchTerms: string[],
+  altTitles?: AltTitleIndex,
+): number {
   if (searchTerms.length === 0) return 0;
 
   const name = (entry.n ?? "").toLowerCase();
   const provider = (entry.p ?? "").toLowerCase();
-  const occupations = entry.o.join(" ").toLowerCase();
+  const officialTitles = entry.o.join(" ").toLowerCase();
+  const alt = altTitleText(entry, altTitles);
+  const occupations = alt ? `${officialTitles} ${alt}` : officialTitles;
   const city = (entry.c ?? "").toLowerCase();
 
   let total = 0;
@@ -249,14 +280,18 @@ export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
  * particular search is losing, and stating nothing would let the filter read as "everywhere
  * near here" when it means "in the two or three cities EDD names".
  */
-export function unplacedMatches(programs: SearchEntry[], filters: Filters): number {
+export function unplacedMatches(
+  programs: SearchEntry[],
+  filters: Filters,
+  altTitles?: AltTitleIndex,
+): number {
   const searchTerms = terms(filters.query);
   const ignoringGeography: Filters = { ...filters, area: ANY_AREA, city: null };
 
   let found = 0;
   for (const entry of programs) {
     if (areaOf(entry) !== null) continue;
-    if (score(entry, searchTerms) < 0) continue;
+    if (score(entry, searchTerms, altTitles) < 0) continue;
     if (!matchesFilters(entry, ignoringGeography)) continue;
     found += 1;
   }
@@ -276,6 +311,7 @@ function excludedByLength(
   programs: SearchEntry[],
   filters: Filters,
   qualifies: (entry: SearchEntry) => boolean,
+  altTitles?: AltTitleIndex,
 ): number {
   if (filters.maxWeeks === null) return 0;
 
@@ -285,7 +321,7 @@ function excludedByLength(
   let found = 0;
   for (const entry of programs) {
     if (!qualifies(entry)) continue;
-    if (score(entry, searchTerms) < 0) continue;
+    if (score(entry, searchTerms, altTitles) < 0) continue;
     if (!matchesFilters(entry, ignoringLength)) continue;
     found += 1;
   }
@@ -305,11 +341,16 @@ function excludedByLength(
  * length or says it has none by design. The count stays, computed rather than assumed, because
  * a later snapshot can bring one back and the interface must not be silent when it does.
  */
-export function unmeasuredLength(programs: SearchEntry[], filters: Filters): number {
+export function unmeasuredLength(
+  programs: SearchEntry[],
+  filters: Filters,
+  altTitles?: AltTitleIndex,
+): number {
   return excludedByLength(
     programs,
     filters,
     (entry) => !isCompetencyBased(entry) && entry.w === null,
+    altTitles,
   );
 }
 
@@ -325,8 +366,12 @@ export function unmeasuredLength(programs: SearchEntry[], filters: Filters): num
  * "nobody said" is a gap in the record. Rolling them into one number would put the design
  * decision back inside the missing-data bucket this count exists to take it out of.
  */
-export function competencyBasedLength(programs: SearchEntry[], filters: Filters): number {
-  return excludedByLength(programs, filters, isCompetencyBased);
+export function competencyBasedLength(
+  programs: SearchEntry[],
+  filters: Filters,
+  altTitles?: AltTitleIndex,
+): number {
+  return excludedByLength(programs, filters, isCompetencyBased, altTitles);
 }
 
 /** Headline counts for the context strip above the results. */
@@ -374,12 +419,16 @@ interface Ranked {
   rank: number;
 }
 
-export function runSearch(programs: SearchEntry[], filters: Filters): SearchEntry[] {
+export function runSearch(
+  programs: SearchEntry[],
+  filters: Filters,
+  altTitles?: AltTitleIndex,
+): SearchEntry[] {
   const searchTerms = terms(filters.query);
 
   const ranked: Ranked[] = [];
   for (const entry of programs) {
-    const rank = score(entry, searchTerms);
+    const rank = score(entry, searchTerms, altTitles);
     if (rank < 0) continue;
     if (!matchesFilters(entry, filters)) continue;
     ranked.push({ entry, rank });

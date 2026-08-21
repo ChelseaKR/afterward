@@ -2091,6 +2091,70 @@ def program_payload(
     }
 
 
+def _search_alternate_titles(titles: list[Any], own_title: str | None) -> list[str]:
+    """CareerOneStop's alternate titles for one occupation, cleaned for search matching.
+
+    Trimmed, de-duplicated case-insensitively, and with a title identical to the occupation's
+    own name dropped -- "RN" is worth indexing under Registered Nurses, "Registered Nurse"
+    is not. Unlike ``pickAlternateTitles`` in the program page (web/app/[lang]/programs/[id]/
+    page.tsx), which keeps four for *display* ("also called"), this keeps all of them: a term
+    that never reaches the screen costs nothing to leave in, and search is exactly the place a
+    reader who knows their target job by its colloquial name and not O*NET's official one
+    needs to be found by it.
+    """
+    own = (own_title or "").strip().lower()
+    seen: set[str] = set()
+    kept: list[str] = []
+    for raw in titles:
+        if not isinstance(raw, str):
+            continue
+        trimmed = raw.strip()
+        key = trimmed.lower()
+        if not trimmed or key == own or key in seen:
+            continue
+        seen.add(key)
+        kept.append(trimmed)
+    return kept
+
+
+def alternate_title_index(
+    payloads: list[dict[str, Any]], occupations: dict[str, dict[str, Any]]
+) -> dict[str, list[str]]:
+    """SOC code -> search-only alternate titles, for every occupation a program actually feeds.
+
+    A lookup table beside the rows rather than a field folded into each one. `search_entry`
+    already found this out the hard way for area names: 27 distinct labour-market areas
+    inlined per-row would have cost 5.1 KB gzipped where a table would cost 1.9 KB, and was
+    kept inline anyway because an integer means nothing without the table travelling with it.
+    Alternate titles make the opposite trade the right one, because the redundancy is far
+    larger: measured against the 2026-08-17 snapshot, folding each program's occupations'
+    full alternate-title lists directly into its search row more than doubles the index
+    (176.4 KB gzipped to 360.0 KB) because a shared occupation -- Computer Support
+    Specialists alone feeds 160 program rows -- would repeat the same list up to 160 times. A
+    table keyed by the 487 SOC codes actually reached by a program, 379 of which carry a term
+    worth indexing (3,473 terms total), costs 23.2 KB gzipped once: 176.4 KB to 199.7 KB.
+
+    Only SOC codes that appear on at least one program are kept, and only when at least one
+    alternate title survives `_search_alternate_titles`. A code nothing trains for, or an
+    occupation CareerOneStop returned no alternate titles for, costs nothing here -- unlike
+    `search_entry`'s per-row fields, an all-or-nothing choice is not being made for every
+    program at once, so there is no reason to publish an empty list where a missing key says
+    the same thing.
+    """
+    used_socs = {soc for payload in payloads for soc in payload.get("soc_codes") or []}
+    table: dict[str, list[str]] = {}
+    for soc in sorted(used_socs):
+        occupation = occupations.get(soc)
+        if occupation is None:
+            continue
+        picked = _search_alternate_titles(
+            occupation.get("alternate_titles") or [], occupation.get("title")
+        )
+        if picked:
+            table[soc] = picked
+    return table
+
+
 def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     """One row of the client-side search index.
 
@@ -2329,6 +2393,9 @@ def emit_site_bundle(
                 "snapshot_date": snapshot,
                 "state": state,
                 "programs": [search_entry(p) for p in payloads],
+                # Search-only, never rendered: see alternate_title_index for why this is a
+                # table beside the rows rather than a field folded into each one.
+                "altTitles": alternate_title_index(payloads, occupations),
             },
             separators=(",", ":"),
         ),

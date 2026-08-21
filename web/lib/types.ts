@@ -728,7 +728,10 @@ export interface SearchEntry {
    * everywhere else. Every current build writes it on every row, false ones included.
    */
   cb?: boolean;
+  /** SOC codes for every occupation this program feeds. Keys into `SearchIndex.altTitles`. */
   s: string[];
+  /** Official occupation title(s) this program feeds, for display. See `SearchIndex.altTitles`
+   *  for the colloquial names that are searched but never shown. */
   o: string[];
   g: number | null;
   op: number | null;
@@ -742,6 +745,20 @@ export interface SearchIndex {
   snapshot_date: string;
   state: string;
   programs: SearchEntry[];
+  /**
+   * SOC code -> alternate/colloquial job titles ("RN", "CNA", "Med Tech"), for search
+   * matching only. Never rendered: a result card and the comparison table show `o`, the
+   * occupation's official title, and nothing here is meant to be read on screen — a program
+   * page's "also called" line is a separate, display-only pick of four (`pickAlternateTitles`
+   * in web/app/[lang]/programs/[id]/page.tsx). A shared lookup rather than a per-row field
+   * because occupations repeat across many programs (Computer Support Specialists alone
+   * feeds 160): folding each row's full alternate-title list into the row itself measured at
+   * more than doubling the index (176.4 KB gzipped to 360.0 KB on the 2026-08-17 snapshot); a
+   * table keyed by SOC costs 23.2 KB once. Optional because an index built before this field
+   * existed carries no key, which reads as "no colloquial terms available" rather than as an
+   * empty table -- the same absent-key convention `cb` uses on `SearchEntry`.
+   */
+  altTitles?: Record<string, string[]>;
 }
 
 export interface StateBenchmark {

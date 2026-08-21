@@ -5,6 +5,16 @@
 > because this note records what was true on the date in its title; substitute
 > `src/afterward/` and `afterward.` when running anything from it.
 
+> **Correction, 2026-08-21.** Recommendation #2 — reported job titles into the search index —
+> is carried out, sourced from CareerOneStop per section 6's own finding that its
+> `AlternateTitles` and O\*NET's `sample_of_reported_titles` are the same data (identical for
+> 596/603 occupations). `alternate_title_index` in `src/afterward/build.py` builds the table
+> and `web/lib/search.ts` matches against it; see the correction note in
+> `enrichment-expansion-2026-08-04.md` for the numbers. Recommendation #1 (Spanish titles) was
+> already done before this note was written (#6/#3, 2026-08-05). #3 (Job Zone) and #4
+> (technology skills) remain unbuilt — #4 was investigated separately and deliberately not
+> shipped, see `onet-technologies-not-shipped-2026-08-04.md`.
+
 Read-only assessment of source **D5, O\*NET Web Services (USDOL/ETA)**, which PROVENANCE.md
 lists as supplying "tasks, technology skills, work activities, job zones, related occupations"
 but which no code has ever read.
