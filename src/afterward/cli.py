@@ -398,6 +398,50 @@ def ask_serve_command(
     uvicorn.run(app_from_env(dataset_dir), host=host, port=port, log_level="warning")
 
 
+@app.command("ask-eval")
+def ask_eval_command(
+    out: Path = typer.Option(..., "--out", help="Where to write the results document."),
+    suite: str = typer.Option("all", "--suite", help="One suite name, or all."),
+    dataset_dir: Path = typer.Option(
+        Path("web/public/data"), "--dataset-dir", help="The dataset to run the cases over."
+    ),
+    cases_dir: Path = typer.Option(Path("evals/cases"), "--cases-dir", help="Committed cases."),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Use the scripted fake: proves the harness runs, measures nothing."
+    ),
+) -> None:
+    """Run the committed eval suites and write a provenance-stamped results document.
+
+    With a provider configured in the environment the document is a `run`. With none, and
+    without --dry-run, it is an honest `not_run` that says so. A --dry-run document is
+    labelled `dry_run` and a test refuses to let one be committed as a measurement.
+    """
+    from afterward.ask import evals, fakes
+    from afterward.ask.api import Assistant
+    from afterward.ask.dataset import Dataset
+    from afterward.ask.provider import provider_from_env
+
+    dataset = Dataset.load(dataset_dir)
+    suites = evals.SUITES if suite == "all" else (suite,)
+    if dry_run:
+        assistant = Assistant(dataset, fakes.scripted(fakes.structured_query()))
+        status = "dry_run"
+    else:
+        assistant = Assistant(dataset, provider_from_env())
+        status = "run" if assistant.available else "not_run"
+    stamp = evals.provenance(assistant, status=status)
+    if status == "not_run":
+        evals.write_results(out, evals.not_run_document(stamp, "no model provider configured"))
+        typer.echo(f"not run: no provider configured -> {out}")
+        return
+    results = evals.run_all(assistant, suites=suites, cases_dir=cases_dir)
+    evals.write_results(out, evals.results_document(results, stamp))
+    typer.echo(f"{status}: {stamp['provider']} {stamp['model']} prompt {stamp['prompt_version']}")
+    for name, result in results.items():
+        typer.echo(f"  {name:<14}{result.passed:>3}/{len(result.cases):<3} {result.summary}")
+    typer.echo(f"-> {out}")
+
+
 def main() -> None:
     app()
 
