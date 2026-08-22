@@ -278,6 +278,13 @@ def _stem(token: str) -> str:
     # so it only has to be consistent, not correct: "nurses" and "nurse" both become "nurs".
     if len(token) > 4 and token.endswith("s"):
         token = token[:-1]
+    # The trade and the tradesperson are one occupation: "welding" and "welder" both become
+    # "weld", "driving" and "driver" both "driv". "-er" is left on "-eer" ("engineer") so
+    # it still meets "engineering".
+    if len(token) > 5 and token.endswith("ing"):
+        token = token[:-3]
+    elif len(token) > 5 and token.endswith("er") and not token.endswith("eer"):
+        token = token[:-2]
     if len(token) > 4 and token.endswith("e"):
         token = token[:-1]
     # Spanish gender: "enfermero" and "enfermera" are one occupation.

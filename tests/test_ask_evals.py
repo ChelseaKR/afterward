@@ -237,10 +237,15 @@ class TestProvenance:
         assert evals.git_commit(tmp_path) == "def456"
         (git / "HEAD").write_text("0123\n")
         assert evals.git_commit(tmp_path) == "0123"
+        # A worktree: its own HEAD, refs shared through commondir.
+        wt_git = git / "worktrees" / "wt"
+        wt_git.mkdir(parents=True)
+        (wt_git / "HEAD").write_text("ref: refs/heads/x\n")
+        (wt_git / "commondir").write_text("../..\n")
         worktree = tmp_path / "wt"
         worktree.mkdir()
-        (worktree / ".git").write_text(f"gitdir: {git}\n")
-        assert evals.git_commit(worktree) == "0123"
+        (worktree / ".git").write_text(f"gitdir: {wt_git}\n")
+        assert evals.git_commit(worktree) == "def456"
 
     def test_documents_are_judged(self) -> None:
         good = {

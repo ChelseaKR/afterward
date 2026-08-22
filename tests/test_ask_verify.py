@@ -138,9 +138,20 @@ class TestCitations:
     def test_unknown_record(self) -> None:
         assert "unknown_record:P:nope" in reasons(claim("x", "P:nope"))
 
-    def test_number_on_uncited_record(self) -> None:
+    def test_a_declared_number_cites_its_record_by_construction(self) -> None:
+        # The first live run withheld eight claims whose only fault was a record declared
+        # in numbers and not repeated in cites. Declaring a number from a record is citing it.
         c = claim("Costs $3,900.", "O:53-3032", numbers=[("P:a", "cost.total_out_of_pocket", 3900)])
-        assert "number_on_uncited_record:P:a" in reasons(c)
+        assert reasons(c) == []
+        c = claim("Costs $3,900.", numbers=[("P:zz", "cost.total_out_of_pocket", 3900)])
+        assert "unknown_record:P:zz" in reasons(c)
+
+    def test_a_unique_prefix_of_an_id_resolves(self) -> None:
+        # The model has been seen writing P:f69d07d3 for a full uuid. A prefix that names
+        # exactly one record is that record; an ambiguous or short one is unknown.
+        assert reasons(claim("x", "O:53-30")) == []
+        assert "unknown_record:P:" in reasons(claim("x", "P:"))
+        assert "unknown_record:P:zzz" in reasons(claim("x", "P:zzz"))
 
     def test_unknown_field(self) -> None:
         c = claim("x", "P:a", numbers=[("P:a", "outcomes.magic", 1)])
@@ -219,6 +230,27 @@ class TestSuppression:
     def test_sentence_level_so_one_labelled_sentence_does_not_excuse_another(self) -> None:
         c = claim("Earnings were not reported. Nobody was employed.", "P:a")
         assert "suppressed_as_value:outcomes.employment_rate_q2" in reasons(c)
+
+    def test_a_denial_of_the_zero_reading_is_faithful(self) -> None:
+        # The first live run withheld the best sentences the model wrote. These pass.
+        for text in (
+            "The employment rate is not 0% — it was simply not reported.",
+            "That does not mean no one was hired; the figure was withheld.",
+            "An unreported figure is not the same as zero; employment was not reported.",
+            "La tasa de empleo no es cero: no fue reportada.",
+            "Esto no significa que nadie consiguió empleo; el dato no se reportó.",
+        ):
+            assert reasons(claim(text, "P:a")) == [], text
+
+    def test_a_denial_without_saying_not_reported_still_fails(self) -> None:
+        assert any(
+            r.startswith("suppressed_as_value")
+            for r in reasons(claim("Employment was not 0%.", "P:a"))
+        )
+        assert any(
+            r.startswith("suppressed_as_value")
+            for r in reasons(claim("Nobody was employed, which was not reported.", "P:a"))
+        )
 
     def test_annual_pay_of_an_occupation_is_not_the_program_s_earnings(self) -> None:
         c = claim(
