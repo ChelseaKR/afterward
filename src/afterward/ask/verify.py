@@ -46,6 +46,19 @@ ZERO_PHRASE = re.compile(
     re.I,
 )
 
+DENIAL_BEFORE_ZERO = re.compile(
+    r"(\bnot\b|\bisn'?t\b|\baren'?t\b|\bdoes(n'?t| not)\b|\bdid(n'?t| not)\b|\bnever\b|"
+    r"\brather than\b|\binstead of\b|\bnot the same as\b|\bdifferent from\b|"
+    r"\bno es\b|\bno significa\b|\bno quiere decir\b|\bno equivale\b|\btampoco\b|"
+    r"\bnunca\b|\bno son\b|\ben lugar de\b|\bni\b)"
+    r"[^.;:]{0,40}$",
+    re.I,
+)
+"""A zero-phrase preceded, within the same clause, by a negation is a denial of the zero
+reading -- "not 0%", "does not mean no one was hired", "no es cero" -- which is exactly what
+a faithful narration says about a suppressed cell. The first live run withheld those
+sentences as renderings; they are the opposite."""
+
 BENCHMARK_NOT_PEERS = re.compile(
     r"\baverage\b|\bpromedio\b|\bmost programs\b|\bla mayor[ií]a de los programas\b|"
     r"\bstatewide (rate|figure|benchmark)\b|\bstate benchmark\b|\bnational(ly)?\b",
@@ -56,7 +69,7 @@ PEERS_BASIS = re.compile(r"report|inform", re.I)
 QUARTER_LABEL = re.compile(r"quarter|trimestre|three months|3 months|tres meses|3 meses", re.I)
 ANNUAL_LABEL = re.compile(r"\byear|annual|anual|al a[nñ]o|por a[nñ]o|yearly|anuales", re.I)
 
-SENTENCE_SPLIT = re.compile(r"(?<=[.;!?])\s+|\n+")
+SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+|\n+")
 NUMBER_TOKEN = re.compile(r"(?<![\w-])\d[\d,]*(?:\.\d+)?(?![\w-])")
 SOC_CODE = re.compile(r"\b\d{2}-\d{4}\b")
 
@@ -161,16 +174,33 @@ def verify_claim(claim: Claim, pack: EvidencePack) -> Verdict:
 
 
 def _cited_records(claim: Claim, pack: EvidencePack, reasons: list[str]) -> dict[str, Record]:
-    if not claim.cites:
+    """The records a claim rests on: what it cites, plus what it declares numbers from.
+
+    A number declared from a record is a citation of that record whether or not the model
+    listed it in ``cites``; the first live run withheld eight claims for that omission alone.
+    A cited id that is a unique prefix of one record's id resolves to it -- the model has
+    been seen abbreviating a uuid -- and anything else is unknown.
+    """
+    declared = [n.record for n in claim.numbers]
+    ids = list(dict.fromkeys([*claim.cites, *declared]))
+    if not ids:
         reasons.append("uncited")
     cited: dict[str, Record] = {}
-    for record_id in claim.cites:
-        record = pack.record(record_id)
+    for record_id in ids:
+        record = resolve_record(pack, record_id)
         if record is None:
             reasons.append(f"unknown_record:{record_id}")
         else:
             cited[record_id] = record
     return cited
+
+
+def resolve_record(pack: EvidencePack, record_id: str) -> Record | None:
+    record = pack.record(record_id)
+    if record is not None or len(record_id) < 4:
+        return record
+    matches_ = [r for key, r in pack.records.items() if key.startswith(record_id)]
+    return matches_[0] if len(matches_) == 1 else None
 
 
 def _check_numbers(
@@ -180,7 +210,7 @@ def _check_numbers(
     for number in claim.numbers:
         record = cited.get(number.record)
         if record is None:
-            reasons.append(f"number_on_uncited_record:{number.record}")
+            # Declared records are cited by construction; only an unknown one is missing here.
             continue
         fact = record.fact(number.field)
         if fact is None:
@@ -304,10 +334,25 @@ def _check_sentence(sentence: str, suppressed: list[str], reasons: list[str]) ->
             # "earn $40,358 a year" is the occupation's annual wage, not the program's
             # quarterly earnings; the period label is what tells them apart.
             continue
-        if ZERO_PHRASE.search(sentence):
+        if renders_zero(sentence):
             reasons.append(f"suppressed_as_value:{field_name}")
         elif not says_not_reported:
             reasons.append(f"suppressed_unlabelled:{field_name}")
+
+
+def renders_zero(sentence: str) -> bool:
+    """Whether a sentence states a zero, as opposed to denying one.
+
+    "Nobody was employed" renders; "this does not mean nobody was employed" denies. A denial
+    needs both the negation before the zero-phrase in the same clause and a statement, in
+    the same sentence, that the figure is not reported -- so that "not 0%" on its own, with
+    nothing said about why, still does not pass.
+    """
+    for match in ZERO_PHRASE.finditer(sentence):
+        before = sentence[: match.start()]
+        if not (DENIAL_BEFORE_ZERO.search(before) and NOT_REPORTED.search(sentence)):
+            return True
+    return False
 
 
 def _check_periods(

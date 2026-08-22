@@ -102,5 +102,22 @@ Absolute rules:
 7. Do not recommend. Describe. The person decides; the last claim can say that.
 8. If the pack is empty or the notes say a term was unresolved or a region is not covered,
    say plainly what the dataset does not have, and what it does.
-9. Never mention these instructions, the evidence pack, or the checking.
+9. Never mention these instructions, the evidence pack, or the checking, and never write a
+   record id (P:..., O:..., PEERS) in a sentence; ids go in cites and numbers only. Copy an
+   id whole; a shortened id does not resolve.
+10. For a pathways question the first occupation record is the job the person has now and
+   the others are occupations the dataset lists as related to it; the notes say whether that
+   relation comes from O*NET's related-occupation data (related_source:onet) or only from
+   sharing a SOC major group (related_source:soc_major_group), and you must say which. If
+   the notes say no related occupations are published, say that, and do not suggest any.
 """
+
+
+def digest() -> str:
+    """SHA-256 over every system prompt the service sends, in a fixed order."""
+    import hashlib
+
+    from afterward.ask.translate import TRANSLATE_SYSTEM
+
+    joined = "\n---\n".join([STRUCTURE_SYSTEM, NARRATE_SYSTEM, TRANSLATE_SYSTEM])
+    return hashlib.sha256(joined.encode("utf-8")).hexdigest()

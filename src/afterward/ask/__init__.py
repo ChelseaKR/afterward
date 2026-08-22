@@ -18,5 +18,11 @@ module here keeps to it:
 
 from __future__ import annotations
 
-PROMPT_VERSION = "2026-08-21.1"
+PROMPT_VERSION = "2026-08-21.2"
 """Stamped on every response and every eval result. Bump when any prompt text changes."""
+
+PROMPT_DIGEST = "1a6889cf09a5d3d4d3c9831af8cf4a7564564a95374e3620fbb474499a8c973d"
+"""SHA-256 over every system prompt, pinned beside the version. ``tests/test_ask_prompts.py``
+recomputes it, so a prompt edit that does not bump ``PROMPT_VERSION`` fails the build and
+eval results stay comparable only within a version. Recompute with
+``afterward.ask.prompts.digest()``."""

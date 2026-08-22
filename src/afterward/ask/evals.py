@@ -31,7 +31,7 @@ from afterward.ask.verify import (
     BENCHMARK_NOT_PEERS,
     NOT_REPORTED,
     QUARTER_LABEL,
-    ZERO_PHRASE,
+    renders_zero,
 )
 
 CASES_DIR = Path("evals/cases")
@@ -49,9 +49,15 @@ PROVENANCE_KEYS = (
 )
 STATUSES = ("run", "not_run", "dry_run")
 
-STATE_BENCHMARK_FIGURES = (0.27, 27.0, 16978.95, 16979.0, 0.71, 71.0, 0.37, 37.0)
-"""DOL's statewide aggregate, which the site does not compare against and the pack never
-carries. A narration that uses one of these got it from somewhere other than the evidence."""
+STATE_BENCHMARK_IN_TEXT = re.compile(
+    r"(state|statewide|california|estatal|estado)[^.;]{0,60}(\b27\s?%|\$\s?16,97[89])|"
+    r"(\b27\s?%|\$\s?16,97[89])[^.;]{0,60}(state|statewide|california|estatal|estado)",
+    re.I,
+)
+"""DOL's statewide aggregate -- 27% employed, $16,978.95 median earnings -- which the site
+does not compare against and the pack never carries, named beside a state word. The
+figures alone are not enough: the first live run flagged a program's own 71% employment
+because it collided with the statewide 71% completion figure."""
 
 
 @dataclass
@@ -255,10 +261,15 @@ def _suppression(assistant: Assistant, cases: Sequence[Mapping[str, Any]]) -> Su
 
 
 def _renders_absence(claim: Claim, suppressed: Sequence[str]) -> bool:
-    """Did this claim give a suppressed measure a value: a declared number, or a zero-phrase?"""
+    """Did this claim give a suppressed measure a value: a declared number, or a stated zero?
+
+    Same test as the verifier's, so a denial of the zero reading ("not 0% -- it was not
+    reported") counts as faithful here too, and not as a rendering.
+    """
     if any(n.field in suppressed for n in claim.numbers):
         return True
-    return bool(ZERO_PHRASE.search(claim.text)) and _mentions_any(claim.text, suppressed)
+    sentences = [s for s in re.split(r"(?<=[.!?])\s+|\n+", claim.text) if s.strip()]
+    return any(renders_zero(s) and _mentions_any(s, suppressed) for s in sentences)
 
 
 _MENTION = {
@@ -366,16 +377,9 @@ def _comparability(assistant: Assistant, cases: Sequence[Mapping[str, Any]]) -> 
 
 
 def _invented_benchmark(claim: Claim) -> bool:
-    if BENCHMARK_NOT_PEERS.search(claim.text):
-        return True
-    declared = {round(n.value, 2) for n in claim.numbers if n.record != "PEERS"}
-    return any(round(f, 2) in declared for f in STATE_BENCHMARK_FIGURES) or _state_figure_in_text(
-        claim.text
+    return bool(
+        BENCHMARK_NOT_PEERS.search(claim.text) or STATE_BENCHMARK_IN_TEXT.search(claim.text)
     )
-
-
-def _state_figure_in_text(text: str) -> bool:
-    return bool(re.search(r"\b27\s?%|\$\s?16,97[89]", text))
 
 
 def _period_unlabelled(claim: Claim) -> bool:
@@ -420,13 +424,19 @@ def git_commit(repo_root: Path | None = None) -> str:
     if not head.startswith("ref: "):
         return head or "unknown"
     ref = head[5:].strip()
-    loose = _read(root / ref)
-    if loose:
-        return loose
-    for line in _read(root / "packed-refs").splitlines():
-        parts = line.split()
-        if len(parts) == 2 and parts[1] == ref:
-            return parts[0]
+    # A worktree's git dir keeps HEAD but shares refs with the main repository through
+    # its `commondir` pointer; look in both.
+    common = _read(root / "commondir")
+    for base in (root, (root / common).resolve() if common else None):
+        if base is None:
+            continue
+        loose = _read(base / ref)
+        if loose:
+            return loose
+        for line in _read(base / "packed-refs").splitlines():
+            parts = line.split()
+            if len(parts) == 2 and parts[1] == ref:
+                return parts[0]
     return "unknown"
 
 

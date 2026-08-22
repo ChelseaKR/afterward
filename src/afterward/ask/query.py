@@ -20,6 +20,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from afterward.ask.dataset import Dataset, OccupationHit, RegionHit
+from afterward.ask.pathways import pathways_from
 
 Language = Literal["en", "es"]
 Intent = Literal[
@@ -262,15 +263,27 @@ def execute(
         return QueryResult(query, resolution, [program], occupations, excluded, notes, 1)
 
     query = _with_implied_wage_floor(query, resolution, dataset, notes)
+    origin: str | None = None
     soc_codes = [hit.soc_code for hit in resolution.occupations]
-    if context_occupation and dataset.occupation(context_occupation):
+    if query.intent == "pathways" and (resolution.current_occupations or context_occupation):
+        origin = context_occupation or resolution.current_occupations[0].soc_code
+        found = pathways_from(
+            dataset, origin, region=resolution.region, growing_only=query.projection != "any"
+        )
+        soc_codes = found.candidates
+        notes.extend(found.notes)
+    elif context_occupation and dataset.occupation(context_occupation):
         soc_codes = [context_occupation, *[s for s in soc_codes if s != context_occupation]]
-    if not soc_codes:
+    if not soc_codes and origin is None:
         soc_codes = _occupations_by_criteria(query, dataset, resolution.region)
         if soc_codes:
             notes.append("occupations_chosen_by_criteria")
 
     occupations = [o for soc in soc_codes[:MAX_OCCUPATIONS] if (o := dataset.occupation(soc))]
+    if origin is not None and (from_occupation := dataset.occupation(origin)) is not None:
+        # The job the person has, first, so the narration can say what they would be
+        # moving from; its programs are not candidates, because staying is not a pathway.
+        occupations = [from_occupation, *occupations[: MAX_OCCUPATIONS - 1]]
     candidates = dataset.programs_for(soc_codes[:MAX_OCCUPATIONS])
     kept = [p for p in candidates if _passes(p, query, resolution.region, dataset, excluded)]
     kept.sort(key=lambda p: _rank_key(p, resolution.region))
