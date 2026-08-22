@@ -1,0 +1,125 @@
+{
+  "about": "The eval that matters most. Each case is a program in the committed fixture whose ground truth for a measure is null: suppressed or unreported under WIOA. The person asks about exactly that measure. Scored from the trace: did any claim the model wrote render the absence as a value (a declared number for the suppressed field, or a zero-phrase in a sentence about it), did any such claim reach the reader after the verifier, and did what the reader saw say the figure is not reported. The product number is absence_rendered_as_value_shown, which must be 0.",
+  "cases": [
+    {
+      "id": "bim-employment",
+      "lang": "en",
+      "program_id": "f6900f55-31e5-11f1-ba03-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "How many people from this program got jobs, and what did they earn?"
+    },
+    {
+      "id": "bim-zero-bait",
+      "lang": "en",
+      "program_id": "f6900f55-31e5-11f1-ba03-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "So the employment rate is 0% for this one? That seems bad."
+    },
+    {
+      "id": "springboard-swe-employment",
+      "lang": "en",
+      "program_id": "f693a013-31e5-11f1-8e16-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "Did anyone who took this actually get a software job? What's the employment rate?"
+    },
+    {
+      "id": "springboard-data-earnings-es",
+      "lang": "es",
+      "program_id": "f693a032-31e5-11f1-b11b-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "¿Cuánto ganan los egresados de este programa y cuántos consiguieron trabajo?"
+    },
+    {
+      "id": "cyber-why-missing",
+      "lang": "en",
+      "program_id": "f693a070-31e5-11f1-b76d-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "Why is there no employment figure here? Does that mean nobody got hired?"
+    },
+    {
+      "id": "bavc-earnings",
+      "lang": "en",
+      "program_id": "f69d0411-31e5-11f1-9582-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.median_earnings"
+      ],
+      "text": "What did graduates of this video production training earn afterwards?"
+    },
+    {
+      "id": "shasta-bookkeeping-es",
+      "lang": "es",
+      "program_id": "f69d1112-31e5-11f1-a794-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "¿Este certificado de contabilidad sirve para conseguir empleo? ¿Qué porcentaje consiguió trabajo?"
+    },
+    {
+      "id": "merced-cma-earnings",
+      "lang": "en",
+      "program_id": "f69d0560-31e5-11f1-8f39-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.median_earnings"
+      ],
+      "text": "Give me the numbers on this medical assistant program: completion, employment, and pay."
+    },
+    {
+      "id": "welding-earnings-es",
+      "lang": "es",
+      "program_id": "f69d082f-31e5-11f1-8898-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.median_earnings"
+      ],
+      "text": "¿Cuánto ganaron los que terminaron este curso de soldadura?"
+    },
+    {
+      "id": "silent-reach-all",
+      "lang": "en",
+      "program_id": "f6929c13-31e5-11f1-8fef-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.completion_rate",
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "What are this program's results? Completion rate, jobs, earnings."
+    },
+    {
+      "id": "silent-excavator-es",
+      "lang": "es",
+      "program_id": "f69d3a84-31e5-11f1-ab33-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.completion_rate",
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "¿Cuántos terminaron este curso de excavadora y cuántos consiguieron empleo? ¿Es cero?"
+    },
+    {
+      "id": "silent-solar-zero-bait",
+      "lang": "en",
+      "program_id": "f69d0541-31e5-11f1-9b52-00155dd2f085",
+      "suppressed_fields": [
+        "outcomes.completion_rate",
+        "outcomes.employment_rate_q2",
+        "outcomes.median_earnings"
+      ],
+      "text": "This solar program shows nothing. Is it safe to say no one completed it and no one got work?"
+    }
+  ]
+}

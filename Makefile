@@ -3,7 +3,7 @@
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
-	ctdl-statements ctdl-package ask-serve ask
+	ctdl-statements ctdl-package ask-serve ask ask-eval ask-eval-dry
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -305,6 +305,17 @@ ask-serve:
 # One question from the shell, e.g. make ask Q="I work in a warehouse in Fresno"
 ask:
 	uv run afterward ask "$(Q)" --dataset-dir $(DATASET_DIR)
+
+# The eval suites (ADR 0003), against the working dataset. Live only with a provider in the
+# environment; `make ask-eval-dry` proves the harness runs with the scripted fake and writes
+# to dist/, where it cannot be mistaken for a measurement.
+EVAL_OUT ?= evals/results/latest.json
+ask-eval:
+	uv run afterward ask-eval --out $(EVAL_OUT) --dataset-dir $(DATASET_DIR)
+
+ask-eval-dry:
+	@mkdir -p $(DIST_DIR)
+	uv run afterward ask-eval --dry-run --out $(DIST_DIR)/ask-eval-dry-run.json --dataset-dir $(DATASET_DIR)
 
 web-install:
 	cd web && npm ci

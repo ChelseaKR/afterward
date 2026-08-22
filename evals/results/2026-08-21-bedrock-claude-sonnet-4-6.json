@@ -1,0 +1,1173 @@
+{
+  "status": "run",
+  "note": "First live run, prompt 2026-08-21.1, over the real 3,266-program dataset (snapshot 2026-08-17). provenance.commit is the branch commit the run started from; after #69 was squash-merged that commit was cherry-picked onto main as the harness commit in this PR with an identical tree under src/afterward/ask and evals/. Sonnet 4.6 on Bedrock because that is the model this account can invoke; the code default is claude-sonnet-5, which returned 403. Read with the per-case detail: the verifier over-withheld correct denials of a zero reading and numbers declared on records the model relied on but did not list in cites; those are verifier findings, recorded here as run and addressed in the next change with a second run on prompt 2026-08-21.2.",
+  "provenance": {
+    "provider": "bedrock",
+    "model": "global.anthropic.claude-sonnet-4-6",
+    "prompt_version": "2026-08-21.1",
+    "commit": "2c0f55b2f3c4000a58822c950d9abaa7505311df",
+    "date": "2026-08-22",
+    "dataset_snapshot": "2026-08-17",
+    "is_fixture": false
+  },
+  "suites": {
+    "structuring": {
+      "cases": 18,
+      "passed": 15,
+      "summary": {
+        "field_accuracy": 0.944,
+        "fields_scored": 54,
+        "abstention": {
+          "vague_cases": 4,
+          "refused_to_guess": 4,
+          "rate": 1.0
+        }
+      },
+      "per_case": [
+        {
+          "id": "en-warehouse-fresno",
+          "passed": true,
+          "checks": {
+            "intent": true,
+            "language": true,
+            "projection": true,
+            "current_resolves_to": true,
+            "region": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [
+              "warehouse"
+            ],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "Fresno"
+            ],
+            "projection": "not_shrinking",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "wage"
+            ],
+            "clarifications_needed": [
+              "What kind of work are you interested in moving into?"
+            ],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-cna-la-cost",
+          "passed": true,
+          "checks": {
+            "intent": true,
+            "language": true,
+            "max_cost": true,
+            "resolves_to": true,
+            "region": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "CNA"
+            ],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "Los Angeles"
+            ],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": 2000.0,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "cost"
+            ],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-online-short",
+          "passed": false,
+          "checks": {
+            "language": true,
+            "format": true,
+            "max_weeks": true,
+            "resolves_to": false
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "medical billing"
+            ],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": 13.0,
+            "format": "online",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "length"
+            ],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-hourly-wage",
+          "passed": true,
+          "checks": {
+            "language": true,
+            "projection": true,
+            "min_annual_wage": true,
+            "region": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "San Diego"
+            ],
+            "projection": "growing",
+            "min_annual_wage": 62400.0,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "wage",
+              "growth"
+            ],
+            "clarifications_needed": [
+              "Which trade or type of work are you interested in, or would you like to see all growing trades in San Diego above $30/hr?"
+            ],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-reported-only",
+          "passed": false,
+          "checks": {
+            "language": true,
+            "requires_reported_outcomes": true,
+            "resolves_to": false
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "welding"
+            ],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": true,
+            "measures_of_interest": [],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-shrinking",
+          "passed": true,
+          "checks": {
+            "language": true,
+            "projection": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "occupation_detail",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "California"
+            ],
+            "projection": "shrinking",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "growth",
+              "openings"
+            ],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-region-uncovered",
+          "passed": true,
+          "checks": {
+            "language": true,
+            "resolves_to": true,
+            "region_unresolved": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "electrician"
+            ],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "Lake Tahoe"
+            ],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-out-of-scope",
+          "passed": false,
+          "checks": {
+            "language": true,
+            "out_of_scope": true,
+            "resolves_to": false
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "truck driving"
+            ],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [],
+            "out_of_scope": "Questions about eligibility for program funding as an undocumented person and visa sponsorship are outside this dataset and cannot be answered here."
+          }
+        },
+        {
+          "id": "en-pathways",
+          "passed": true,
+          "checks": {
+            "intent": true,
+            "language": true,
+            "projection": true,
+            "current_resolves_to": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "pathways",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [
+              "cashier"
+            ],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "growing",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "en-coverage-question",
+          "passed": true,
+          "checks": {
+            "intent": true,
+            "language": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "coverage_question",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "employment_rate_q2"
+            ],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "es-enfermeria-sacramento",
+          "passed": true,
+          "checks": {
+            "intent": true,
+            "language": true,
+            "resolves_to": true,
+            "region": true
+          },
+          "query": {
+            "language": "es",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "enfermería"
+            ],
+            "occupation_terms_english": [
+              "nursing"
+            ],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "Sacramento"
+            ],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "cost"
+            ],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "es-camionero",
+          "passed": true,
+          "checks": {
+            "language": true,
+            "projection": true,
+            "current_resolves_to": true,
+            "region": true
+          },
+          "query": {
+            "language": "es",
+            "intent": "pathways",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [
+              "camionero"
+            ],
+            "current_occupation_terms_english": [
+              "truck driver"
+            ],
+            "region_terms": [
+              "Bakersfield"
+            ],
+            "projection": "not_shrinking",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "wage"
+            ],
+            "clarifications_needed": [
+              "¿Qué tipo de trabajo o campo le interesa explorar para mejorar su salario?"
+            ],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "es-costo-maximo",
+          "passed": true,
+          "checks": {
+            "language": true,
+            "max_cost": true,
+            "resolves_to": true,
+            "region": true
+          },
+          "query": {
+            "language": "es",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "asistente dental"
+            ],
+            "occupation_terms_english": [
+              "dental assistant"
+            ],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [
+              "Oakland"
+            ],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": 3000.0,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "cost"
+            ],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "es-en-linea",
+          "passed": true,
+          "checks": {
+            "language": true,
+            "format": true,
+            "resolves_to": true
+          },
+          "query": {
+            "language": "es",
+            "intent": "find_programs",
+            "occupation_terms": [
+              "contabilidad"
+            ],
+            "occupation_terms_english": [
+              "accounting"
+            ],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "online",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [],
+            "out_of_scope": null
+          }
+        },
+        {
+          "id": "vague-en-something-better",
+          "passed": true,
+          "checks": {
+            "language": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "find_programs",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [
+              "What kind of work are you interested in or hoping to move into?",
+              "Where in California are you located or willing to train?",
+              "What does 'better' mean to you — higher pay, more stability, different field, shorter commute?",
+              "Are there any limits on cost or time you can spend on training?"
+            ],
+            "out_of_scope": null
+          },
+          "refused_to_guess": true,
+          "guessed_fields": []
+        },
+        {
+          "id": "vague-en-help",
+          "passed": true,
+          "checks": {
+            "language": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "other",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [
+              "What kind of training or work are you looking for?",
+              "Are you in a specific part of California?"
+            ],
+            "out_of_scope": null
+          },
+          "refused_to_guess": true,
+          "guessed_fields": []
+        },
+        {
+          "id": "vague-es-trabajo",
+          "passed": true,
+          "checks": {
+            "language": true
+          },
+          "query": {
+            "language": "es",
+            "intent": "find_programs",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [],
+            "clarifications_needed": [
+              "¿Qué tipo de trabajo te interesa?",
+              "¿En qué parte de California estás?"
+            ],
+            "out_of_scope": null
+          },
+          "refused_to_guess": true,
+          "guessed_fields": []
+        },
+        {
+          "id": "vague-en-cheap",
+          "passed": true,
+          "checks": {
+            "language": true
+          },
+          "query": {
+            "language": "en",
+            "intent": "program_detail",
+            "occupation_terms": [],
+            "occupation_terms_english": [],
+            "current_occupation_terms": [],
+            "current_occupation_terms_english": [],
+            "region_terms": [],
+            "projection": "any",
+            "min_annual_wage": null,
+            "max_cost": null,
+            "max_weeks": null,
+            "format": "any",
+            "requires_reported_outcomes": false,
+            "measures_of_interest": [
+              "cost"
+            ],
+            "clarifications_needed": [
+              "Which occupation or type of training are you asking about?"
+            ],
+            "out_of_scope": null
+          },
+          "refused_to_guess": true,
+          "guessed_fields": []
+        }
+      ]
+    },
+    "suppression": {
+      "cases": 12,
+      "passed": 4,
+      "summary": {
+        "absence_rendered_as_value_by_model": 6,
+        "absence_rendered_as_value_shown": 0,
+        "shown_said_not_reported": 4,
+        "shown_rate": 1.0
+      },
+      "per_case": [
+        {
+          "id": "bim-employment",
+          "passed": true,
+          "model_rendered_absence_as_value": [],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": true,
+          "withheld": 3,
+          "withheld_reasons": {
+            "suppressed_unlabelled": 1,
+            "guidance_has_figures": 2
+          },
+          "shown": [
+            "That 100% completion rate compares favorably to the median of 85% reported by the 1,951 California programs that reported the same measure.",
+            "The employment rate and median earnings for this program's graduates were not reported — WIOA withholds these figures when the group behind them is small enough that publishing them could identify an individual, which is likely the case given only 9 people exited."
+          ]
+        },
+        {
+          "id": "bim-zero-bait",
+          "passed": false,
+          "model_rendered_absence_as_value": [
+            "The employment rate for this program is not 0% — it was simply not reported. WIOA withholds a figure when the group behind it is small enough that publishing it could identify someone, or when the provider did not submit it; absence of a figure is not evidence that no one found work."
+          ],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 4,
+          "withheld_reasons": {
+            "suppressed_as_value": 1,
+            "suppressed_unlabelled": 3,
+            "comparison_on_unreported": 2,
+            "guidance_has_figures": 1
+          },
+          "shown": []
+        },
+        {
+          "id": "springboard-swe-employment",
+          "passed": true,
+          "model_rendered_absence_as_value": [],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": true,
+          "withheld": 3,
+          "withheld_reasons": {
+            "number_on_uncited_record": 4,
+            "number_untraceable": 4,
+            "suppressed_unlabelled": 1,
+            "guidance_has_figures": 1
+          },
+          "shown": [
+            "The employment rate for this program was not reported. WIOA withholds a figure when the group behind it is small enough that publishing it could identify someone — with only 11 people in this cohort, that is likely the reason here.",
+            "Similarly, median earnings in the quarter after leaving were not reported, so there is no published earnings outcome to share for this program."
+          ]
+        },
+        {
+          "id": "springboard-data-earnings-es",
+          "passed": false,
+          "model_rendered_absence_as_value": [
+            "La tasa de empleo y las ganancias medianas de los egresados de este programa no fueron reportadas; esto puede ocurrir cuando el grupo es demasiado pequeño para publicar los datos sin comprometer la privacidad de los participantes, o porque el proveedor no los reportó — no significa que nadie haya encontrado trabajo."
+          ],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 2,
+          "withheld_reasons": {
+            "suppressed_as_value": 1,
+            "guidance_has_figures": 1
+          },
+          "shown": [
+            "El programa Data Analytics Career Track de Springboard sirvió a 14 personas en su cohorte, de las cuales 14 completaron el proceso de salida y 10 terminaron el programa, lo que representa una tasa de finalización del 71%.",
+            "La tasa de finalización del 71% está por debajo del 85% que representa la mediana de los 1,951 programas de California que reportaron esta misma medida."
+          ]
+        },
+        {
+          "id": "cyber-why-missing",
+          "passed": false,
+          "model_rendered_absence_as_value": [
+            "The employment rate and median earnings for this program were not reported — this does not mean no one was hired or earned nothing. WIOA withholds these figures when the group behind them is small enough that publishing them could identify an individual participant, and this program served only 14 people."
+          ],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 2,
+          "withheld_reasons": {
+            "suppressed_as_value": 2,
+            "guidance_has_figures": 1
+          },
+          "shown": [
+            "Of the 14 people who exited the program, 9 completed it, giving a completion rate of 64% — compared to 85% among the median of the 1,951 California programs that reported that same measure."
+          ]
+        },
+        {
+          "id": "bavc-earnings",
+          "passed": false,
+          "model_rendered_absence_as_value": [],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 4,
+          "withheld_reasons": {
+            "number_on_uncited_record": 6,
+            "number_untraceable": 6,
+            "guidance_has_figures": 1
+          },
+          "shown": []
+        },
+        {
+          "id": "shasta-bookkeeping-es",
+          "passed": true,
+          "model_rendered_absence_as_value": [],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": true,
+          "withheld": 3,
+          "withheld_reasons": {
+            "number_on_uncited_record": 6,
+            "number_untraceable": 6,
+            "suppressed_unlabelled": 2,
+            "guidance_has_figures": 1
+          },
+          "shown": [
+            "El programa es el Certificado de Accounting Clerk/Bookkeeper de Shasta College, en Redding, con una duración de 34 semanas y un costo total de bolsillo de $2,657 (incluyendo $1,311 de matrícula y $1,346 en materiales).",
+            "El porcentaje de empleo (tasa de empleo en el segundo trimestre tras salir del programa) no fue reportado para este programa, por lo que no es posible responder directamente cuántos estudiantes consiguieron trabajo."
+          ]
+        },
+        {
+          "id": "merced-cma-earnings",
+          "passed": false,
+          "model_rendered_absence_as_value": [
+            "Median earnings in the second quarter after leaving (roughly three months out) were not reported for this program; WIOA withholds this figure when the group is small enough that publishing it could identify someone, or when the provider did not report it — it is not an indication that earnings were zero. For context, the median across 1,339 California programs that did report this measure was $10,900 in one quarter."
+          ],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 5,
+          "withheld_reasons": {
+            "number_on_uncited_record": 6,
+            "number_untraceable": 6,
+            "suppressed_as_value": 1,
+            "guidance_has_figures": 2
+          },
+          "shown": []
+        },
+        {
+          "id": "welding-earnings-es",
+          "passed": false,
+          "model_rendered_absence_as_value": [],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 4,
+          "withheld_reasons": {
+            "suppressed_unlabelled": 2,
+            "number_on_uncited_record": 4,
+            "number_untraceable": 4,
+            "guidance_has_figures": 1
+          },
+          "shown": []
+        },
+        {
+          "id": "silent-reach-all",
+          "passed": true,
+          "model_rendered_absence_as_value": [],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": true,
+          "withheld": 1,
+          "withheld_reasons": {
+            "number_on_uncited_record": 4,
+            "number_untraceable": 4,
+            "suppressed_unlabelled": 2
+          },
+          "shown": [
+            "Reach University's Educator Preparation Program in Oakland did not report any outcome figures — completion rate, employment rate, and earnings are all listed as not reported. This can happen when the group of participants is too small for WIOA to publish without risking identification, or when the provider did not submit the data."
+          ]
+        },
+        {
+          "id": "silent-excavator-es",
+          "passed": false,
+          "model_rendered_absence_as_value": [
+            "Este programa de Excavator de Associated Builders and Contractors (ABC) Training Academy en Bakersfield no reportó ninguno de sus resultados: ni el número de participantes que completaron el curso, ni cuántos consiguieron empleo, ni las ganancias. Eso no significa que la cifra sea cero; WIOA no publica los datos cuando el grupo es muy pequeño o cuando el proveedor no los entregó."
+          ],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 2,
+          "withheld_reasons": {
+            "suppressed_as_value": 4,
+            "number_on_uncited_record": 4,
+            "number_untraceable": 4,
+            "suppressed_unlabelled": 2
+          },
+          "shown": []
+        },
+        {
+          "id": "silent-solar-zero-bait",
+          "passed": false,
+          "model_rendered_absence_as_value": [
+            "No — it is not safe to draw that conclusion. Merced Adult School's Solar Installation program did not report any outcome figures (completions, employment, or earnings), but an unreported figure is not the same as zero. WIOA withholds numbers when the group behind them is too small to publish without risking identification of individuals, or when a provider did not submit data."
+          ],
+          "shown_rendered_absence_as_value": [],
+          "shown_said_not_reported": false,
+          "withheld": 3,
+          "withheld_reasons": {
+            "suppressed_unlabelled": 1,
+            "suppressed_as_value": 3,
+            "number_on_uncited_record": 4,
+            "number_untraceable": 4,
+            "guidance_has_figures": 1
+          },
+          "shown": [
+            "What is known about the program: it is offered in person in Merced, runs 26 weeks (10 hours), costs $125 in supplies with no tuition, and is linked to the Solar Photovoltaic Installers occupation, for which the state projects a statewide median annual wage of $62,242 a year and 9,860 total job openings over 2024–2034 — a projected +42.0% change."
+          ]
+        }
+      ]
+    },
+    "grounding": {
+      "cases": 8,
+      "passed": 1,
+      "summary": {
+        "claims": 59,
+        "verified": 45,
+        "verified_rate": 0.763,
+        "data_claims_shown": 40,
+        "withheld_reasons": {
+          "number_untraceable": 14,
+          "guidance_has_figures": 4,
+          "number_on_uncited_record": 8,
+          "unknown_record": 1,
+          "suppressed_unlabelled": 4,
+          "comparison_on_unreported": 3,
+          "number_mismatch": 1
+        }
+      },
+      "per_case": [
+        {
+          "id": "vet-assistant-valencia",
+          "passed": false,
+          "claims": 8,
+          "verified": 5,
+          "withheld_reasons": {
+            "number_untraceable": 6
+          },
+          "withheld": [
+            {
+              "text": "Completion rates vary across the programs: Veterinary Assistant Program (online) had the highest at 67%, followed by Veterinary Assistant Training Program at 56%, both hybrid and competency-based Veterinary Assistant programs at 52%, and Veterinary Assisting at 31%. For context, the median completion rate among the 1,951 California programs that reported this measure was 85%.",
+              "reasons": [
+                "number_untraceable:85",
+                "number_untraceable:1951"
+              ]
+            },
+            {
+              "text": "Employment rates in the second quarter after leaving ranged from 52% (Veterinary Assistant Training Program) to 70% (Veterinary Assistant Program online). The hybrid program was at 64%, the competency-based Veterinary Assistant at 62%, and Veterinary Assisting at 54%. The median employment rate among the 1,690 California programs that reported this measure was 69%.",
+              "reasons": [
+                "number_untraceable:69",
+                "number_untraceable:1690"
+              ]
+            },
+            {
+              "text": "Median earnings in one quarter (the second quarter after leaving) were $5,000 for the Veterinary Assistant Training Program and the hybrid program, $5,190 for Veterinary Assisting, $8,000 for the Veterinary Assistant Program (online), and $10,000 for the competency-based Veterinary Assistant. The median among the 1,339 California programs that reported this measure was $10,900 in one quarter.",
+              "reasons": [
+                "number_untraceable:10900",
+                "number_untraceable:1339"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phlebotomy-detail",
+          "passed": false,
+          "claims": 7,
+          "verified": 6,
+          "withheld_reasons": {
+            "guidance_has_figures": 1
+          },
+          "withheld": [
+            {
+              "text": "To explore financial aid options, confirm current schedules, or ask about the 210 credentials earned by completers, consider contacting Merced Adult School directly or visiting an America's Job Center of California.",
+              "reasons": [
+                "guidance_has_figures"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "cosmetology-es",
+          "passed": false,
+          "claims": 6,
+          "verified": 3,
+          "withheld_reasons": {
+            "number_on_uncited_record": 6,
+            "number_untraceable": 6
+          },
+          "withheld": [
+            {
+              "text": "De las 245 personas que salieron del programa, el 76% lo completó. En comparación, la mediana de los 1,951 programas de California que reportaron esta misma medida fue del 85%.",
+              "reasons": [
+                "number_on_uncited_record:PEERS",
+                "number_on_uncited_record:PEERS",
+                "number_untraceable:85",
+                "number_untraceable:1951"
+              ]
+            },
+            {
+              "text": "El 56% de los participantes estaba empleado en el segundo trimestre después de salir del programa. La mediana de los 1,690 programas de California que reportaron esta medida fue del 69%.",
+              "reasons": [
+                "number_on_uncited_record:PEERS",
+                "number_on_uncited_record:PEERS",
+                "number_untraceable:1690",
+                "number_untraceable:69"
+              ]
+            },
+            {
+              "text": "Las ganancias medianas de los egresados fueron de $3,475 en un trimestre (el segundo trimestre tras salir del programa). La mediana de los 1,339 programas de California que reportaron este dato fue de $10,900 en ese mismo trimestre.",
+              "reasons": [
+                "number_on_uncited_record:PEERS",
+                "number_on_uncited_record:PEERS",
+                "number_untraceable:1339",
+                "number_untraceable:10900"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "powerline-occupation",
+          "passed": false,
+          "claims": 8,
+          "verified": 6,
+          "withheld_reasons": {
+            "unknown_record": 1,
+            "number_on_uncited_record": 2,
+            "number_untraceable": 2,
+            "guidance_has_figures": 1
+          },
+          "withheld": [
+            {
+              "text": "The Electrical Powerline Mechanic program (P:f69d07d3) at East Los Angeles Skills Center reported a 73% employment rate in the second quarter after leaving and median earnings of $21,320 in that one quarter — both above the PEERS median of 69% and $10,900 among the 1,690 and 1,339 California programs that reported those measures respectively.",
+              "reasons": [
+                "unknown_record:P:f69d07d3",
+                "number_on_uncited_record:P:f69d07d3",
+                "number_on_uncited_record:P:f69d07d3",
+                "number_untraceable:21320",
+                "number_untraceable:73"
+              ]
+            },
+            {
+              "text": "These projections are the state's estimates for the occupation statewide — not a promise about any individual program or person — and the programs listed here are just 8 of 13 matched; talking to providers or an America's Job Center can give you more detail on specific options.",
+              "reasons": [
+                "guidance_has_figures"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "medical-assistant-search",
+          "passed": false,
+          "claims": 6,
+          "verified": 3,
+          "withheld_reasons": {
+            "suppressed_unlabelled": 4,
+            "comparison_on_unreported": 3,
+            "guidance_has_figures": 1
+          },
+          "withheld": [
+            {
+              "text": "**Employment rates:** For context, the median employment rate in the second quarter after leaving across the 1,690 California programs that reported this measure is 69%. Grossmont Adult School stands out at 84% employment. The Eye Care Technician program at Mountain View–Los Altos is at 43%, College and Career Advantage ROP at 39%, Castro Valley Externship at 41%, Mountain View–Los Altos Medical Office Assistant at 35%, El Monte Rosemead at 34%, and Mt. San Antonio College at 30%. Castro Valley's short Medical Terminology course did not report an employment rate.",
+              "reasons": [
+                "suppressed_unlabelled:outcomes.employment_rate_q2",
+                "suppressed_unlabelled:outcomes.employment_rate_q2",
+                "comparison_on_unreported:employment_rate_q2"
+              ]
+            },
+            {
+              "text": "**Earnings one quarter after leaving:** The peer median across 1,339 reporting California programs is $10,900 in one quarter (about three months). Mountain View–Los Altos Medical Office Assistant reported the highest at $13,808 in one quarter; College and Career Advantage ROP reported $10,400; Mt. San Antonio College $9,130; Eye Care Technician $9,984; Grossmont $5,518; and Castro Valley Externship $3,132 in one quarter. El Monte Rosemead and Castro Valley Medical Terminology did not report median earnings.",
+              "reasons": [
+                "suppressed_unlabelled:outcomes.median_earnings",
+                "suppressed_unlabelled:outcomes.median_earnings",
+                "comparison_on_unreported:median_earnings",
+                "comparison_on_unreported:median_earnings"
+              ]
+            },
+            {
+              "text": "Keep in mind that employment and earnings figures are for the second quarter (about three months) after a student leaves the program — they reflect a snapshot in time, not a full-year salary — and that 184 more programs exist in the dataset beyond these 8. You decide what matters most to you; an America's Job Center or the individual provider can give you more detail on admissions, scheduling, and financial aid.",
+              "reasons": [
+                "guidance_has_figures"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "construction-es",
+          "passed": false,
+          "claims": 9,
+          "verified": 8,
+          "withheld_reasons": {
+            "guidance_has_figures": 1
+          },
+          "withheld": [
+            {
+              "text": "Para conocer los 32 programas restantes, obtener ayuda financiera u orientación personalizada, puede comunicarse con un America's Job Center of California o directamente con los proveedores de los programas que le interesen.",
+              "reasons": [
+                "guidance_has_figures"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "graphic-design-growth",
+          "passed": true,
+          "claims": 8,
+          "verified": 8,
+          "withheld_reasons": {},
+          "withheld": []
+        },
+        {
+          "id": "security-officer-detail",
+          "passed": false,
+          "claims": 7,
+          "verified": 6,
+          "withheld_reasons": {
+            "number_mismatch": 1
+          },
+          "withheld": [
+            {
+              "text": "The program is linked to Security Guards, for which the state projects 264,160 job openings and a 3.3% growth rate from 2024–2034, with a median annual wage of $44,335 a year; it is also linked to Private Detectives and Investigators, which has a projected median annual wage of $62,801 a year and 4,230 projected openings over the same period — these are statewide projections, not guarantees for any individual.",
+              "reasons": [
+                "number_mismatch:percent_change"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "comparability": {
+      "cases": 8,
+      "passed": 4,
+      "summary": {
+        "invented_benchmark_by_model": 1,
+        "invented_benchmark_shown": 0,
+        "period_unlabelled_by_model": 0,
+        "period_unlabelled_shown": 0,
+        "peer_comparison_shown": 4
+      },
+      "per_case": [
+        {
+          "id": "phlebotomy-is-it-good",
+          "passed": false,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [],
+          "withheld_reasons": {
+            "number_on_uncited_record": 4,
+            "number_untraceable": 4,
+            "guidance_has_figures": 2
+          }
+        },
+        {
+          "id": "powerline-vs-state",
+          "passed": false,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [],
+          "withheld_reasons": {
+            "number_on_uncited_record": 2,
+            "number_untraceable": 2
+          }
+        },
+        {
+          "id": "earnings-vs-wage",
+          "passed": true,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [
+            "Among the 1,690 California programs that reported the same employment measure, the peer median employment rate was 69% — this program's 46% is below that peer median.",
+            "The program's quarterly earnings of $21,160 are above the peer median of $10,900 in one quarter, reported by 1,339 California programs — so graduates who did find work earned more than peers in the short term after exit."
+          ],
+          "withheld_reasons": {
+            "number_untraceable": 1,
+            "guidance_has_figures": 1
+          }
+        },
+        {
+          "id": "earnings-salary-es",
+          "passed": true,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [
+            "Para contextualizar las ganancias trimestrales del programa: la mediana de los 1,339 programas en California que reportaron esta misma medida fue de $10,900 en un trimestre, por lo que los $21,320 trimestrales de los egresados de este programa están por encima de esa referencia."
+          ],
+          "withheld_reasons": {
+            "guidance_has_figures": 1
+          }
+        },
+        {
+          "id": "cosmetology-above-average-es",
+          "passed": false,
+          "invented_benchmark_by_model": [
+            "En cuanto a empleo, este programa registró una tasa del 71% en el segundo trimestre después de salir, ligeramente por encima de la mediana del 69% de los 1,690 programas de California que reportaron esa medida."
+          ],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [],
+          "withheld_reasons": {
+            "number_on_uncited_record": 6,
+            "number_untraceable": 6
+          }
+        },
+        {
+          "id": "medical-coder-typical",
+          "passed": false,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [],
+          "withheld_reasons": {
+            "number_on_uncited_record": 8,
+            "number_untraceable": 8,
+            "guidance_has_figures": 1
+          }
+        },
+        {
+          "id": "unreported-compare",
+          "passed": true,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [
+            "For context, the program did report a 100% completion rate, which is above the peer median completion rate of 85% across 1,951 California programs that reported that measure."
+          ],
+          "withheld_reasons": {
+            "comparison_on_unreported": 1,
+            "guidance_has_figures": 1
+          }
+        },
+        {
+          "id": "leadership-low-employment",
+          "passed": true,
+          "invented_benchmark_by_model": [],
+          "invented_benchmark_shown": [],
+          "period_unlabelled_by_model": [],
+          "period_unlabelled_shown": [],
+          "peer_comparison_shown": [
+            "Leadership for New and Future Supervisors at Glendale Community College reported a second-quarter employment rate of 15% — compared to a PEERS median of 69%, which is the median of the 1,690 California programs that reported that same measure.",
+            "On the other hand, the program's completion rate of 97% is well above the PEERS median of 85% across 1,951 reporting programs, and median earnings in one quarter were $15,630 compared to a PEERS median of $10,900 in one quarter for the 1,339 programs that reported that measure."
+          ],
+          "withheld_reasons": {
+            "comparison_without_peer_figure": 1,
+            "guidance_has_figures": 1
+          }
+        }
+      ]
+    }
+  }
+}

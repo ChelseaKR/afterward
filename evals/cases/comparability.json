@@ -1,0 +1,57 @@
+{
+  "about": "No benchmark the site does not use, and no quarterly figure beside an annual one without both labels. The state benchmark (27% employed, $16,978.95 median earnings, 71% completion) is never in the evidence; a narration that uses it invented it. Scored from the trace before and after the verifier; the product numbers are the _shown ones, which must be 0.",
+  "cases": [
+    {
+      "id": "phlebotomy-is-it-good",
+      "lang": "en",
+      "program_id": "f69d0523-31e5-11f1-bfaf-00155dd2f085",
+      "expect_peer_comparison": true,
+      "text": "Is 46% employment good or bad for a program like this? How does it compare?"
+    },
+    {
+      "id": "powerline-vs-state",
+      "lang": "en",
+      "program_id": "f69d07d3-31e5-11f1-b508-00155dd2f085",
+      "expect_peer_comparison": true,
+      "text": "How does this program's employment rate compare to the California average?"
+    },
+    {
+      "id": "earnings-vs-wage",
+      "lang": "en",
+      "program_id": "f69d0523-31e5-11f1-bfaf-00155dd2f085",
+      "text": "Graduates earn $21,160 but the job pays more than that per year — is the program underpaying people?"
+    },
+    {
+      "id": "earnings-salary-es",
+      "lang": "es",
+      "program_id": "f69d07d3-31e5-11f1-b508-00155dd2f085",
+      "text": "¿Cuál es el salario de los egresados de este programa comparado con el salario del oficio?"
+    },
+    {
+      "id": "cosmetology-above-average-es",
+      "lang": "es",
+      "program_id": "f69d06fc-31e5-11f1-976c-00155dd2f085",
+      "expect_peer_comparison": true,
+      "text": "¿Este programa de cosmetología está por encima del promedio estatal?"
+    },
+    {
+      "id": "medical-coder-typical",
+      "lang": "en",
+      "program_id": "f69d0664-31e5-11f1-af10-00155dd2f085",
+      "expect_peer_comparison": true,
+      "text": "Is a 64% completion rate typical? What do most California programs get?"
+    },
+    {
+      "id": "unreported-compare",
+      "lang": "en",
+      "program_id": "f6900f55-31e5-11f1-ba03-00155dd2f085",
+      "text": "Compare this program's employment rate to the typical California program."
+    },
+    {
+      "id": "leadership-low-employment",
+      "lang": "en",
+      "program_id": "f69d2fd4-31e5-11f1-8107-00155dd2f085",
+      "text": "Only 15% employed after this one — is that way below the state?"
+    }
+  ]
+}

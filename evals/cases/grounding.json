@@ -1,0 +1,49 @@
+{
+  "about": "The fraction of claims the model wrote whose citations and numbers verify against the published JSON. Scored from the trace over a mix of page-context questions and open searches on the committed fixture. verified_rate is claims shown over claims written; withheld_reasons says why the rest were removed.",
+  "cases": [
+    {
+      "id": "vet-assistant-valencia",
+      "lang": "en",
+      "text": "What veterinary assistant programs are there in Valencia and what happened to their students?"
+    },
+    {
+      "id": "phlebotomy-detail",
+      "lang": "en",
+      "program_id": "f69d0523-31e5-11f1-bfaf-00155dd2f085",
+      "text": "Walk me through this program's cost, length and results."
+    },
+    {
+      "id": "cosmetology-es",
+      "lang": "es",
+      "program_id": "f69d04e6-31e5-11f1-9494-00155dd2f085",
+      "text": "Explícame los resultados de este programa de cosmetología."
+    },
+    {
+      "id": "powerline-occupation",
+      "lang": "en",
+      "soc_code": "49-9051",
+      "text": "Is this a growing job in California and what does it pay?"
+    },
+    {
+      "id": "medical-assistant-search",
+      "lang": "en",
+      "text": "Compare the medical assistant programs you have: cost, how long, and whether students got jobs."
+    },
+    {
+      "id": "construction-es",
+      "lang": "es",
+      "text": "Busco un programa de trabajador de construcción. ¿Qué hay y cómo les fue a los estudiantes?"
+    },
+    {
+      "id": "graphic-design-growth",
+      "lang": "en",
+      "text": "Graphic design programs — and is graphic design shrinking in California?"
+    },
+    {
+      "id": "security-officer-detail",
+      "lang": "en",
+      "program_id": "f69d059e-31e5-11f1-ae18-00155dd2f085",
+      "text": "Is this security officer course worth it? What do the numbers say?"
+    }
+  ]
+}

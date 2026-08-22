@@ -1,0 +1,244 @@
+{
+  "about": "Does the model turn a person's words into the right structured query, and refuse to guess when the words do not support one? Expected values are checked by code: scalar fields by equality, numbers within 1%, occupation terms by what they resolve to in the dataset, regions by the area they resolve to. Vague cases list the fields the model has no basis to fill; it passes only if it leaves them empty and asks a clarifying question.",
+  "cases": [
+    {
+      "id": "en-warehouse-fresno",
+      "lang": "en",
+      "text": "I'm 40, work in a warehouse in Fresno, want something that pays more and isn't going away.",
+      "expected": {
+        "language": "en",
+        "intent": "find_programs",
+        "projection": "not_shrinking",
+        "current_resolves_to": [
+          "53-7062"
+        ],
+        "region": "Fresno"
+      }
+    },
+    {
+      "id": "en-cna-la-cost",
+      "lang": "en",
+      "text": "Looking for a CNA program in Los Angeles under $2,000.",
+      "expected": {
+        "language": "en",
+        "intent": "find_programs",
+        "resolves_to": [
+          "31-1131",
+          "31-1120"
+        ],
+        "region": "Los Angeles",
+        "max_cost": 2000
+      }
+    },
+    {
+      "id": "en-online-short",
+      "lang": "en",
+      "text": "Any online medical billing course I can finish in about three months?",
+      "expected": {
+        "language": "en",
+        "format": "online",
+        "max_weeks": 13,
+        "resolves_to": [
+          "43-3021",
+          "29-2072"
+        ]
+      }
+    },
+    {
+      "id": "en-hourly-wage",
+      "lang": "en",
+      "text": "I need to make at least $30 an hour. What trades are growing in San Diego?",
+      "expected": {
+        "language": "en",
+        "projection": "growing",
+        "min_annual_wage": 62400,
+        "region": "San Diego"
+      }
+    },
+    {
+      "id": "en-reported-only",
+      "lang": "en",
+      "text": "Show me welding programs that actually report what happened to their students.",
+      "expected": {
+        "language": "en",
+        "requires_reported_outcomes": true,
+        "resolves_to": [
+          "51-4121"
+        ]
+      }
+    },
+    {
+      "id": "en-shrinking",
+      "lang": "en",
+      "text": "Which jobs is California expecting to shrink over the next ten years?",
+      "expected": {
+        "language": "en",
+        "projection": "shrinking"
+      }
+    },
+    {
+      "id": "en-region-uncovered",
+      "lang": "en",
+      "text": "Electrician apprenticeships near Lake Tahoe?",
+      "expected": {
+        "language": "en",
+        "resolves_to": [
+          "47-2111"
+        ],
+        "region_unresolved": true
+      }
+    },
+    {
+      "id": "en-out-of-scope",
+      "lang": "en",
+      "text": "I'm undocumented. Can I get a truck driving program paid for and will they sponsor a visa?",
+      "expected": {
+        "language": "en",
+        "resolves_to": [
+          "53-3032"
+        ],
+        "out_of_scope": true
+      }
+    },
+    {
+      "id": "en-pathways",
+      "lang": "en",
+      "text": "I've been a cashier for ten years. What could I move into that's related and growing?",
+      "expected": {
+        "language": "en",
+        "intent": "pathways",
+        "projection": "growing",
+        "current_resolves_to": [
+          "41-2011"
+        ]
+      }
+    },
+    {
+      "id": "en-coverage-question",
+      "lang": "en",
+      "text": "Why does it say 'not reported' for employment on so many of these?",
+      "expected": {
+        "language": "en",
+        "intent": "coverage_question"
+      }
+    },
+    {
+      "id": "es-enfermeria-sacramento",
+      "lang": "es",
+      "text": "Quiero estudiar enfermería en Sacramento. ¿Qué programas hay y cuánto cuestan?",
+      "expected": {
+        "language": "es",
+        "intent": "find_programs",
+        "resolves_to": [
+          "29-1141",
+          "29-2061",
+          "31-1131"
+        ],
+        "region": "Sacramento"
+      }
+    },
+    {
+      "id": "es-camionero",
+      "lang": "es",
+      "text": "Soy camionero en Bakersfield y busco algo que pague mejor y que no vaya a desaparecer.",
+      "expected": {
+        "language": "es",
+        "projection": "not_shrinking",
+        "current_resolves_to": [
+          "53-3032",
+          "53-3033"
+        ],
+        "region": "Bakersfield"
+      }
+    },
+    {
+      "id": "es-costo-maximo",
+      "lang": "es",
+      "text": "Busco un curso de asistente dental en Oakland que no cueste más de 3000 dólares.",
+      "expected": {
+        "language": "es",
+        "resolves_to": [
+          "31-9091"
+        ],
+        "region": "Oakland",
+        "max_cost": 3000
+      }
+    },
+    {
+      "id": "es-en-linea",
+      "lang": "es",
+      "text": "¿Hay programas de contabilidad completamente en línea?",
+      "expected": {
+        "language": "es",
+        "format": "online",
+        "resolves_to": [
+          "43-3031",
+          "13-2011"
+        ]
+      }
+    },
+    {
+      "id": "vague-en-something-better",
+      "lang": "en",
+      "text": "I want something better.",
+      "vague": true,
+      "expected": {
+        "language": "en"
+      },
+      "must_be_empty": [
+        "occupation_terms",
+        "region_terms",
+        "min_annual_wage",
+        "max_cost",
+        "max_weeks"
+      ]
+    },
+    {
+      "id": "vague-en-help",
+      "lang": "en",
+      "text": "Can you help me?",
+      "vague": true,
+      "expected": {
+        "language": "en"
+      },
+      "must_be_empty": [
+        "occupation_terms",
+        "region_terms",
+        "min_annual_wage",
+        "max_cost",
+        "max_weeks",
+        "projection"
+      ]
+    },
+    {
+      "id": "vague-es-trabajo",
+      "lang": "es",
+      "text": "Necesito un trabajo.",
+      "vague": true,
+      "expected": {
+        "language": "es"
+      },
+      "must_be_empty": [
+        "occupation_terms",
+        "region_terms",
+        "min_annual_wage",
+        "max_cost",
+        "max_weeks"
+      ]
+    },
+    {
+      "id": "vague-en-cheap",
+      "lang": "en",
+      "text": "What's the cheapest one?",
+      "vague": true,
+      "expected": {
+        "language": "en"
+      },
+      "must_be_empty": [
+        "occupation_terms",
+        "region_terms",
+        "max_cost"
+      ]
+    }
+  ]
+}
