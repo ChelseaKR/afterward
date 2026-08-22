@@ -8,6 +8,18 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **A deliberate change of direction, recorded before the code that follows it.**
+  [ADR 0003](docs/adr/0003-runtime-ai-at-the-edges.md) records the owner's decision to add
+  runtime AI to the product: an optional, opt-in service, `afterward.ask`, in which a model
+  structures a person's question into a query the service runs deterministically over the
+  published dataset, then narrates the records it is handed, with every claim verified
+  against the published JSON before it is shown and every suppressed measure narrated as not
+  reported. The README, `docs/ROADMAP.md`, `docs/RESPONSIBLE-TECH-AUDITS.md` and `SECURITY.md`
+  stopped saying "no model runs at build time or runtime" in the same change, because the
+  sentence was about to become false and a claims document that lags its own code is the
+  thing this project refuses to ship. The AI Evaluation standard moves from N/A to Applies.
+  The static site itself is unchanged by this entry and still contains no model; the service
+  lands in the changes that follow, and deployment is a decision the owner has not made.
 - Search now finds a program by the colloquial name of the job it leads to, not only the
   official one. Someone typing "RN", "CNA", "CDL", or "IT Manager" found nothing before,
   because the search index carried only O\*NET's formal occupation titles

@@ -23,20 +23,26 @@ This repo plans in dated documents, not in a single mutable list. Current source
 ## Standard declarations
 
 ```
-AI-Evaluation-Standard: N/A  (the product contains no model, prompt, retrieval,
-                              or generation surface; nothing here scores, ranks,
-                              or generates with an LLM)
+AI-Evaluation-Standard: Applies  (since 2026-08-21, ADR 0003: the optional
+                                  afterward.ask runtime service has a prompt, a
+                                  retrieval step and a generation surface)
 ```
 
-The pipeline is deterministic parsing and joining of public government data; the site is a
-static export of its output. Development of this repo was AI-assisted (disclosed in the
-README), which is a fact about tooling, not about the product: no model runs at build time
-or runtime, so there is no eval surface. Re-enter scope if any model-backed feature (say,
-description summarization or a chat guide) is ever added.
+Until 2026-08-21 this read `N/A`, with the sentence "Re-enter scope if any model-backed
+feature (say, description summarization or a chat guide) is ever added." One has been, by
+the owner's direction, and the declaration moves with it. The pipeline is still deterministic
+parsing and joining of public government data and the site is still a static export of its
+output; no model runs at build time, and nothing the static site shows was generated,
+summarized or ranked by one. The model runs only in `afterward.ask`, only after a person opts
+in, and only in the roles ADR 0003 bounds. The eval surface that follows — query structuring,
+suppression faithfulness, citation grounding, comparability — is committed under `evals/`
+with provenance-stamped results, and the ledger below carries its gates.
 
-**Observability: Tier B (static frontend), narrowed honestly.** There is no server, no RUM,
-and no analytics, by design ("no account, no tracking" is a product commitment, so
-user-behavior telemetry is out of scope permanently, not deferred). What exists instead:
+**Observability: Tier B (static frontend), narrowed honestly.** There is no server behind
+the static site, no RUM, and no analytics, by design ("no account, no tracking" is a product
+commitment, so user-behavior telemetry is out of scope permanently, not deferred). The
+optional `afterward.ask` service, when deployed, will carry request counts and cost
+counters and nothing about who asked or what they typed (ADR 0003). What exists instead:
 
 - Deploy-time verification: the deploy workflow smoke-tests the live site through
   CloudFront, asserts the published dataset snapshot end-to-end, and verifies every built
