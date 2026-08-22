@@ -322,3 +322,62 @@ The 518 → 538 figure is the one that matters, because it is the product claim.
 `CHANGELOG.md` and in the warning comment in `app/[lang]/programs/[id]/page.tsx`, and both now
 say 538. The "still open" question about California's own ETPL is still open, and the federal
 file's 3,266 programs are still the spine.
+
+---
+
+## 2026-08-21 — Runtime AI, by direction, at the edges only
+
+### Inputs consulted
+
+The owner's direction, which is the input: add real AI features at runtime, grounded in the
+published dataset. The repository's own record of how absence becomes a value — the
+competency-based `-1` (2026-08-07), the employment numerator that is not the rate's
+numerator (#25), the DOL statewide 27% that is not on the programs' basis (D7 above, and the
+`peer_medians` docstring in `build.py`). The public ADR of a sibling project by the same owner
+that adopted the same shape for a different domain, read for the shape of the trust pattern
+and nothing else; no code was copied from it or from anywhere. The clean-room constraint in
+PROVENANCE.md, which is unchanged and which `make provenance-check` continues to enforce on
+every change in the series.
+
+### D16 — The model structures and narrates; the dataset is the only evidence; a verifier sits before display
+
+**Decision.** `docs/adr/0003-runtime-ai-at-the-edges.md`. An optional Python service,
+`afterward.ask`, built on the public `anthropic` SDK with `claude-sonnet-5` as the
+configurable default. A person who opts in describes their situation; the model turns it
+into a structured query; the service resolves occupation and region terms lexically against
+the dataset's own vocabulary and runs the query deterministically; the model narrates the
+records it is handed as a list of claims carrying record ids and declared numbers; a
+verifier checks every one against the published JSON and withholds what does not verify,
+counting what it withheld. A suppressed measure is handed to the model as "not reported" and
+a claim that renders it as anything else is withheld. The only comparison the model may make
+is against `peer_medians`, with its count; `state_benchmark` is not offered. Spanish from the
+model is labelled AI-translated and unreviewed and may not alter a number. Pathways come from
+the dataset's own related-occupation lists. When the data cannot answer, the deterministic
+layer says so and the model has nothing to narrate.
+
+**Why this shape and not the obvious one.** Handing the model the JSON and taking its prose
+makes every number in the answer the model's word. This site exists so that no number is
+anyone's word. The structure → execute → narrate → verify shape keeps the model at the two
+edges where language is the problem — understanding what was asked, and saying what was
+found — and keeps the middle, where the numbers are, deterministic and testable.
+
+**What becomes false, and where it is rewritten.** "No model runs at build time or runtime"
+(README, ROADMAP, RESPONSIBLE-TECH-AUDITS). "No user-submitted input" (SECURITY,
+RESPONSIBLE-TECH-AUDITS F). "AI Evaluation: N/A" (README conformance table, ROADMAP
+declaration). Each is rewritten in this entry's change, before the service exists, so that
+the documents lead the code rather than trail it. Two strings in `web/lib/i18n.ts` that say
+nothing on the site is machine-translated stay true until the Spanish layer lands and are
+rewritten with it.
+
+**What is deliberately not decided here.** Deployment. The prepared Lambda + Function URL
+shape will sit beside the static-site stack and will not be applied; exposing the service
+needs the owner's decision on cost envelope, on model access (Sonnet 5 is not enabled on this
+account's Bedrock; Sonnet 4.6 is), and on the subprocessor note the privacy section now
+requires. Issue #32 stays open; AI translation is not native review.
+
+### Still open
+
+The eval numbers. They are committed only from a recorded live run that names provider,
+model, prompt version, commit and date, and a test rejects a results file without them. The
+first such run, if it happens in this series, will be on Bedrock Sonnet 4.6 because that is
+what this account can invoke today, and the results file will say so.

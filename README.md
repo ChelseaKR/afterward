@@ -289,10 +289,35 @@ make verify    # provenance-check, lint, typecheck, test, security, audit
 Built AI-assisted (Claude Code). The honesty rules above bind the tooling as much as the
 author: every figure the site publishes is produced by the pipeline from the sources
 recorded in [PROVENANCE.md](PROVENANCE.md), the null-versus-zero rule is enforced by tests
-rather than by intention, and nothing ships that the data does not support. There is no AI
-in the product itself: no model runs at build time or runtime, and nothing on the site is
-generated, summarized, or ranked by one. Decisions and their reasons are recorded as they
-were made, in [docs/design-log.md](docs/design-log.md) and [docs/adr/](docs/adr/).
+rather than by intention, and nothing ships that the data does not support. Decisions and
+their reasons are recorded as they were made, in [docs/design-log.md](docs/design-log.md)
+and [docs/adr/](docs/adr/).
+
+## AI in the product
+
+Until 2026-08-21 there was none: no model ran at build time or runtime, and nothing on the
+site was generated, summarized, or ranked by one. That is still true of the static site and
+of every figure on it. What changed is recorded in
+[ADR 0003](docs/adr/0003-runtime-ai-at-the-edges.md): an optional, opt-in runtime service,
+`afterward.ask`, is being added in a series of changes, and this section is rewritten as
+each one lands.
+
+The shape is fixed by that ADR and does not move. A person who opts in can describe their
+situation in English or Spanish; a model turns that into a structured query against the
+published dataset — it structures, it does not invent — the query runs deterministically over
+the same `programs.json`, `occupations.json` and `coverage.json` the site serves, and the
+model narrates the records it is handed. Every substantive claim in the narration cites a
+record id and is verified against the published JSON before it is shown; a claim that does
+not verify is withheld and counted. A suppressed measure is narrated as not reported, never
+as a zero. The only comparison the model may make is the one the site already makes, against
+the median of programs reporting the same measure. Spanish produced by the model is labelled
+AI-translated and unreviewed, and never alters a number. Every AI output is labelled
+AI-generated, unofficial, and not a recommendation from the State of California.
+
+Nothing in the service is deployed publicly yet. That is a decision the owner has not made;
+see the ADR's "Consequences". The evaluation suites that score the service — including the
+one that matters most, whether absence is ever rendered as a value — live in `evals/` with
+their recorded results.
 
 ## Standards Conformance
 
@@ -309,12 +334,12 @@ silently.
 | Performance | Applies (pre-rendered static export served from S3/CloudFront, so pages do no server round trip and ship no client data fetch). **Not yet enforced:** no performance budget is gated in CI and none has been measured, so treat this row as declared scope rather than proven numbers |
 | Accessibility | Applies (WCAG 2.2 AAA target; axe and contrast gates block the build; what automation proves and what it cannot: [docs/wcag-2.2-aaa-conformance.md](docs/wcag-2.2-aaa-conformance.md)) |
 | Internationalization | Applies (EN/ES ship together; typed modules instead of catalogs: [docs/I18N.md](docs/I18N.md), ADR 0002) |
-| AI Evaluation | N/A (no model, prompt, retrieval, or generation surface anywhere in the product; declared in [docs/ROADMAP.md](docs/ROADMAP.md)) |
+| AI Evaluation | Applies since 2026-08-21 ([ADR 0003](docs/adr/0003-runtime-ai-at-the-edges.md)): the optional `afterward.ask` service has a prompt, a retrieval step and a generation surface. Committed eval suites and provenance-stamped results live in `evals/`; the static site itself still contains no model |
 | Documentation | Applies (README, CHANGELOG, CONTRIBUTING, SECURITY, DISCLAIMER, PROVENANCE, design log, ADRs) |
 | Quality & Metrics | Applies (metrics ledger: [docs/ROADMAP.md](docs/ROADMAP.md)) |
 | Release & Versioning | N/A (not consumed downstream: ADR [docs/adr/0001-release-and-versioning-na.md](docs/adr/0001-release-and-versioning-na.md); dataset snapshots are date-tagged releases consumed only by the deploy workflow) |
-| AI Development Measurement | Applies (this repo was built AI-assisted, disclosed under [Development disclosure](#development-disclosure); the product itself ships no model). The committed, dated artifact is the metrics ledger in [docs/ROADMAP.md](docs/ROADMAP.md); no AI-usage or delivery metric gates a merge here, by design, since activity counters are diagnostic rather than outcomes |
-| Incident Response | Applies (private vulnerability reporting and a stated acknowledgement expectation in [SECURITY.md](SECURITY.md), plus the in-scope and out-of-scope list). Scope is a static site with no accounts, no cookies, and no user-submitted input; no incident has been recorded, so there is no `docs/incidents/` yet |
+| AI Development Measurement | Applies (this repo was built AI-assisted, disclosed under [Development disclosure](#development-disclosure); the runtime AI the product itself ships is a separate matter, under [AI in the product](#ai-in-the-product)). The committed, dated artifact is the metrics ledger in [docs/ROADMAP.md](docs/ROADMAP.md); no AI-usage or delivery metric gates a merge here, by design, since activity counters are diagnostic rather than outcomes |
+| Incident Response | Applies (private vulnerability reporting and a stated acknowledgement expectation in [SECURITY.md](SECURITY.md), plus the in-scope and out-of-scope list). Scope is a static site with no accounts and no cookies, plus the optional `afterward.ask` service, which accepts free text and is in scope once deployed; no incident has been recorded, so there is no `docs/incidents/` yet |
 | Data Governance | Applies (per-source terms and the clean-room rule in [PROVENANCE.md](PROVENANCE.md), enforced by `make provenance-check`; privacy review in [docs/RESPONSIBLE-TECH-AUDITS.md](docs/RESPONSIBLE-TECH-AUDITS.md) section C). The dataset holds no personal data, and upstream small-cohort suppression is preserved rather than reversed |
 
 ## License
