@@ -679,7 +679,7 @@ const en = {
     "California's Employment Development Department: its long-term occupational employment projections for 2024 to 2034, and its wage statistics where the projections carry no wage. These are the state's own ten-year estimates for an occupation, statewide and for the areas it names.",
   aboutSourceFederalLabel: "Job descriptions and skills",
   aboutSourceFederalBody:
-    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name, and nothing on this site is machine-translated.",
+    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name. Nothing in the catalogue is machine-translated; where a Spanish page offers an AI translation on request, it is labelled as such, unreviewed, and the English stays the record.",
   aboutSourceWagesLabel: "What an occupation pays across its range",
   aboutSourceWagesBody:
     "The Bureau of Labor Statistics' Occupational Employment and Wage Statistics for California, published by EDD. It gives the 10th, 25th, 50th, 75th and 90th percentiles, which is how an occupation page can show the spread rather than the median alone. Each percentile can be withheld separately, and a withheld one is left blank rather than estimated from the ones on either side of it.",
@@ -721,7 +721,7 @@ const en = {
   aboutLimitsBody:
     "These are the things this site gets wrong or cannot yet do. They are listed here rather than discovered later.",
   aboutLimitTranslation:
-    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing on this site is machine-translated.",
+    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing in the catalogue is machine-translated. Where a Spanish page offers an AI translation on request, it is labelled as AI-translated and unreviewed, a check refuses any translation that changes a number, and the English stays the record.",
   aboutLimitEtpl:
     "The programs here are the ones California filed federally. Whether the state's own eligible training provider list carries programs the federal file omits is unresolved, because California publishes no bulk export of it. A program missing from this site is not necessarily a program that does not exist.",
   aboutLimitUnmatched: (unmatched: string) =>
@@ -1276,6 +1276,42 @@ const en = {
   ctdlCiteHeading: "Corrections",
   ctdlCiteBody:
     "If a mapping here is wrong, or a property is being used in a way the schema does not intend, that is worth an issue. This is a demonstration and the point of it is to be checkable; a correction from somebody who works on this vocabulary is the most useful thing this page could produce.",
+  // --- The runtime assistant (ADR 0003). Every string a person sees around AI output. ---
+  askOpen: "Ask about this data",
+  askHeading: "Ask about this data",
+  askLede:
+    "Describe your situation or ask a question, in English or Spanish. The answer is put together from the same published records as this page — programs, occupations, and the state's projections — and every figure in it is checked against the data before you see it.",
+  askNotice:
+    "AI-generated and unofficial. Not a recommendation from the State of California, and not advice. Statements the check could not verify are removed and counted.",
+  askPrivacy:
+    "What you type here leaves this site and is sent to an AI model provider for the time it takes to answer. It is not stored by this site. Please do not include your name or anything that identifies a person.",
+  askLabel: "Your question",
+  askPlaceholder: "I work in a warehouse in Fresno and want something that pays more and is not going away…",
+  askSubmit: "Ask",
+  askWorking: "Checking the data…",
+  askClose: "Close",
+  askClear: "Start over",
+  askUnavailable: "The assistant is not available right now. Everything else on this page still works.",
+  askLimited: "The assistant is busy. Please try again in a little while; everything else on this page still works.",
+  askFailed: "The assistant could not be reached. Everything else on this page still works.",
+  askWithheld: (n: number) =>
+    n === 1
+      ? "1 statement was removed because it could not be verified against the published data."
+      : `${fmt(n)} statements were removed because they could not be verified against the published data.`,
+  askNothingShown: "Nothing the assistant said could be verified against the published data, so nothing is shown.",
+  askProgramsFound: "Programs this answer rests on",
+  askOccupationsFound: "Occupations this answer rests on",
+  askFollowUps: "You could also ask",
+  askClarifications: "To be more specific, the assistant would need to know",
+  askOutOfScope: "Outside this dataset",
+  askSources: "Sources for this statement",
+  askProvenance: (model: string, snapshot: string) =>
+    `Generated by ${model} from the dataset published ${snapshot}.`,
+  askTranslateOpen: "Translate with AI",
+  askTranslateWorking: "Translating…",
+  askTranslateLabel: "Translated by AI, not reviewed by a person. The English is the record.",
+  askTranslateWithheld: "The translation was not shown because it did not match the English exactly.",
+  askTranslateUnavailable: "Translation is not available right now.",
 };
 
 /**
@@ -1773,7 +1809,7 @@ const es: Dictionary = {
     "El Departamento de Desarrollo del Empleo de California: sus proyecciones de empleo por ocupación a largo plazo para 2024–2034 y sus estadísticas de salarios cuando la proyección no trae salario. Son las estimaciones propias del estado a diez años para una ocupación, a nivel estatal y en las áreas que el estado nombra.",
   aboutSourceFederalLabel: "Descripciones de la ocupación y habilidades",
   aboutSourceFederalBody:
-    "CareerOneStop, el servicio del Departamento de Trabajo de EE. UU. que publica en inglés el contenido ocupacional de O*NET. Cuando el Departamento también publica la ocupación en español mediante Mi Próximo Paso —600 de las 670 de California—, la página en español usa el nombre y la descripción en español del propio Departamento. Las otras 70 conservan el nombre en inglés, y nada en este sitio está traducido por máquina.",
+    "CareerOneStop, el servicio del Departamento de Trabajo de EE. UU. que publica en inglés el contenido ocupacional de O*NET. Cuando el Departamento también publica la ocupación en español mediante Mi Próximo Paso —600 de las 670 de California—, la página en español usa el nombre y la descripción en español del propio Departamento. Las otras 70 conservan el nombre en inglés. Nada en el catálogo está traducido por máquina; cuando una página en español ofrece una traducción por IA a pedido, se etiqueta como tal, sin revisión, y la versión en inglés sigue siendo el registro.",
   aboutSourceWagesLabel: "Cuánto paga una ocupación en todo su rango",
   aboutSourceWagesBody:
     "Las Estadísticas de Empleo y Salarios por Ocupación de California, que publica el EDD a partir de la Oficina de Estadísticas Laborales de EE. UU. Incluyen los percentiles 10, 25, 50, 75 y 90, y por eso una página de ocupación puede mostrar el rango completo y no solo la mediana. Cada percentil puede ocultarse por separado, y cuando se oculta se deja en blanco en lugar de estimarlo a partir de los percentiles vecinos.",
@@ -1823,7 +1859,7 @@ const es: Dictionary = {
   aboutLimitsBody:
     "Esto es lo que este sitio hace mal o todavía no puede hacer. Se enumera aquí en vez de dejar que se descubra después.",
   aboutLimitTranslation:
-    "Los nombres de los programas, las descripciones y los nombres de los proveedores aparecen en inglés en las páginas en español, porque las fuentes federales y estatales publican ese texto solo en inglés. Los títulos de las ocupaciones son distintos: el Departamento publica un nombre en español para 600 de las 670 ocupaciones de California, y la página en español lo usa; las otras 70 mantienen el título en inglés. Nada en este sitio está traducido automáticamente.",
+    "Los nombres de los programas, las descripciones y los nombres de los proveedores aparecen en inglés en las páginas en español, porque las fuentes federales y estatales publican ese texto solo en inglés. Los títulos de las ocupaciones son distintos: el Departamento publica un nombre en español para 600 de las 670 ocupaciones de California, y la página en español lo usa; las otras 70 mantienen el título en inglés. Nada en el catálogo está traducido automáticamente. Cuando una página en español ofrece una traducción por IA a pedido, se etiqueta como traducida por IA y sin revisión, una verificación rechaza cualquier traducción que cambie una cifra, y la versión en inglés sigue siendo el registro.",
   aboutLimitEtpl:
     "Los programas que aparecen aquí son los que California presentó al gobierno federal. Queda sin resolver si la lista estatal de instituciones elegibles incluye programas que el archivo federal omite, porque California no publica una descarga masiva de esa lista. Un programa ausente de este sitio no es necesariamente un programa que no existe.",
   aboutLimitUnmatched: (unmatched: string) =>
@@ -2337,6 +2373,42 @@ const es: Dictionary = {
   ctdlCiteHeading: "Correcciones",
   ctdlCiteBody:
     "Si alguna correspondencia de aquí está mal, o una propiedad se usa de un modo que el esquema no pretende, eso merece un reporte. Esto es una demostración y su razón de ser es poder comprobarse; una corrección de alguien que trabaja con este vocabulario es lo más útil que esta página podría producir.",
+  // --- El asistente en tiempo de ejecución (ADR 0003). ---
+  askOpen: "Preguntar sobre estos datos",
+  askHeading: "Preguntar sobre estos datos",
+  askLede:
+    "Describa su situación o haga una pregunta, en español o en inglés. La respuesta se arma con los mismos registros publicados que esta página —programas, ocupaciones y las proyecciones del estado— y cada cifra se verifica contra los datos antes de que usted la vea.",
+  askNotice:
+    "Generado por IA y no oficial. No es una recomendación del Estado de California ni un consejo. Las afirmaciones que la verificación no pudo comprobar se eliminan y se cuentan.",
+  askPrivacy:
+    "Lo que escriba aquí sale de este sitio y se envía a un proveedor de modelos de IA durante el tiempo que tarda en responder. Este sitio no lo guarda. Por favor no incluya su nombre ni nada que identifique a una persona.",
+  askLabel: "Su pregunta",
+  askPlaceholder: "Trabajo en un almacén en Fresno y busco algo que pague mejor y que no vaya a desaparecer…",
+  askSubmit: "Preguntar",
+  askWorking: "Verificando los datos…",
+  askClose: "Cerrar",
+  askClear: "Empezar de nuevo",
+  askUnavailable: "El asistente no está disponible ahora. Todo lo demás en esta página sigue funcionando.",
+  askLimited: "El asistente está ocupado. Inténtelo de nuevo en un rato; todo lo demás en esta página sigue funcionando.",
+  askFailed: "No se pudo conectar con el asistente. Todo lo demás en esta página sigue funcionando.",
+  askWithheld: (n: number) =>
+    n === 1
+      ? "Se eliminó 1 afirmación porque no pudo verificarse contra los datos publicados."
+      : `Se eliminaron ${fmt(n)} afirmaciones porque no pudieron verificarse contra los datos publicados.`,
+  askNothingShown: "Nada de lo que dijo el asistente pudo verificarse contra los datos publicados, así que no se muestra nada.",
+  askProgramsFound: "Programas en los que se apoya esta respuesta",
+  askOccupationsFound: "Ocupaciones en las que se apoya esta respuesta",
+  askFollowUps: "También podría preguntar",
+  askClarifications: "Para ser más específico, el asistente necesitaría saber",
+  askOutOfScope: "Fuera de este conjunto de datos",
+  askSources: "Fuentes de esta afirmación",
+  askProvenance: (model: string, snapshot: string) =>
+    `Generado por ${model} a partir del conjunto de datos publicado el ${snapshot}.`,
+  askTranslateOpen: "Traducir con IA",
+  askTranslateWorking: "Traduciendo…",
+  askTranslateLabel: "Traducido por IA, sin revisión humana. La versión en inglés es el registro.",
+  askTranslateWithheld: "La traducción no se muestra porque no coincidía exactamente con el inglés.",
+  askTranslateUnavailable: "La traducción no está disponible ahora.",
 };
 
 function fmt(n: number): string {

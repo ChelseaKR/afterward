@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AskPanel } from "@/components/AskPanel";
+import { TranslateButton } from "@/components/TranslateButton";
 import { CENTERS_STEP, LEAD_STEP, SEQUENCE_STEP, stepCopy } from "@/components/funding";
 import { Measure } from "@/components/Measure";
 import { WageRangeChart } from "@/components/WageRangeChart";
@@ -1617,6 +1619,12 @@ export default async function ProgramPage({
           <h2>{t.viewProgram}</h2>
           {format !== null && <p>{format}</p>}
           <p lang={feedTextLang(lang)}>{program.description}</p>
+          {/*
+            * Spanish on request for the provider's own filed text, which exists only in
+            * English. Renders nothing unless this build has a service (ADR 0003) and the page
+            * is Spanish; the English above stays in place as the record either way.
+            */}
+          <TranslateButton lang={lang} kind="program" id={program.uuid} />
         </>
       )}
 
@@ -1669,6 +1677,14 @@ export default async function ProgramPage({
           lang={lang}
         />
       )}
+
+      {/*
+        * The assistant, after the funding block and before the methodology link: a reader who
+        * has a question at this point has read the figures, and the answer cites them.
+        * Renders nothing unless this build has a service (ADR 0003); with one, nothing leaves
+        * the page until the reader opens it and asks.
+        */}
+      <AskPanel lang={lang} programId={program.uuid} />
 
       {/*
         * Every figure above is somebody else's, filed by this provider or published by the
