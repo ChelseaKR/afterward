@@ -1,6 +1,7 @@
 """HTTP in front of :class:`afterward.ask.api.Assistant`.
 
-Three routes. ``POST /ask`` is the conversation. ``GET /health`` says whether a model is
+Four routes. ``POST /ask`` is the conversation; ``POST /translate`` is Spanish for one record,
+labelled and number-checked. ``GET /health`` says whether a model is
 configured, which dataset is loaded, and what the limits are, and carries no counters a
 visitor could use to learn about other visitors. ``GET /`` is a one-line description.
 
@@ -20,7 +21,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from afterward.ask import PROMPT_VERSION
-from afterward.ask.api import AskRequest, AskResponse, Assistant
+from afterward.ask.api import (
+    AskRequest,
+    AskResponse,
+    Assistant,
+    TranslateRequest,
+    TranslateResponse,
+)
 from afterward.ask.dataset import DEFAULT_DATASET_DIR, Dataset
 from afterward.ask.limits import LimitExceeded, Limits, Meter
 from afterward.ask.provider import provider_from_env
@@ -67,6 +74,10 @@ def create_app(assistant: Assistant, *, allowed_origins: Sequence[str] = ()) -> 
     @app.post("/ask", response_model=AskResponse)
     def ask(body: AskRequest, request: Request) -> AskResponse:
         return assistant.ask(body, client_key=client_key(request))
+
+    @app.post("/translate", response_model=TranslateResponse)
+    def translate(body: TranslateRequest, request: Request) -> TranslateResponse:
+        return assistant.translate(body, client_key=client_key(request))
 
     @app.exception_handler(LimitExceeded)
     def limited(_: Request, exc: LimitExceeded) -> JSONResponse:

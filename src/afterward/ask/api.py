@@ -24,6 +24,7 @@ from afterward.ask.narrate import Narration, narrate
 from afterward.ask.provider import ModelProvider, ProviderError, Usage
 from afterward.ask.query import QueryResult, StructuredQuery, execute
 from afterward.ask.structure import Turn, structure
+from afterward.ask.translate import LABEL, Translator
 from afterward.ask.verify import Verified, verify
 
 NOTICE = {
@@ -120,6 +121,26 @@ class AskResponse(BaseModel):
     provenance: Provenance | None = None
 
 
+class TranslateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["occupation", "program"]
+    id: str = Field(min_length=1, max_length=80)
+
+
+class TranslateResponse(BaseModel):
+    status: Literal["ok", "published", "withheld", "unavailable", "not_found"]
+    kind: Literal["occupation", "program"]
+    id: str
+    title: str | None = None
+    description: str | None = None
+    label: str
+    ai_translated: bool = False
+    reviewed: bool = False
+    withheld: list[str] = Field(default_factory=list)
+    provenance: Provenance | None = None
+
+
 @dataclass
 class Trace:
     """Everything that happened, for the eval harness and for tests. Never sent to a browser."""
@@ -146,6 +167,7 @@ class Assistant:
         self.provider = provider
         self.meter = meter or Meter()
         self.site_root = site_root.rstrip("/")
+        self.translator = Translator(dataset, provider)
 
     @property
     def available(self) -> bool:
@@ -229,6 +251,55 @@ class Assistant:
                 is_fixture=self.dataset.is_fixture,
                 generated_at=datetime.now(UTC).isoformat(timespec="seconds"),
                 usage=trace.usage.as_dict(),
+            ),
+        )
+
+    def translate(
+        self, request: TranslateRequest, *, client_key: str = "local"
+    ) -> TranslateResponse:
+        """Spanish for one record: the published Spanish if there is one, else the model's,
+        verified and labelled. Admitted by the same meter as a question."""
+        kind, record_id = request.kind, request.id
+
+        def answer(status: str, **extra: Any) -> TranslateResponse:
+            return TranslateResponse(
+                status=status,  # type: ignore[arg-type]
+                kind=kind,
+                id=record_id,
+                label=LABEL["es"],
+                **extra,
+            )
+
+        published = self.translator.already_in_spanish(kind, record_id)
+        if published is not None:
+            return answer("published", **published)
+        if self.translator.source(kind, record_id) is None:
+            return answer("not_found")
+        if self.provider is None:
+            return answer("unavailable")
+        self.meter.admit(client_key)
+        try:
+            translated = self.translator.translate(kind, record_id)
+        except ProviderError:
+            return answer("unavailable")
+        if translated is None:  # pragma: no cover - both causes are answered above
+            return answer("unavailable")
+        self.meter.record_output_tokens(translated.usage.output_tokens)
+        return answer(
+            "withheld" if translated.withheld else "ok",
+            title=translated.title,
+            description=translated.description,
+            ai_translated=True,
+            reviewed=False,
+            withheld=list(translated.withheld),
+            provenance=Provenance(
+                provider=self.provider.name,
+                model=translated.model,
+                prompt_version=translated.prompt_version,
+                snapshot_date=self.dataset.snapshot_date,
+                is_fixture=self.dataset.is_fixture,
+                generated_at=datetime.now(UTC).isoformat(timespec="seconds"),
+                usage=translated.usage.as_dict(),
             ),
         )
 
