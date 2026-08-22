@@ -3,7 +3,7 @@
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
-	ctdl-statements ctdl-package
+	ctdl-statements ctdl-package ask-serve ask
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -15,7 +15,7 @@ help:
 	@uv run afterward --help
 
 install:
-	uv sync --locked --all-groups
+	uv sync --locked --all-groups --all-extras
 
 format:
 	uv run ruff format .
@@ -293,6 +293,18 @@ ctdl-package: ctdl-validate
 	( cd $(DIST_DIR) && if command -v sha256sum >/dev/null 2>&1; then \
 		sha256sum $$asset > $$asset.sha256; else shasum -a 256 $$asset > $$asset.sha256; fi ); \
 	ls -lh $(DIST_DIR)/$$asset $(DIST_DIR)/$$asset.sha256
+
+# --- The runtime assistant (ADR 0003) ---------------------------------------------------
+# Local only. Provider and model come from the environment (AFTERWARD_AI_PROVIDER=anthropic
+# with ANTHROPIC_API_KEY, or =bedrock with the AWS credential chain); with nothing set the
+# service starts with AI off and every /ask answers "unavailable". Binds to 127.0.0.1.
+ASK_PORT ?= 8765
+ask-serve:
+	uv run afterward ask-serve --port $(ASK_PORT) --dataset-dir $(DATASET_DIR)
+
+# One question from the shell, e.g. make ask Q="I work in a warehouse in Fresno"
+ask:
+	uv run afterward ask "$(Q)" --dataset-dir $(DATASET_DIR)
 
 web-install:
 	cd web && npm ci

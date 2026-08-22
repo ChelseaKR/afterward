@@ -26,6 +26,24 @@ dependencies = [
   "typer>=0.15,<1",
 ]
 
+[project.optional-dependencies]
+# The optional runtime AI service (`afterward.ask`, ADR 0003). An extra rather than a core
+# dependency because the pipeline and the static site need none of it: `make data` and
+# `make web-build` run without a model provider installed, and a machine that only rebuilds
+# the dataset should not have to carry an HTTP framework and an SDK for a service it never
+# starts. `make install` installs it so `make verify` tests it.
+ask = [
+  "anthropic>=0.125,<1",
+  "fastapi>=0.115,<1",
+  "pydantic>=2.9,<3",
+  "uvicorn>=0.30,<1",
+]
+# Amazon Bedrock through the same SDK (`AFTERWARD_AI_PROVIDER=bedrock`). Separate because it
+# pulls in boto3, which nothing else here needs.
+ask-bedrock = [
+  "anthropic[bedrock]>=0.125,<1",
+]
+
 [project.urls]
 Documentation = "https://github.com/ChelseaKR/afterward#readme"
 Issues = "https://github.com/ChelseaKR/afterward/issues"
@@ -70,6 +88,8 @@ max-complexity = 10
 "tests/*" = ["S101", "E501"]
 # B008: typer.Option in a default is the framework's documented idiom.
 "src/afterward/cli.py" = ["B008"]
+# B008: FastAPI's `Depends`/`Body` defaults are the framework's documented idiom, as typer's are.
+"src/afterward/ask/service.py" = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"
