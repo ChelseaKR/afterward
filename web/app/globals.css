@@ -1766,3 +1766,109 @@ td.num {
 .funding-cite a {
   color: var(--primary-100);
 }
+
+/*
+ * The runtime assistant (ADR 0003). Existing tokens only -- gray-20 on gray-10, gray-120 text,
+ * primary-100 links -- so the contrast audit meets no pairing it has not already passed.
+ */
+.ask {
+  margin-top: 3rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--gray-40);
+  border-radius: var(--border-radius);
+  background: var(--gray-20);
+}
+
+.ask-heading {
+  margin-top: 0;
+}
+
+/* Same shape and tokens as .compare-open, including its hover fix (see that rule); a class
+ * of its own so the rendered audit, which clicks button.compare-open, meets one button. */
+.ask-button {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: var(--border-radius-sm);
+  background: var(--gray-10);
+  color: var(--gray-120);
+  cursor: pointer;
+}
+
+.ask-button:hover,
+.ask-button:focus-visible {
+  background: var(--gray-10);
+  color: var(--gray-120);
+}
+
+.ask-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ask-lede,
+.ask-privacy,
+.ask-reply p,
+.ask-reply li {
+  max-width: var(--measure);
+  line-height: 1.6;
+}
+
+.ask-notice {
+  margin: 1rem 0;
+}
+
+.ask-form label {
+  display: block;
+  font-weight: 700;
+  margin: 1rem 0 0.375rem;
+}
+
+.ask-form textarea {
+  width: 100%;
+  max-width: var(--measure);
+  font: inherit;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--gray-60);
+  border-radius: var(--border-radius-sm);
+  background: var(--gray-10);
+  color: var(--gray-120);
+}
+
+.ask-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.ask-reply {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-40);
+}
+
+.ask-label,
+.ask-withheld,
+.ask-provenance,
+.ask-sources {
+  font-size: 0.875rem;
+}
+
+.ask-label {
+  font-weight: 700;
+}
+
+.ask-claims > li {
+  margin-bottom: 0.75rem;
+}
+
+.ask-guidance {
+  font-style: italic;
+}
+
+.ask-translate {
+  margin-top: 0.5rem;
+}

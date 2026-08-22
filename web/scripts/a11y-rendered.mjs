@@ -117,6 +117,14 @@ try {
     ["es", "Spanish"],
   ]) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    // Every request the browser makes while this page is driven, so the no-off-origin rule
+    // (SECURITY.md; ADR 0003) is checked in a real browser and not only in a unit test: the
+    // static site makes no request beyond its own origin, and opening the assistant panel
+    // must not change that. Submitting a question would, and this audit never submits one.
+    const offOrigin = [];
+    page.on("request", (request) => {
+      if (!request.url().startsWith(base)) offOrigin.push(request.url());
+    });
     await page.goto(`${base}/${lang}/`, { waitUntil: "networkidle" });
 
     // The chrome is server-rendered and present immediately; the result list is fetched
@@ -134,6 +142,26 @@ try {
     await page.waitForSelector(".compare-table", { timeout: 15000 });
     failures += await auditPage(page, `Comparison table (${label})`);
 
+    // The assistant's open state (ADR 0003) exists only after a click, so no static gate
+    // sees its form, its notice or its live region. It is on the page only in a build with
+    // NEXT_PUBLIC_ASK_URL set; opening it makes no request, so this is safe offline.
+    const askOpen = page.locator("button.ask-open");
+    if ((await askOpen.count()) > 0) {
+      await askOpen.click();
+      await page.waitForSelector(".ask-form textarea", { timeout: 15000 });
+      failures += await auditPage(page, `Assistant panel, open (${label})`);
+    } else {
+      console.log(`skip  Assistant panel (${label}): not in this build`);
+    }
+
+    if (offOrigin.length > 0) {
+      console.log(`FAIL  Off-origin requests (${label})`);
+      for (const url of offOrigin) console.log(`          ${url}`);
+      failures += offOrigin.length;
+    } else {
+      console.log(`pass  No off-origin requests (${label})`);
+    }
+
     await page.close();
   }
 } finally {
@@ -143,7 +171,7 @@ try {
 
 console.log(
   failures === 0
-    ? "\na11y-rendered: no violations in the rendered search results or comparison table"
+    ? "\na11y-rendered: no violations in the rendered search results, comparison table, or assistant panel"
     : `\na11y-rendered: ${failures} node(s) failing`,
 );
 process.exit(failures === 0 ? 0 : 1);

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AskPanel } from "@/components/AskPanel";
 import { Fact, Measure } from "@/components/Measure";
+import { TranslateButton } from "@/components/TranslateButton";
 import {
   allOccupationCodes,
   getOccupation,
@@ -248,6 +250,14 @@ export default async function OccupationPage({
           <p className="compare-note">
             {spanishDescription === null ? t.occupationDescriptionNote : t.occupationDescriptionNoteEs}
           </p>
+          {/*
+            * Only where the Department publishes no Spanish for this occupation (70 of 670):
+            * Spanish on request, labelled, with the English left as the record. Renders
+            * nothing unless this build has a service (ADR 0003).
+            */}
+          {spanishDescription === null && (
+            <TranslateButton lang={lang} kind="occupation" id={soc} />
+          )}
         </>
       )}
 
@@ -558,6 +568,9 @@ export default async function OccupationPage({
           </ul>
         </>
       )}
+
+      {/* See the program page: renders nothing without a service, requests nothing until asked. */}
+      <AskPanel lang={lang} socCode={soc} />
     </div>
   );
 }
