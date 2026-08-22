@@ -333,6 +333,71 @@ def validate_ctdl_command(
     typer.echo(f"  validation statement -> {report.statement_path}")
 
 
+@app.command("ask")
+def ask_command(
+    text: str = typer.Argument(..., help="What the person said, in English or Spanish."),
+    lang: str = typer.Option("en", "--lang", help="Interface language hint: en or es."),
+    dataset_dir: Path = typer.Option(
+        Path("web/public/data"), "--dataset-dir", help="The published dataset to answer from."
+    ),
+    program_id: str | None = typer.Option(None, "--program", help="Program page the person is on."),
+    soc_code: str | None = typer.Option(None, "--occupation", help="Occupation page they are on."),
+    as_json: bool = typer.Option(False, "--json", help="Print the full response as JSON."),
+) -> None:
+    """Ask the runtime assistant one question from the command line (ADR 0003).
+
+    Uses whatever AFTERWARD_AI_PROVIDER names; with nothing configured it reports that the
+    assistant is off and prints nothing invented. Every claim printed has passed the
+    verifier; the count of withheld claims is printed beside them.
+    """
+    from afterward.ask.api import AskRequest, Assistant
+    from afterward.ask.dataset import Dataset
+    from afterward.ask.provider import provider_from_env
+
+    assistant = Assistant(Dataset.load(dataset_dir), provider_from_env())
+    request = AskRequest(
+        text=text,
+        lang="es" if lang == "es" else "en",
+        program_id=program_id,
+        soc_code=soc_code,
+    )
+    response = assistant.ask(request)
+    if as_json:
+        typer.echo(response.model_dump_json(indent=2))
+        return
+    if response.status != "ok":
+        typer.echo(response.message or response.status)
+        return
+    for claim in response.claims:
+        typer.echo(f"- {claim.text}")
+    typer.echo(f"\n[{response.withheld.count} claim(s) withheld: {response.withheld.reasons}]")
+    for program in response.programs:
+        typer.echo(f"  program   {program.path}  {program.name} -- {program.provider}")
+    for occupation in response.occupations:
+        typer.echo(f"  occupation {occupation.path}  {occupation.title}")
+    typer.echo(f"\n{response.notice}")
+
+
+@app.command("ask-serve")
+def ask_serve_command(
+    host: str = typer.Option("127.0.0.1", "--host", help="Interface to bind. Local by default."),
+    port: int = typer.Option(8765, "--port", help="Port to bind."),
+    dataset_dir: Path = typer.Option(
+        Path("web/public/data"), "--dataset-dir", help="The published dataset to answer from."
+    ),
+) -> None:
+    """Run the runtime assistant as a local HTTP service (ADR 0003).
+
+    Binds to localhost by default. Provider, model, limits and allowed origins all come from
+    the environment; see `afterward.ask.provider` and `afterward.ask.limits`.
+    """
+    import uvicorn
+
+    from afterward.ask.service import app_from_env
+
+    uvicorn.run(app_from_env(dataset_dir), host=host, port=port, log_level="warning")
+
+
 def main() -> None:
     app()
 
