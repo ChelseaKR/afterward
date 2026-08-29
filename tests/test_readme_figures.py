@@ -17,9 +17,15 @@ sentence. A rewrite that drops the sentence fails here rather than passing quiet
 is deliberate: the figures are the reason the sentence is in the README, so a sentence that
 no longer states them has to be re-derived rather than silently un-gated.
 
-What this does not check: that the committed statements match a fresh build. That is
-``make ctdl-export`` and ``scripts/ci_artifact_check.py``'s job. This checks only that the
-prose agrees with the artifact as committed.
+What this does not check: that the committed statements match a fresh build. This file used
+to name ``make ctdl-export`` and ``scripts/ci_artifact_check.py`` as the place that was
+checked; measured 2026-08-29, neither did. ``make ctdl-export`` is in no ``verify`` target
+and ``ci_artifact_check.py`` mentions neither statement, so the figures below were pinned to
+a file nothing kept current. ``tests/test_ctdl_committed_statements.py`` is that check now:
+it rebuilds both statements from the committed fixture and requires everything the code
+decides to match, byte for byte. The counts themselves still cannot be re-derived without
+the production dataset. This file checks only that the prose agrees with the artifact as
+committed.
 """
 
 from __future__ import annotations
