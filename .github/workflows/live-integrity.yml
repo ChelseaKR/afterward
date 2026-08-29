@@ -1,0 +1,86 @@
+# Is the data the site serves the dataset the site says it is serving?
+#
+# publish_preflight.py grades web/out before it leaves the runner, deploy.yml compares
+# the local key set with the bucket's and smoke-tests four routes, and deploy_check.py
+# asks the CDN whether the assets a page references resolve. Every one of those runs
+# inside the deploy that produced the artifact, or by hand: deploy_check.py is wired to
+# no workflow at all. Nothing runs afterwards, and nothing has ever compared a published
+# byte with a byte this project produced.
+#
+# The payload is claims about real training programs: median earnings, completion rates,
+# employment rates, and a link to the provider. A partially synced data/ directory, an
+# interrupted --delete pass, or a bucket half-written from two snapshots would leave
+# every gate green and serve a reader one program's outcomes under another's name.
+#
+# WHY THE DATASET AND NOT THE PAGES
+#
+# The deployed HTML is not reproducible from a checkout. Next.js mints a random buildId
+# per build and stamps it into nearly every exported file, so two builds of the same
+# commit differ in about 40,000 files; the dataset is not in git, it arrives as a release
+# asset; and nothing published records which commit built the site. Byte equality over
+# the export would fail for reasons that are not drift.
+#
+# So this takes the site at its word about which dataset it serves, and holds it to that
+# word exactly: read the live coverage.json, take the dataset release its snapshot date
+# names, check the tarball against its published digest, and compare all 3,940 files byte
+# for byte. That is the whole machine-readable claim surface.
+#
+# Pinning generateBuildId in web/next.config.ts and publishing a version.json would make
+# the pages comparable too, and would answer "which commit is live". Both change what
+# gets deployed, so neither is done here.
+#
+# The second job is deploy_check.py, which existed and ran nowhere. It asks the CDN for
+# the pages a visitor gets and requires every asset they reference to answer 200, which
+# is the failure that once left the search page dead with every gate green.
+#
+# Runs daily and on demand (Actions > live integrity sentinel > Run workflow).
+name: live integrity sentinel
+
+on:
+  schedule:
+    - cron: "27 16 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-integrity
+  cancel-in-progress: false
+
+jobs:
+  dataset:
+    name: the served data is the dataset the site names
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Compare every published data file with the release the site names
+        env:
+          # `gh release download` reads this repository's own releases. contents: read
+          # is the whole permission set; nothing here writes anywhere.
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/verify_live_site.py
+
+  assets:
+    name: every asset the deployed pages reference resolves
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Ask the CDN for the pages a visitor gets
+        run: python3 scripts/deploy_check.py https://afterward.chelseakr.com
