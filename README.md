@@ -8,8 +8,10 @@ programs actually lead.**
 > Not affiliated with the State of California. It uses the state's open-source design
 > system, so a permanent notice on every page says so.
 
-3,266 California training programs, joined to the state's own ten-year projection for the
-occupation each one leads to. No account, no tracking, English and Spanish.
+3,266 California training programs, 3,250 of them joined to the state's own ten-year
+projection for the occupation they lead to. California publishes no projection for the
+occupation the other 16 are tagged with, and the site says that rather than showing a gap
+that reads like a zero. No account, no tracking, English and Spanish.
 
 **Status:** Beta. Version `0.1.0`, first signed tag not yet cut. The public site, the bilingual
 interface, and the data pipeline are live and covered by an automated test suite. Datasets are
@@ -31,9 +33,12 @@ Afterward does exactly that, from public data, with no account and no tracking.
 ## What it does today
 
 The pipeline pulls every California training program reported under WIOA — provider, cost,
-length, format, and the federally-reported outcome measures — and joins each one to
-California's own ten-year projection for the occupation it feeds: median wage, projected
-openings, expected entry-level education, statewide and by region.
+length, format, and the federally-reported outcome measures — and joins it to California's
+own ten-year projection for the occupation it feeds: median wage, projected openings,
+expected entry-level education, statewide and by region. 3,250 of the 3,266 get one. The
+state publishes no projection for the occupation the other 16 are tagged with, and no
+nearby occupation is substituted, because a similar-sounding job at a different wage would
+look exactly like a correct answer.
 
 ```bash
 make install       # Python pipeline
