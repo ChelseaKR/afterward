@@ -286,14 +286,14 @@ class TestMatchKindResolution:
 
     def test_an_exact_match_wins_over_an_aggregate_reaching_the_same_occupation(self) -> None:
         # DOL naming the published code itself is a stronger claim than one derived here.
-        published = {"31-1120": {}, "15-1252": {}}
+        published: dict[str, dict[str, Any]] = {"31-1120": {}, "15-1252": {}}
         matches = match_occupations(["31-1122", "31-1120"], published)
         assert len(matches) == 1
         assert matches[0].kind == MATCH_EXACT
         assert matches[0].program_soc_codes == ("31-1122", "31-1120")
 
     def test_is_aggregate_is_the_complement_of_exact(self) -> None:
-        published = {"21-1018": {}, "15-1252": {}}
+        published: dict[str, dict[str, Any]] = {"21-1018": {}, "15-1252": {}}
         matches = match_occupations(["15-1252", "21-1014"], published)
         assert [m.is_aggregate for m in matches] == [False, True]
 
@@ -789,7 +789,7 @@ class TestSearchEntryArea:
     def _entry(
         self, region: dict | None, city: str | None = "Fresno", cohort: dict | None = None
     ) -> dict:
-        program = {
+        program: dict[str, Any] = {
             "uuid": "u1",
             "program_name": "Software Development",
             "provider_name": "Fresno City College",
@@ -854,7 +854,7 @@ class TestSearchAlternateTitles:
 
     def test_a_non_string_entry_is_skipped_rather_than_raising(self) -> None:
         # The source is CareerOneStop's own JSON; a malformed entry should not crash a build.
-        assert _search_alternate_titles([None, "RN"], "Registered Nurse") == ["RN"]  # type: ignore[list-item]
+        assert _search_alternate_titles([None, "RN"], "Registered Nurse") == ["RN"]
 
     def test_no_own_title_keeps_everything_after_cleaning(self) -> None:
         assert _search_alternate_titles(["RN", "Staff Nurse"], None) == ["RN", "Staff Nurse"]
@@ -1030,7 +1030,7 @@ class TestCoverageShape:
     """
 
     def _document(self, **overrides: object) -> dict:
-        document = {key: 1 for key in SITE_COVERAGE_KEYS}
+        document: dict[str, Any] = {key: 1 for key in SITE_COVERAGE_KEYS}
         document["snapshot_date"] = "2026-08-04"
         document["state_benchmark"] = {"state": "CA"}
         document["peer_medians"] = {
@@ -1245,7 +1245,7 @@ class TestOutcomeIntegrity:
         assert problems == ["p1.reported: says False, which its own measures contradict"]
 
     def test_a_reported_flag_claiming_measures_that_are_absent_is_caught(self) -> None:
-        payload = _outcome_payload(**dict.fromkeys(_MEASURES))
+        payload = _outcome_payload("p1", **dict.fromkeys(_MEASURES))
         assert outcome_integrity_problems([payload]) == [
             "p1.reported: says True, which its own measures contradict"
         ]

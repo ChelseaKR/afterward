@@ -94,7 +94,27 @@ max-complexity = 10
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src"]
+# All three Python surfaces, not just the package.
+#
+# This read `files = ["src"]` until 2026-08-28, so `scripts/` -- the eight gate scripts
+# that decide whether a dataset may be backed up, packaged or published -- and `tests/` -- 1,240
+# cases -- were never type-checked at all, while the README's Code Quality row said
+# "mypy --strict" without saying which third of the repository it meant. A gate script is
+# exactly the code that must not be wrong, and a test that does not type-check can assert
+# something other than what it appears to.
+files = ["src", "scripts", "tests"]
+
+# `scripts/` is strict with no relaxation: it is the gates.
+
+[[tool.mypy.overrides]]
+# Test fixtures are ad-hoc dicts and lists built to stand in for feed payloads. Requiring a
+# generic parameter on every one of them buys 48 annotations and no safety -- the errors that
+# matter in a test are a wrong argument type, an attribute that does not exist, and a call to
+# something untyped, and those all stay on. Nothing else is relaxed here, and `src/` and
+# `scripts/` are not relaxed at all.
+module = "tests.*"
+disallow_any_generics = false
+warn_return_any = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

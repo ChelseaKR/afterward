@@ -43,12 +43,17 @@ repos:
   # so it calls the project venv instead of pre-commit's isolated one. Pre-push
   # rather than per-commit: a strict whole-package check is too slow for the
   # inner loop.
+  #
+  # No `args`. A path on the command line overrides `files` in pyproject.toml,
+  # and `args: ["src"]` is how this hook went on reading a third of the
+  # repository after the config was widened to cover all of it. The config is
+  # the single place the scope is declared; `tests/test_typing_scope.py` holds
+  # both this hook and `make typecheck` to it.
   - repo: local
     hooks:
       - id: mypy
-        name: mypy --strict (src)
+        name: mypy --strict (src, scripts, tests)
         entry: .venv/bin/mypy
-        args: ["src"]
         language: system
         types: [python]
         pass_filenames: false

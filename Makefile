@@ -25,7 +25,10 @@ lint:
 	uv run ruff check .
 
 typecheck:
-	uv run mypy src
+	# No path argument: a path on the command line overrides `files` in pyproject.toml,
+	# which is how `scripts/` and `tests/` stayed outside mypy's scope after the config
+	# was written to include them. The config is the single place the scope is declared.
+	uv run mypy
 
 test:
 	uv run pytest --cov=afterward --cov-report=term-missing

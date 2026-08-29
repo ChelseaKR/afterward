@@ -548,10 +548,15 @@ class TestCitations:
         assert all(question.citations for question in QUESTIONS)
 
     def test_every_citation_is_an_https_url_with_a_label(self) -> None:
-        for item in (*STEPS, *QUESTIONS):
-            for citation in item.citations:
-                assert citation.url.startswith("https://"), citation
-                assert citation.label.strip(), citation
+        # A tuple of a Step and a Question unifies to `object`; their citation tuples are
+        # the same type, so the citations are chained rather than the records holding them.
+        citations = (
+            *(c for step in STEPS for c in step.citations),
+            *(c for question in QUESTIONS for c in question.citations),
+        )
+        for citation in citations:
+            assert citation.url.startswith("https://"), citation
+            assert citation.label.strip(), citation
 
     def test_citations_survive_serialization(self) -> None:
         payload = funding_guidance().as_dict()
