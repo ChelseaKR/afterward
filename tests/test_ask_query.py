@@ -182,7 +182,7 @@ class TestFilters:
             occupations={"11-1011": _occupation()},
         )
         for wanted, expected in (("online", ["o"]), ("hybrid", ["h"]), ("in_person", ["p"])):
-            result = execute(query(occupation_terms=["Chief Executives"], format=wanted), d)  # type: ignore[arg-type]
+            result = execute(query(occupation_terms=["Chief Executives"], format=wanted), d)
             assert program_ids(result.programs) == expected, wanted
 
     def test_projection_uses_published_change_and_never_assumes(self) -> None:

@@ -17,6 +17,17 @@
  * `a11y-browser.mjs` does, and can run as part of `verify` without changing what a
  * developer has to remember to do first.
  *
+ * The assistant panel is the exception this file used to make and no longer does. It exists
+ * in a build only when `NEXT_PUBLIC_ASK_URL` was set, which no build sets, so the panel's
+ * branch never ran -- and the verdict printed underneath said "no violations in the rendered
+ * search results, comparison table, or assistant panel". A gate claiming a surface it
+ * skipped is the failure `a11y-audit.mjs` refuses one file over, in words already in this
+ * tree: a page it is told to read and cannot is unaudited, not passing. So the same variable
+ * that decides whether the build carries a panel now decides whether this gate demands one,
+ * a disagreement in either direction is a failure, and the verdict names only what it read.
+ * The panel's own axe coverage, for builds that have none, is
+ * `web/components/AskPanel.a11y.test.tsx`.
+ *
  * Usage: node scripts/a11y-rendered.mjs [outDir]
  */
 
@@ -27,6 +38,8 @@ import { createRequire } from "node:module";
 import path from "node:path";
 
 import { chromium } from "playwright";
+
+import { askServiceConfigured, verdict } from "./a11y-verdict.mjs";
 
 const require = createRequire(import.meta.url);
 const AXE = readFileSync(require.resolve("axe-core/axe.min.js"), "utf-8");
@@ -104,12 +117,16 @@ async function auditPage(page, label) {
   return result.reduce((n, v) => n + v.nodes.length, 0);
 }
 
+const ASSISTANT_EXPECTED = askServiceConfigured(process.env.NEXT_PUBLIC_ASK_URL);
+
 const server = serveExport(OUT_DIR);
 const port = await listen(server);
 const base = `http://127.0.0.1:${port}`;
 
 const browser = await chromium.launch();
 let failures = 0;
+/** What this run actually read, in the order it read it. The verdict is built from this. */
+const audited = [];
 
 try {
   for (const [lang, label] of [
@@ -132,6 +149,7 @@ try {
     // for the page this audit exists to cover, not the shell around it.
     await page.waitForSelector(".card-list .card", { timeout: 15000 });
     failures += await auditPage(page, `Search results (${label})`);
+    audited.push(`the rendered search results (${label})`);
 
     // Two programs selected, same as a reader comparing options, so the comparison table
     // — never audited before #29 — is actually in the DOM for this pass.
@@ -141,17 +159,39 @@ try {
     await page.locator("button.compare-open").click();
     await page.waitForSelector(".compare-table", { timeout: 15000 });
     failures += await auditPage(page, `Comparison table (${label})`);
+    audited.push(`the comparison table (${label})`);
 
     // The assistant's open state (ADR 0003) exists only after a click, so no static gate
     // sees its form, its notice or its live region. It is on the page only in a build with
     // NEXT_PUBLIC_ASK_URL set; opening it makes no request, so this is safe offline.
-    const askOpen = page.locator("button.ask-open");
-    if ((await askOpen.count()) > 0) {
-      await askOpen.click();
+    //
+    // Both directions are failures. A build configured with a service and no panel in it is
+    // an export that does not match the environment it is being audited against, which is
+    // the stale-artifact shape this repository keeps meeting. A panel in a build that
+    // declared no service is a page carrying an interface nobody meant to ship.
+    const present = (await page.locator("button.ask-open").count()) > 0;
+    if (present !== ASSISTANT_EXPECTED) {
+      console.log(`FAIL  Assistant panel (${label})`);
+      console.log(
+        present
+          ? "        NEXT_PUBLIC_ASK_URL configures no service and the build has a panel anyway."
+          : "        NEXT_PUBLIC_ASK_URL configures a service and the build has no panel.\n" +
+              "        Rebuild the export in the environment it is audited in.",
+      );
+      failures += 1;
+    } else if (present) {
+      await page.locator("button.ask-open").click();
       await page.waitForSelector(".ask-form textarea", { timeout: 15000 });
       failures += await auditPage(page, `Assistant panel, open (${label})`);
+      audited.push(`the assistant panel (${label})`);
     } else {
-      console.log(`skip  Assistant panel (${label}): not in this build`);
+      // Not a skip that the verdict then forgets: this build has no panel to read, the
+      // verdict will not claim one, and the component's own axe pass lives in
+      // components/AskPanel.a11y.test.tsx.
+      console.log(
+        `none  Assistant panel (${label}): this build configures no service, so there is no ` +
+          "panel to audit (covered by components/AskPanel.a11y.test.tsx)",
+      );
     }
 
     if (offOrigin.length > 0) {
@@ -160,6 +200,7 @@ try {
       failures += offOrigin.length;
     } else {
       console.log(`pass  No off-origin requests (${label})`);
+      audited.push(`off-origin requests (${label})`);
     }
 
     await page.close();
@@ -169,9 +210,5 @@ try {
   server.close();
 }
 
-console.log(
-  failures === 0
-    ? "\na11y-rendered: no violations in the rendered search results, comparison table, or assistant panel"
-    : `\na11y-rendered: ${failures} node(s) failing`,
-);
+console.log(`\n${verdict({ failures, audited })}`);
 process.exit(failures === 0 ? 0 : 1);

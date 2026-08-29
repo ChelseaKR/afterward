@@ -27,6 +27,18 @@ a free port, waits for the result list to actually populate, audits it with ever
 then selects two programs, opens the comparison, and audits again with the table in the DOM.
 Because it serves itself it needs no separately-started server and runs as part of `verify`.
 
+The assistant panel (ADR 0003) was the hole in that. It renders nothing unless the build was
+made with `NEXT_PUBLIC_ASK_URL`, no build sets it, so the rendered pass looked for the panel,
+did not find it, printed `skip`, and then printed a verdict claiming it had audited "the
+rendered search results, comparison table, or assistant panel". The newest interface here had
+no accessibility coverage anywhere, under a sentence saying it had. Two things now hold it:
+`components/AskPanel.a11y.test.tsx` mounts the panel closed, open in both languages, and
+showing an answer, and runs axe over each with every rule enabled minus the three jsdom
+cannot answer; and `a11y-rendered.mjs` takes its expectation of a panel from the same
+variable that decides whether one is built, so a build that carries a panel is audited in
+Chromium and a disagreement in either direction fails. A build with no panel says so in
+words, and the verdict names only the surfaces the run actually read.
+
 `npm run a11y` now enables every rule axe ships. Running axe unconfigured is **not** "all the
 checks": sixteen rules are off unless asked for, including `color-contrast-enhanced` (AAA
 1.4.6), `identical-links-same-purpose` (AAA 2.4.9), `meta-refresh-no-exceptions` (AAA 2.2.4)

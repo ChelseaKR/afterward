@@ -77,19 +77,18 @@ jobs:
         run: make web-verify
 
       - name: Confirm this build is not publishable
-        # Says out loud what the two lines above imply. CI has no production dataset (DOL
+        # Says out loud what the two steps above imply. CI has no production dataset (DOL
         # refuses runner egress) and sets no NEXT_PUBLIC_SITE_URL, so what it exports is a
         # 60-program fixture that advertises example.invalid. That is correct for a test
         # build and catastrophic as a published one, which is why the deploy workflow
         # refuses both markers rather than trusting anyone to remember the difference.
         # If this step ever fails, CI has started producing something that looks
         # deployable, and the guards in deploy.yml need re-reading before it is.
-        run: |
-          set -euo pipefail
-          python3 -c 'import json,sys; d=json.load(open("web/public/data/coverage.json")); sys.exit(0 if d.get("is_fixture") else "::error::CI built a dataset that is not the fixture.")'
-          grep -qF 'example.invalid' web/out/robots.txt || {
-            echo "::error::A CI build carrying a real site URL is a publishable artifact."; exit 1; }
-          echo "CI artifact is fixture-backed and placeholder-hosted, as it must be."
+        #
+        # A `make` target rather than inline shell: this was the one assertion in the
+        # pipeline a developer could not reproduce, so a tree green locally could still be
+        # rejected here. `tests/test_ci_artifact_check.py` covers both directions.
+        run: make ci-artifact-check
 
   data-freshness:
     # Confirms the public sources still respond and still contain California data.

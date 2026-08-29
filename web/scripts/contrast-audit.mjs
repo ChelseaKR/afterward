@@ -84,7 +84,14 @@ function aliasesByScheme() {
   return { light, dark: new Map([...light, ...dark]) };
 }
 
-function resolve(token, scheme, statics, aliases) {
+/**
+ * A token's hex value under one scheme's alias table.
+ *
+ * Took a `scheme` argument it never read: the scheme is carried entirely by which `aliases`
+ * map the caller passes. A half-landed refactor, and the finding that came out of pointing
+ * ESLint at these scripts for the first time.
+ */
+function resolve(token, statics, aliases) {
   let name = token.replace(/^--/, "").toLowerCase();
   // Aliases chain: --primary-100 -> --primary-static-100 -> --valley-static-100 -> #hex.
   for (let hop = 0; hop < 8; hop += 1) {
@@ -179,8 +186,8 @@ for (const scheme of ["light", "dark"]) {
   console.log(`\n${scheme}`);
 
   for (const [label, fgToken, bgToken, minimum] of PAIRS) {
-    const fg = resolve(fgToken, scheme, statics, aliases[scheme]);
-    const bg = resolve(bgToken, scheme, statics, aliases[scheme]);
+    const fg = resolve(fgToken, statics, aliases[scheme]);
+    const bg = resolve(bgToken, statics, aliases[scheme]);
 
     // An unresolvable token is a failure, not a skip. A gate that passes because it could
     // not evaluate anything is worse than no gate: it reports confidence it does not have.

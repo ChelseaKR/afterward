@@ -11,6 +11,12 @@ an unchecked URL is not a dead URL.
 from __future__ import annotations
 
 import json
+
+# The resolver `link_check` calls. `link_check` does `import socket`, so this is the same
+# module object it holds; patching it here patches what it calls. Reaching through
+# `link_check.socket` said the same thing less directly and read a name the module does
+# not export.
+import socket
 import ssl
 import threading
 from collections.abc import Iterator
@@ -270,7 +276,7 @@ class TestHostResolution:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setattr(
-            link_check.socket,
+            socket,
             "getaddrinfo",
             lambda *a, **k: pytest.fail("looked up an empty host"),
         )
@@ -281,9 +287,9 @@ class TestHostResolution:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         def refuse(*args: object, **kwargs: object) -> None:
-            raise link_check.socket.gaierror(8, "nodename nor servname provided")
+            raise socket.gaierror(8, "nodename nor servname provided")
 
-        monkeypatch.setattr(link_check.socket, "getaddrinfo", refuse)
+        monkeypatch.setattr(socket, "getaddrinfo", refuse)
         assert link_check._host_resolves("gone.example") is False
 
     def test_our_own_networking_failing_does_not_blame_the_provider(
@@ -294,11 +300,11 @@ class TestHostResolution:
         def broken(*args: object, **kwargs: object) -> None:
             raise OSError(65, "No route to host")
 
-        monkeypatch.setattr(link_check.socket, "getaddrinfo", broken)
+        monkeypatch.setattr(socket, "getaddrinfo", broken)
         assert link_check._host_resolves("real-school.example") is True
 
     def test_a_resolvable_name_resolves(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setattr(link_check.socket, "getaddrinfo", lambda *a, **k: [object()])
+        monkeypatch.setattr(socket, "getaddrinfo", lambda *a, **k: [object()])
         assert link_check._host_resolves("real-school.example") is True
 
     def test_a_urlless_comparison_is_not_the_same_site(self) -> None:
@@ -1412,7 +1418,7 @@ class TestDecideOffsiteRedirect:
             decision = decide(
                 results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
                 PAGE,
-                redirect=link_review.RedirectVerdict(resolution, "review", "why"),  # type: ignore[arg-type]
+                redirect=link_review.RedirectVerdict(resolution, "review", "why"),
             )
             assert decision is not None
             assert decision.linked is False, resolution
@@ -1425,7 +1431,7 @@ class TestDecideOffsiteRedirect:
             decision = decide(
                 results(checked(PAGE, "redirected_offsite", final=OFFSITE)),
                 PAGE,
-                redirect=link_review.RedirectVerdict(resolution, "review", "why"),  # type: ignore[arg-type]
+                redirect=link_review.RedirectVerdict(resolution, "review", "why"),
             )
             assert decision is not None
             assert decision.notice != NOTICE_UNREACHABLE
@@ -1434,7 +1440,7 @@ class TestDecideOffsiteRedirect:
         """``redirect`` is null for every link that never left the site it named, so a
         consumer cannot read one class's field as another's."""
         for reason in ("ok", "redirected_to_site_root", "not_found", "forbidden"):
-            decision = decide(results(checked(PAGE, reason)), PAGE)  # type: ignore[arg-type]
+            decision = decide(results(checked(PAGE, reason)), PAGE)
             assert decision is not None
             assert decision.redirect is None, reason
         assert decide({}, PAGE).redirect is None  # type: ignore[union-attr]
