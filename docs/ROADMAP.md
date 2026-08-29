@@ -57,8 +57,8 @@ Per QUALITY-AND-METRICS-STANDARD's ledger shape. Values as measured 2026-08-07.
 
 | Metric | Target | Measured by | Gate | Owner |
 |--------|--------|-------------|------|-------|
-| Branch coverage, Python pipeline [CQ-08] | >= 85% (measured: 92.12% on 2026-08-21) | `pytest --cov` via `make test`; `branch = true` + `fail_under = 85` in pyproject.toml | AUTO | maintainer |
-| mypy --strict errors [CQ-06] | 0 | `make typecheck` in `make verify` | AUTO | maintainer |
+| Branch coverage, Python pipeline [CQ-08] | >= 85% (measured: 94.75% on 2026-08-28) | `pytest --cov` via `make test`; `branch = true` + `fail_under = 85` in pyproject.toml | AUTO | maintainer |
+| mypy --strict errors [CQ-06] | 0, over `src`, `scripts` and `tests` (71 files) | `make typecheck` in `make verify`; scope is `files` in pyproject.toml, held there by `tests/test_typing_scope.py` | AUTO | maintainer |
 | ruff lint + format findings [CQ-04] | 0 | `make lint` in `make verify` | AUTO | maintainer |
 | axe-core violations, built pages [A11Y-01] | 0, all rules enabled including AAA | `npm run a11y` + `npm run a11y:rendered` in `make web-verify` | AUTO | maintainer |
 | Token contrast ratios, both schemes [A11Y-05] | AAA thresholds (7:1 body text) | `npm run contrast` in `make web-verify` | AUTO | maintainer |

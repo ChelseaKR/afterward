@@ -39,7 +39,7 @@ of record either way.
 
 ```bash
 make verify        # provenance, lint, typecheck, Python tests, security, dependency audit
-make web-verify    # typecheck, front-end tests, static export, accessibility audit
+make web-verify    # typecheck, lint, front-end tests, static export, accessibility audits
 ```
 
 Both run in CI.
