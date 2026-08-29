@@ -69,6 +69,7 @@ import sys
 import tarfile
 import tempfile
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -297,6 +298,41 @@ def compare(origin: Origin, nonce: str, files: dict[str, bytes], workers: int) -
     return [line for line in results if line is not None]
 
 
+def one_pass(origin: Origin, args: argparse.Namespace) -> tuple[list[str], str, int, int]:
+    """One complete look: read what the site claims, fetch that dataset, compare."""
+    nonce = secrets.token_hex(16)
+    prove_the_origin_discriminates(origin, nonce)
+    snapshot, programs = live_coverage(origin, nonce)
+    tag = f"dataset-{snapshot}"
+    with tempfile.TemporaryDirectory(prefix="afterward-live-") as directory:
+        work = Path(directory)
+        if args.dataset:
+            tarball = Path(args.dataset)
+            if not tarball.is_file():
+                raise LiveSiteError(f"{tarball} is not a file")
+        else:
+            tarball = download_dataset(tag, work / "release")
+            verify_digest(tarball)
+        files = extract(tarball, work / "dataset")
+        if len(files) < args.minimum_files:
+            raise LiveSiteError(
+                f"the dataset holds {len(files)} file(s), below the floor of "
+                f"{args.minimum_files}. A check that compares nothing must fail, not pass."
+            )
+        differences = compare(origin, nonce, files, args.workers)
+    return differences, tag, len(files), programs
+
+
+def validate(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+    """Bounds on the knobs, so a typo cannot quietly turn the check into nothing."""
+    if not 1 <= args.workers <= 16:
+        parser.error("--workers must be between 1 and 16")
+    if not 1 <= args.attempts <= 10:
+        parser.error("--attempts must be between 1 and 10")
+    if not 0 <= args.retry_seconds <= 120:
+        parser.error("--retry-seconds must be between 0 and 120")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", default=SITE_URL, help=f"live site root (default {SITE_URL})")
@@ -318,38 +354,50 @@ def main(argv: list[str] | None = None) -> int:
         default=8,
         help="parallel connections to the origin (default 8)",
     )
+    parser.add_argument(
+        "--attempts",
+        type=int,
+        default=3,
+        help="how many times to look before reporting a difference (default 3)",
+    )
+    parser.add_argument(
+        "--retry-seconds",
+        type=float,
+        default=20.0,
+        help="seconds to wait between attempts, for a deploy to settle (default 20)",
+    )
     args = parser.parse_args(argv)
-    if not 1 <= args.workers <= 16:
-        parser.error("--workers must be between 1 and 16")
+    validate(parser, args)
 
     origin = Origin(args.url, timeout_seconds=args.timeout_seconds)
-    try:
-        nonce = secrets.token_hex(16)
-        prove_the_origin_discriminates(origin, nonce)
-        snapshot, programs = live_coverage(origin, nonce)
-        tag = f"dataset-{snapshot}"
-        with tempfile.TemporaryDirectory(prefix="afterward-live-") as directory:
-            work = Path(directory)
-            if args.dataset:
-                tarball = Path(args.dataset)
-                if not tarball.is_file():
-                    raise LiveSiteError(f"{tarball} is not a file")
-            else:
-                tarball = download_dataset(tag, work / "release")
-                verify_digest(tarball)
-            files = extract(tarball, work / "dataset")
-            if len(files) < args.minimum_files:
-                raise LiveSiteError(
-                    f"the dataset holds {len(files)} file(s), below the floor of "
-                    f"{args.minimum_files}. A check that compares nothing must fail, "
-                    f"not pass."
-                )
-            differences = compare(origin, nonce, files, args.workers)
-    except LiveSiteError as exc:
-        print(f"live integrity check could not run: {exc}", file=sys.stderr)
+    last_error: LiveSiteError | None = None
+    differences: list[str] = []
+    tag, compared, programs = "", 0, 0
+    # A bounded retry, for the same reason nearmiss's live check has one: one reset
+    # connection in a 3,940-request pass, or a sync still in flight, is not drift,
+    # and a check that cries wolf is one people learn to ignore. A real difference
+    # is still a difference on the last attempt.
+    for attempt in range(1, args.attempts + 1):
+        last_error = None
+        try:
+            differences, tag, compared, programs = one_pass(origin, args)
+        except LiveSiteError as exc:
+            last_error = exc
+            differences = []
+        if last_error is None and not differences:
+            break
+        if attempt < args.attempts:
+            reason = last_error if last_error else f"{len(differences)} difference(s)"
+            print(
+                f"attempt {attempt}/{args.attempts}: {reason}; waiting "
+                f"{args.retry_seconds:.0f}s in case a deploy is still settling",
+                file=sys.stderr,
+            )
+            time.sleep(args.retry_seconds)
+    origin.close()
+    if last_error is not None:
+        print(f"live integrity check could not run: {last_error}", file=sys.stderr)
         return EXIT_CANNOT_RUN
-    finally:
-        origin.close()
 
     if differences:
         print(
@@ -360,7 +408,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {difference}", file=sys.stderr)
         if len(differences) > 50:
             print(
-                f"  ... and {len(differences) - 50} more, of {len(files)} files compared",
+                f"  ... and {len(differences) - 50} more, of {compared} files compared",
                 file=sys.stderr,
             )
         print(
@@ -371,8 +419,8 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_DIFFERS
 
     print(
-        f"{args.url} serves exactly the dataset it names: {tag}, {len(files)} files, "
-        f"{sum(len(v) for v in files.values())} bytes, {programs} programs."
+        f"{args.url} serves exactly the dataset it names: {tag}, {compared} files, "
+        f"{programs} programs."
     )
     return 0
 
