@@ -1,9 +1,9 @@
 .DEFAULT_GOAL := help
 
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
-	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check \
+	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
-	ctdl-statements ctdl-package ask-serve ask ask-eval ask-eval-dry
+	ctdl-statements ctdl-package ask-serve ask ask-eval ask-eval-dry ci-artifact-check
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -25,7 +25,10 @@ lint:
 	uv run ruff check .
 
 typecheck:
-	uv run mypy src
+	# No path argument: a path on the command line overrides `files` in pyproject.toml,
+	# which is how `scripts/` and `tests/` stayed outside mypy's scope after the config
+	# was written to include them. The config is the single place the scope is declared.
+	uv run mypy
 
 test:
 	uv run pytest --cov=afterward --cov-report=term-missing
@@ -129,6 +132,18 @@ publish-preflight:
 	uv run python scripts/publish_preflight.py web/out
 
 SITE_URL ?= https://afterward.chelseakr.com
+
+# Is the data the site serves the dataset the site says it is serving?
+#
+# deploy-check asks whether the assets a page references resolve. This asks
+# whether the claims themselves are the ones this project published: it reads
+# the live coverage.json, takes the dataset release its snapshot date names,
+# checks the tarball against its published digest, and compares all 3,940
+# files byte for byte with what the origin serves. Needs `gh` authenticated
+# for the release download; pass --dataset to compare against one on disk.
+live-check:
+	uv run python scripts/verify_live_site.py --url "$(SITE_URL)"
+
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
 
@@ -327,9 +342,22 @@ web-dev:
 web-build:
 	cd web && npm run build
 
-# Typecheck, unit tests, static export, then an axe pass over the built pages.
+# Typecheck, lint, unit tests, contrast, static export, then two axe passes over it.
 web-verify:
 	cd web && npm run verify
+
+# The assertion CI makes about its own artifact: it has to be the fixture, and it has to
+# advertise the placeholder host.
+#
+# This was six lines of inline shell in .github/workflows/ci.yml, which made it the one check
+# in the pipeline a developer could not run -- a tree green on `make verify` and
+# `make web-verify` could still be rejected after a push, and the only way to find out was to
+# push. CI calls this target now, so the local gate and the CI gate read the same file.
+#
+# Correct only for a CI build. A workstation with a real dataset will and should fail it;
+# `make publish-preflight` is the same question asked of a build that is meant to ship.
+ci-artifact-check:
+	uv run python scripts/ci_artifact_check.py $(DATASET_DIR) web/out
 
 verify: provenance-check lint typecheck test security audit
 

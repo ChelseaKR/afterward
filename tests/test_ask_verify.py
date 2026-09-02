@@ -291,7 +291,7 @@ class TestPeriods:
         assert "period_unlabelled:annual" in reasons(c)
 
     def test_both_side_by_side_need_both_labels(self) -> None:
-        both = [
+        both: list[tuple[str, str, float]] = [
             ("P:b", "outcomes.median_earnings", 22953),
             ("O:53-3032", "median_annual_wage", 61548),
         ]

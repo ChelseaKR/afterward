@@ -9,10 +9,10 @@
     "dev": "next dev",
     "build": "next build && node scripts/size-report.mjs out --prune",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest run",
     "a11y": "node scripts/a11y-audit.mjs out",
-    "verify": "npm run typecheck && npm run test && npm run contrast && npm run build && npm run a11y && npm run a11y:rendered",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run contrast && npm run build && npm run a11y && npm run a11y:rendered",
     "contrast": "node scripts/contrast-audit.mjs",
     "size-report": "node scripts/size-report.mjs out",
     "a11y:browser": "node scripts/a11y-browser.mjs",
@@ -21,21 +21,21 @@
   },
   "dependencies": {
     "@cagovweb/design-system": "^0.2.0",
-    "next": "^16.3.1",
+    "next": "^16.3.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.0",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.4",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@types/react-dom": "^19.2.5",
+    "@vitest/coverage-v8": "^4.1.11",
     "axe-core": "^4.13.0",
-    "eslint": "^10.8.1",
-    "eslint-config-next": "^16.3.1",
+    "eslint": "^10.9.1",
+    "eslint-config-next": "^16.3.3",
     "jsdom": "^30.0.1",
     "playwright": "^1.62.1",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

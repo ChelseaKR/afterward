@@ -9,6 +9,10 @@ against a refusal.
 
 from __future__ import annotations
 
+# The clock `dol_etp` pauses on. `dol_etp` does `import time`, so this is the same module
+# object it holds; patching it here patches what it calls, and reads a name this module
+# exports rather than one `dol_etp` happens to have imported.
+import time
 from datetime import UTC, datetime, timedelta
 from email.utils import format_datetime
 
@@ -302,7 +306,7 @@ class TestDolClient:
     def test_inter_page_throttle_is_unchanged(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """The pause between pages is a courtesy to a public service. It stays."""
         clock = Clock()
-        monkeypatch.setattr(dol_etp.time, "sleep", clock)
+        monkeypatch.setattr(time, "sleep", clock)
         client, handler = replay(
             search_response(hit("u1", 1), hit("u2", 2)),
             search_response(hit("u3", 3)),
@@ -319,7 +323,7 @@ class TestDolClient:
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """A generator that pulls one page at a time is the whole rate limit."""
-        monkeypatch.setattr(dol_etp.time, "sleep", Clock())
+        monkeypatch.setattr(time, "sleep", Clock())
         client, handler = replay(
             search_response(hit("u1", 1)),
             search_response(hit("u2", 2)),
@@ -358,7 +362,7 @@ class TestEddClient:
 
     def test_ckan_lookup_retries_a_transient_failure(self, monkeypatch: pytest.MonkeyPatch) -> None:
         clock = Clock()
-        monkeypatch.setattr(dol_etp.time, "sleep", clock)
+        monkeypatch.setattr(time, "sleep", clock)
         client, handler = replay(
             httpx.Response(502),
             httpx.Response(200, json=CKAN_PACKAGE),

@@ -20,44 +20,78 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from typing import TypedDict, cast
+
+
+class Counts(TypedDict):
+    """What a dataset has to say about itself for this gate to have an opinion.
+
+    A ``dict[str, int | str | None]`` typed this before 2026-08-28, which made every
+    comparison below an operation between two unions and hid the fact that the counts are
+    integers and the snapshot date is not. mypy had never read this file (`files = ["src"]`),
+    so nothing said so.
+    """
+
+    programs: int
+    occupations: int
+    snapshot_date: str | None
+    occupations_with_spanish: int
+    occupations_with_wage_spread: int
+
 
 MANIFEST = Path("data-manifest.json")
 DATA = Path("web/public/data")
 
 
-def counts() -> dict[str, int | str | None]:
+def counts() -> Counts:
     programs = json.loads((DATA / "programs.json").read_text())
     occupations = json.loads((DATA / "occupations.json").read_text())
     occ = occupations["occupations"]
-    return {
-        "programs": len(programs["programs"]),
-        "occupations": len(occ),
-        "snapshot_date": programs.get("snapshot_date"),
-        "occupations_with_spanish": sum(1 for r in occ.values() if r.get("spanish")),
-        "occupations_with_wage_spread": sum(1 for r in occ.values() if r.get("wage_spread")),
-    }
+    return Counts(
+        programs=len(programs["programs"]),
+        occupations=len(occ),
+        snapshot_date=programs.get("snapshot_date"),
+        occupations_with_spanish=sum(1 for r in occ.values() if r.get("spanish")),
+        occupations_with_wage_spread=sum(1 for r in occ.values() if r.get("wage_spread")),
+    )
 
 
-def problems(
-    actual: dict[str, int | str | None], expected: dict[str, int | str | None]
-) -> list[str]:
+def problems(actual: Counts, expected: Counts) -> list[str]:
     """Every way ``actual`` fails to look like the dataset ``expected`` describes.
 
     Split out of :func:`main` to keep that function under the complexity limit, and
     because the comparison is the part worth reading on its own: it is what decides
     whether a backup is allowed to overwrite the last good copy.
+
+    The pairs are written out rather than looped over key names so each comparison is between
+    two integers the type checker can see, instead of between two members of a union it
+    cannot.
     """
     found: list[str] = []
 
     # A shortfall is corruption. A surplus is a refresh, which is fine and expected, so only
     # the downward direction fails: a real refresh should never lose most of the dataset.
-    for key in ("programs", "occupations"):
-        if actual[key] < expected[key] * 0.9:
-            found.append(f"{key}: {actual[key]}, manifest says {expected[key]}")
+    for key, got, want in (
+        ("programs", actual["programs"], expected["programs"]),
+        ("occupations", actual["occupations"], expected["occupations"]),
+    ):
+        if got < want * 0.9:
+            found.append(f"{key}: {got}, manifest says {want}")
 
-    for key in ("occupations_with_spanish", "occupations_with_wage_spread"):
-        if actual[key] == 0 and expected[key] > 0:
-            found.append(f"{key}: 0, manifest says {expected[key]} — enrichment lost")
+    for key, got, want in (
+        (
+            "occupations_with_spanish",
+            actual["occupations_with_spanish"],
+            expected["occupations_with_spanish"],
+        ),
+        (
+            "occupations_with_wage_spread",
+            actual["occupations_with_wage_spread"],
+            expected["occupations_with_wage_spread"],
+        ),
+    ):
+        if got == 0 and want > 0:
+            found.append(f"{key}: 0, manifest says {want} — enrichment lost")
 
     return found
 
@@ -86,7 +120,7 @@ def main(argv: list[str]) -> int:
         )
         return 1
 
-    expected = json.loads(MANIFEST.read_text())
+    expected = cast(Counts, json.loads(MANIFEST.read_text()))
     found = problems(actual, expected)
 
     if found:

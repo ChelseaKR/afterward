@@ -94,7 +94,27 @@ max-complexity = 10
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src"]
+# All three Python surfaces, not just the package.
+#
+# This read `files = ["src"]` until 2026-08-28, so `scripts/` -- the eight gate scripts
+# that decide whether a dataset may be backed up, packaged or published -- and `tests/` -- 1,240
+# cases -- were never type-checked at all, while the README's Code Quality row said
+# "mypy --strict" without saying which third of the repository it meant. A gate script is
+# exactly the code that must not be wrong, and a test that does not type-check can assert
+# something other than what it appears to.
+files = ["src", "scripts", "tests"]
+
+# `scripts/` is strict with no relaxation: it is the gates.
+
+[[tool.mypy.overrides]]
+# Test fixtures are ad-hoc dicts and lists built to stand in for feed payloads. Requiring a
+# generic parameter on every one of them buys 48 annotations and no safety -- the errors that
+# matter in a test are a wrong argument type, an attribute that does not exist, and a call to
+# something untyped, and those all stay on. Nothing else is relaxed here, and `src/` and
+# `scripts/` are not relaxed at all.
+module = "tests.*"
+disallow_any_generics = false
+warn_return_any = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -114,9 +134,9 @@ addopts = "-q --strict-markers --strict-config --import-mode=importlib"
 branch = true
 
 [tool.coverage.report]
-# Floor, not target: measured 92.12% branch on 2026-08-21 (92.57% statement, for comparison;
-# 91.62%/92.05% on 2026-08-15, when branch mode was first turned on -- the pipeline gained
-# code and tests between the two measurements). Applies when tests run with coverage
+# Floor, not target: measured 94.75% branch on 2026-08-28 (92.12% on 2026-08-21, and
+# 91.62% on 2026-08-15 when branch mode was first turned on -- the pipeline gained code and
+# tests between each pair of measurements). Applies when tests run with coverage
 # (`make test`); raising it is welcome, lowering it needs a reason. 85 is CQ-08's floor for
 # an application.
 fail_under = 85

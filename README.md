@@ -8,8 +8,10 @@ programs actually lead.**
 > Not affiliated with the State of California. It uses the state's open-source design
 > system, so a permanent notice on every page says so.
 
-3,266 California training programs, joined to the state's own ten-year projection for the
-occupation each one leads to. No account, no tracking, English and Spanish.
+3,266 California training programs, 3,250 of them joined to the state's own ten-year
+projection for the occupation they lead to. California publishes no projection for the
+occupation the other 16 are tagged with, and the site says that rather than showing a gap
+that reads like a zero. No account, no tracking, English and Spanish.
 
 **Status:** Beta. Version `0.1.0`, first signed tag not yet cut. The public site, the bilingual
 interface, and the data pipeline are live and covered by an automated test suite. Datasets are
@@ -31,9 +33,12 @@ Afterward does exactly that, from public data, with no account and no tracking.
 ## What it does today
 
 The pipeline pulls every California training program reported under WIOA — provider, cost,
-length, format, and the federally-reported outcome measures — and joins each one to
-California's own ten-year projection for the occupation it feeds: median wage, projected
-openings, expected entry-level education, statewide and by region.
+length, format, and the federally-reported outcome measures — and joins it to California's
+own ten-year projection for the occupation it feeds: median wage, projected openings,
+expected entry-level education, statewide and by region. 3,250 of the 3,266 get one. The
+state publishes no projection for the occupation the other 16 are tagged with, and no
+nearby occupation is substituted, because a similar-sounding job at a different wage would
+look exactly like a correct answer.
 
 ```bash
 make install       # Python pipeline
@@ -51,7 +56,7 @@ occupation detail, and provider pages, in English and Spanish. It needs no serve
 runtime.
 
 ```bash
-make web-verify    # typecheck, unit tests, contrast audit, static export, axe pass
+make web-verify    # typecheck, lint, unit tests, contrast audit, static export, axe passes
 ```
 
 ### Working without the network
@@ -327,7 +332,7 @@ silently.
 | Standard | State |
 |----------|-------|
 | Responsible-Tech Framework | Applies (honest record: [docs/RESPONSIBLE-TECH-AUDITS.md](docs/RESPONSIBLE-TECH-AUDITS.md)) |
-| Code Quality | Applies (ruff, mypy --strict, pytest with an 85% branch-coverage floor at 92.12% measured, uv.lock, pre-commit) |
+| Code Quality | Applies (ruff and ESLint; `mypy --strict` over `src`, `scripts` and `tests`, not `src` alone; pytest with an 85% branch-coverage floor at 94.75% measured 2026-08-28; `tsc --noEmit` under `strict` and `noUncheckedIndexedAccess` on the front end; uv.lock, pre-commit). **Not linted:** `.ts`/`.tsx`, because `typescript-eslint` does not support TypeScript 7.0 (typescript-eslint#10940); stated in `web/eslint.config.mjs` rather than implied |
 | Security & Supply-Chain | Applies (SHA-pinned actions, gitleaks, bandit, pip-audit, Dependabot, OIDC-only deploy with no static keys) |
 | CI/CD | Applies (`make verify` and `make web-verify` run identically in CI; deploys are dispatch-only and refuse to run without CI green on the exact commit) |
 | Observability | Applies (static-site tier: deploy-time guards, live-site smoke tests, quarterly upstream freshness checks; declared in [docs/ROADMAP.md](docs/ROADMAP.md)) |

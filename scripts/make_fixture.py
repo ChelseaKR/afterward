@@ -61,7 +61,9 @@ def pick(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if count == 0 and not any(predicate(program) for program in chosen.values()):
             print(f"  warning: no program matched {label!r}")
 
-    outcomes = lambda p: p["outcomes"]  # noqa: E731
+    def outcomes(program: dict[str, Any]) -> Any:
+        """The record's outcome block, named so the predicates below read as English."""
+        return program["outcomes"]
 
     take("full outcomes", lambda p: outcomes(p)["reported"] and p["occupations"])
     take("nothing reported", lambda p: not outcomes(p)["reported"])

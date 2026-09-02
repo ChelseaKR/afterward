@@ -248,7 +248,7 @@ class TestProvenance:
         assert evals.git_commit(worktree) == "def456"
 
     def test_documents_are_judged(self) -> None:
-        good = {
+        good: dict[str, Any] = {
             "status": "run",
             "provenance": {
                 "provider": "bedrock",

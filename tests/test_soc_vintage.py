@@ -13,6 +13,7 @@ import pytest
 
 from afterward.sources.soc_vintage import (
     AGGREGATIONS,
+    MappingKind,
     SocAggregation,
     aggregation_for,
     resolve_published_soc,
@@ -126,7 +127,7 @@ class TestAggregationFor:
             ("25-9049", "25-9045", "bls_hybrid_occupation"),
         ],
     )
-    def test_documented_mappings(self, code: str, target: str, kind: str) -> None:
+    def test_documented_mappings(self, code: str, target: str, kind: MappingKind) -> None:
         aggregation = aggregation_for(code)
         assert aggregation == SocAggregation(source=code, target=target, kind=kind)
 
