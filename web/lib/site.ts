@@ -1,4 +1,6 @@
-import type { Lang } from "./i18n";
+import type { Metadata } from "next";
+
+import { dict, type Lang } from "./i18n";
 
 /**
  * Where this site lives, and what it hands a link unfurler.
@@ -61,4 +63,69 @@ export function rootCard(alt: string) {
 /** The card for one language's pages. */
 export function langCard(lang: Lang, alt: string) {
   return { url: `${SITE_URL}/og/afterward-${lang}.png`, alt, ...CARD };
+}
+
+/**
+ * Everything a shared link to one page under `/[lang]/` needs: that page's own title and
+ * description, over the site's card image, in the reader's language.
+ *
+ * A page here is a specific claim -- one program at one provider in one city, one occupation
+ * and what California pays for it -- and every one of them was unfurling as the site. The
+ * detail routes set a rich `<title>` and a rich `description` and stopped there, on the
+ * reasonable-sounding assumption that Open Graph would follow the title it sits beside. It
+ * does not: `og:title` and `title` are unrelated fields to Next, so a page that sets only
+ * `title` inherits `app/[lang]/layout.tsx`'s `openGraph` untouched. All 6,532 program pages,
+ * 1,162 provider pages and 1,340 occupation pages therefore shared one card reading
+ * "Afterward — California training programs, and what happened to the people who took them",
+ * which is true of the site and says nothing about the page someone actually sent you. For a
+ * site whose entire value is its individual records, that is the one place a generic answer
+ * costs the most.
+ *
+ * ---- Why this takes the whole object rather than the two fields that were missing ----
+ *
+ * Next does not deep-merge `openGraph`. `resolveMetadata` assigns
+ * `newResolvedMetadata.openGraph = resolveOpenGraph(metadata.openGraph, ...)` per segment, so
+ * a child that declares `openGraph` *replaces* its parent's rather than adding to it. Writing
+ * the obvious two lines -- `openGraph: { title, description }` -- on a program page would set
+ * the title correctly and silently drop `og:image`, `og:site_name`, `og:locale` and `og:type`,
+ * trading a card with the wrong words for no card at all. The fix for a missing field is
+ * therefore the complete object, and the complete object is written once, here.
+ *
+ * `twitter` is set for the same reason and a sharper one. Next fills `twitter:title` and
+ * `twitter:description` from `openGraph` only when the resolved `twitter` does not already
+ * have them -- and after the layout it always does, so a page setting `openGraph` alone would
+ * publish a specific `og:title` next to a `twitter:title` still reading the site's name.
+ * `twitter.card` has no fallback at all: omit it and the layout's `summary_large_image`
+ * disappears with the rest of the replaced object and the card silently shrinks to a
+ * thumbnail. Nothing about that is visible in review; it is visible only in the built `<head>`.
+ *
+ * `images` is deliberately the language card every other page uses, not a card per program.
+ * The picture is a claim about which site this is and it is equally true on all of them --
+ * the distinction `app/[lang]/layout.tsx` draws between that and a canonical URL. One PNG per
+ * program -- 3,266 of them -- would be a build cost and a bandwidth cost for a picture nobody
+ * is choosing between; the words are the part that differs per page, and the words are what
+ * this fixes.
+ *
+ * No `openGraph.url` and no `alternates`, for the reason recorded at length in that layout.
+ *
+ * Callers pass the same `title` and `description` they were already returning, so the card
+ * and the page cannot drift: there is one expression per page, read three times.
+ */
+export function shareMetadata(lang: Lang, title: string, description: string): Metadata {
+  const t = dict(lang);
+  const images = [langCard(lang, t.ogImageAlt)];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      type: "website",
+      siteName: t.siteName,
+      locale: lang === "es" ? "es_US" : "en_US",
+      title,
+      description,
+      images,
+    },
+    twitter: { card: "summary_large_image", title, description, images },
+  };
 }

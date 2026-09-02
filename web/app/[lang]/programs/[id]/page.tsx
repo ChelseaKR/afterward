@@ -43,6 +43,7 @@ import type {
 } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
+import { shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allProgramIds().map((id) => ({ lang, id })));
@@ -78,6 +79,12 @@ function placeOf(program: Program): string {
  * description adds beyond the title is the one thing worth knowing before clicking: whether
  * this program reported anything about the people who took it. Roughly a third did not, and
  * saying so in the result saves a click and cannot be read as a poor result.
+ *
+ * Both strings are handed to `shareMetadata`, so they are also what a shared link unfurls as.
+ * They were previously the search result only: `og:title` is not derived from `title`, so
+ * every one of these pages posted into Slack, iMessage or LinkedIn as the site rather than as
+ * the program -- the same generic card 6,532 times, on the pages that are the entire reason
+ * this site exists. See `lib/site.ts` for why the fix is a whole object and not two fields.
  */
 export async function generateMetadata({
   params,
@@ -94,12 +101,11 @@ export async function generateMetadata({
   const place = placeOf(program);
   const name = program.program_name ?? place;
 
-  return {
-    title: t.metaProgramTitle(name, place),
-    description: program.outcomes.reported
-      ? t.metaProgramReported(place)
-      : t.metaProgramUnreported(place),
-  };
+  return shareMetadata(
+    lang,
+    t.metaProgramTitle(name, place),
+    program.outcomes.reported ? t.metaProgramReported(place) : t.metaProgramUnreported(place),
+  );
 }
 
 /**

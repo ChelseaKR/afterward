@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
-import { langCard } from "@/lib/site";
+import { shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
@@ -37,6 +37,13 @@ export function generateStaticParams() {
  * The card is a claim about which site this is, and it is equally true on all of them: a
  * shared program page gets the site's card, which is the right answer and was previously no
  * card at all. Per language, for the same reason the description is.
+ *
+ * The tags themselves are now built by `shareMetadata` in `lib/site.ts`, which every page
+ * under this layout also calls with its own title and description. What was inherited from
+ * here is the *shape* of the card rather than its words -- and only because Next replaces a
+ * child's `openGraph` wholesale rather than merging it, so a page cannot add the two fields
+ * it was missing without restating the six it was not. One function, so restating them is
+ * not something anyone has to remember to do correctly nine times.
  */
 export async function generateMetadata({
   params,
@@ -47,27 +54,16 @@ export async function generateMetadata({
   if (!isLang(lang)) return {};
 
   const t = dict(lang);
-  const title = `${t.siteName} — ${t.tagline}`;
-  const description = `${t.notAffiliated} ${t.siteSummary}`;
-  const images = [langCard(lang, t.ogImageAlt)];
 
-  return {
-    title,
-    description,
-    openGraph: {
-      type: "website",
-      siteName: t.siteName,
-      locale: lang === "es" ? "es_US" : "en_US",
-      title,
-      description,
-      images,
-    },
-    // `summary_large_image` now that there is one. This read `summary` because the large
-    // variant renders as an empty banner above the text when no image is supplied; with a
-    // card to show, the reason for the small variant is gone and the large one is what the
-    // 1200x630 card is cut for.
-    twitter: { card: "summary_large_image", title, description, images },
-  };
+  // `summary_large_image`, chosen inside `shareMetadata`. This read `summary` because the
+  // large variant renders as an empty banner above the text when no image is supplied; with
+  // a card to show, the reason for the small variant is gone and the large one is what the
+  // 1200x630 card is cut for.
+  return shareMetadata(
+    lang,
+    `${t.siteName} — ${t.tagline}`,
+    `${t.notAffiliated} ${t.siteSummary}`,
+  );
 }
 
 /**

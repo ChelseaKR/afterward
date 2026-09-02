@@ -22,6 +22,7 @@ import {
   feedTextLang,
   isLang,
 } from "@/lib/i18n";
+import { shareMetadata } from "@/lib/site";
 import type { Program } from "@/lib/types";
 
 export function generateStaticParams() {
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return { title: `${t.coverageTitle} | ${t.siteName}`, description: t.coverageLede };
+  return shareMetadata(lang, `${t.coverageTitle} | ${t.siteName}`, t.coverageLede);
 }
 
 /** Where a reader can check the sources, and where someone can say this got something wrong. */

@@ -9,6 +9,7 @@ import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
 import { findProvider, groupByProvider } from "@/lib/providers";
 import { isShrinking } from "@/lib/search";
+import { shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   const providers = groupByProvider(getSearchIndex().programs);
@@ -28,6 +29,10 @@ export function generateStaticParams() {
  *
  * A provider in more than one city gets a count rather than a first-city-wins guess, which
  * would name Fresno on a page listing programs in Fresno, Madera and Visalia.
+ *
+ * The same pair is what a shared link now unfurls as. Someone sending a colleague the page
+ * for the college they were about to enrol in was, until this, sending them a card with the
+ * site's name on it and the school's name nowhere.
  */
 export async function generateMetadata({
   params,
@@ -48,10 +53,11 @@ export async function generateMetadata({
   // provider publishes nothing at all, which is a fact and is the point of showing it.
   const reporting = provider.programs.filter((program) => program.r).length;
 
-  return {
-    title: t.metaProviderTitle(tidyName(provider.name), provider.programs.length, place),
-    description: t.metaProviderDescription(reporting, provider.programs.length),
-  };
+  return shareMetadata(
+    lang,
+    t.metaProviderTitle(tidyName(provider.name), provider.programs.length, place),
+    t.metaProviderDescription(reporting, provider.programs.length),
+  );
 }
 
 export default async function ProviderPage({

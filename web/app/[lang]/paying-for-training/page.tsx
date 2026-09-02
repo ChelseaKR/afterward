@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Citations, Questions, stepCopy } from "@/components/funding";
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
+import { shareMetadata } from "@/lib/site";
 
 /*
  * The funding guidance, once.
@@ -28,7 +29,7 @@ export async function generateMetadata({
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return { title: t.fundingGuideTitle, description: t.fundingGuideIntro };
+  return shareMetadata(lang, t.fundingGuideTitle, t.fundingGuideIntro);
 }
 
 export default async function PayingForTraining({
