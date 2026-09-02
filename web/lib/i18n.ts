@@ -516,6 +516,12 @@ const en = {
   siteSummary:
     "Free to use, with no account. Every figure comes from public federal and state records, and a program that reported nothing is shown as having reported nothing.",
 
+  // Alternative text for the share card in `lib/site.ts`. It describes the picture, not the
+  // site — a reader who cannot see the card is already being told what the site is by the
+  // og:description beside it, and repeating that there would say nothing about the image.
+  ogImageAlt:
+    "The Afterward wordmark over the site's tagline, above the notice that this is not a California state website.",
+
   // ---- What a search engine shows ----
   //
   // Titles and descriptions for the roughly nine thousand pages a search engine can reach.
@@ -1690,6 +1696,9 @@ const es: Dictionary = {
 
   siteSummary:
     "De uso gratuito y sin cuenta. Cada cifra viene de registros públicos federales y estatales, y un programa que no reportó nada aparece justamente así: sin nada reportado.",
+
+  ogImageAlt:
+    "El logotipo de Afterward sobre el lema del sitio, encima del aviso de que este no es un sitio del estado de California.",
 
   // ---- What a search engine shows ----
   metaProgramTitle: (program: string, place: string) =>

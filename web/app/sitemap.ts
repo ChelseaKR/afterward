@@ -6,15 +6,7 @@ export const dynamic = "force-static";
 import { allOccupationCodes, allProgramIds, getCoverage, getSearchIndex } from "@/lib/data";
 import { LANGUAGES } from "@/lib/i18n";
 import { groupByProvider } from "@/lib/providers";
-
-/**
- * Base URL for absolute sitemap entries.
- *
- * Set NEXT_PUBLIC_SITE_URL at build time. The placeholder is obviously a placeholder rather
- * than a plausible-looking domain, so a sitemap built without it cannot quietly ship URLs
- * pointing at somewhere real that this project does not control.
- */
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://example.invalid";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Every page, in both languages, cross-linked with hreflang alternates.

@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 
+import { SITE_URL } from "@/lib/site";
+
 // Required for `output: "export"`: these are files on disk, not routes.
 export const dynamic = "force-static";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "https://example.invalid";
 
 /**
  * Everything here is public data and every page is meant to be found. Nothing is disallowed,

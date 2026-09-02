@@ -4,12 +4,11 @@ import { notFound } from "next/navigation";
 
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
+import { langCard } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
 }
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
 
 /**
  * Metadata for the preview card a shared link produces.
@@ -31,6 +30,13 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
  * whose whole purpose is being findable when someone searches a provider's name, that is the
  * most expensive line of code it could contain. A per-URL canonical belongs in each page's
  * own metadata or nowhere; absent, engines self-canonicalise, which is correct here.
+ *
+ * `openGraph.images` IS declared here, and the distinction is the point of the paragraph
+ * above rather than an exception to it. What made a canonical URL unsafe to inherit is that
+ * it is a claim about *which page this is*, so it is wrong on every page that inherits it.
+ * The card is a claim about which site this is, and it is equally true on all of them: a
+ * shared program page gets the site's card, which is the right answer and was previously no
+ * card at all. Per language, for the same reason the description is.
  */
 export async function generateMetadata({
   params,
@@ -43,6 +49,7 @@ export async function generateMetadata({
   const t = dict(lang);
   const title = `${t.siteName} — ${t.tagline}`;
   const description = `${t.notAffiliated} ${t.siteSummary}`;
+  const images = [langCard(lang, t.ogImageAlt)];
 
   return {
     title,
@@ -53,10 +60,13 @@ export async function generateMetadata({
       locale: lang === "es" ? "es_US" : "en_US",
       title,
       description,
+      images,
     },
-    // Summary rather than a large image card: there is no image, and the large variant
-    // renders as an empty banner above the text when none is supplied.
-    twitter: { card: "summary", title, description },
+    // `summary_large_image` now that there is one. This read `summary` because the large
+    // variant renders as an empty banner above the text when no image is supplied; with a
+    // card to show, the reason for the small variant is gone and the large one is what the
+    // 1200x630 card is cut for.
+    twitter: { card: "summary_large_image", title, description, images },
   };
 }
 

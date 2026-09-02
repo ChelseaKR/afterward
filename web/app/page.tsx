@@ -1,11 +1,54 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
+import { ROOT_DESCRIPTION, ROOT_TITLE, SITE_URL, rootCard } from "@/lib/site";
 
 export const dynamic = "force-static";
 
-export const metadata = {
-  title: "Afterward — California training programs and their outcomes",
+/** Both languages, because this URL is in both. */
+const CARD_ALT =
+  "The Afterward wordmark over the site's tagline in English and Spanish, above the notice " +
+  "that this is not a California state website.";
+
+/**
+ * Share metadata on the root, which is the URL most likely to be pasted and was the one page
+ * in the site that had none.
+ *
+ * This page redirects, and that is exactly why the tags have to be here. A link unfurler --
+ * Slack, LinkedIn, X, Mastodon, iMessage -- fetches the URL it was given, reads that
+ * document's `<head>`, and stops. It runs no JavaScript and does not follow a
+ * `<meta http-equiv="refresh">`, so everything the language chooser knows about itself has
+ * to be in this head or it is not read at all. Before this, sharing the bare domain produced
+ * a bare title and nothing else: no description, no image, no card. The redirect below is
+ * untouched -- a browser still lands on `/en/` -- and only the crawler's view changes.
+ *
+ * `openGraph.url` is safe here in a way `app/[lang]/layout.tsx` explains it is not there:
+ * this is a page, not a layout, so nothing inherits it. It names the canonical root, so a
+ * share of `camino.chelseakr.com` -- which 301s here -- and a share of a URL with tracking
+ * parameters both resolve to one card rather than several.
+ *
+ * `summary_large_image` rather than `summary`, and unlike the language pages this one has
+ * always had the room for it: the card is the bilingual one, because this URL belongs to no
+ * language.
+ */
+export const metadata: Metadata = {
+  title: ROOT_TITLE,
+  description: ROOT_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "Afterward",
+    title: ROOT_TITLE,
+    description: ROOT_DESCRIPTION,
+    url: `${SITE_URL}/`,
+    images: [rootCard(CARD_ALT)],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: ROOT_TITLE,
+    description: ROOT_DESCRIPTION,
+    images: [rootCard(CARD_ALT)],
+  },
 };
 
 /**
