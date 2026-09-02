@@ -5,6 +5,7 @@ import { Measure } from "@/components/Measure";
 import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
 import { count } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
+import { shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return { title: `${t.aboutTitle} | ${t.siteName}`, description: t.aboutLede };
+  return shareMetadata(lang, `${t.aboutTitle} | ${t.siteName}`, t.aboutLede);
 }
 
 /** Where a reader can read the sources for themselves, and where a provider can object. */

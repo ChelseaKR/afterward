@@ -14,6 +14,7 @@ import { count, tidyName } from "@/lib/format";
 import { TableFilter } from "@/components/TableFilter";
 import { LANGUAGES, type Lang, dict, feedTextLang, isLang } from "@/lib/i18n";
 import { groupByProvider } from "@/lib/providers";
+import { shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
@@ -23,7 +24,11 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return { title: `${t.browseProvidersTitle} | ${t.siteName}`, description: t.browseProvidersIntro };
+  return shareMetadata(
+    lang,
+    `${t.browseProvidersTitle} | ${t.siteName}`,
+    t.browseProvidersIntro,
+  );
 }
 
 /**

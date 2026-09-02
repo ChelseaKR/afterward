@@ -20,6 +20,7 @@ import {
 } from "@/lib/data";
 import { count, money, signedPercent } from "@/lib/format";
 import { LANGUAGES, type Lang, dict, isLang } from "@/lib/i18n";
+import { shareMetadata } from "@/lib/site";
 import { translateTerm } from "@/lib/vocabulary";
 
 type Dictionary = ReturnType<typeof dict>;
@@ -32,7 +33,11 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return { title: `${t.browseOccupationsTitle} | ${t.siteName}`, description: t.browseOccupationsIntro };
+  return shareMetadata(
+    lang,
+    `${t.browseOccupationsTitle} | ${t.siteName}`,
+    t.browseOccupationsIntro,
+  );
 }
 
 /** Section heading and standfirst for each outlook band. */
