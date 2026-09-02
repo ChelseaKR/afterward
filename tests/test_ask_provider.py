@@ -111,7 +111,11 @@ class TestFailures:
             _call(provider)
 
     def test_http_and_connection_errors(self) -> None:
-        import httpx
+        # httpx2, not httpx: from 1.0 the SDK is built on httpx2 (the maintained fork of
+        # httpx, by its original author, published by Pydantic as github.com/pydantic/httpx2)
+        # and it arrives with `anthropic`. Its exception types carry httpx2 objects, so a
+        # test that hands them httpx ones is testing a shape the SDK never produces.
+        import httpx2 as httpx
 
         status = anthropic.APIStatusError(
             "bad",
