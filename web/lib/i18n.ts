@@ -183,9 +183,10 @@ const en = {
     "gap in the record.",
   /**
    * The length cap named as something a sentence can remove, for the empty state's list of
-   * filters worth dropping. Belongs with the `nameQuery`/`nameCost` family that `SearchApp`
-   * still holds in its local `COPY` block under a standing TODO to move here; new strings go
-   * to the documented home rather than growing the block that is on its way out.
+   * filters worth dropping. One of the `filterName*` family, all of which `SearchApp` now
+   * reads from here; a new filter's name belongs in this catalog rather than in the component,
+   * because only a key in the typed dictionary makes a missing Spanish translation a compile
+   * error instead of an English string on a Spanish page.
    */
   filterNameLength: (label: string): string => `the time limit “${label}”`,
   filterNameQuery: (query: string) => `your search for “${query}”`,
@@ -1845,14 +1846,6 @@ const es: Dictionary = {
   aboutComparisonsHeading: "Qué afirman las comparaciones y qué no",
   aboutComparisonsBody:
     "Una tasa sola no se puede interpretar: nadie sabe si 45% empleado es bueno. Por eso, cuando un programa reporta una medida, se muestra frente al programa mediano de California que reportó esa misma medida. Los programas que no reportaron nada no entran en esa mediana, así que es una comparación entre quienes sí publican, no una comparación contra el estado entero.",
-  /*
-   * Corrected here, not appended to. This key still described «Mejor que lo típico» as a live
-   * judgement long after the site withdrew it, which is why `about/page.tsx` carries a local
-   * Spanish override and a TODO to delete it "once the Spanish key is corrected in i18n.ts".
-   * Adding a sentence about the completion rule to a paragraph that still advertised the
-   * withdrawn verdict would have left the key wrong in a new way, so it is replaced whole. The
-   * override still wins on the rendered page until that constant goes.
-   */
   aboutComparisonsSecond:
     "Este sitio llegó a etiquetar programas como «mejores» o «peores» que lo típico frente a esa mediana. Ya no lo hace. La mediana juntaba a todos los programas que reportan, sin importar su duración, y un certificado de cuatro semanas y una carrera de dos años no son comparables en finalización: medidos contra programas de su misma duración, ese rótulo estaba sencillamente invertido en alrededor de uno de cada diez programas. Las cifras y la mediana se siguen mostrando; la conclusión la saca usted, porque la comparación no podía sostenerla. Cuando dos programas se ponen lado a lado, la celda marcada es la cifra reportada más fuerte de esa fila; una fila donde menos de dos programas reportaron algo se queda sin marcar, porque ser el único que presentó un número no es lo mismo que ser el mejor. La finalización solo se marca cuando los programas duran más o menos lo mismo, porque ahí la misma distorsión aparece de dos en dos: la mediana de quienes terminaron baja del 97% en los de cuatro semanas o menos al 78% en los de más de un año, así que marcar entre duraciones distintas marca al curso más corto.",
   aboutComparisonsThird:
