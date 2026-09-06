@@ -22,11 +22,40 @@ import { uncovered } from "./routes.mjs";
 
 const POSITIONAL = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 const OUT = POSITIONAL[1] ?? POSITIONAL[0] ?? "out";
-const SINGLE = process.env.A11Y_PAGE;
+/**
+ * Child mode: audit the one page named in `A11Y_PAGE` and print its findings as JSON.
+ *
+ * Selected by the flag, never by the environment variable alone, and that distinction is the
+ * whole of this. Until this flag existed the branch was chosen by `if (process.env.A11Y_PAGE)`
+ * and the parent handed its entire environment down to each child, so the variable was a
+ * normal thing to have exported: audit one page to look at it, forget to unset it, and every
+ * later `npm run a11y` -- a step of `npm run verify` -- printed one page's findings as a JSON
+ * blob and exited 0. Not "no violations": no message at all, and the missing-page check, the
+ * uncovered-route check and all 22 audits skipped before they ran, because `if (SINGLE)`
+ * comes before every one of them.
+ *
+ * An environment variable that silently turns a gate into a printer is the same shape as a
+ * sample that filters itself down to whatever exists, which this file already refuses two
+ * checks below. So: the flag decides, the variable only carries the path, and a variable set
+ * without the flag is announced rather than obeyed.
+ */
+const CHILD = process.argv.includes("--child");
+const SINGLE = CHILD ? process.env.A11Y_PAGE : undefined;
 /** An app tree to read routes from instead of this repository's, so the gate can be tested. */
 const APP_DIR_OVERRIDE = process.env.A11Y_APP_DIR;
 /** Resolve the sample, check it is all there, and print it without auditing anything. */
 const LIST_ONLY = process.argv.includes("--list");
+
+if (CHILD && !SINGLE) {
+  console.error("a11y-audit: --child needs A11Y_PAGE to name the page to audit");
+  process.exit(1);
+}
+if (!CHILD && process.env.A11Y_PAGE) {
+  console.error(
+    `a11y-audit: ignoring A11Y_PAGE=${process.env.A11Y_PAGE} — auditing the whole sample.` +
+      "\n            To audit one page, pass --child as well.",
+  );
+}
 
 async function auditOnePage(file) {
   const { JSDOM } = await import("jsdom");
@@ -233,7 +262,7 @@ if (SINGLE) {
   let contrastPending = 0;
 
   for (const [label, file] of targets) {
-    const child = spawnSync(process.execPath, [new URL(import.meta.url).pathname], {
+    const child = spawnSync(process.execPath, [new URL(import.meta.url).pathname, "--child"], {
       env: { ...process.env, A11Y_PAGE: file },
       encoding: "utf-8",
     });

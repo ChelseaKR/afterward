@@ -48,9 +48,25 @@ def _program(**over: Any) -> dict[str, Any]:
     return {**base, **over}
 
 
-def _dataset(tmp_path: Path, *programs: dict[str, Any]) -> Path:
+def _dataset(tmp_path: Path, *programs: dict[str, Any], claims: int | None = None) -> Path:
+    """A dataset directory in the shape both gate paths hand this script.
+
+    ``coverage.json`` is written beside ``programs.json`` because that is what a real dataset
+    directory holds, on the operator's disk and inside the release tarball alike, and the
+    count in it is what this gate now checks the programs list against. ``claims`` overrides
+    it, which is the only way to write the shape being tested: the two files disagreeing.
+    """
     (tmp_path / "programs.json").write_text(
         json.dumps({"snapshot_date": "2026-08-07", "programs": list(programs)}), encoding="utf-8"
+    )
+    (tmp_path / "coverage.json").write_text(
+        json.dumps(
+            {
+                "snapshot_date": "2026-08-07",
+                "total_programs": len(programs) if claims is None else claims,
+            }
+        ),
+        encoding="utf-8",
     )
     return tmp_path
 
@@ -109,6 +125,57 @@ class TestTheGateItself:
 
     def test_a_current_dataset_exits_zero(self, tmp_path: Path) -> None:
         assert dataset_shape_check.main([str(_dataset(tmp_path, _program()))]) == 0
+
+
+class TestAGateThatMeasuredNothingHasNotPassed:
+    """Every question this script asks is a count, and every count over nothing is zero.
+
+    So an empty programs list used to clear all of them: the gate printed "0 programs, all
+    written by a pipeline that carries every fix this check knows about" and exited 0, which
+    differs from a real pass by one number nobody reads. That is the same shape as the
+    object-count check `scripts/deploy_check.py` was written to replace -- a green signal
+    that says "nothing was measured" in the words it uses for "everything is fine".
+
+    It is reachable because the gates on the publishing path do not all read the same file.
+    `make dataset-verify` and GUARD 1 in the deploy workflow establish that a dataset is real
+    by comparing `coverage.json` against the `programs/*.json` shards the site renders from;
+    this script and `scripts/provider_link_check.py` read `programs.json`, a third file that
+    until now nothing compared to either of the other two.
+    """
+
+    def test_a_dataset_with_no_programs_is_refused(self) -> None:
+        found = dataset_shape_check.problems([])
+        assert found
+        assert "no programs at all" in found[0]
+
+    def test_an_empty_dataset_exits_nonzero(self, tmp_path: Path) -> None:
+        assert dataset_shape_check.main([str(_dataset(tmp_path))]) == 1
+
+    def test_a_programs_file_that_lost_its_records_is_refused(self, tmp_path: Path) -> None:
+        """The shape a truncated write or a half-finished extract leaves: every shard on
+        disk, every page still rendered, and the file both link gates read holding nothing.
+        Without the count check this passes twice over."""
+        dataset = _dataset(tmp_path, claims=3266)
+        assert dataset_shape_check.main([str(dataset)]) == 1
+
+    def test_a_programs_file_short_of_what_coverage_claims_is_refused(self, tmp_path: Path) -> None:
+        dataset = _dataset(tmp_path, _program(), claims=3266)
+        found = dataset_shape_check.miscounted(dataset, [_program()])
+        assert found
+        assert "different datasets" in found[0]
+
+    def test_a_dataset_with_no_coverage_to_check_against_is_refused(self, tmp_path: Path) -> None:
+        """Not a silent skip. This script runs after the coverage checks on both paths a
+        dataset travels, so arriving without one means it is being run somewhere new, and a
+        gate that quietly drops half its question in a place nobody expected is worse than
+        one that stops."""
+        (tmp_path / "programs.json").write_text(
+            json.dumps({"programs": [_program()]}), encoding="utf-8"
+        )
+        assert dataset_shape_check.main([str(tmp_path)]) == 1
+
+    def test_agreement_passes(self, tmp_path: Path) -> None:
+        assert dataset_shape_check.miscounted(_dataset(tmp_path, _program()), [_program()]) == []
 
 
 class TestTheGateIsWiredIntoBothPathsAStaleDatasetTravels:
