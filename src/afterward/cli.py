@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import typer
 
@@ -20,6 +21,9 @@ from afterward.build import (
 from afterward.ctdl.export import export_ctdl
 from afterward.ctdl.validate import validate_export
 from afterward.sources import link_check
+
+if TYPE_CHECKING:  # imported lazily inside the command; only the annotation needs it here
+    from afterward.ask.deterministic import Answer
 
 app = typer.Typer(
     add_completion=False,
@@ -376,6 +380,110 @@ def ask_command(
     for occupation in response.occupations:
         typer.echo(f"  occupation {occupation.path}  {occupation.title}")
     typer.echo(f"\n{response.notice}")
+
+
+def _echo_query_answer(found: Answer, *, explain: bool) -> None:
+    """The human-readable form of a deterministic query result.
+
+    The unresolved terms print whenever there are any, not only under ``--explain``: a person
+    who asked about a place and got nothing back is owed the reason without having to re-run
+    the command with another flag.
+    """
+    if explain or found.status != "ok":
+        for item in found.unresolved:
+            typer.echo(f"  unresolved {item.kind}: {item.term!r} is not in this dataset")
+        for note in found.resolution_notes:
+            typer.echo(f"  note: {note}")
+    for program in found.programs:
+        cost = (program.get("cost") or {}).get("total_out_of_pocket")
+        # Never "$0" for a cost the source did not report: an unreported price is not a free
+        # program, and this is the line a counsellor would read aloud.
+        money = "cost not reported" if cost is None else f"${cost:,.0f}"
+        typer.echo(f"  {program['uuid']}  {program['program_name']} -- {program['provider_name']}")
+        typer.echo(f"      {money}")
+    if found.status != "ok":
+        return
+    typer.echo(f"\n{found.candidates} program(s) matched; {len(found.programs)} shown.")
+    for reason, count in sorted(found.excluded.items()):
+        if count:
+            typer.echo(f"  {count} excluded: {reason}")
+
+
+@app.command("query")
+def query_command(
+    occupation: list[str] = typer.Option(
+        [], "--occupation", help="Occupation to search for, in plain words. Repeatable."
+    ),
+    area: str | None = typer.Option(
+        None, "--area", help="EDD projection area, or a city the dataset places programs in."
+    ),
+    max_cost: float | None = typer.Option(
+        None, "--max-cost", help="Ceiling on total out-of-pocket cost, in dollars."
+    ),
+    max_weeks: float | None = typer.Option(
+        None, "--max-weeks", help="Ceiling on program length, in weeks."
+    ),
+    min_annual_wage: float | None = typer.Option(
+        None, "--min-annual-wage", help="Floor on the occupation's annual wage, in dollars."
+    ),
+    program_format: str = typer.Option(
+        "any", "--format", help="online, in_person, hybrid, or any."
+    ),
+    projection: str = typer.Option(
+        "any", "--projection", help="growing, not_shrinking, shrinking, or any."
+    ),
+    reported_only: bool = typer.Option(
+        False, "--reported-only", help="Only programs that report their outcomes."
+    ),
+    lang: str = typer.Option("en", "--lang", help="Language for resolving terms: en or es."),
+    dataset_dir: Path = typer.Option(
+        Path("web/public/data"), "--dataset-dir", help="The published dataset to answer from."
+    ),
+    as_json: bool = typer.Option(False, "--json", help="Print the full response as JSON."),
+    explain: bool = typer.Option(
+        False, "--explain", help="Print what each term resolved to, and what it did not."
+    ),
+) -> None:
+    """Run the deterministic query layer with no model and no network (ADR 0003).
+
+    The same executor `afterward ask` runs after a model has structured a sentence, driven
+    from named criteria instead. Nothing is narrated, ranked by a model, or recommended, and
+    no provider is consulted: this verb answers identically with `AFTERWARD_AI_PROVIDER`
+    unset.
+
+    A term the dataset cannot place ends the query rather than widening it. `--area` naming
+    somewhere that is neither an EDD area nor a known program city exits 2 with no records,
+    because the alternative -- silently dropping the filter and returning the whole state --
+    is a full result set that looks like an answer to a question nobody asked.
+
+    Exit codes: 0 records found, 1 no records but every term resolved, 2 a named term
+    resolved to nothing.
+    """
+    from afterward.ask.dataset import Dataset
+    from afterward.ask.deterministic import Criteria, answer
+
+    criteria = Criteria(
+        occupations=tuple(occupation),
+        area=area,
+        max_cost=max_cost,
+        max_weeks=max_weeks,
+        min_annual_wage=min_annual_wage,
+        program_format=program_format,  # type: ignore[arg-type]
+        projection=projection,  # type: ignore[arg-type]
+        reported_only=reported_only,
+        language="es" if lang == "es" else "en",
+    )
+    found = answer(criteria, Dataset.load(dataset_dir))
+
+    if as_json:
+        typer.echo(found.as_json())
+    else:
+        _echo_query_answer(found, explain=explain)
+
+    if found.status == "unresolved":
+        raise typer.Exit(code=2)
+    if not found.programs:
+        raise typer.Exit(code=1)
 
 
 @app.command("ask-serve")

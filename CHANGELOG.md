@@ -8,6 +8,31 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `afterward query` and `GET /query`: the deterministic query layer with no model attached.
+  `afterward.ask` structures a sentence with a model, runs a deterministic query over the
+  published dataset, then verifies every claim. The middle step is the whole of what a job
+  centre counsellor or a script wants — the same answer every time, offline, with no provider
+  configured — and it was reachable only by going through the model. Named criteria go in
+  (`--occupation`, `--area`, `--max-cost`, `--max-weeks`, `--min-annual-wage`, `--format`,
+  `--projection`, `--reported-only`), records and a written account of what each term resolved
+  to come out, and nothing is narrated, ranked by a model, or recommended.
+  A named term the dataset cannot place now ends the query instead of widening it. That rule
+  is the reason the verb is a thin layer rather than a direct call to the executor: `execute`
+  is written for a narrated answer, where an unplaceable area becomes a `region_not_covered`
+  note that the narration is obliged to read out, and `_in_region` treats a region of `None`
+  as "no region filter". Measured on the committed fixture, `--area Atlantis` — not an EDD
+  area and not a program city — returns three programs from elsewhere in California through
+  the executor alone. On a silent path there is nobody to say so, and a full result set that
+  looks like the answer to a question nobody ran is an absence rendered as a value. It now
+  exits 2 with no records and names the term. The filters that were already careful are left
+  alone: an unreported cost is still excluded from `--max-cost` rather than read as zero, a
+  competency-based programme is still not "short", and each exclusion is counted.
+  Exit codes are the interface for a script: 0 records found, 1 none found but every term
+  resolved, 2 a named term resolved to nothing. `--json` is byte-identical across runs of the
+  same criteria and carries a `schema_version`; `--explain` prints the resolution trace.
+  `GET /query` answers on the service whether or not a model is configured, under the same
+  per-client meter as a question, because an unmetered route beside a metered one is a way
+  around the meter.
 - **A deliberate change of direction, recorded before the code that follows it.**
   [ADR 0003](docs/adr/0003-runtime-ai-at-the-edges.md) records the owner's decision to add
   runtime AI to the product: an optional, opt-in service, `afterward.ask`, in which a model
