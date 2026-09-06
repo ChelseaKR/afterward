@@ -1,9 +1,11 @@
 """HTTP in front of :class:`afterward.ask.api.Assistant`.
 
-Four routes. ``POST /ask`` is the conversation; ``POST /translate`` is Spanish for one record,
-labelled and number-checked. ``GET /health`` says whether a model is
-configured, which dataset is loaded, and what the limits are, and carries no counters a
-visitor could use to learn about other visitors. ``GET /`` is a one-line description.
+Five routes. ``POST /ask`` is the conversation; ``POST /translate`` is Spanish for one record,
+labelled and number-checked. ``GET /query`` is the deterministic half of ``/ask`` on its own --
+named criteria in, records out, no model consulted, so it answers with no provider configured.
+``GET /health`` says whether a model is configured, which dataset is loaded, and what the
+limits are, and carries no counters a visitor could use to learn about other visitors.
+``GET /`` is a one-line description.
 
 CORS is locked to the site origin(s) in ``AFTERWARD_AI_ALLOWED_ORIGINS``; with none set only
 same-origin and non-browser callers can reach it, which is what local development is. The
@@ -15,8 +17,9 @@ from __future__ import annotations
 import os
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -29,6 +32,8 @@ from afterward.ask.api import (
     TranslateResponse,
 )
 from afterward.ask.dataset import DEFAULT_DATASET_DIR, Dataset
+from afterward.ask.deterministic import Criteria
+from afterward.ask.deterministic import answer as deterministic_answer
 from afterward.ask.limits import LimitExceeded, Limits, Meter
 from afterward.ask.provider import provider_from_env
 
@@ -78,6 +83,40 @@ def create_app(assistant: Assistant, *, allowed_origins: Sequence[str] = ()) -> 
     @app.post("/translate", response_model=TranslateResponse)
     def translate(body: TranslateRequest, request: Request) -> TranslateResponse:
         return assistant.translate(body, client_key=client_key(request))
+
+    @app.get("/query")
+    def query(
+        request: Request,
+        occupation: Annotated[list[str], Query()] = [],  # noqa: B006  - FastAPI reads the default
+        area: str | None = None,
+        max_cost: float | None = None,
+        max_weeks: float | None = None,
+        min_annual_wage: float | None = None,
+        program_format: Annotated[str, Query(alias="format")] = "any",
+        projection: str = "any",
+        reported_only: bool = False,
+        lang: str = "en",
+    ) -> dict[str, object]:
+        """The deterministic half, with no model between the caller and the dataset.
+
+        Answers whether or not a provider is configured -- ``/ask`` reports itself unavailable
+        with none, and this route is unaffected, because nothing here consults one. Metered by
+        the same per-client meter as a question: the work is cheap, but an unmetered route
+        beside a metered one is a way around the meter.
+        """
+        assistant.meter.admit(client_key(request))
+        criteria = Criteria(
+            occupations=tuple(occupation),
+            area=area,
+            max_cost=max_cost,
+            max_weeks=max_weeks,
+            min_annual_wage=min_annual_wage,
+            program_format=program_format,  # type: ignore[arg-type]
+            projection=projection,  # type: ignore[arg-type]
+            reported_only=reported_only,
+            language="es" if lang == "es" else "en",
+        )
+        return deterministic_answer(criteria, assistant.dataset).as_dict()
 
     @app.exception_handler(LimitExceeded)
     def limited(_: Request, exc: LimitExceeded) -> JSONResponse:
