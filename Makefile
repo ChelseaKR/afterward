@@ -3,7 +3,7 @@
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
-	ctdl-statements ctdl-package ask-serve ask ask-eval ask-eval-dry ci-artifact-check
+	ctdl-statements ctdl-package csv-export ask-serve ask ask-eval ask-eval-dry ci-artifact-check
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -260,6 +260,22 @@ dataset-publish: dataset-package
 		--notes "Site dataset built from the live sources on $$1: $$2 programs."; \
 	echo; \
 	echo "Now run the Deploy workflow with dataset_tag=dataset-$$1"
+
+# Flat CSV of the working dataset plus its Table Schema, into dist/ (gitignored).
+#
+# The reader most likely to check this project's figures is a journalist or a researcher with a
+# spreadsheet, and sharded JSON is not that. Deliberately its own target, like `ctdl-export`: not
+# part of `data`, `build` or `verify`, so it can never slow or break the main pipeline, and it
+# writes nothing into $(DATASET_DIR), so the bytes the site serves are untouched.
+#
+# Deterministic -- rows sort by uuid, so the same snapshot writes byte-identical output -- and it
+# refuses to write at all if any measure cell would end up with a blank state word beside it.
+csv-export:
+	uv run afterward export-csv --dataset-dir $(DATASET_DIR) --output-dir $(DIST_DIR)/csv
+	@( cd $(DIST_DIR)/csv && if command -v sha256sum >/dev/null 2>&1; then \
+		sha256sum programs.csv programs.schema.json > SHA256SUMS; \
+	else shasum -a 256 programs.csv programs.schema.json > SHA256SUMS; fi )
+	@echo "checksums -> $(DIST_DIR)/csv/SHA256SUMS"
 
 # Demonstration CTDL JSON-LD export of the working dataset, into dist/ (gitignored).
 #

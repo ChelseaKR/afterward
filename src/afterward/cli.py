@@ -21,6 +21,7 @@ from afterward.build import (
 from afterward.ctdl.export import export_ctdl
 from afterward.ctdl.validate import validate_export
 from afterward.sources import link_check
+from afterward.tabular import export_csv
 
 if TYPE_CHECKING:  # imported lazily inside the command; only the annotation needs it here
     from afterward.ask.deterministic import Answer
@@ -302,6 +303,42 @@ def export_ctdl_command(
         typer.echo(f"    {term:<30}{count:>6}")
     typer.echo(f"  coverage statement -> {report.coverage_path}")
     typer.echo("\nDemonstration export: not published to any registry; CTIDs are locally derived.")
+
+
+@app.command("export-csv")
+def export_csv_command(
+    dataset_dir: Path = typer.Option(
+        Path("web/public/data"),
+        "--dataset-dir",
+        help="Emitted dataset to flatten; the same files the site serves.",
+    ),
+    output_dir: Path = typer.Option(
+        Path("dist/csv"), "--output-dir", help="Where to write the table and its Table Schema."
+    ),
+) -> None:
+    """Write the dataset as one CSV in which no blank ever carries a meaning.
+
+    Every measure gets a state word beside it -- `reported`, `not_reported` or
+    `competency_based` -- and the state word is never empty. A value cell is empty only where
+    the state cell says why, so a reader who reaches for `fillna(0)` has been told, in the
+    column next to the one they filled, that there was never a number there.
+
+    There is deliberately no `suppressed` state. WIOA does suppress small-cohort cells, but the
+    ETP scorecard serves a suppressed cell and an unreported cell as the same `-1`, so by the
+    time a measure reaches this dataset the cause is gone. Naming one would be a claim nothing
+    here measured.
+
+    Deterministic: rows sort by `uuid`, so the same snapshot writes byte-identical output.
+    """
+    report = export_csv(dataset_dir, output_dir)
+    typer.echo(f"Snapshot {report.snapshot_date} -> {report.table_path}")
+    typer.echo(f"  rows                      {report.rows:>6}")
+    typer.echo(f"  columns                   {report.columns:>6}")
+    typer.echo(f"  of which measures         {report.measures:>6}  (each with a state column)")
+    typer.echo("  measure cells stating")
+    for state, count in report.states.items():
+        typer.echo(f"    {state:<24}{count:>6}")
+    typer.echo(f"  Table Schema -> {report.schema_path}")
 
 
 @app.command("validate-ctdl")

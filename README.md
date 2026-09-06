@@ -282,6 +282,42 @@ QData term was verified against the schema encoding fetched 2026-08-07 from cred
 that same file. `qdata:DataSetTimeFrame` is deliberately not emitted: the source states no
 reporting-period dates, and the export does not invent them.
 
+## Flat CSV export
+
+`make csv-export` writes the whole dataset as one table into `dist/csv/`, beside a
+Frictionless Table Schema generated from the same column definitions in the same pass, and a
+`SHA256SUMS` for both. For the reader most likely to check these figures — a journalist or a
+researcher with a spreadsheet — sharded JSON is the wrong shape.
+
+The design is one rule: **no blank ever carries a meaning.** Every measure has a state column
+beside it, the state column is never empty, and a value cell is empty only where the state
+cell says why. A reader who reaches for `fillna(0)` has been told, in the column next to the
+one they filled, that there was never a number there.
+
+The vocabulary is three words, and the fourth one that is missing is the point:
+
+| State | Meaning |
+| --- | --- |
+| `reported` | A number the source filed, present in the value column beside it. |
+| `not_reported` | No number. The ETP scorecard's `-1` and its empty string. |
+| `competency_based` | On `length_weeks` and `length_hours` only: the programme advances on demonstrated competency and has no fixed length. A fact, not a gap. |
+
+There is deliberately no `suppressed`. WIOA does suppress small-cohort cells, and that is why
+many of these measures are absent — but the ETP scorecard serves a suppressed cell and an
+unreported cell as the same `-1`, and its data dictionary calls the sentinel "not reported or
+suppressed" without separating them. By the time a measure reaches the emitted record the
+cause is gone. Writing `suppressed` into a cell whose cause nobody measured would be this
+project's own headline failure mode wearing its opposite face: not an absence published as a
+number, but an absence published as a specific cause. If the source ever separates the two,
+the vocabulary can grow.
+
+Deterministic, like the CTDL export: rows sort by `uuid`, no wall-clock appears anywhere, and
+the only date in the output is the dataset's own `snapshot_date`. The export refuses to write
+at all if any measure cell would end up with a blank state beside it, so a failed run leaves
+no partial file to mistake for a good one. It writes nothing into `web/public/data/`, so the
+bytes the site serves are untouched.
+
+
 ## Development
 
 ```bash
