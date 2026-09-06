@@ -3,7 +3,8 @@
 .PHONY: help install format lint typecheck test security audit provenance-check verify build data \
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
-	ctdl-statements ctdl-package csv-export ask-serve ask ask-eval ask-eval-dry ci-artifact-check
+	ctdl-statements ctdl-package csv-export dataset-diff ask-serve ask ask-eval ask-eval-dry \
+	ci-artifact-check
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -276,6 +277,21 @@ csv-export:
 		sha256sum programs.csv programs.schema.json > SHA256SUMS; \
 	else shasum -a 256 programs.csv programs.schema.json > SHA256SUMS; fi )
 	@echo "checksums -> $(DIST_DIR)/csv/SHA256SUMS"
+
+# What changed between a previous dataset and the working one, into dist/ (gitignored).
+#
+# Every refresh replaces $(DATASET_DIR) wholesale and the only review it gets is the shape floors
+# in dataset_check.py: a count that did not collapse. That cannot see a programme that stopped
+# reporting a measure, which is a different event from a programme that left the list, which is a
+# different event again from one that was never on it.
+#
+# PREVIOUS_DATASET_DIR is the unpacked earlier dataset -- extract a `dataset-<date>` release
+# tarball into it. Deliberately its own target, like `ctdl-export`: it writes only into dist/, so
+# the bytes the site serves are untouched, and it refuses rather than reporting an empty diff if
+# either directory cannot be read.
+PREVIOUS_DATASET_DIR ?= dist/previous-dataset
+dataset-diff:
+	uv run afterward diff $(PREVIOUS_DATASET_DIR) $(DATASET_DIR) --output-dir $(DIST_DIR)/diff
 
 # Demonstration CTDL JSON-LD export of the working dataset, into dist/ (gitignored).
 #

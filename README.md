@@ -317,6 +317,38 @@ at all if any measure cell would end up with a blank state beside it, so a faile
 no partial file to mistake for a good one. It writes nothing into `web/public/data/`, so the
 bytes the site serves are untouched.
 
+## What changed between two datasets
+
+Every refresh replaces the dataset wholesale, and the only review it gets is the shape floors in
+`dataset_check.py`: a count that did not collapse. That review cannot see the events this project
+exists to notice.
+
+`afterward diff <earlier-dataset-dir> <later-dataset-dir>` writes `changes.json` and a Markdown
+summary into `dist/diff/`. `make dataset-diff` runs it against `PREVIOUS_DATASET_DIR` (an unpacked
+`dataset-<date>` release) and the working dataset.
+
+Three things happen when a programme's number disappears, and they are not the same event:
+
+- The programme **left the list** — `program_removed`, and **no measure events at all**. Its
+  measures did not stop being reported; it stopped being listed.
+- The programme is still listed and **stopped reporting** that measure — `stopped_reporting`, on
+  that measure, on that programme. Somebody who used to answer no longer does.
+- The programme was **never on the list**, so nothing moved.
+
+Collapsing those into "the number is gone" is the same error, one level up, that this codebase
+spends its life avoiding on a single value. Outcome events are counted per measure and never
+summed: nine measures moving once and one measure moving nine times are different events.
+
+**An empty diff means "compared, and nothing moved". It never means "could not compare."** A
+dataset directory that is missing, unreadable, carries no `snapshot_date`, or holds a record with
+no `uuid` is a refusal that writes nothing and exits 2. Returning zero counts because there was
+nothing to read would be a statement that the refresh changed nothing, published on the strength
+of never having looked.
+
+Deterministic, like the other exports: events sort by kind then by programme so the emitted order
+cannot move the bytes, no wall-clock is recorded anywhere, and the only dates in the output are
+the two snapshots' own. It writes into `dist/` only, so the bytes the site serves are untouched.
+
 
 ## Development
 

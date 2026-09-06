@@ -20,6 +20,7 @@ from afterward.build import (
 )
 from afterward.ctdl.export import export_ctdl
 from afterward.ctdl.validate import validate_export
+from afterward.diff import DatasetUnreadable, diff_datasets
 from afterward.sources import link_check
 from afterward.tabular import export_csv
 
@@ -372,6 +373,60 @@ def validate_ctdl_command(
         "emitted properties"
     )
     typer.echo(f"  validation statement -> {report.statement_path}")
+
+
+@app.command("diff")
+def diff_command(
+    earlier: Path = typer.Argument(..., help="The dataset directory from the earlier snapshot."),
+    later: Path = typer.Argument(..., help="The dataset directory from the later snapshot."),
+    output_dir: Path = typer.Option(
+        Path("dist/diff"), "--output-dir", help="Where to write changes.json and changes.md."
+    ),
+) -> None:
+    """Say what changed between two emitted datasets, keeping the kinds of change apart.
+
+    Three things happen when a programme's number disappears and they are not the same event:
+    the programme left the list, the programme is still listed and stopped reporting that
+    measure, or the programme was never listed at all. Every refresh replaces the dataset
+    wholesale and the only review it gets is a count that did not collapse, which cannot see
+    any of that.
+
+    A programme present on one side only produces exactly one event and no measure events: its
+    measures did not stop being reported, it stopped being listed. Outcome events are counted
+    per measure and never summed, because nine measures moving once and one measure moving nine
+    times are different events.
+
+    An empty diff means "compared, and nothing moved". It never means "could not compare": an
+    unreadable dataset is a refusal that writes nothing, exit 2.
+
+    Deterministic: no wall-clock is recorded, and the only dates in the output are the two
+    snapshots' own.
+    """
+    try:
+        report = diff_datasets(earlier, later, output_dir)
+    except DatasetUnreadable as exc:
+        typer.echo(f"refusing: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+
+    typer.echo(
+        f"{report.earlier} ({report.earlier_programs} programs) -> "
+        f"{report.later} ({report.later_programs} programs)"
+    )
+    counts = report.counts
+    for kind, count in counts["by_kind"].items():
+        typer.echo(f"  {kind:<26}{count:>6}")
+    typer.echo("  outcome reporting, per measure (never summed)")
+    for measure, moves in counts["by_measure"].items():
+        if moves["stopped_reporting"] or moves["started_reporting"]:
+            typer.echo(
+                f"    {measure:<24}"
+                f"stopped {moves['stopped_reporting']:>5}   "
+                f"started {moves['started_reporting']:>5}"
+            )
+    if report.total == 0:
+        typer.echo("\nThe two datasets were compared and nothing moved.")
+    typer.echo(f"\n  statement -> {output_dir / 'changes.json'}")
+    typer.echo(f"  summary   -> {output_dir / 'changes.md'}")
 
 
 @app.command("ask")

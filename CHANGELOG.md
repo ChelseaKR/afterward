@@ -39,6 +39,28 @@ All notable changes to this project are documented here. The format follows
   written, so no partial file survives to be mistaken for a good one. The target writes into
   `dist/` only: the bytes the site serves are untouched.
 
+- `afterward diff` and `make dataset-diff`: what changed between two emitted datasets, with the
+  kinds of change kept apart. Every refresh replaces the dataset wholesale and the only review it
+  gets is the shape floors in `dataset_check.py` — a count that did not collapse — which cannot
+  see a programme that stopped reporting a measure. That is a different event from a programme
+  that left the list, which is a different event again from one that was never on it, and
+  collapsing the three into "the number is gone" is the same error, one level up, that this
+  codebase spends its life avoiding on a single value.
+  So a programme present on one side only produces exactly one event and **no measure events**:
+  its measures did not stop being reported, it stopped being listed. Outcome events are counted
+  per measure and never summed into one number, because nine measures moving once and one measure
+  moving nine times are different events. Programme titles, provider disappearance, length,
+  cost, the occupation join's `match.kind` and the link verdict each get their own class.
+  **An empty diff means "compared, and nothing moved", never "could not compare".** A dataset
+  directory that is missing, holds invalid JSON, states no `snapshot_date`, or carries a record
+  with no `uuid` is a refusal that writes nothing and exits 2; returning zero counts because there
+  was nothing to read would be a statement that the refresh changed nothing, published on the
+  strength of never having looked.
+  The Markdown summary is written only from the statement's own counts rather than recounting the
+  events, so the two cannot disagree with no way to tell which is wrong. Deterministic: events
+  sort by kind then by programme so the emitted order cannot move the bytes, no wall-clock is
+  recorded, and the only dates in the output are the two snapshots' own. Writes into `dist/` only.
+
 - `afterward query` and `GET /query`: the deterministic query layer with no model attached.
   `afterward.ask` structures a sentence with a model, runs a deterministic query over the
   published dataset, then verifies every claim. The middle step is the whole of what a job
