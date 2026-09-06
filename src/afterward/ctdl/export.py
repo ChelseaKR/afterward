@@ -89,6 +89,7 @@ only date in the output is the dataset's own ``snapshot_date``.
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -961,12 +962,178 @@ def ctdl_coverage(
     }
 
 
+LEARNING_PROGRAM_IDENTITY_KEYS: Final = frozenset({"@type", "@id", "ceterms:ctid"})
+"""Keys a LearningProgram carries to be a record at all, rather than to describe a program.
+
+Excluded from the property count for the same reason ``@id`` is: counting them would report
+3,266 out of 3,266 for every export ever made, which tells a reader nothing about coverage.
+They are named here rather than assumed so that :func:`unprojected_claim_problems` can tell
+"identity" from "a property nobody remembered to count".
+"""
+
+_PREFIXED_TERM: Final = re.compile(r"\b([a-z][a-z0-9]*:[A-Za-z][A-Za-z0-9]*)\b")
+
+
+def _emitted_properties(document: Mapping[str, Any]) -> set[str]:
+    """Every prefixed property name the document uses, at any depth.
+
+    Walked from the emitted document rather than read off this module's own constants, for
+    the same reason :func:`ctdl_coverage` counts rather than asserts: a list of what the
+    export was meant to emit cannot catch the export emitting something else.
+    """
+    found: set[str] = set()
+
+    def walk(node: Any) -> None:
+        if isinstance(node, list):
+            for item in node:
+                walk(item)
+            return
+        if not isinstance(node, Mapping):
+            return
+        for key, value in node.items():
+            if key.startswith("@"):
+                continue
+            if ":" in key:
+                found.add(key)
+            walk(value)
+
+    walk(document.get("@graph", []))
+    return found
+
+
+def dropped_property_terms() -> set[str]:
+    """The CTDL properties this export's published statement says it does not carry.
+
+    Read out of each :attr:`UnprojectedField.ctdl_term` rather than kept as a second list,
+    so the claim a reader sees and the claim this module checks are the same string. A term
+    naming a *class* -- an initial capital after the colon -- is skipped on purpose:
+    ``qdata:Metric``, ``qdata:Observation`` and ``ceterms:CostProfile`` appear in these
+    reasons as the shape a dropped field would have taken, and all three are shapes this
+    export already emits for fields it does carry. What must be absent is the property that
+    would carry the dropped field itself: ``ceterms:estimatedDuration``,
+    ``ceterms:directCostType``, and the rest.
+    """
+    terms: set[str] = set()
+    for field in UNPROJECTED_SOURCE_FIELDS:
+        for term in _PREFIXED_TERM.findall(field.ctdl_term):
+            if term.split(":", 1)[1][:1].islower():
+                terms.add(term)
+    return terms
+
+
+def unprojected_claim_problems(document: Mapping[str, Any]) -> list[str]:
+    """Every statement the coverage document makes about the export that the export refutes.
+
+    The rest of this module checks that the published *figures* describe the export beside
+    them. This checks the published *prose*, which until now nothing did. Both halves of the
+    coverage statement are claims a reader cannot verify without the source data, and the
+    ``not_projected`` half is the one with no arithmetic behind it: "the source's program
+    length is not carried" is true because a person wrote it and stays true only for as long
+    as nobody adds ``ceterms:estimatedDuration`` to :func:`project_program` without deleting
+    the paragraph. :func:`unknown_term_problems` would not catch that -- the term is in the
+    vendored CTDL context, which is the whole reason it is the term the paragraph names.
+
+    Two ways the published account can stop describing the export:
+
+    * a property the statement names as dropped turns up in the document, so the statement
+      claims an absence that is not there;
+    * a property lands on a ``ceterms:LearningProgram`` that ``PROGRAM_PROPERTIES`` does not
+      count, so ``learning_program_properties`` describes a projection smaller than the one
+      actually published -- silently, because that block is a hand-kept list and an
+      uncounted key reads exactly like a key that was never emitted.
+    """
+    problems: list[str] = []
+    emitted = _emitted_properties(document)
+    for term in sorted(dropped_property_terms() & emitted):
+        problems.append(
+            f"not_projected names {term} as the term this export does not use, and the "
+            "document emits it: the reason published beside the export is no longer true"
+        )
+    counted = set(PROGRAM_PROPERTIES) | LEARNING_PROGRAM_IDENTITY_KEYS
+    uncounted = {
+        key
+        for entity in document.get("@graph", [])
+        if entity.get("@type") == "ceterms:LearningProgram"
+        for key in entity
+        if key not in counted
+    }
+    for key in sorted(uncounted):
+        problems.append(
+            f"{key} is emitted on a ceterms:LearningProgram and PROGRAM_PROPERTIES does not "
+            "count it: learning_program_properties would describe a smaller projection than "
+            "the one published"
+        )
+    return problems
+
+
+def source_expectations(payloads: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """What the coverage figures must be, read off the source rather than off the graph.
+
+    Derived from ``payloads`` alone, touching neither :func:`project_graph` nor anything it
+    produced. That independence is the entire point of the function: it is the second
+    opinion :func:`ctdl_coverage_problems` needs in order to be a check at all.
+
+    Each rule restates a projection commitment in the terms of the source. One
+    ``LearningProgram`` per record, because :func:`project_graph` refuses two records that
+    derive the same CTID. One ``CredentialOrganization`` per distinct provider CTID, which is
+    how the organization block is keyed. One ``DataSetProfile`` per record reporting at least
+    one projected measure, and no profile for a record reporting none -- the rule
+    :func:`dataset_profile` states and the one a reader is owed, because an empty statistics
+    entity would read as "measured, and empty". And one observation per reported measure,
+    per measure.
+    """
+    reported_by_measure = {
+        measure.field: sum(
+            1 for p in payloads if (p.get("outcomes") or {}).get(measure.field) is not None
+        )
+        for measure in MEASURES
+    }
+    with_any_measure = sum(
+        1
+        for p in payloads
+        if any((p.get("outcomes") or {}).get(m.field) is not None for m in MEASURES)
+    )
+    return {
+        "source_programs": len(payloads),
+        "entities": {
+            "ceterms:LearningProgram": len(payloads),
+            "ceterms:CredentialOrganization": len(
+                {organization_ctid(str(p["provider_name"])) for p in payloads}
+            ),
+            "qdata:DataSetProfile": with_any_measure,
+        },
+        "observation_measures": reported_by_measure,
+    }
+
+
 def ctdl_coverage_problems(
     coverage: Mapping[str, Any],
     document: Mapping[str, Any],
     payloads: Sequence[Mapping[str, Any]],
 ) -> list[str]:
-    """Every figure in a coverage statement that the export beside it contradicts."""
+    """Every figure or claim in a coverage statement that the export or the source contradicts.
+
+    Three comparisons, and only the second is a check of the arithmetic.
+
+    The first recomputes the statement from the emitted graph. On the publishing path that
+    is worth nothing at all, and said plainly here because it read as a real check for as
+    long as it was the only one: ``export_ctdl`` writes ``coverage = ctdl_coverage(document,
+    payloads, snapshot)`` and then hands the same three arguments to this function, which
+    calls the same pure function again and compares the answer to itself. Measured on the
+    committed fixture: delete every ``ceterms:CredentialOrganization`` from the graph,
+    recount, and the statement says ``CredentialOrganization: 0`` beside 60 programs whose
+    ``ceterms:offeredBy`` now resolves to nothing -- and this returns ``[]``. Empty the graph
+    entirely and it still returns ``[]``. It is kept because it does catch a statement that
+    arrived from somewhere else, which is what a committed ``ctdl-coverage.json`` is.
+
+    The second compares the same figures against :func:`source_expectations`, which reads
+    the dataset and never looks at the graph. Two derivations from two inputs can disagree,
+    which is the only arrangement in which agreement means anything.
+
+    The third is :func:`unprojected_claim_problems`, which checks the statement's prose
+    rather than its figures: a property the reasons call dropped that the document emits
+    anyway, or a property on a ``ceterms:LearningProgram`` that nothing counts.
+    """
     expected = ctdl_coverage(document, payloads, str(coverage.get("snapshot_date")))
     problems: list[str] = []
     for key in (
@@ -979,6 +1146,14 @@ def ctdl_coverage_problems(
         if coverage.get(key) != expected[key]:
             problems.append(
                 f"{key}: says {coverage.get(key)!r}, the export gives {expected[key]!r}"
+            )
+    problems.extend(unprojected_claim_problems(document))
+
+    for key, wanted in source_expectations(payloads).items():
+        if coverage.get(key) != wanted:
+            problems.append(
+                f"{key}: says {coverage.get(key)!r}, the {len(payloads)} source records "
+                f"call for {wanted!r}"
             )
     return problems
 

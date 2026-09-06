@@ -19,7 +19,9 @@ import pytest
 from afterward.ctdl.export import (
     COVERAGE_FILENAME,
     GRAPH_FILENAME,
+    LEARNING_PROGRAM_IDENTITY_KEYS,
     MEASURES,
+    PROGRAM_PROPERTIES,
     UNPROJECTED_SOURCE_FIELDS,
     check_ctdl_coverage,
     check_ctdl_terms,
@@ -28,6 +30,7 @@ from afterward.ctdl.export import (
     ctdl_coverage_problems,
     dataset_profile,
     dataset_profile_ctid,
+    dropped_property_terms,
     entity_ctid,
     export_ctdl,
     load_vendored_context,
@@ -36,7 +39,9 @@ from afterward.ctdl.export import (
     project_graph,
     project_program,
     projection_problems,
+    source_expectations,
     unknown_term_problems,
+    unprojected_claim_problems,
     unprojected_field_counts,
 )
 
@@ -376,6 +381,78 @@ class TestCoverageStatement:
         }
         assert coverage["entities"]["qdata:DataSetProfile"] == 1
 
+    def test_a_graph_missing_every_organization_refuses(self) -> None:
+        """The check this class is named for could not fail where it actually runs.
+
+        ``export_ctdl`` writes ``coverage = ctdl_coverage(document, payloads, snapshot)`` and
+        then hands the same three arguments to ``check_ctdl_coverage``, which calls the same
+        pure function again and compares the answer to itself. Measured on the fixture before
+        this test existed: delete every ``ceterms:CredentialOrganization``, recount, and the
+        statement published ``CredentialOrganization: 0`` beside 60 programs whose
+        ``ceterms:offeredBy`` resolved to nothing -- and every guard passed. The recomputation
+        is still worth keeping for a statement that arrived from elsewhere; what makes this a
+        gate is the second derivation, from the source records, which cannot agree by
+        construction.
+        """
+        payloads = [make_payload(), make_payload(uuid=str(uuid.uuid4()))]
+        document = project_graph(payloads)
+        document["@graph"] = [
+            entity
+            for entity in document["@graph"]
+            if entity.get("@type") != "ceterms:CredentialOrganization"
+        ]
+        coverage = ctdl_coverage(document, payloads, "2026-08-04")
+        assert coverage["entities"]["ceterms:CredentialOrganization"] == 0
+        with pytest.raises(ValueError, match="source records call for"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_an_empty_graph_refuses(self) -> None:
+        """The same shape at its limit, and the one a coverage statement makes look tidy:
+        every entity count zero, every measure zero, nothing to contradict."""
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        document["@graph"] = []
+        coverage = ctdl_coverage(document, payloads, "2026-08-04")
+        with pytest.raises(ValueError, match="source records call for"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_a_missing_statistics_profile_refuses(self) -> None:
+        """One program's outcomes dropped out of the graph. The recomputation agrees with
+        itself that there are no profiles; the source says there is one to be had."""
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        document["@graph"] = [
+            entity for entity in document["@graph"] if entity.get("@type") != "qdata:DataSetProfile"
+        ]
+        coverage = ctdl_coverage(document, payloads, "2026-08-04")
+        with pytest.raises(ValueError, match="source records call for"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_the_source_expectation_is_read_from_the_records_alone(self) -> None:
+        """No graph anywhere in it. That is the whole reason it can disagree with one."""
+        payloads = [make_payload(), make_payload(uuid=str(uuid.uuid4()))]
+        expected = source_expectations(payloads)
+        assert expected["source_programs"] == 2
+        assert expected["entities"]["ceterms:LearningProgram"] == 2
+        assert expected["entities"]["ceterms:CredentialOrganization"] == 1
+        assert expected["entities"]["qdata:DataSetProfile"] == 2
+
+    def test_a_program_reporting_nothing_expects_no_profile(self) -> None:
+        """The rule stated in the source's own terms: all measures suppressed means no
+        statistics entity, because an empty one would read as "measured, and empty"."""
+        silent = make_payload(
+            outcomes={
+                "median_earnings": None,
+                "credentials_earned": None,
+                "employed_q2": None,
+                "completion_rate": None,
+                "employment_rate_q2": None,
+            }
+        )
+        expected = source_expectations([silent])
+        assert expected["entities"]["qdata:DataSetProfile"] == 0
+        assert set(expected["observation_measures"].values()) == {0}
+
     def test_the_note_claims_nothing_about_a_registry_holding_these(self, tmp_path: Path) -> None:
         export_ctdl(FIXTURE_DIR, tmp_path)
         coverage = json.loads((tmp_path / COVERAGE_FILENAME).read_text(encoding="utf-8"))
@@ -460,6 +537,78 @@ class TestUnprojectedSourceFields:
         }
         assert projected & dropped == set()
         assert len(projected) + len(dropped) == 9
+
+
+class TestUnprojectedClaims:
+    """The published prose, held to the same bar as the published figures.
+
+    ``check_ctdl_coverage`` recomputes every count before publishing, so a stale number
+    cannot ship. The reasons beside those numbers had no such check: "the source's program
+    length is not carried" was true because somebody wrote it, and would have stayed
+    published unchanged the day somebody added ``ceterms:estimatedDuration`` to
+    ``project_program``. ``unknown_term_problems`` does not cover this -- the terms these
+    reasons name are terms the vendored CTDL context defines, which is exactly why they are
+    the terms the reasons name.
+    """
+
+    def test_the_export_contradicts_none_of_its_own_reasons(self) -> None:
+        assert unprojected_claim_problems(project_graph([make_payload()])) == []
+
+    def test_the_committed_fixture_export_contradicts_none_of_them_either(
+        self, tmp_path: Path
+    ) -> None:
+        export_ctdl(FIXTURE_DIR, tmp_path)
+        document = json.loads((tmp_path / GRAPH_FILENAME).read_text(encoding="utf-8"))
+        assert unprojected_claim_problems(document) == []
+
+    def test_only_the_properties_are_required_absent_not_the_shapes(self) -> None:
+        # The reasons name classes too, as the shape a dropped field would have taken --
+        # and this export already emits all three of those shapes for fields it does carry.
+        # Requiring them absent would make the check unsatisfiable rather than useful.
+        dropped = dropped_property_terms()
+        assert "ceterms:estimatedDuration" in dropped
+        assert "ceterms:instructionalProgramType" in dropped
+        assert "ceterms:directCostType" in dropped
+        assert dropped.isdisjoint({"qdata:Metric", "qdata:Observation", "ceterms:CostProfile"})
+
+    def test_carrying_a_field_the_statement_calls_dropped_refuses_to_publish(self) -> None:
+        # The WIOA-funded cost, added as the second CostProfile the reason itself describes,
+        # while the reason still says only the out-of-pocket total is carried.
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        program = next(e for e in document["@graph"] if e["@type"] == "ceterms:LearningProgram")
+        program["ceterms:estimatedCost"][0]["ceterms:directCostType"] = (
+            "https://credreg.net/ctdl/vocabs/costType/Tuition"
+        )
+        problems = unprojected_claim_problems(document)
+        assert len(problems) == 1
+        assert "ceterms:directCostType" in problems[0]
+        coverage = ctdl_coverage(document, payloads, "2026-08-07")
+        with pytest.raises(ValueError, match="no longer true"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_a_program_property_nothing_counts_refuses_to_publish(self) -> None:
+        # Not a dropped term -- an ordinary CTDL property the context defines, added to the
+        # program and never added to PROGRAM_PROPERTIES. The coverage block would keep
+        # listing seven properties over a projection that now publishes eight, and an
+        # uncounted key reads exactly like a key that was never emitted.
+        payloads = [make_payload()]
+        document = project_graph(payloads)
+        program = next(e for e in document["@graph"] if e["@type"] == "ceterms:LearningProgram")
+        program["ceterms:keyword"] = {"en": "welding"}
+        problems = unprojected_claim_problems(document)
+        assert len(problems) == 1
+        assert "ceterms:keyword" in problems[0]
+        coverage = ctdl_coverage(document, payloads, "2026-08-07")
+        with pytest.raises(ValueError, match="PROGRAM_PROPERTIES does not count it"):
+            check_ctdl_coverage(coverage, document, payloads)
+
+    def test_the_keys_that_make_a_record_a_record_are_not_uncounted_properties(self) -> None:
+        # ceterms:ctid is on every program and is deliberately outside the property count:
+        # a block reporting 3,266 of 3,266 for it every time says nothing about coverage.
+        program = project_program(make_payload())
+        assert "ceterms:ctid" in program
+        assert set(PROGRAM_PROPERTIES).isdisjoint(LEARNING_PROGRAM_IDENTITY_KEYS)
 
 
 class TestFixtureExportShape:
