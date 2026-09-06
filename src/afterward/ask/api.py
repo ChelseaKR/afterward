@@ -237,6 +237,9 @@ class Assistant:
             resolution=_resolution_summary(result),
             programs=[self._program_summary(p, lang) for p in result.programs],
             occupations=[self._occupation_summary(o, lang) for o in result.occupations],
+            # `verified.accepted` carries the ids the verifier resolved, not the ones the model
+            # listed, so a claim checked through a declared number arrives with the record it
+            # rests on and an abbreviated uuid arrives whole. The browser resolves by exact id.
             claims=[ShownClaim(text=c.text, kind=c.kind, cites=c.cites) for c in verified.accepted],
             withheld=WithheldSummary(count=verified.withheld_count, reasons=dict(verified.reasons)),
             follow_up_questions=verified.follow_up_questions,

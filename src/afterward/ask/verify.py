@@ -149,11 +149,25 @@ class Verdict:
     claim: Claim
     accepted: bool
     reasons: list[str] = field(default_factory=list)
+    cites: list[str] = field(default_factory=list)
+    """The records the claim was actually checked against, each by its own full id.
+
+    ``_cited_records`` widens the model's list on purpose -- a record it declared a number
+    from is cited whether or not it repeated the id, and an abbreviated id resolves by unique
+    prefix. This is that resolved set, so what the reader is shown can be the set the claim
+    was verified against rather than the weaker one the model happened to write."""
 
 
 @dataclass
 class Verified:
     accepted: list[Claim]
+    """Accepted claims, each carrying the ids the verifier resolved rather than the ones the
+    model listed. The two differ whenever a claim declares a number from a record it did not
+    repeat in ``cites``, or abbreviates a uuid -- both shapes the verifier accepts because the
+    model produces them. Shipping the model's list instead put a checked figure in front of
+    the reader with no source link behind it. Only the ids change: the text, kind and declared
+    numbers are the model's, and its raw list is still on the narration in the trace."""
+
     withheld: list[Verdict]
     reasons: Counter[str]
     follow_up_questions: list[str]
@@ -174,7 +188,7 @@ def verify(narration: Narration, pack: EvidencePack) -> Verified:
     for claim in narration.claims:
         verdict = verify_claim(claim, pack)
         if verdict.accepted:
-            accepted.append(claim)
+            accepted.append(claim.model_copy(update={"cites": verdict.cites}))
         else:
             withheld.append(verdict)
             reasons.update(_code(r) for r in verdict.reasons)
@@ -190,7 +204,7 @@ def verify_claim(claim: Claim, pack: EvidencePack) -> Verdict:
     if claim.kind == "guidance":
         if OUTCOME_WORDS.search(claim.text):
             reasons.append("guidance_has_figures")
-        return Verdict(claim, not reasons, reasons)
+        return Verdict(claim, not reasons, reasons, list(claim.cites))
 
     cited = _cited_records(claim, pack, reasons)
     verified_numbers = _check_numbers(claim, cited, reasons)
@@ -201,7 +215,7 @@ def verify_claim(claim: Claim, pack: EvidencePack) -> Verdict:
     _check_comparison(claim, cited, verified_numbers, reasons)
     if BENCHMARK_NOT_PEERS.search(claim.text):
         reasons.append("benchmark_not_peers")
-    return Verdict(claim, not reasons, reasons)
+    return Verdict(claim, not reasons, reasons, _resolved_ids(cited))
 
 
 def _cited_records(claim: Claim, pack: EvidencePack, reasons: list[str]) -> dict[str, Record]:
@@ -224,6 +238,15 @@ def _cited_records(claim: Claim, pack: EvidencePack, reasons: list[str]) -> dict
         else:
             cited[record_id] = record
     return cited
+
+
+def _resolved_ids(cited: dict[str, Record]) -> list[str]:
+    """The cited records by their own ids, in the order the claim named them, deduplicated.
+
+    ``_cited_records`` is keyed by what the model wrote, which for an abbreviated uuid is not
+    the record's id. The browser resolves a cite by exact id, so the key is what it cannot
+    find; the value knows its own."""
+    return list(dict.fromkeys(record.id for record in cited.values()))
 
 
 def resolve_record(pack: EvidencePack, record_id: str) -> Record | None:
