@@ -48,6 +48,13 @@ def _pack() -> EvidencePack:
         "total_job_openings": Fact("total_job_openings", 1190.0, "count"),
         "region.period": Fact("region.period", "2023-2033", "text"),
     }
+    growing = Record(id="O:29-1141", kind="occupation", name="Registered Nurses")
+    growing.facts = {
+        "period": Fact("period", "2024-2034", "text"),
+        "percent_change": Fact("percent_change", 12.4, "percent"),
+    }
+    flat = Record(id="O:11-1021", kind="occupation", name="General Managers")
+    flat.facts = {"percent_change": Fact("percent_change", 0.0, "percent")}
     peers = Record(id=PEERS_ID, kind="peers", name="peers")
     peers.facts = {
         "completion_rate": Fact("completion_rate", 0.85, "rate"),
@@ -55,7 +62,7 @@ def _pack() -> EvidencePack:
         "median_earnings": Fact("median_earnings", 10900.0, "money", period="quarter"),
         "median_earnings.reporting": Fact("median_earnings.reporting", 1339, "count"),
     }
-    for record in (program, reported, occupation, peers):
+    for record in (program, reported, occupation, growing, flat, peers):
         pack.records[record.id] = record
     return pack
 
@@ -271,6 +278,95 @@ class TestSuppression:
             ],
         )
         assert reasons(c) == []
+
+
+class TestDirection:
+    """The sign of a projected percent change is dropped by ``matches`` and by ``renderings``,
+    on purpose -- "a 15.8% decline" is how a narration writes -15.8. The words are therefore
+    the only place the direction is stated, and they are checked here."""
+
+    def test_a_decline_narrated_as_growth_is_withheld(self) -> None:
+        c = claim(
+            "California projects this occupation to grow 15.8% between 2024 and 2034, so there "
+            "should be more of these jobs by the end of the decade.",
+            "O:53-3032",
+            numbers=[("O:53-3032", "percent_change", 15.8)],
+        )
+        assert "direction_reversed:percent_change" in reasons(c)
+
+    def test_growth_narrated_as_a_decline_is_withheld(self) -> None:
+        c = claim(
+            "The state projects a 12.4% decline over 2024-2034.",
+            "O:29-1141",
+            numbers=[("O:29-1141", "percent_change", 12.4)],
+        )
+        assert "direction_reversed:percent_change" in reasons(c)
+
+    def test_spanish_reversals_are_withheld_too(self) -> None:
+        c = claim(
+            "California proyecta que esta ocupación crecerá 15.8% entre 2024 y 2034.",
+            "O:53-3032",
+            numbers=[("O:53-3032", "percent_change", 15.8)],
+        )
+        assert "direction_reversed:percent_change" in reasons(c)
+        c = claim(
+            "El estado proyecta una disminución de 12.4% entre 2024 y 2034.",
+            "O:29-1141",
+            numbers=[("O:29-1141", "percent_change", 12.4)],
+        )
+        assert "direction_reversed:percent_change" in reasons(c)
+
+    def test_the_published_direction_passes_in_either_sign(self) -> None:
+        c = claim(
+            "The state projects a 15.8% decline over 2024-2034.",
+            "O:53-3032",
+            numbers=[("O:53-3032", "percent_change", 15.8)],
+        )
+        assert reasons(c) == []
+        c = claim(
+            "The state projects 12.4% growth over 2024-2034.",
+            "O:29-1141",
+            numbers=[("O:29-1141", "percent_change", 12.4)],
+        )
+        assert reasons(c) == []
+
+    def test_a_correct_direction_word_clears_a_contrasting_one(self) -> None:
+        # "fewer ... not more" states the decline and mentions growth to deny it. Requiring
+        # the absence of every growth word would withhold a faithful sentence.
+        c = claim(
+            "California expects 15.8% fewer of these jobs by 2034, not more.",
+            "O:53-3032",
+            numbers=[("O:53-3032", "percent_change", 15.8)],
+        )
+        assert reasons(c) == []
+
+    def test_a_claim_that_names_no_direction_is_not_withheld_for_one(self) -> None:
+        c = claim(
+            "The projected change for 2024-2034 is 15.8%.",
+            "O:53-3032",
+            numbers=[("O:53-3032", "percent_change", 15.8)],
+        )
+        assert reasons(c) == []
+
+    def test_a_flat_projection_contradicts_no_word(self) -> None:
+        # A published 0.0% asserts no direction, so neither word can reverse it.
+        c = claim(
+            "The state projects no growth for this occupation, 0%.",
+            "O:11-1021",
+            numbers=[("O:11-1021", "percent_change", 0)],
+        )
+        assert "direction_reversed:percent_change" not in reasons(c)
+
+    def test_only_a_verified_percent_change_is_checked(self) -> None:
+        # A mismatched number is already withheld for the mismatch; it is not also checked
+        # for direction, because there is no published value it was declared against.
+        c = claim(
+            "Truck driving is projected to grow 12%.",
+            "O:53-3032",
+            numbers=[("O:53-3032", "percent_change", 12)],
+        )
+        assert "number_mismatch:percent_change" in reasons(c)
+        assert "direction_reversed:percent_change" not in reasons(c)
 
 
 class TestPeriods:

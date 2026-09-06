@@ -53,9 +53,11 @@ exposes four capabilities, each bounded the same way:
    published numbers it uses. A verifier then checks, programmatically and without a model:
    that every cited id was among the records retrieved; that every declared number matches
    the published field it names, on the published basis; that every numeric token in the
-   claim's text traces to a declared number (or to an enumeration or a year); and that no
+   claim's text traces to a declared number (or to an enumeration or a year); that no
    claim mentions a measure the record reports as suppressed without saying that it is not
-   reported. A claim that fails any check is withheld, and the count of withheld claims is
+   reported; and that a claim naming a direction for a projected percent change names the
+   published one, since a projected change is matched on magnitude and the direction lives
+   in the word. A claim that fails any check is withheld, and the count of withheld claims is
    shown beside what survived. The reader sees what the data supports and a number for what
    the model said that it did not.
 
