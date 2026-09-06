@@ -8,6 +8,13 @@ second number is the product; the first is how much the verifier is doing.
 A results file is written only with provenance: provider, model, prompt version, commit,
 date, dataset snapshot. A run on the scripted fake is ``dry_run`` and exists to prove the
 harness works; it is never a measurement and a test refuses to let one be committed as one.
+
+A run measures the prompt and the verifier it ran on. When either is replaced the file stops
+describing the shipped service, so a committed run whose ``prompt_version`` is not the shipped
+:data:`afterward.ask.PROMPT_VERSION` must say so in a ``superseded`` banner naming what changed
+under it. Without the banner the file is refused, because the failure it prevents is silent:
+a reader following the README or an open decision to the eval surface reads numbers produced
+by code the repository has since replaced.
 """
 
 from __future__ import annotations
@@ -49,6 +56,11 @@ PROVENANCE_KEYS = (
     "is_fixture",
 )
 STATUSES = ("run", "not_run", "dry_run")
+
+SUPERSEDED_KEY = "superseded"
+MIN_SUPERSEDED_NOTE = 80
+"""A supersession banner has to be worth reading: which prompt version superseded this run,
+and what changed under it. A bare flag would turn the check off without telling anyone why."""
 
 STATE_BENCHMARK_IN_TEXT = re.compile(
     r"(state|statewide|california|estatal|estado)[^.;]{0,60}(\b27\s?%|\$\s?16,97[89])|"
@@ -505,7 +517,28 @@ def provenance_problems(doc: Mapping[str, Any]) -> list[str]:
             problems.append("a run must carry suite results")
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(block.get("date", ""))):
             problems.append("provenance.date must be an ISO date")
+        problems.extend(_staleness_problems(doc, block))
     return problems
+
+
+def _staleness_problems(doc: Mapping[str, Any], block: Mapping[str, Any]) -> list[str]:
+    """A run on a prompt the repository no longer ships is a record, not a measurement.
+
+    It stays committed either way -- history is not rewritten here -- but it has to say which
+    version replaced it, so nobody reads it as the shipped service's score.
+    """
+    version = str(block.get("prompt_version", ""))
+    if version == PROMPT_VERSION:
+        return []
+    banner = doc.get(SUPERSEDED_KEY)
+    if not isinstance(banner, str) or len(banner.strip()) < MIN_SUPERSEDED_NOTE:
+        return [
+            f"provenance.prompt_version {version!r} is not the shipped PROMPT_VERSION "
+            f"{PROMPT_VERSION!r}: commit a run on the shipped prompt, or give this document a "
+            f"{SUPERSEDED_KEY!r} banner of at least {MIN_SUPERSEDED_NOTE} characters naming the "
+            f"version that replaced it and what changed"
+        ]
+    return []
 
 
 def write_results(path: Path, doc: Mapping[str, Any]) -> None:

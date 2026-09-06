@@ -51,6 +51,22 @@ counters and nothing about who asked or what they typed (ADR 0003). What exists 
 - A quarterly scheduled CI job checks the upstream government feeds still respond and still
   contain California data, so a broken source surfaces before the next refresh is due.
 
+## Open: re-run the eval suites on the shipped prompt
+
+The one file under `evals/results/` measures prompt `2026-08-21.1`. The shipped
+`PROMPT_VERSION` is `2026-08-21.2`, and the verifier has changed three times under it since
+that run: #72 added `DENIAL_BEFORE_ZERO` and widened `_cited_records`, and #114 added
+`direction_reversed`. The file now carries a `superseded` banner saying so, and
+`evals.provenance_problems` refuses any future run whose `prompt_version` is not the shipped
+one unless it carries such a banner — so this cannot go stale silently again.
+
+What is still owed is the measurement itself: a live run of all four suites on the shipped
+prompt, committed under `evals/results/`. It needs a Bedrock invocation on
+`global.anthropic.claude-sonnet-4-6` (the model this account can invoke) and an owner's
+judgment on the numbers it produces, so it is not something a code change can close. **#94,
+which asks whether to deploy `afterward.ask`, should cite that run rather than the superseded
+one.**
+
 ## Metrics ledger
 
 Per QUALITY-AND-METRICS-STANDARD's ledger shape. Values as measured 2026-08-07.
