@@ -253,7 +253,7 @@ class TestProvenance:
             "provenance": {
                 "provider": "bedrock",
                 "model": "m",
-                "prompt_version": "v",
+                "prompt_version": PROMPT_VERSION,
                 "commit": "c" * 40,
                 "date": "2026-08-21",
                 "dataset_snapshot": "2026-08-17",
@@ -279,6 +279,52 @@ class TestProvenance:
         )
         not_run = evals.not_run_document(good["provenance"] | {"status": "not_run"}, "no provider")
         assert evals.provenance_problems(not_run) == []
+
+    def test_a_run_on_a_prompt_the_code_no_longer_ships_must_say_so(self) -> None:
+        """The failure this prevents is silent: a stale file reads as the shipped score.
+
+        The committed 2026-08-21.1 run measured a prompt and two verifier rules that #72
+        replaced, and reported a reason code the shipped verifier cannot emit, while nothing
+        compared its version to PROMPT_VERSION.
+        """
+        stale: dict[str, Any] = {
+            "status": "run",
+            "provenance": {
+                "provider": "bedrock",
+                "model": "m",
+                "prompt_version": "2026-08-21.1",
+                "commit": "c" * 40,
+                "date": "2026-08-22",
+                "dataset_snapshot": "2026-08-17",
+                "is_fixture": False,
+            },
+            "suites": {"grounding": {}},
+        }
+        problems = evals.provenance_problems(stale)
+        assert any("2026-08-21.1" in p and PROMPT_VERSION in p for p in problems)
+
+        # A banner clears it -- but only one that says something.
+        assert evals.provenance_problems({**stale, "superseded": True})
+        assert evals.provenance_problems({**stale, "superseded": "stale"})
+        assert evals.provenance_problems({**stale, "superseded": " " * 200})
+        cleared = {**stale, "superseded": "x" * evals.MIN_SUPERSEDED_NOTE}
+        assert evals.provenance_problems(cleared) == []
+
+        # A banner is not a way to commit a run on the shipped prompt without provenance.
+        no_commit = {
+            **cleared,
+            "provenance": {**stale["provenance"], "commit": "unknown"},
+        }
+        assert "provenance.commit missing" in evals.provenance_problems(no_commit)
+
+    def test_the_committed_stale_run_carries_its_banner(self) -> None:
+        path = RESULTS_DIR / "2026-08-21-bedrock-claude-sonnet-4-6.json"
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        assert doc["provenance"]["prompt_version"] != PROMPT_VERSION
+        banner = doc[evals.SUPERSEDED_KEY]
+        assert PROMPT_VERSION in banner
+        assert "number_on_uncited_record" in banner
+        assert doc["note"], "the original note stays as it was written"
 
     def test_every_committed_results_file_has_provenance(self) -> None:
         files = sorted(RESULTS_DIR.glob("*.json"))
