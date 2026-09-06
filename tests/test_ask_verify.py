@@ -450,6 +450,28 @@ class TestGuidance:
         )
 
 
+class TestResolvedCitations:
+    def test_a_verdict_carries_the_records_the_claim_was_checked_against(self) -> None:
+        # Declared-not-cited and an abbreviated id both resolve; the verdict names both whole.
+        v = verify_claim(
+            claim("Costs $3,900.", numbers=[("P:a", "cost.total_out_of_pocket", 3900)]), _pack()
+        )
+        assert v.accepted and v.cites == ["P:a"]
+        v = verify_claim(claim("Truck drivers.", "O:53-30"), _pack())
+        assert v.accepted and v.cites == ["O:53-3032"]
+
+    def test_an_accepted_claim_ships_the_resolved_ids_not_the_model_s(self) -> None:
+        c = claim("Costs $3,900.", numbers=[("P:a", "cost.total_out_of_pocket", 3900)])
+        verified = verify(Narration(claims=[c]), _pack())
+        assert verified.accepted[0].cites == ["P:a"]
+        assert c.cites == [], "the model's own claim is left as it was"
+
+    def test_the_text_kind_and_numbers_are_still_the_model_s(self) -> None:
+        c = claim("Costs $3,900.", "P:a", numbers=[("P:a", "cost.total_out_of_pocket", 3900)])
+        shown = verify(Narration(claims=[c]), _pack()).accepted[0]
+        assert shown.text == c.text and shown.kind == c.kind and shown.numbers == c.numbers
+
+
 class TestVerifyNarration:
     def test_accepted_and_withheld_are_separated_and_counted(self) -> None:
         narration = Narration(

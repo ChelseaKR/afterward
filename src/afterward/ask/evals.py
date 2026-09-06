@@ -24,6 +24,7 @@ from typing import Any
 from afterward.ask import PROMPT_VERSION
 from afterward.ask.api import AskRequest, Assistant, Trace
 from afterward.ask.dataset import normalize
+from afterward.ask.evidence import PEERS_ID
 from afterward.ask.narrate import Claim
 from afterward.ask.query import QueryResult
 from afterward.ask.verify import (
@@ -353,7 +354,9 @@ def _comparability(assistant: Assistant, cases: Sequence[Mapping[str, Any]]) -> 
             "invented_benchmark_shown": [c.text for c in after if _invented_benchmark(c)],
             "period_unlabelled_by_model": [c.text for c in before if _period_unlabelled(c)],
             "period_unlabelled_shown": [c.text for c in after if _period_unlabelled(c)],
-            "peer_comparison_shown": [c.text for c in after if "PEERS" in c.cites],
+            # On the verifier's resolved ids: a peer comparison accepted through a declared
+            # PEERS number, with PEERS absent from what the model wrote, still counts.
+            "peer_comparison_shown": [c.text for c in after if PEERS_ID in c.cites],
         }
         for key, found in flags.items():
             totals[key] += int(bool(found))

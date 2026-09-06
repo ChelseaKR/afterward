@@ -118,6 +118,103 @@ class TestFullSequence:
         assert "outside the dataset" in provider.calls[1]["user"]
 
 
+class TestClaimsCarryTheResolvedRecordIds:
+    """What the reader is shown must be the citation set the claim was verified against.
+
+    The verifier widens the model's list on purpose -- a record a number is declared from is
+    cited whether or not the model repeated the id, and an abbreviated uuid resolves by unique
+    prefix. Both are shapes the model actually produces. Shipping the model's narrower list
+    put a checked figure on the page with no source link, because ``citedLinks`` resolves a
+    cite by exact id and drops silently what it cannot find.
+    """
+
+    @staticmethod
+    def _priced_program(dataset: Dataset) -> tuple[str, float]:
+        for uuid, program in dataset.programs.items():
+            cost = (program.get("cost") or {}).get("total_out_of_pocket")
+            if cost:
+                return uuid, float(cost)
+        raise AssertionError("the fixture has no program with a cost")
+
+    def _answer(self, dataset: Dataset, uuid: str, cost: float, cites: list[str]) -> Any:
+        def script(route: str, user: str) -> dict[str, Any]:
+            if route == "structure":
+                return structured_query(intent="program_detail")
+            return {
+                "claims": [
+                    {
+                        "text": f"The program costs ${cost:,.0f}.",
+                        "kind": "data",
+                        "cites": cites,
+                        "numbers": [
+                            {
+                                "record": f"P:{uuid}",
+                                "field": "cost.total_out_of_pocket",
+                                "value": cost,
+                            }
+                        ],
+                    }
+                ],
+                "follow_up_questions": [],
+            }
+
+        assistant = Assistant(dataset, FakeProvider(script), site_root="https://example.test")
+        return assistant.ask(AskRequest(text="what does it cost?", program_id=uuid))
+
+    def test_a_number_declared_without_a_cite_ships_the_record_it_rests_on(
+        self, dataset: Dataset
+    ) -> None:
+        uuid, cost = self._priced_program(dataset)
+        response = self._answer(dataset, uuid, cost, cites=[])
+        assert response.withheld.count == 0
+        assert response.claims[0].cites == [f"P:{uuid}"]
+        # what web/lib/ask.ts citedLinks does: programs.find(p => p.id === cite.slice(2))
+        shown = {p.id for p in response.programs}
+        assert all(c[2:] in shown for c in response.claims[0].cites)
+
+    def test_an_abbreviated_uuid_ships_whole(self, dataset: Dataset) -> None:
+        uuid, cost = self._priced_program(dataset)
+        response = self._answer(dataset, uuid, cost, cites=[f"P:{uuid[:8]}"])
+        assert response.withheld.count == 0
+        assert response.claims[0].cites == [f"P:{uuid}"]
+        shown = {p.id for p in response.programs}
+        assert all(c[2:] in shown for c in response.claims[0].cites)
+
+    def test_the_model_s_own_claim_is_not_rewritten(self, dataset: Dataset) -> None:
+        # Only the ids the response ships change. The narration in the trace stays the record
+        # of what the model said, which is what an eval measuring the model needs.
+        uuid, cost = self._priced_program(dataset)
+
+        def script(route: str, user: str) -> dict[str, Any]:
+            if route == "structure":
+                return structured_query(intent="program_detail")
+            return {
+                "claims": [
+                    {
+                        "text": f"The program costs ${cost:,.0f}.",
+                        "kind": "data",
+                        "cites": [],
+                        "numbers": [
+                            {
+                                "record": f"P:{uuid}",
+                                "field": "cost.total_out_of_pocket",
+                                "value": cost,
+                            }
+                        ],
+                    }
+                ],
+                "follow_up_questions": [],
+            }
+
+        assistant = Assistant(dataset, FakeProvider(script))
+        response, trace = assistant.ask_traced(
+            AskRequest(text="what does it cost?", program_id=uuid)
+        )
+        assert trace.narration is not None
+        assert trace.narration.claims[0].cites == []
+        assert response.claims[0].cites == [f"P:{uuid}"]
+
+
 class TestFailsClosed:
     def test_no_provider_means_unavailable_not_a_guess(self, dataset: Dataset) -> None:
         assistant = Assistant(dataset, None)
