@@ -12,6 +12,8 @@ numbers, and the typed facts in the pack. The rules, in the order they are appli
 - No sentence mentions a suppressed measure without saying it is not reported, and no
   sentence about a record with a suppressed measure renders the absence as a zero or a
   nobody.
+- A sentence that names a direction for a projected percent change names the published one:
+  a decline is not narrated as growth, and growth is not narrated as a decline.
 - A quarterly earnings figure is labelled as a quarter; an annual wage is labelled as a year.
 - A comparison cites PEERS, declares the peer figure, says what the peer figure is, and is
   not made against a value the program did not report or a cohort that is not its own.
@@ -58,6 +60,34 @@ DENIAL_BEFORE_ZERO = re.compile(
 reading -- "not 0%", "does not mean no one was hired", "no es cero" -- which is exactly what
 a faithful narration says about a suppressed cell. The first live run withheld those
 sentences as renderings; they are the opposite."""
+
+GROWTH_WORDS = re.compile(
+    r"\bgrow\w*|\bgrew\b|\bgrowth\b|\bexpand\w*|\bincreas\w*|\bris(e|es|ing)\b|\brose\b|"
+    r"\bgain\w*|\badd(s|ed|ing)?\b|\bmore\b|\bup\b|"
+    r"\bcrec\w*|\baument\w*|\bexpansi\w*|\bm[aá]s\b|\bmayor(es)?\b|\bsub(e|en|ir[aá]?)\b|"
+    r"\bampli\w*",
+    re.I,
+)
+
+DECLINE_WORDS = re.compile(
+    r"\bshrink\w*|\bshrank\b|\bshrunk\w*|\bdeclin\w*|\bdecreas\w*|\bfall\w*|\bfell\b|"
+    r"\bdrop\w*|\bfewer\b|\bloss(es)?\b|\blos(e|es|ing)\b|\bcontract(s|ed|ing|ion)?\b|"
+    r"\bshed(s|ding)?\b|\bdown\b|\breduc\w*|"
+    r"\bdisminu\w*|\bbaj(a|an|ar|ar[aá]|[oó])\b|\bmenos\b|\bmenor(es)?\b|"
+    r"\bca(e|en|er|er[aá]|[ií]da)\b|\bp[eé]rdida?s?\b|\bperder\b|\bdescens\w*|\bcontracci\w*",
+    re.I,
+)
+"""Words that assert a direction of travel for a projected change, in English and Spanish.
+
+``matches`` and ``renderings`` drop the sign of a ``percent`` fact on purpose -- the design is
+that the magnitude lives in the number and the direction lives in the word. These two patterns
+are the other half of that bargain: they read the word. Without them the sign is checked
+nowhere, and "projected to grow 15.8%" verifies against a published -15.8.
+"""
+
+PERCENT_CHANGE_FIELDS = frozenset({"percent_change", "region.percent_change"})
+"""The fields ``evidence._projection_facts`` gives ``kind="percent"``: EDD's ten-year projected
+change in employment, statewide and for the region."""
 
 BENCHMARK_NOT_PEERS = re.compile(
     r"\baverage\b|\bpromedio\b|\bmost programs\b|\bla mayor[ií]a de los programas\b|"
@@ -166,6 +196,7 @@ def verify_claim(claim: Claim, pack: EvidencePack) -> Verdict:
     verified_numbers = _check_numbers(claim, cited, reasons)
     _check_tokens(claim, cited, verified_numbers, pack, reasons)
     _check_suppression(claim, cited, reasons)
+    _check_direction(claim, verified_numbers, reasons)
     _check_periods(claim, verified_numbers, reasons)
     _check_comparison(claim, cited, verified_numbers, reasons)
     if BENCHMARK_NOT_PEERS.search(claim.text):
@@ -227,7 +258,12 @@ def _check_numbers(
 
 
 def matches(fact: Fact, declared: float) -> bool:
-    """Whether a declared value is the published value, on the published basis."""
+    """Whether a declared value is the published value, on the published basis.
+
+    For ``percent`` the basis drops the sign: a narration writes "a 15.8% decline", not
+    "-15.8%", so a declared +15.8 matches a published -15.8. Direction is therefore not
+    checked here; ``_check_direction`` checks it against the claim's words.
+    """
     if not isinstance(fact.value, int | float) or isinstance(fact.value, bool):
         return False
     v = float(fact.value)
@@ -280,7 +316,11 @@ def _published_figures(record: Record) -> set[float]:
 
 
 def renderings(fact: Fact) -> set[float]:
-    """Every way a verified figure may appear in text: rounded, as a percent, to the hundred."""
+    """Every way a verified figure may appear in text: rounded, as a percent, to the hundred.
+
+    A ``percent`` fact renders unsigned as well as signed, for the same reason ``matches``
+    accepts an unsigned declaration; ``_check_direction`` supplies the sign check.
+    """
     v = float(fact.value)
     out = {v, round(v), round(v, 1), round(v, 2)}
     if fact.kind == "rate":
@@ -353,6 +393,38 @@ def renders_zero(sentence: str) -> bool:
         if not (DENIAL_BEFORE_ZERO.search(before) and NOT_REPORTED.search(sentence)):
             return True
     return False
+
+
+def _check_direction(
+    claim: Claim, verified: Iterable[tuple[DeclaredNumber, Fact]], reasons: list[str]
+) -> None:
+    """Whether the words agree with the sign of a declared projected percent change.
+
+    ``matches`` accepts +15.8 for a published -15.8, and ``renderings`` allows the positive
+    token in the text, because a faithful narration writes "a 15.8% decline" rather than
+    "-15.8%": the magnitude is the number and the direction is the word. That leniency is only
+    safe if something reads the word, and nothing did -- ``_check_suppression`` walks suppressed
+    fields only, and a reported -15.8 is not suppressed.
+
+    So: a claim that declares a ``percent_change`` and describes it in the wrong direction is
+    withheld. A correct direction word anywhere in the claim clears it, which keeps "fewer of
+    these jobs, not more" and a two-sentence claim that names the decline once from being
+    withheld over a stray "more". The residual limit is a claim that names the direction
+    correctly in one sentence and reverses it in another; that is not withheld here.
+
+    A published change of exactly zero asserts no direction, so no word can contradict it.
+    """
+    for number, fact in verified:
+        if fact.kind != "percent" or number.field not in PERCENT_CHANGE_FIELDS:
+            continue
+        published = float(fact.value)
+        if published == 0:
+            continue
+        right, wrong = (
+            (GROWTH_WORDS, DECLINE_WORDS) if published > 0 else (DECLINE_WORDS, GROWTH_WORDS)
+        )
+        if wrong.search(claim.text) and not right.search(claim.text):
+            reasons.append(f"direction_reversed:{number.field}")
 
 
 def _check_periods(
