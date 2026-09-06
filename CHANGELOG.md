@@ -8,6 +8,37 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `afterward export-csv` and `make csv-export`: the dataset as one flat table in which no blank
+  ever carries a meaning. The site's dataset is sharded JSON, which is right for a page loading
+  one programme and wrong for the reader most likely to check these figures — a journalist or a
+  researcher with a spreadsheet, who today has to reverse-engineer the shards. Every measure now
+  carries a state column beside it, the state column is never empty, and a value cell is empty
+  only where the state cell says why. A reader reaching for `fillna(0)` has been told, in the
+  column next to the one they filled, that there was never a number there. A Frictionless Table
+  Schema is generated from the same column definitions in the same pass — so a column cannot
+  exist in one and not the other — with every state column constrained to the vocabulary by an
+  enum, and `""` declared as the only missing value.
+  The vocabulary is `reported`, `not_reported` and `competency_based`, and the missing fourth is
+  the point. `competency_based` reaches only `length_weeks` and `length_hours`, from the record's
+  own flag: the ETP data dictionary attaches `-1` on those two elements to a programme that
+  advances on demonstrated competency, which is a fact about the programme and not missing data.
+  There is deliberately **no `suppressed`**, which the issue asked for. WIOA does suppress
+  small-cohort cells and that is why many of these measures are absent, but the scorecard serves
+  a suppressed cell and an unreported cell as the same `-1` and its data dictionary calls the
+  sentinel "not reported or suppressed" without separating them, so by the time a measure reaches
+  the emitted record the cause is gone. Writing `suppressed` into a cell whose cause nobody
+  measured would be this project's own headline failure mode wearing its opposite face: not an
+  absence published as a number, but an absence published as a specific, defensible-sounding
+  cause. A test pins that decision to the premise it rests on — `dol_etp.clean_measure` mapping
+  both `-1` and `""` to `None` — so if the source ever separates the two, the test says so and
+  the vocabulary can grow.
+  Deterministic: rows sort by `uuid`, so the emitted order cannot move the bytes, and no
+  wall-clock appears anywhere. The rule is checked against the rendered bytes rather than
+  re-derived from the records, because a check that recomputes its expectation with the function
+  that produced the answer compares a value to itself; a failed check refuses before anything is
+  written, so no partial file survives to be mistaken for a good one. The target writes into
+  `dist/` only: the bytes the site serves are untouched.
+
 - `afterward query` and `GET /query`: the deterministic query layer with no model attached.
   `afterward.ask` structures a sentence with a model, runs a deterministic query over the
   published dataset, then verifies every claim. The middle step is the whole of what a job
