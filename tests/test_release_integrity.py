@@ -12,14 +12,39 @@ other people's datasets on, committed inside the thing that checks for it.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import io
 import json
+import sys
 import tarfile
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from scripts import release_integrity as ri
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS = REPO_ROOT / "scripts"
+
+
+def _script(name: str) -> Any:
+    """Load a gate script by path, the way `tests/test_deploy_staleness.py` does.
+
+    Not `from scripts import ...`. `scripts/` is not a package, so importing it that way makes
+    mypy see the same file under two module names (`release_integrity` and
+    `scripts.release_integrity`) and refuse to check anything at all -- which a warm local mypy
+    cache hides and a clean CI run does not.
+    """
+    spec = importlib.util.spec_from_file_location(name, SCRIPTS / f"{name}.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    # Registered before execution: `@dataclass` resolves annotations through
+    # `sys.modules[cls.__module__]`.
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+ri = _script("release_integrity")
 
 CLEAN_COVERAGE = {"snapshot_date": "2026-08-17", "total_programs": 3, "state": "CA"}
 
