@@ -623,3 +623,23 @@ def test_a_workbook_missing_a_member_this_reader_opens_is_refused(tmp_path: Path
         archive.writestr("xl/worksheets/sheet1.xml", _sheet_xml([HEADER, row()]))
     with pytest.raises(dol_bulk.BulkExportError, match="has no member"):
         dol_bulk.read_bulk_export(path)
+
+
+def test_the_reader_actually_repairs_the_cip_it_reads_not_only_the_helper(
+    tmp_path: Path,
+) -> None:
+    """A negative control found this test missing, and it is worth saying why.
+
+    `repair_float_cip` was covered as a pure function, and every workbook fixture here filed a
+    clean `48.0508`, so nothing proved the reader *called* it. Replacing the call with the
+    plain text reader left the whole suite green -- the fixture sat where the failure was
+    impossible. This is the widened fixture: a CIP filed the way the real export files 11.0201
+    must still join to a program whose CIP is the same code written properly.
+    """
+    path = write_workbook(tmp_path / "bulk.xlsx", [HEADER, row(cip="11.020099999999999")])
+    export = dol_bulk.read_bulk_export(path)
+    assert list(export.by_key) == [("example college", "welding certificate", "11.0201", "90001")]
+    payloads = [{**_payload(), "cip_code": "11.0201"}]
+    _attach_bulk_denominator(payloads, export)
+    assert payloads[0]["employment_denominator"]["state"] == dol_bulk.STATE_SHOWN
+    assert payloads[0]["employment_denominator"]["denominator"] == 50.0
