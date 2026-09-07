@@ -34,7 +34,8 @@ describe("encoding", () => {
   });
 
   it("encodes the unplaced-area selection as its own token", () => {
-    // "No region" is a choice a reader makes about 53% of programs, not an absent filter.
+    // "No region" is a choice a reader makes, not an absent filter — and it stays one now
+    // that the residual is 165 rather than 1,741.
     expect(filtersToParams(filters({ area: { kind: "unplaced" } })).get("area")).toBe("none");
   });
 

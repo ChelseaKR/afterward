@@ -40,15 +40,20 @@ export type Outlook = "any" | "growing" | "shrinking";
  * The geography filter, over the labor-market areas California itself publishes.
  *
  * Three states rather than "an area or nothing", because the dataset has three. A program is
- * placed in an area only when its city is one EDD names in that area's own title, and 1,741
- * of California's 3,266 programs are in cities EDD names nowhere — including cities that sit
- * squarely inside these areas' counties (Van Nuys, Pleasant Hill, Clovis). Those programs are
- * not "somewhere else" and they are not "region unknown": they are unplaced, and nothing here
- * may quietly file them under an area or under a residual bucket that reads like one.
+ * placed by one of two rules, both of them restatements of EDD's own published area titles:
+ * the title names its city, or the title names the county its ZIP resolves to. Neither infers
+ * California geography. On the 2026-08-04 snapshot that places 3,101 of 3,266 programs
+ * (94.9%) and leaves 165 unplaced — 160 whose ZIP straddles two areas (La Palma, Cypress,
+ * Davis, Dixon, Truckee) and 5 whose mailing ZIP has no crosswalk row at all. Those programs
+ * are not "somewhere else" and they are not "region unknown": they are unplaced, and nothing
+ * here may quietly file them under an area or under a residual bucket that reads like one.
  *
  * `"unplaced"` is therefore a selection a reader can make, not merely a state they fall into.
- * Without it the 53% would be reachable only by never touching this filter, which is the same
- * as hiding them.
+ * The residual shrank by an order of magnitude when the county rule landed and that changed
+ * nothing about this: a smaller residual is still a residual, and without this option it would
+ * be reachable only by never touching the filter, which is the same as hiding it.
+ *
+ * See `PROVENANCE.md` D8 for the crosswalk behind the second rule and what it cannot answer.
  */
 export type AreaFilter =
   | { kind: "any" }
@@ -108,10 +113,16 @@ export interface Tally {
 /**
  * Published areas with at least one program, most programs first.
  *
- * Only areas that actually received programs appear. EDD publishes 31 areas and four of them
- * hold nothing — three rural Consortium regions whose names are region coinages rather than
- * city-titled CBSAs, so no program city can ever match one. Offering them as filter options
- * would advertise 31 choices, four of which silently return nothing.
+ * Only areas that actually received programs appear, and the list is derived from the rows
+ * rather than from EDD's published area list, so an area that holds nothing is never offered
+ * as a choice that silently returns nothing.
+ *
+ * That guard used to be doing more work than it does now. While placement went by principal
+ * city alone, the three rural Consortium regions could never receive a program at all — their
+ * names are EDD coinages rather than CBSA titles, so there was no city for a program to match.
+ * The county rule reaches them, because their titles do name counties, and it put 71 programs
+ * into them on the 2026-08-04 snapshot. Deriving the list from the rows is why that arrived
+ * without a code change here.
  */
 export function areas(programs: SearchEntry[]): Tally[] {
   const counts = new Map<string, number>();
@@ -137,10 +148,12 @@ export function unplacedTotal(programs: SearchEntry[]): number {
 /**
  * Cities with at least one program, most programs first.
  *
- * Cities are kept alongside areas rather than replaced by them. An area only ever contains
- * the two or three cities EDD names in its title, so the city list is the *only* geographic
- * handle the 1,741 unplaced programs have; dropping it would leave someone in Clovis unable
- * to narrow to anything at all. Pass a list already narrowed by `matchesArea` to get the
+ * Cities are kept alongside areas rather than replaced by them, for two reasons that survived
+ * the county rule. It is still the only geographic handle an unplaced program has — 165 of
+ * them on the 2026-08-04 snapshot, down from 1,741, and a reader in Truckee still has nothing
+ * else. And an area is now a much coarser thing than it was: a county-placed program is
+ * somewhere in a county the area's title names, which for Los Angeles County is a great many
+ * places that are not each other. Pass a list already narrowed by `matchesArea` to get the
  * cities inside one area — the caller does the narrowing so this stays a plain tally.
  */
 export function cities(programs: SearchEntry[]): Tally[] {
@@ -276,9 +289,10 @@ export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
  *
  * The exact cost of narrowing by area, measured against everything else the reader asked
  * for: query, outcomes, outlook and cost still apply, geography does not. That is the number
- * to put on screen beside a filtered result set — the blanket 1,741 would overstate what any
- * particular search is losing, and stating nothing would let the filter read as "everywhere
- * near here" when it means "in the two or three cities EDD names".
+ * to put on screen beside a filtered result set — the dataset-wide unplaced total would
+ * overstate what any particular search is losing, and stating nothing would let the filter
+ * read as "everywhere near here" when it means "in an area whose EDD title names this
+ * program's city, or the county its ZIP resolves to".
  */
 export function unplacedMatches(
   programs: SearchEntry[],

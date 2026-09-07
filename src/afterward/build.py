@@ -2532,17 +2532,22 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     ``a`` carries the program's published EDD area, and only its short name: the full
     ``area_name`` repeats a county gloss ("Fresno MSA (Fresno and Madera Counties)") that a
     filter has no use for, and the gloss is one fetch away on the program page. Measured on
-    the 3,266-program build, the field costs 5.1 KB gzipped (178.4 KB to 183.5 KB, +2.8%).
-    Interning the 27 distinct names into a lookup table and shipping an integer per row would
-    have cost 1.9 KB instead, and was rejected: an integer means nothing without the table, so
-    a table that ever slipped out of step with the rows would attribute programs to the wrong
-    labour market silently, which is the one failure this dataset is built to refuse. 3.2 KB
-    is a cheap price for a row that can be read on its own.
+    the 3,266-program build **before the county placement rule**, when 1,525 rows carried the
+    key rather than 3,101, the field cost 5.1 KB gzipped (178.4 KB to 183.5 KB, +2.8%), and
+    interning the distinct names into a lookup table and shipping an integer per row would
+    have cost 1.9 KB instead. That measurement has not been retaken and the figure is stale in
+    the direction of understating the cost, because twice as many rows now carry a string.
+    The decision it supported is unchanged and does not turn on the size: interning was
+    rejected because an integer means nothing without the table, so a table that ever slipped
+    out of step with the rows would attribute programs to the wrong labour market silently,
+    which is the one failure this dataset is built to refuse. A row that can be read on its
+    own is worth a few kilobytes, and worth more of them than it was.
 
-    ``a`` is null for the 1,741 programs whose city EDD does not name. That is a third state,
-    not an absence to be tidied away: it is neither "not reported" (the city is known, and
-    published in ``c``) nor membership in some residual area. The key is always written so a
-    consumer can tell an unplaced program from an index built before this field existed.
+    ``a`` is null for a program neither placement rule reaches — 165 of 3,266 on the
+    2026-08-04 snapshot, against 1,741 before the county rule. That is a third state, not an
+    absence to be tidied away: it is neither "not reported" (the city is known, and published
+    in ``c``) nor membership in some residual area. The key is always written so a consumer
+    can tell an unplaced program from an index built before this field existed.
     """
     occupations = program["occupations"]
     outcomes = program["outcomes"]
