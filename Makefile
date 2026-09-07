@@ -4,7 +4,7 @@
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
 	ctdl-statements ctdl-package csv-export dataset-diff ask-serve ask ask-eval ask-eval-dry \
-	ci-artifact-check
+	ci-artifact-check zip-county-refresh
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -48,6 +48,12 @@ audit:
 # Enforces the clean-room constraint recorded in PROVENANCE.md.
 provenance-check:
 	uv run python scripts/provenance_check.py
+
+# Re-derive the vendored ZIP-to-county extract (D8) from the Census relationship file.
+# Network-bound and run by hand. The 2020 relationship files are decennial, so this exists to
+# make the extract reproducible rather than to keep it current: run it and diff the result.
+zip-county-refresh:
+	uv run python scripts/zip_county_refresh.py
 
 # Refresh the dataset from DOL and CA EDD. Network-bound; not part of `verify`.
 # Emits straight into the web app's public directory, which is where the site reads it.

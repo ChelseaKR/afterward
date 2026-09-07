@@ -662,8 +662,24 @@ export interface Program {
     lat: number | null;
     lon: number | null;
   };
-  /** Null when this program's city could not be placed in a published EDD area. */
+  /** Null when neither placement rule could put this program in a published EDD area. */
   region: ProgramArea | null;
+  /**
+   * Why `region` is null, and null itself when it is not.
+   *
+   * Two rules place a program — its city against EDD's principal-city names, then its ZIP
+   * against the counties EDD's area titles name — and they can decline for five different
+   * reasons: `crosswalk_not_read` (this build read no ZIP-county crosswalk, so the second
+   * rule was never attempted, which is a fact about the build and not about the program),
+   * `no_zip`, `zip_not_in_crosswalk` (a real mailing ZIP with no ZCTA — a PO Box range),
+   * `county_outside_areas`, and `straddles_areas` (the ZIP reaches two EDD areas, so either
+   * answer would render identically to the other).
+   *
+   * Optional because a record built before this field existed carries no such key. Absent is
+   * not `crosswalk_not_read`: one is a record that predates the question, the other is an
+   * answer to it.
+   */
+  region_unplaced_reason?: string | null;
   /**
    * How long the program takes, or the reason it has no clock length.
    *

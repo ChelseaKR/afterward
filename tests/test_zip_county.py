@@ -27,6 +27,7 @@ from afterward.build import (
     UNPLACED_NO_ZIP,
     UNPLACED_STRADDLES_AREAS,
     UNPLACED_ZIP_NOT_IN_CROSSWALK,
+    CountyIndex,
     area_for_zip,
     area_placement_coverage,
     county_index,
@@ -34,12 +35,14 @@ from afterward.build import (
     program_payload,
 )
 from afterward.sources import zip_county
-from afterward.sources.dol_etp import parse_program
+from afterward.sources.dol_etp import Program, parse_program
 from afterward.sources.edd_lmi import parse_area
 
 # EDD writes each area's counties into its own published title, so the fixtures below are
 # real ``Area Name`` strings from the 2024-2034 projections file rather than invented ones.
-LOS_ANGELES = parse_area("Metropolitan Area", "Los Angeles-Long Beach-Glendale MD (Los Angeles County)")
+LOS_ANGELES = parse_area(
+    "Metropolitan Area", "Los Angeles-Long Beach-Glendale MD (Los Angeles County)"
+)
 ORANGE = parse_area("Metropolitan Area", "Anaheim-Santa Ana-Irvine MD (Orange County)")
 INLAND_EMPIRE = parse_area(
     "Metropolitan Area",
@@ -62,7 +65,7 @@ def crosswalk() -> zip_county.ZipCountyCrosswalk:
 
 
 @pytest.fixture(scope="module")
-def counties(crosswalk: zip_county.ZipCountyCrosswalk) -> object:
+def counties(crosswalk: zip_county.ZipCountyCrosswalk) -> CountyIndex:
     return county_index(AREAS, crosswalk)
 
 
@@ -217,8 +220,10 @@ class TestVendoredExtract:
         the California one; keyed on the code, it is a county this pipeline knows nothing
         about, which is the truth."""
         assert crosswalk.california_county("Lake") == "06033"
-        assert "41037" in crosswalk.counties("97635")
-        assert "06033" not in crosswalk.counties("97635")
+        reached = crosswalk.counties("97635")
+        assert reached is not None
+        assert "41037" in reached
+        assert "06033" not in reached
 
     def test_a_mailing_zip_with_no_zcta_is_unanswerable_not_countyless(
         self, crosswalk: zip_county.ZipCountyCrosswalk
@@ -236,20 +241,20 @@ class TestVendoredExtract:
 
 
 class TestCountyIndex:
-    def test_every_county_edd_names_resolves(self, counties: object) -> None:
-        assert counties.unresolved_counties == ()  # type: ignore[attr-defined]
+    def test_every_county_edd_names_resolves(self, counties: CountyIndex) -> None:
+        assert counties.unresolved_counties == ()
 
     def test_a_consortium_region_is_indexed_even_though_no_city_can_match_it(
-        self, counties: object
+        self, counties: CountyIndex
     ) -> None:
         """The city rule cannot reach a Consortium: its name is an EDD coinage, not a CBSA
         title, so ``principal_cities`` is empty for it. Its gloss names real counties, and
         that is the half this rule reads."""
-        by_county = counties.areas_by_county  # type: ignore[attr-defined]
+        by_county = counties.areas_by_county
         assert by_county["06023"].area_name == NORTH_COAST.area_name  # Humboldt
 
-    def test_an_out_of_state_county_is_in_no_area(self, counties: object) -> None:
-        by_county = counties.areas_by_county  # type: ignore[attr-defined]
+    def test_an_out_of_state_county_is_in_no_area(self, counties: CountyIndex) -> None:
+        by_county = counties.areas_by_county
         assert "41037" not in by_county  # Lake County, Oregon
         assert "32031" not in by_county  # Washoe County, Nevada
 
@@ -264,14 +269,14 @@ class TestCountyIndex:
 
 
 class TestAreaForZip:
-    def test_a_zip_in_one_county_of_one_area_is_placed(self, counties: object) -> None:
+    def test_a_zip_in_one_county_of_one_area_is_placed(self, counties: CountyIndex) -> None:
         area, reason = area_for_zip("91355", counties)  # Valencia, Los Angeles County
         assert reason is None
         assert area is not None
         assert area.area_name == LOS_ANGELES.area_name
 
     def test_a_zip_straddling_two_counties_inside_one_area_is_placed(
-        self, counties: object
+        self, counties: CountyIndex
     ) -> None:
         """92373 (Redlands) reaches Riverside and San Bernardino. Both are named in the
         Inland Empire MSA's own title, so the whole ZIP is inside one area and there is
@@ -281,12 +286,12 @@ class TestAreaForZip:
         assert area is not None
         assert area.area_name == INLAND_EMPIRE.area_name
 
-    def test_a_zip_straddling_two_areas_stays_unplaced(self, counties: object) -> None:
+    def test_a_zip_straddling_two_areas_stays_unplaced(self, counties: CountyIndex) -> None:
         """90630 (Cypress) reaches Los Angeles and Orange, which are different EDD areas
         with different wages. Either answer would render identically to the other."""
         assert area_for_zip("90630", counties) == (None, UNPLACED_STRADDLES_AREAS)
 
-    def test_a_zip_reaching_out_of_state_stays_unplaced(self, counties: object) -> None:
+    def test_a_zip_reaching_out_of_state_stays_unplaced(self, counties: CountyIndex) -> None:
         """89439 is half in Sierra County, California and half in Washoe County, Nevada. The
         California half alone would place it; the ZIP as published does not."""
         assert area_for_zip("89439", counties) == (None, UNPLACED_STRADDLES_AREAS)
@@ -299,11 +304,13 @@ class TestAreaForZip:
         assert area_for_zip("91355", index) == (None, UNPLACED_COUNTY_OUTSIDE_AREAS)
 
     def test_a_zip_with_no_crosswalk_row_stays_unplaced_for_its_own_reason(
-        self, counties: object
+        self, counties: CountyIndex
     ) -> None:
         assert area_for_zip("90239", counties) == (None, UNPLACED_ZIP_NOT_IN_CROSSWALK)
 
-    def test_an_unreadable_zip_stays_unplaced_for_its_own_reason(self, counties: object) -> None:
+    def test_an_unreadable_zip_stays_unplaced_for_its_own_reason(
+        self, counties: CountyIndex
+    ) -> None:
         assert area_for_zip(None, counties) == (None, UNPLACED_NO_ZIP)
         assert area_for_zip("9135", counties) == (None, UNPLACED_NO_ZIP)
 
@@ -311,12 +318,12 @@ class TestAreaForZip:
         assert area_for_zip("91355", None) == (None, UNPLACED_CROSSWALK_NOT_READ)
 
 
-def _program(**source: object) -> object:
+def _program(**source: object) -> Program:
     return parse_program({"_source": {"field_uuid": "u", "field_etp": "provider", **source}})
 
 
 class TestPlaceProgram:
-    def test_the_city_rule_goes_first_and_says_so(self, counties: object) -> None:
+    def test_the_city_rule_goes_first_and_says_so(self, counties: CountyIndex) -> None:
         city_areas = {"los angeles": LOS_ANGELES}
         area, matched_on, reason = place_program(
             _program(field_city="Los Angeles", field_zip="90012"), city_areas, counties
@@ -325,17 +332,19 @@ class TestPlaceProgram:
         assert area is not None
 
     def test_a_city_edd_does_not_name_falls_through_to_the_county_rule(
-        self, counties: object
+        self, counties: CountyIndex
     ) -> None:
         area, matched_on, reason = place_program(
-            _program(field_city="Valencia", field_zip="91355"), {"los angeles": LOS_ANGELES}, counties
+            _program(field_city="Valencia", field_zip="91355"),
+            {"los angeles": LOS_ANGELES},
+            counties,
         )
         assert (matched_on, reason) == (AREA_MATCH_COUNTY, None)
         assert area is not None
         assert area.area_name == LOS_ANGELES.area_name
 
     def test_a_program_placed_by_county_has_that_county_named_in_the_areas_own_title(
-        self, counties: object
+        self, counties: CountyIndex
     ) -> None:
         """The claim the placement makes, checked against the string EDD published. If the
         county is not in the area's own ``area_name``, this rule has inferred a fact about
@@ -345,7 +354,7 @@ class TestPlaceProgram:
         assert area is not None
         assert "Humboldt" in area.area_name
 
-    def test_a_refused_program_carries_the_reason_and_no_area(self, counties: object) -> None:
+    def test_a_refused_program_carries_the_reason_and_no_area(self, counties: CountyIndex) -> None:
         area, matched_on, reason = place_program(
             _program(field_city="Cypress", field_zip="90630"), {}, counties
         )
@@ -353,14 +362,14 @@ class TestPlaceProgram:
 
 
 class TestProgramPayloadPlacement:
-    def test_the_record_says_which_rule_placed_it(self, counties: object) -> None:
+    def test_the_record_says_which_rule_placed_it(self, counties: CountyIndex) -> None:
         payload = program_payload(
             _program(field_city="Valencia", field_zip="91355"), {}, {}, counties=counties
         )
         assert payload["region"]["matched_on"] == AREA_MATCH_COUNTY
         assert payload["region_unplaced_reason"] is None
 
-    def test_an_unplaced_record_says_why(self, counties: object) -> None:
+    def test_an_unplaced_record_says_why(self, counties: CountyIndex) -> None:
         payload = program_payload(
             _program(field_city="Cypress", field_zip="90630"), {}, {}, counties=counties
         )

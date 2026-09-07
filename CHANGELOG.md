@@ -8,6 +8,37 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- A second program-placement rule, beside the principal-city one rather than instead of it: a
+  program is placed in an EDD labor market area when the county its ZIP resolves to is a county
+  that area's own published title names. The missing link was a citable ZIP-to-county crosswalk,
+  and it is now source D8 — the Census Bureau's 2020 ZCTA-to-county relationship file, with a
+  California extract vendored beside the code and a retrieval record every figure of which is
+  recomputed by a test. `PROVENANCE.md` records why that file and not HUD's USPS crosswalk, and
+  what it cannot answer, both measured.
+  On the 2026-08-04 snapshot this moves placement from 1,525 of 3,266 programs (46.7%) to 3,101
+  (94.9%). The residual is 165 and it is the interesting part: 160 programs whose ZIP straddles
+  two EDD areas, which stay unplaced because either answer would render identically to the
+  other, and 5 whose mailing ZIP has no ZCTA at all. `region.matched_on` says which rule placed
+  each program, `region_unplaced_reason` says which of five things happened to each one that was
+  not placed, and `coverage.area_placement` counts both from the emitted records rather than
+  from a number typed into a document.
+  Nothing is placed by proximity, on a share, or on a nearby area's figures. A ZIP reaching into
+  a county no EDD area claims — an out-of-state county on a border ZIP — is refused, which is
+  why the vendored extract deliberately keeps the seven rows naming counties in Nevada and
+  Oregon: dropping them would complete those ZIPs' county sets and turn a refusal into a
+  placement.
+
+- `make zip-county-refresh`: re-derives the vendored D8 extract from the Census file and
+  recomputes its retrieval record, so the extract can be reproduced and diffed rather than
+  trusted. Network-bound, run by hand, and in no build.
+
+### Changed
+
+- `check_coverage_counts` now recomputes `programs_mapped_to_area` and `programs_without_area`
+  from the emitted programs, as it already did for the outcome counts. Those two are the figures
+  the site's whole regional half is measured by, and they were carried through the offline build
+  untouched with nothing to notice if they had come to describe some other dataset.
+
 - `afterward export-csv` and `make csv-export`: the dataset as one flat table in which no blank
   ever carries a meaning. The site's dataset is sharded JSON, which is right for a page loading
   one programme and wrong for the reader most likely to check these figures — a journalist or a

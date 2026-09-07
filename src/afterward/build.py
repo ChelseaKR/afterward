@@ -2442,7 +2442,9 @@ def area_coverage(
             # Split by rule, so "this area has members at all" and "this area has members
             # the city rule could reach" stay separate questions. The Consortium regions can
             # only ever be non-zero on the second line.
-            "programs_by_principal_city": by_rule.get((area.area_name, AREA_MATCH_PRINCIPAL_CITY), 0),
+            "programs_by_principal_city": by_rule.get(
+                (area.area_name, AREA_MATCH_PRINCIPAL_CITY), 0
+            ),
             "programs_by_county": by_rule.get((area.area_name, AREA_MATCH_COUNTY), 0),
         }
         for area in areas
