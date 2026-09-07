@@ -174,7 +174,10 @@ class TestWhatTheApiSaysBeforeAnythingIsDownloaded:
         shape = ri.check_release_shape(
             {
                 "tag_name": "dataset-2026-08-04",
-                "assets": ["camino-dataset-2026-08-04.tar.gz", "camino-dataset-2026-08-04.tar.gz.sha256"],
+                "assets": [
+                    "camino-dataset-2026-08-04.tar.gz",
+                    "camino-dataset-2026-08-04.tar.gz.sha256",
+                ],
             }
         )
         assert shape.problems == []
@@ -254,9 +257,7 @@ class TestRefusingRatherThanReportingNothing:
     def test_a_named_tag_that_does_not_exist_is_a_refusal(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        monkeypatch.setattr(
-            ri, "list_releases", lambda repo: [{"tag_name": "dataset-2026-08-17"}]
-        )
+        monkeypatch.setattr(ri, "list_releases", lambda repo: [{"tag_name": "dataset-2026-08-17"}])
         code, result = ri.run(
             repo="o/r", tag="dataset-2026-01-01", min_programs=2, work_dir=tmp_path
         )
