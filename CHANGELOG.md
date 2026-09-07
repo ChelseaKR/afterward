@@ -86,6 +86,29 @@ All notable changes to this project are documented here. The format follows
   `GET /query` answers on the service whether or not a model is configured, under the same
   per-client meter as a question, because an unmetered route beside a metered one is a way
   around the meter.
+
+- **A clock on the gap between `main` and the site a visitor actually gets.**
+  `.github/workflows/deploy.yml` is dispatch-only for a reason its own header states — the
+  production dataset cannot be built on a hosted runner, so the only dataset an automatic
+  deploy could reach is the committed 60-program fixture, and publishing that would replace
+  3,266 real programs with 60 fake ones while looking entirely plausible. Nothing here
+  changes that. What was missing is that nothing reported the cost: measured on 2026-09-06,
+  the last successful deploy ran on 2026-08-17 against `41b8f7c` and `main` had moved 44
+  commits ahead, 18 of them changing what a visitor receives, with every gate in the
+  repository green — because none of them was asking. `live-integrity.yml` asks whether the
+  site serves the dataset it names, which a site frozen three weeks behind `main` answers
+  correctly every day.
+  `scripts/deploy_staleness.py` and `.github/workflows/deploy-staleness.yml` run weekly,
+  take the newest successful deploy run as the record of which commit is live (ADR 0001's
+  own answer to "what is live"), and open or refresh a single issue when a visitor-visible
+  commit has been waiting longer than the threshold, shutting it again once the site catches
+  up. It holds no AWS role, no `id-token: write` and no `contents: write`, and a test asserts
+  it never acquires one; a second test asserts `deploy.yml` still has no automatic trigger.
+  Every way the comparison can be meaningless — no successful deploy in the run history, a
+  deploy from another branch, a deployed commit a shallow clone does not have, a diverged
+  history — fails the run rather than producing a comfortable number, and "no visitor-visible
+  commit is waiting" is reported as such rather than as zero days.
+
 - **A deliberate change of direction, recorded before the code that follows it.**
   [ADR 0003](docs/adr/0003-runtime-ai-at-the-edges.md) records the owner's decision to add
   runtime AI to the product: an optional, opt-in service, `afterward.ask`, in which a model

@@ -35,6 +35,14 @@ name: Deploy
 #
 # If DOL ever stops refusing runner egress -- or a self-hosted runner with allowed egress
 # appears -- the dataset build moves in here and the release handshake goes away.
+#
+# What being dispatch-only costs is a clock nobody watches: `main` moves, the site does not,
+# and no gate here is red because none of them is asking. `.github/workflows/deploy-staleness.yml`
+# is the one that asks. It runs weekly, reads the newest successful run of THIS workflow as the
+# record of which commit is live, and opens an issue when a visitor-visible commit has been
+# waiting too long. It reports and does nothing else -- it holds no AWS role and no write
+# permission on this repository's contents, and `tests/test_deploy_staleness.py` asserts both
+# that it never acquires one and that this workflow still has no automatic trigger.
 
 on:
   workflow_dispatch:
