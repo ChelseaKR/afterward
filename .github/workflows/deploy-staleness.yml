@@ -1,0 +1,154 @@
+# Is the site a visitor gets the site this repository has?
+#
+# `deploy.yml` is dispatch-only and stays that way. The reason is in its header and it is a
+# good one: the production dataset cannot be built on a hosted runner, so the only dataset an
+# automatic deploy could reach is the committed 60-program fixture, and publishing that would
+# look entirely plausible while replacing 3,266 real programs with 60 fake ones. This workflow
+# does not deploy, cannot deploy, and holds no credential that would let it.
+#
+# What it does is watch the clock nobody was watching. Between 2026-08-17 and 2026-09-06 the
+# live site stood still while `main` took 44 commits, 18 of them changing what a visitor
+# receives, and every gate in this repository stayed green -- because none of them was asking.
+# `live-integrity.yml` asks whether the site serves the dataset it names, which a site frozen
+# three weeks behind `main` answers correctly every single day.
+#
+# The output is an issue, not a red run. A scheduled workflow that fails whenever a deploy is
+# overdue is red for weeks at a time and then ignored. This run goes red only when the
+# comparison cannot be made at all -- no successful deploy in the run history, a deployed
+# commit this clone does not have, a history that has diverged -- because a detector that
+# cannot tell must not be reporting a comfortable number.
+name: deploy staleness sentinel
+
+on:
+  schedule:
+    # Mondays. The dataset refreshes on a quarterly-ish cadence and code lands most days, so
+    # the useful question is asked weekly, not hourly.
+    - cron: "41 15 * * 1"
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: "Days an undeployed visitor-visible commit may wait before this reports"
+        required: false
+        default: "14"
+        type: string
+
+permissions:
+  contents: read # checkout, and the git history the comparison reads
+  actions: read # the deploy workflow's run history: which commit is live
+  issues: write # the report itself; nothing else here writes anywhere
+
+concurrency:
+  group: deploy-staleness
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Required, not incidental. With a shallow clone the deployed commit is simply
+          # absent, `git log <deployed>..origin/main` prints nothing, and the site reads as
+          # up to date. The script refuses that case rather than reporting it as zero, and
+          # this is what keeps it from having to.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Measure how far the live site is behind main
+        id: measure
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '14' }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python3 scripts/deploy_staleness.py \
+            --repo "$REPOSITORY" \
+            --max-age-days "$MAX_AGE_DAYS" \
+            | tee "$RUNNER_TEMP/report.txt"
+          {
+            echo "## Deploy staleness"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/report.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or refresh the report issue
+        if: steps.measure.outputs.verdict == 'stale'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          REPORT: ${{ steps.measure.outputs.report }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          marker='<!-- deploy-staleness-sentinel -->'
+          {
+            echo "$marker"
+            echo
+            echo "The deployed site is behind \`main\`. Nothing is broken; nothing has been"
+            echo "deployed either, and this is the workflow that says so out loud."
+            echo
+            echo '```'
+            echo "$REPORT"
+            echo '```'
+            echo
+            echo "A production deploy is a two-step operation on purpose — see the header of"
+            echo ".github/workflows/deploy.yml for why an automatic one would publish the CI"
+            echo "fixture as though it were the real dataset:"
+            echo
+            echo "1. Build and publish a dataset where the fetch works, on a workstation:"
+            echo "   \`make data && make dataset-publish\`. Skip this if the current dataset"
+            echo "   release is still the one you want; the guards on the deploy path will"
+            echo "   refuse it if it predates the code that describes it."
+            echo "2. Actions → Deploy → Run workflow, naming that dataset tag."
+            echo
+            echo "This issue is rewritten in place each week rather than reopened, and is"
+            echo "commented on and shut automatically once the site catches up."
+            echo
+            echo "Reported by [this run]($RUN_URL)."
+          } > "$RUNNER_TEMP/body.md"
+
+          existing="$(gh api "repos/${REPOSITORY}/issues?state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null) | select(.body != null and (.body | contains(\"${marker}\"))) | .number] | first // empty")"
+
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/${REPOSITORY}/issues/${existing}" \
+              -f "body=$(cat "$RUNNER_TEMP/body.md")" --jq '.html_url'
+          else
+            gh api -X POST "repos/${REPOSITORY}/issues" \
+              -f "title=The deployed site is behind main" \
+              -f "body=$(cat "$RUNNER_TEMP/body.md")" --jq '.html_url'
+          fi
+
+      - name: Shut the report issue once the site has caught up
+        if: steps.measure.outputs.verdict == 'current'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          REPORT: ${{ steps.measure.outputs.report }}
+        run: |
+          set -euo pipefail
+          marker='<!-- deploy-staleness-sentinel -->'
+          existing="$(gh api "repos/${REPOSITORY}/issues?state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null) | select(.body != null and (.body | contains(\"${marker}\"))) | .number] | first // empty")"
+          if [ -z "$existing" ]; then
+            echo "The site is current and no report issue is open. Nothing to do."
+            exit 0
+          fi
+          # Only ever an issue this workflow itself wrote: the marker is in the body, and a
+          # human report of the same problem would not carry it.
+          gh api -X POST "repos/${REPOSITORY}/issues/${existing}/comments" \
+            -f "body=The deployed site has caught up with \`main\`.
+
+\`\`\`
+${REPORT}
+\`\`\`
+"
+          gh api -X PATCH "repos/${REPOSITORY}/issues/${existing}" -f state=closed --jq '.state'
