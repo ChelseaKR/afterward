@@ -72,10 +72,30 @@ const en = {
   resultsRegion: "Search results",
   searchLabel: "Search programs, providers, or jobs",
   searchPlaceholder: "medical assistant, welding, Fresno…",
+  /**
+   * The older sentence, kept for an index built before the Spanish title table existed.
+   *
+   * True of such a build and of nothing else. It is not a fallback in the sense of "close
+   * enough": a build that carries no Spanish titles really does match English only, and
+   * saying so is the accurate thing to say about it.
+   */
   searchEnglishOnly:
     "Program names and job titles here are recorded in English only, exactly as the " +
     "provider filed them and the state published them. A search term in another language " +
     "will not match one.",
+  /**
+   * What this search does with Spanish, once the Spanish title table is in the index.
+   *
+   * `missing` and `total` are counted from the index rather than written here, because a
+   * proportion typed into copy is a number nothing rechecks.
+   */
+  searchSpanishTitles: (missing: number, total: number) =>
+    `Program names and provider names here are recorded in English only, exactly as the ` +
+    `provider filed them and the state published them. Job titles are different: the ` +
+    `Department publishes a Spanish name for most occupations, and the Spanish version of ` +
+    `this site searches those names as well as the English ones. ${fmt(missing)} of the ` +
+    `${fmt(total)} occupations these programs lead to have no Spanish name on record, and ` +
+    `those are reachable by their English title only.`,
   filters: "Filters",
   clearFilters: "Clear filters",
   resultsCount: (n: number, total: number) => `${fmt(n)} of ${fmt(total)} programs`,
@@ -1359,6 +1379,14 @@ const es: Dictionary = {
     "tal como los presentó la institución y los publicó el estado. Un término en español " +
     "no va a coincidir con ninguno: pruebe la palabra en inglés — «welding» en lugar de " +
     "«soldadura», «medical assistant» en lugar de «asistente médico».",
+  searchSpanishTitles: (missing: number, total: number) =>
+    `Los nombres de los programas y de las instituciones están registrados solo en inglés, ` +
+    `tal como los presentó la institución y los publicó el estado. Los títulos de las ` +
+    `ocupaciones son distintos: el Departamento publica un nombre en español para casi ` +
+    `todas y esta búsqueda lo usa, así que «enfermera» sí encuentra programas de ` +
+    `enfermería. Pero ${fmt(missing)} de las ${fmt(total)} ocupaciones a las que llevan ` +
+    `estos programas no tienen nombre en español publicado, y a esas solo se llega con la ` +
+    `palabra en inglés — «welding» en lugar de «soldadura».`,
   filters: "Filtros",
   clearFilters: "Borrar filtros",
   resultsCount: (n: number, total: number) => `${fmt(n)} de ${fmt(total)} programas`,

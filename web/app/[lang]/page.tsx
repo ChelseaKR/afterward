@@ -15,10 +15,10 @@ export default async function SearchPage({ params }: { params: Promise<{ lang: s
 
   // Embedded at build time rather than fetched: the index is ~150 KB gzipped, and shipping
   // it with the document means search works on the first paint instead of after a round trip.
-  const { programs, altTitles } = getSearchIndex();
+  const { programs, altTitles, esTitles } = getSearchIndex();
   return (
     <>
-      <SearchApp programs={programs} altTitles={altTitles} lang={lang} />
+      <SearchApp programs={programs} altTitles={altTitles} esTitles={esTitles} lang={lang} />
       {/*
         * The assistant, below the search: "I work in a warehouse in Fresno and want something
         * that pays more" is a question the filter form cannot take. Renders nothing unless this
