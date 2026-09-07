@@ -50,10 +50,23 @@ def build_command(
         help="Provider-link report to read, if it exists. Produced by `afterward check-links`; "
         "a build that finds none publishes every link exactly as filed.",
     ),
+    bulk_export: Path | None = typer.Option(
+        None,
+        "--bulk-export",
+        help="A local copy of DOL's DownloadPrograms.xlsx, read beside the API for the "
+        "employment rate's denominator (DE129). Never fetched here; a build without one "
+        "records `bulk_export_not_read` on every program rather than claiming none has a "
+        "denominator.",
+    ),
 ) -> None:
     """Fetch source data, join it, and emit the site dataset."""
     typer.echo(f"Fetching {state} training programs and California occupation projections...")
-    report = build(state, output_dir=output_dir, link_checks_path=link_checks)
+    report = build(
+        state,
+        output_dir=output_dir,
+        link_checks_path=link_checks,
+        bulk_export_path=bulk_export,
+    )
 
     typer.echo(f"\nSnapshot {report.snapshot_date} -> {output_dir}")
     typer.echo(f"  programs                  {report.total_programs:>6}")
@@ -71,6 +84,26 @@ def build_command(
         f"  ({report.occupation_match_pct}%)"
     )
     typer.echo(f"  distinct occupations      {report.distinct_occupations_matched:>6}")
+
+    # The employment rate's denominator, borrowed from D1B. Printed as "not read" rather than
+    # as a row of zeros when no copy of the bulk export was given: a build that did not look
+    # has not found that no program has one.
+    denominator = report.employment_denominator
+    if not denominator.bulk_export_read:
+        typer.echo("\nEmployment denominator      not read (no --bulk-export given)")
+    else:
+        typer.echo(f"\nEmployment denominator      vintage {denominator.vintage}")
+        typer.echo(f"  shown                    {denominator.programs_with_denominator:>6}")
+        typer.echo(f"  no rate published        {denominator.programs_rate_not_published:>6}")
+        typer.echo(f"  bulk figure suppressed   {denominator.programs_bulk_figures_suppressed:>6}")
+        typer.echo(
+            f"  does not reconstruct     "
+            f"{denominator.programs_bulk_row_does_not_reconstruct:>6}"
+            f"  (of which "
+            f"{denominator.programs_reconstructing_only_their_own_older_rate} reproduce the "
+            f"bulk file's own older rate)"
+        )
+        typer.echo(f"  no bulk row              {denominator.programs_with_no_bulk_row:>6}")
 
     # Occupation enrichment (CareerOneStop). All zeros is a legitimate build: with no
     # credentials configured the dataset is complete, and simply carries no descriptions.
@@ -271,9 +304,15 @@ def build_offline_command(
     output_dir: Path = typer.Option(
         Path("web/public/data"), "--output-dir", help="Where to write the emitted JSON."
     ),
+    bulk_export: Path | None = typer.Option(
+        None,
+        "--bulk-export",
+        help="A local copy of DOL's DownloadPrograms.xlsx. Omitted is the ordinary case and "
+        "the one CI runs: every program records `bulk_export_not_read`.",
+    ),
 ) -> None:
     """Emit the site dataset from the committed fixture, without touching the network."""
-    count = build_offline(fixture_dir, output_dir=output_dir)
+    count = build_offline(fixture_dir, output_dir=output_dir, bulk_export_path=bulk_export)
     typer.echo(f"Built {count} fixture programs from {fixture_dir} -> {output_dir}")
 
 

@@ -30,6 +30,7 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | # | Source | URL | Accessed | License / terms | Used for |
 |---|---|---|---|---|---|
 | D1 | U.S. DOL Eligible Training Provider scorecard search API (backs the public TrainingProviderResults.gov site) | `https://cxsearch.dol.gov/etp` | 2026-08-04 | U.S. Government work, public domain (17 U.S.C. §105). Public WIOA ETP performance data DOL is required to publish under WIOA §116(d)(4). | Program records, provider names, cost, length, CIP + SOC codes, WIOA outcome measures |
+| D1B | U.S. DOL Eligible Training Provider bulk export (`DownloadPrograms.xlsx`) | `https://www.trainingproviderresults.gov/data/DownloadPrograms.xlsx` | 2026-09-07 | Same U.S. Government work as D1, public domain (17 U.S.C. §105). | **One column, read beside D1 and never instead of it:** `de129`, the actual denominator of the published Q2 employment rate. Not fetched by any build — an operator passes a local copy to `afterward build --bulk-export`. See "Notes on D1B" below |
 | D2 | CA EDD — Long-Term Occupational Employment Projections (2024–2034) | `https://data.ca.gov/dataset/long-term-occupational-employment-projections` | 2026-08-04 | California open data, public domain | Occupation growth, job openings, median wages, entry-level education, by region |
 | D3 | CA EDD — Occupational Employment and Wage Statistics (OEWS 2009–2026) | `https://data.ca.gov/dataset/oews` | 2026-08-04 | California open data, public domain | Statewide annual wage percentiles (10th, 25th, 50th, 75th, 90th) shown as the pay range on occupation pages, 2026 vintage. Fetched separately from a build, not on every one: the published extract is the whole 2009–2026 panel (~112 MB, 580,790 records) because EDD publishes no per-year resource. |
 | D4 | CA EDD — Regional Planning Unit Overviews | `https://data.ca.gov/dataset/regional-planning-unit-overviews` | 2026-08-04 | California open data, public domain | Region definitions for geographic filtering |
@@ -292,6 +293,77 @@ dictionary-deprecated `field_tags`, plus Drupal search-index internals that are 
 That makes the bulk file worth reading **beside** the API for one specific gap, on its own
 vintage and labelled as such, and not worth reading instead of it. Nothing in this change
 ingests it.
+
+### Notes on D1B: reading the bulk export beside the API, measured 2026-09-07
+
+The assessment above resolved, in the negative, whether to *switch* to the bulk file, and
+left one thing open: "what a follow-up is worth opening for: seven columns, of which `de129`
+is the significant one." `src/afterward/sources/dol_bulk.py` is that follow-up, and nothing
+in it reopens the switch. The file is read for one column, joined on the same four keys, on
+its own vintage, into its own block that is never merged into a D1 figure.
+
+**What was re-measured.** The file was re-fetched on 2026-09-07: 36.2 MB, one sheet, **57
+columns**, 77,085 rows across 55 `reportingstate` values, **4,171 of them California** — down
+from 4,258 on 2026-08-07, so the file has been republished since the assessment. Its
+California `de172` now tops out at **2024-06-30**. Over the whole file, on the 1,782
+California rows carrying all three figures, `d123_total_employed_q2 / de129` reproduces the
+bulk file's own `c_q2_employment_percent` to within 0.01 on **1,782 of 1,782**. The
+assessment's 1,801/1,801 still holds in kind.
+
+**A premise that moved, and it is the finding.** 1,782 of 1,782 is a fact about the bulk
+file's *internal* consistency. It is not the question this site has to answer, which is
+whether `de129` is the denominator of the rate **this site publishes**. Joined against the
+3,266-program dataset and graded against D1's own `employment_rate_q2`:
+
+| state | programs | what it means |
+|---|---|---|
+| shown | **365** | the bulk row reproduces D1's published rate; the denominator is shown |
+| rate not published | 1,227 | D1 publishes no rate, so there is nothing for a denominator to sit under |
+| does not reconstruct | 839 | a bulk row whose arithmetic does not reproduce D1's rate |
+| no bulk row | 686 | absent from the bulk file entirely |
+| bulk figure suppressed | 149 | the bulk file withholds the numerator or the denominator |
+
+**All 839** of the non-reconstructing programs reproduce the bulk file's *own* older rate
+exactly. The disagreement is not noise in the arithmetic; it is the two files being two
+different reads of the same programs, which is what the assessment above concluded on other
+grounds. So the denominator is publishable for **365 of 3,266 programs**, or 365 of the 2,039
+that publish a rate — a far smaller number than "1,801 of 1,801" invites, and the honest one.
+
+**The join.** Provider, program name, CIP and ZIP, as the assessment used, reproduced by the
+pipeline rather than quoted: 2,578 shared keys, 686 current programs absent from the bulk
+file, 1,579 bulk rows with no counterpart, 6 keys the bulk file republishes (dropped rather
+than picked between) and 2 rows it cannot key at all. Against the assessment's 2,618 / 646 /
+1,635 the differences are the two refreshes between the reads.
+
+Getting there needed one repair the assessment does not mention. The bulk file files CIP
+codes that have been through a binary float: `11.020099999999999` for 11.0201,
+`52.020099999999999` for 52.0201. A CIP detail is two or four digits and never more, so five
+or more decimals can only be that residue. Without repairing it the four-key join finds
+**635** shared keys, with 2,018 more agreeing on provider and program name and disagreeing
+only on a code that is the same code. `dol_bulk.repair_float_cip` rounds exactly that shape
+and leaves every other width alone, including the bare series and four-digit families CIP
+genuinely publishes.
+
+**`de172` is a serial number, not a date.** It arrives as `45473`, which is 2024-06-30 in
+Excel's counting from 1899-12-30. Publishing 45473 as a vintage would put a number that reads
+like a measurement next to figures that are ones.
+
+**Four states, and a fifth that is not one of them.** Every program record carries an
+`employment_denominator` block: `shown`, `rate_not_published`, `bulk_figures_suppressed`,
+`bulk_row_does_not_reconstruct`, or `no_bulk_row`. Above those sits `bulk_export_not_read`,
+which is a fact about the *build* and not about the program — and when a build carries it,
+every count in `coverage.json`'s `employment_denominator` block is `null` rather than `0`. A
+build that has not looked has not found that no program has a denominator. CI always carries
+it: the DOL endpoint answers a runner with 403 and nothing here fetches the file.
+
+**What is not done.** The front end shows none of this yet. `/outcomes-coverage/` does not
+carry the reconstruction rate, and no program page shows a denominator, because whether a
+denominator on an older vintage may sit on a program page beside a newer rate at all — or may
+appear only on `/outcomes-coverage/` as a methodological statement about the measure — is a
+judgement about what this site claims, in two languages, and #127 says so. The data half is
+built and measured; the rendering decision is not made here. `employment_denominator` is
+deliberately absent from `SITE_COVERAGE_KEYS` for that reason: the site does not read it, and
+the shape check must not claim it does.
 
 ### Notes on D1: the feed carries no program year
 

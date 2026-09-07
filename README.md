@@ -113,6 +113,37 @@ figure carries the program-year window and the date the record was read. The sco
 publishes no program-year field anywhere in its data, states the window only in prose on its
 About page, and its data dictionary still names an earlier year.
 
+### The rate's denominator, and how little of it can honestly be shown
+
+The published Q2 employment rate is DE123/DE129, and **DE129 is not on the search API**, so
+the site publishes a rate whose denominator it cannot show — the one figure a reader cannot
+check on a site whose whole argument is that a reader must be able to. DOL's bulk export
+carries it, and [PROVENANCE.md](PROVENANCE.md) settled in 2026-08 that the bulk file must not
+*replace* the API and left reading it beside the API for this one gap open.
+
+It is now read, for that one column, joined on provider, program name, CIP and ZIP, on its own
+vintage, into its own block that is never merged into a scorecard figure. Pass a local copy:
+
+```sh
+afterward build --bulk-export ~/Downloads/DownloadPrograms.xlsx
+```
+
+Nothing fetches it. A build without one records `bulk_export_not_read` on every program and
+`null` — not `0` — in every count, because a build that has not looked has not found that no
+program has a denominator.
+
+The result is smaller than it first looks, and that is the finding. `de129` reproduces the
+**bulk file's own** rate on 1,782 of 1,782 California rows carrying all three figures. Graded
+against the rate *this site publishes*, it reproduces on **365 of 3,266 programs**. 839 have a
+bulk row whose arithmetic reproduces the bulk file's own older rate and not the site's — all
+839 of them — which is the two files being two different reads rather than noise. Those 839
+show nothing, and are counted in their own bucket rather than folded into "no data".
+
+The front end shows none of this yet: whether a denominator on an older vintage may sit on a
+program page beside a newer rate, or belongs only on `/outcomes-coverage/` as a statement
+about the measure, is a judgement about what the site claims, in two languages, and it has not
+been made. See PROVENANCE.md, "Notes on D1B".
+
 ## Design commitments
 
 - **No account, no tracking.** Everything is public, static, and readable without logging in.
@@ -133,6 +164,7 @@ About page, and its data dictionary still names an earlier year.
 | Source | Provides |
 |---|---|
 | U.S. DOL Eligible Training Provider scorecard (WIOA ETA-9171) | Programs, providers, cost, length, CIP + SOC codes, outcome measures |
+| U.S. DOL ETP bulk export (`DownloadPrograms.xlsx`) | One column, read beside the scorecard and never instead of it: `de129`, the denominator behind the published employment rate |
 | CA EDD Long-Term Occupational Employment Projections (2024–2034) | Wages, job openings, growth, entry-level education, by region |
 | CA EDD OEWS | Wage detail |
 
