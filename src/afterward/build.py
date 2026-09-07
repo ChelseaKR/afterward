@@ -18,6 +18,7 @@ from typing import Any, Final
 
 from afterward.sources import (
     careeronestop,
+    dol_bulk,
     dol_etp,
     edd_lmi,
     link_check,
@@ -190,6 +191,57 @@ class EmploymentMeasureCoverage:
 
 
 @dataclass(frozen=True)
+class DenominatorCoverage:
+    """What became of the employment rate's denominator, borrowed from D1B.
+
+    Issue #25 established that this site publishes a rate whose denominator it cannot show:
+    the rate is DE123/DE129 and DE129 is not on the search API. DOL's bulk export carries it.
+    `PROVENANCE.md` "Notes on D1: the bulk export, evaluated 2026-08-07" settles that the bulk
+    file must not *replace* the API, and leaves open reading it beside the API for this one
+    gap. This block is what that read produced.
+
+    ``bulk_export_read`` is the first thing here because everything under it is conditional on
+    it. When it is false every count is ``null``, never zero: a build with no copy of the file
+    has not found that no program has a denominator, it has not looked. That fourth state is
+    the whole reason this is a block rather than a single number.
+
+    The issue asked for three states -- shown, a bulk row that failed reconstruction, and no
+    bulk row. Measuring the join against the real 3,266-program dataset produced five, and the
+    two extra ones are findings rather than decoration:
+
+    * ``programs_rate_not_published`` (1,227 of 3,266): the API publishes no rate for the
+      program, so there is nothing on the page for a denominator to sit under. Counting these
+      as reconstruction failures would report the API's own suppression as the bulk file's.
+    * ``programs_bulk_figures_suppressed`` (149): a bulk row exists and the bulk file withholds
+      the numerator or the denominator. Not the same fact as arithmetic that disagrees.
+
+    And ``programs_reconstructing_only_their_own_older_rate`` is the finding that matters most.
+    Of the 839 programs whose bulk row does not reproduce the rate this site publishes, **all
+    839** reproduce the bulk file's *own* rate exactly. The disagreement is not noise in the
+    arithmetic; it is the two files being two different reads, which is what the provenance
+    assessment concluded on other grounds and what makes a denominator borrowed across them
+    something to show sparingly and label, rather than something to fill in.
+    """
+
+    bulk_export_read: bool
+    source: str
+    source_url: str
+    vintage: str | None
+    """The newest ``de172`` in the export, as an ISO date. NOT the period the outcomes
+    describe -- the file carries no program year. Null when nothing was read."""
+    programs_total: int
+    # Every count below is null when `bulk_export_read` is false. Absent is not zero.
+    programs_with_denominator: int | None
+    programs_rate_not_published: int | None
+    programs_bulk_figures_suppressed: int | None
+    programs_bulk_row_does_not_reconstruct: int | None
+    programs_reconstructing_only_their_own_older_rate: int | None
+    programs_with_no_bulk_row: int | None
+    reconstruction_tolerance: float
+    citation: str
+
+
+@dataclass(frozen=True)
 class ProviderLinkCoverage:
     """What this build does with the "Provider's website" link on each program page.
 
@@ -308,6 +360,9 @@ class CoverageReport:
     # What became of the provider links. All-unchecked, not absent, when the build read no
     # link report -- which is the CI case and a complete build.
     provider_links: ProviderLinkCoverage
+    # The denominator behind the employment rate, borrowed from DOL's bulk export and never
+    # merged into a D1 figure. All-null, not all-zero, when no copy of the export was read.
+    employment_denominator: DenominatorCoverage
     # How many pages can name an America's Job Center. Present with a null `centers_loaded`,
     # not absent, when the build had no credentials to read the directory with.
     local_help: LocalHelpCoverage
@@ -712,6 +767,57 @@ fractional one -- and the total is their sum, so an exact ``==`` would eventuall
 ordinary binary-float rounding rather than on anything wrong. A total corrupted enough to
 mislead a reader is wrong by whole dollars, not by half a cent.
 """
+
+
+def denominator_integrity_problems(payloads: Sequence[Mapping[str, Any]]) -> list[str]:
+    """Every way a record's borrowed denominator would mislead the reader it reaches.
+
+    Four rules, and each one is a failure this project has met in another field:
+
+    * The block is present on every record. Absent, a page cannot tell "this build did not
+      read the export" from "this program has no denominator", and would render the first as
+      the second -- the error `length.competency_based` and `local_help.centers` are each
+      shaped by.
+    * A state the code does not define is refused. A typo in a state string makes a bucket
+      silently unreachable, and a coverage count over an unreachable bucket reads as a
+      finding about the data.
+    * A denominator is present if and only if the state is ``shown``. A number under any
+      other state is a figure this build did not stand behind.
+    * A shown denominator is positive and its reconstructed rate is present. A zero
+      denominator does not make a rate of zero; it makes the division undefined.
+    """
+    problems: list[str] = []
+    for payload in payloads:
+        where = payload.get("uuid", "<no uuid>")
+        block = payload.get("employment_denominator")
+        if not isinstance(block, Mapping):
+            problems.append(f"{where}: employment_denominator is absent")
+            continue
+        state = block.get("state")
+        if state != dol_bulk.STATE_NOT_READ and state not in dol_bulk.DENOMINATOR_STATES:
+            problems.append(f"{where}: employment_denominator.state {state!r} is not a state")
+            continue
+        denominator = block.get("denominator")
+        if state == dol_bulk.STATE_SHOWN:
+            if not isinstance(denominator, int | float) or denominator <= 0:
+                problems.append(f"{where}: a shown denominator must be a positive number")
+            if block.get("reconstructed_rate") is None:
+                problems.append(f"{where}: a shown denominator must carry its reconstruction")
+            if not block.get("vintage"):
+                problems.append(f"{where}: a shown denominator must name its vintage")
+        elif denominator is not None:
+            problems.append(f"{where}: {state} carries a denominator it did not show")
+    return problems
+
+
+def check_denominator_integrity(payloads: Sequence[Mapping[str, Any]]) -> None:
+    """Refuse to emit a record whose borrowed denominator says more than the build knows."""
+    problems = denominator_integrity_problems(payloads)
+    if problems:
+        raise ValueError(
+            f"{len(problems)} record(s) carry an employment denominator this build cannot "
+            "stand behind: " + "; ".join(problems[:5])
+        )
 
 
 def _cost_arithmetic_problems(cost: Mapping[str, Any], where: str) -> list[str]:
@@ -1231,6 +1337,91 @@ def employment_measure_coverage(payloads: Sequence[Mapping[str, Any]]) -> Employ
         completion_rate_checked=completion_checked,
         completion_rate_reconciles=completion_reconciles,
         citation=EMPLOYMENT_MEASURE_CITATION,
+    )
+
+
+DENOMINATOR_CITATION: Final = (
+    "ETA-9171 DE129 via DOL's bulk ETP export (DownloadPrograms.xlsx), read beside the "
+    "search API and never merged into a D1 figure. PROVENANCE.md, Notes on D1B."
+)
+
+
+def _attach_bulk_denominator(
+    payloads: Sequence[dict[str, Any]], export: dol_bulk.BulkExport | None
+) -> None:
+    """Attach the denominator block to every record, including when nothing was read.
+
+    Always attached, never conditionally. A record that carries no block at all cannot say
+    whether this build looked; a record carrying ``bulk_export_not_read`` can. That is the
+    same argument :func:`_attach_cohort_integrity` and :func:`_attach_provider_links` make,
+    and it is why the offline build recomputes rather than trusting a fixture.
+
+    The block sits beside ``outcomes`` rather than inside it. Every figure in ``outcomes``
+    comes from one read of one source on one date; this one comes from a different file on a
+    different vintage, and putting it in the same object would invite exactly the arithmetic
+    across vintages the block exists to prevent.
+    """
+    for payload in payloads:
+        location = payload.get("location") or {}
+        payload["employment_denominator"] = dol_bulk.denominator_block(
+            export,
+            provider_name=payload.get("provider_name"),
+            program_name=payload.get("program_name"),
+            cip_code=payload.get("cip_code"),
+            zip_code=location.get("zip"),
+            published_rate=(payload.get("outcomes") or {}).get(AUTHORITATIVE_EMPLOYMENT_MEASURE),
+        )
+
+
+def denominator_coverage(
+    payloads: Sequence[Mapping[str, Any]], export: dol_bulk.BulkExport | None
+) -> DenominatorCoverage:
+    """Count the denominator states from the emitted records, never from the export.
+
+    Same discipline as every other coverage block here: the only honest count is of what a
+    reader will actually meet on the pages. Counting from ``export`` would count rows nobody
+    is shown.
+    """
+    if export is None:
+        return DenominatorCoverage(
+            bulk_export_read=False,
+            source=dol_bulk.SOURCE_ID,
+            source_url=dol_bulk.BULK_URL,
+            vintage=None,
+            programs_total=len(payloads),
+            programs_with_denominator=None,
+            programs_rate_not_published=None,
+            programs_bulk_figures_suppressed=None,
+            programs_bulk_row_does_not_reconstruct=None,
+            programs_reconstructing_only_their_own_older_rate=None,
+            programs_with_no_bulk_row=None,
+            reconstruction_tolerance=dol_bulk.RECONSTRUCTION_TOLERANCE,
+            citation=DENOMINATOR_CITATION,
+        )
+    states = Counter(
+        str((payload.get("employment_denominator") or {}).get("state")) for payload in payloads
+    )
+    own_rate_only = sum(
+        1
+        for payload in payloads
+        if (block := payload.get("employment_denominator") or {}).get("state")
+        == dol_bulk.STATE_DOES_NOT_RECONSTRUCT
+        and block.get("reconstructs_its_own_published_rate")
+    )
+    return DenominatorCoverage(
+        bulk_export_read=True,
+        source=dol_bulk.SOURCE_ID,
+        source_url=dol_bulk.BULK_URL,
+        vintage=export.vintage,
+        programs_total=len(payloads),
+        programs_with_denominator=states[dol_bulk.STATE_SHOWN],
+        programs_rate_not_published=states[dol_bulk.STATE_RATE_NOT_PUBLISHED],
+        programs_bulk_figures_suppressed=states[dol_bulk.STATE_BULK_FIGURES_SUPPRESSED],
+        programs_bulk_row_does_not_reconstruct=states[dol_bulk.STATE_DOES_NOT_RECONSTRUCT],
+        programs_reconstructing_only_their_own_older_rate=own_rate_only,
+        programs_with_no_bulk_row=states[dol_bulk.STATE_NO_BULK_ROW],
+        reconstruction_tolerance=dol_bulk.RECONSTRUCTION_TOLERANCE,
+        citation=DENOMINATOR_CITATION,
     )
 
 
@@ -2696,7 +2887,11 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
 
 
 def build_offline(
-    fixture_dir: Path, *, output_dir: Path | None = None, link_checks_path: Path | None = None
+    fixture_dir: Path,
+    *,
+    output_dir: Path | None = None,
+    link_checks_path: Path | None = None,
+    bulk_export_path: Path | None = None,
 ) -> int:
     """Emit the site bundle from a committed fixture instead of the live sources.
 
@@ -2736,6 +2931,17 @@ def build_offline(
     # observation this build did not make. The pages it produces carry the funding route and
     # the statewide finder, and claim nothing about what is near any particular city.
     _attach_local_help(payloads, None)
+    # Recomputed for the same reason the three blocks above are: the fixture predates the
+    # field, and defaulting one in would publish "we read the bulk export" about a build that
+    # did not. With no path this attaches `bulk_export_not_read` everywhere, which is the
+    # honest answer and the one CI produces.
+    bulk_export = (
+        None
+        if bulk_export_path is None
+        else dol_bulk.read_bulk_export(bulk_export_path, state=programs_doc.get("state", "CA"))
+    )
+    _attach_bulk_denominator(payloads, bulk_export)
+    coverage["employment_denominator"] = asdict(denominator_coverage(payloads, bulk_export))
     coverage["cohort_integrity"] = asdict(cohort_integrity_coverage(payloads))
     coverage["employment_measures"] = asdict(employment_measure_coverage(payloads))
     coverage["provider_links"] = asdict(provider_link_coverage(payloads))
@@ -2756,6 +2962,7 @@ def build_offline(
     # A fixture predating `length.competency_based` cannot say whether its null lengths are a
     # design decision or an absence, and this build would republish them as the latter.
     check_length_integrity(payloads)
+    check_denominator_integrity(payloads)
     # And the same argument a third time, for the block the other two left unguarded: a
     # fixture carries whatever arithmetic the code that wrote it produced, and a total that
     # no longer matches its own components is a price nobody charged.
@@ -2784,12 +2991,19 @@ def build(
     output_dir: Path | None = None,
     snapshot: str | None = None,
     link_checks_path: Path | None = LINK_CHECK_PATH,
+    bulk_export_path: Path | None = None,
 ) -> CoverageReport:
     """Fetch, join and emit. Reads a provider-link report if one has been left for it.
 
     ``link_checks_path`` is consumed, never produced: the check is
     :func:`check_provider_links`, invoked deliberately by ``afterward check-links``, and a build
     that found no report is a complete build whose links are published exactly as filed.
+
+    ``bulk_export_path`` is a copy of DOL's ``DownloadPrograms.xlsx`` an operator has already
+    downloaded. Consumed, never fetched: the DOL endpoint answers a runner with 403, the file
+    is 36 MB, and a build that quietly produced no denominators because a fetch failed would
+    publish that absence as a measurement. Omitting it is a complete build whose every record
+    says ``bulk_export_not_read`` rather than claiming no program has a denominator.
     """
     output_dir = output_dir or Path("data/processed")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -2854,9 +3068,16 @@ def build(
     # Before anything is written, because a record carrying a -1 where a measurement belongs
     # should stop the build rather than land in programs.json and the per-program shards for
     # the coverage check at the end of this function to fail behind it.
+    bulk_export = (
+        None
+        if bulk_export_path is None
+        else dol_bulk.read_bulk_export(bulk_export_path, state=state)
+    )
+    _attach_bulk_denominator(payloads, bulk_export)
     check_outcome_integrity(payloads)
     check_length_integrity(payloads)
     check_cost_integrity(payloads)
+    check_denominator_integrity(payloads)
     # Counted from the occupations actually attached, not from the raw SOC codes: after the
     # aggregation those are no longer the same set, and the emitted records are the ones a
     # reader can check.
@@ -2890,6 +3111,7 @@ def build(
         spanish=spanish_coverage(occupations),
         provider_links=provider_link_coverage(payloads),
         local_help=local_help_coverage(payloads, centers),
+        employment_denominator=denominator_coverage(payloads, bulk_export),
     )
 
     (output_dir / "programs.json").write_text(

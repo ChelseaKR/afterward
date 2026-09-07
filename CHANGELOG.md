@@ -8,6 +8,36 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **DOL's bulk export is now read beside the search API for the one thing it has that the API
+  does not: `de129`, the actual denominator of the published Q2 employment rate.** Issue #25
+  established that this site publishes a rate whose denominator it cannot show, and
+  `PROVENANCE.md` recorded that reading the bulk file beside D1 for that one gap was "what a
+  follow-up is worth opening for". A new source `dol_bulk` reads it — with `zipfile` and
+  `xml.etree` rather than a new dependency, streaming, refusing any member declaring a DOCTYPE
+  and any member whose uncompressed size is implausible — joins on provider, program name, CIP
+  and ZIP, and attaches an `employment_denominator` block beside `outcomes`, never inside it.
+  Nothing here reopens the settled decision not to adopt the bulk file instead of D1.
+  **The headline number moved, and the move is the finding.** `d123 / de129` reproduces the
+  *bulk file's own* rate on 1,782 of 1,782 California rows carrying all three figures. Graded
+  against the rate this site actually publishes, it reproduces on **365 of 3,266 programs**;
+  839 have a bulk row whose arithmetic reproduces the bulk file's own older rate and not the
+  site's — all 839 of them, so the disagreement is two vintages rather than arithmetic noise.
+  A denominator that cannot reconstruct its own program's published rate is not shown.
+  Five program states are published and kept distinguishable — `shown`, `rate_not_published`,
+  `bulk_figures_suppressed`, `bulk_row_does_not_reconstruct`, `no_bulk_row` — and above them
+  `bulk_export_not_read`, which is a fact about the build. When a build carries it every count
+  in `coverage.json` is `null`, never `0`: a build that has not looked has not found that no
+  program has a denominator. CI always carries it; the DOL endpoint answers a runner with 403
+  and nothing here fetches the file. `afterward build --bulk-export PATH` reads a local copy.
+  Two defects had to be repaired to get an honest join, both in the bulk file. Its CIP codes
+  have been through a binary float (`11.020099999999999` for 11.0201), and without repairing
+  that the four-key join finds 635 shared keys instead of 2,578. And `de172` is an Excel
+  serial (`45473` is 2024-06-30), which would have been published as a vintage that reads like
+  a measurement and is not one.
+  `check_denominator_integrity` refuses to emit a record whose block says more than the build
+  knows. The front end renders none of it yet; see "What is not done" in PROVENANCE.md,
+  "Notes on D1B". Part of #127.
+
 - A second program-placement rule, beside the principal-city one rather than instead of it: a
   program is placed in an EDD labor market area when the county its ZIP resolves to is a county
   that area's own published title names. The missing link was a citable ZIP-to-county crosswalk,
