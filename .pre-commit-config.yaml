@@ -7,9 +7,11 @@
 # same supply-chain convention the workflows use for GitHub Actions: a movable
 # tag is not an acceptable pin for a hook that runs on every commit.
 # Generated and vendored bytes are not style-fixable: the fixture must stay
-# byte-identical to what `make fixture` emits, and the vendored CTDL context
-# must stay byte-identical to what its recorded retrieval fetched.
-exclude: ^(fixtures/data/|src/afterward/ctdl/ctdl-context\.json$|web/public/data/)
+# byte-identical to what `make fixture` emits, and the vendored CTDL context and
+# ZIP-county extract must stay byte-identical to what their recorded retrievals
+# fetched -- each carries a sha256 in a sidecar that a test recomputes, so a
+# whitespace fixer would break its own provenance record.
+exclude: ^(fixtures/data/|src/afterward/ctdl/ctdl-context\.json$|src/afterward/sources/zcta-county-ca-2020\.csv$|web/public/data/)
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

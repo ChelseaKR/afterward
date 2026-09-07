@@ -25,6 +25,7 @@ from afterward.sources import (
     local_help,
     onet,
     soc_vintage,
+    zip_county,
 )
 
 DEFAULT_STATE = "CA"
@@ -491,6 +492,16 @@ def coverage_count_problems(
     disagrees("programs_with_any_outcome", with_any)
     for key, field in HEADLINE_MEASURES.items():
         disagrees(key, sum(1 for p in payloads if p["outcomes"].get(field) is not None))
+
+    # Geography, on the same terms as the outcome counts and for the same reason. These two
+    # are the ones the site's regional half is measured by and the ones a second placement
+    # rule moves, and until now they were carried through the offline build untouched with
+    # nothing to notice if they described some other dataset. `programs_without_area` is
+    # checked as its own count rather than as a subtraction, because that is how the site
+    # publishes it: a declined placement is a finding, not an arithmetic leftover.
+    placed = sum(1 for p in payloads if p.get("region") is not None)
+    disagrees("programs_mapped_to_area", placed)
+    disagrees("programs_without_area", total - placed)
 
     # Recomputed exactly as CoverageReport._pct does, so a mismatch means the counts and the
     # percentage came from different builds -- not that the two round differently.
@@ -1844,6 +1855,44 @@ REGION_PROJECTION_FIELDS = (
 AREA_MATCH_PRINCIPAL_CITY = "principal_city"
 """How an area was decided. Emitted so a reader can audit the claim rather than trust it."""
 
+AREA_MATCH_COUNTY = "county"
+"""The second placement rule: the program's ZIP resolves to counties one area's title names.
+
+Beside the city rule rather than instead of it, and held to the same standard. A CBSA title
+names its principal cities and its parenthetical gloss names its counties, both published by
+EDD in the same string, so a match against either is a restatement of EDD's own definition.
+What this rule adds is the ZIP-to-county link, which EDD does not publish and which is read
+from the Census Bureau under D8 -- never inferred here.
+"""
+
+UNPLACED_CROSSWALK_NOT_READ = "crosswalk_not_read"
+"""No ZIP-county crosswalk was given to this build, so the county rule was not attempted.
+
+Distinct from every reason below, all of which mean the rule ran and declined. "We did not
+look" is not a finding about the program.
+"""
+
+UNPLACED_NO_ZIP = "no_zip"
+"""The record carries no ZIP this can look up. See :func:`zip_county.normalise_zip`."""
+
+UNPLACED_ZIP_NOT_IN_CROSSWALK = "zip_not_in_crosswalk"
+"""A real ZIP the crosswalk has no row for -- a PO Box range, or a ZIP unique to one
+recipient. These have no ZCTA at all, which is the known cost of reading a ZCTA-based file
+for a mailing ZIP; it is recorded in PROVENANCE.md under D8 and counted here rather than
+absorbed."""
+
+UNPLACED_COUNTY_OUTSIDE_AREAS = "county_outside_areas"
+"""Every county the ZIP reaches lies outside all of EDD's areas -- an out-of-state county on
+a border ZIP, or a California county no area title names."""
+
+UNPLACED_STRADDLES_AREAS = "straddles_areas"
+"""The ZIP reaches counties in more than one area, or reaches into ground no area claims.
+
+Refused rather than resolved. Picking the larger share would be exactly the judgement this
+rule exists not to make, and a program on the Los Angeles side of a Los Angeles/Orange ZIP
+renders identically to one on the Orange side.
+"""
+
 
 def regional_projection(
     occupation: Mapping[str, Any], area_name: str | None
@@ -1939,11 +1988,14 @@ def area_for_city(
 ) -> edd_lmi.ProjectionArea | None:
     """The EDD area whose published title names this city, or None.
 
-    Exact match against EDD's own principal-city names, and nothing else. A city EDD does
-    not name gets no region at all: the nearest metro's wages would render identically to a
-    correct answer, so a reader could not tell a fact from a guess, and roughly half of
-    California's programs sit in cities no CBSA title mentions. Saying nothing about them
-    is the only version of this that stays honest.
+    Exact match against EDD's own principal-city names, and nothing else. The reason this
+    rule refuses to reach further is unchanged and is not a reason to leave a program
+    unplaced by *any* rule: the nearest metro's wages would render identically to a correct
+    answer, so a reader could not tell a fact from a guess. What that argues against is
+    proximity, not geography. A city EDD does not name is handed to :func:`area_for_zip`,
+    which places it only when a published crosswalk puts the whole of its ZIP inside one
+    area whose own title names that county -- a restatement of two publishers' definitions
+    rather than an inference about California made here. See :func:`place_program`.
     """
     if city_areas is None:
         return None
@@ -1951,6 +2003,118 @@ def area_for_city(
     if key is None:
         return None
     return city_areas.get(key)
+
+
+@dataclass(frozen=True)
+class CountyIndex:
+    """EDD's areas indexed by the county FIPS codes their own titles name.
+
+    ``unresolved_counties`` holds any county EDD names that the crosswalk does not know as a
+    California county. It is empty on the 2026-08-04 projections -- all 58 names resolve --
+    and it is published rather than dropped, because an EDD re-publication that renamed a
+    county would otherwise silently stop placing every program in it, and an area quietly
+    losing its members looks exactly like an area that never had any.
+    """
+
+    areas_by_county: Mapping[str, edd_lmi.ProjectionArea]
+    unresolved_counties: tuple[str, ...]
+    crosswalk: zip_county.ZipCountyCrosswalk
+
+
+def county_index(
+    areas: Iterable[edd_lmi.ProjectionArea], crosswalk: zip_county.ZipCountyCrosswalk
+) -> CountyIndex:
+    """Index every area by the counties its published title names, keyed on FIPS code.
+
+    Keyed on the code, never the name, because the crosswalk is national and county names
+    repeat across states: it carries a Lake County in Oregon, and California has a Lake
+    County of its own in a different EDD area. See :mod:`afterward.sources.zip_county`.
+
+    A county claimed by two areas is dropped rather than assigned to either, for the reason
+    :func:`afterward.sources.edd_lmi.principal_city_areas` drops an ambiguous city: nothing
+    in the current file is ambiguous, and a re-publication that introduced an ambiguity must
+    lose the county rather than have this code pick a winner. Every area type is indexed,
+    including the Consortium regions -- their names are EDD coinages that no city can match,
+    but their glosses name real counties, so this rule reaches them where the city rule
+    cannot.
+    """
+    claims: dict[str, list[edd_lmi.ProjectionArea]] = {}
+    unresolved: list[str] = []
+    for area in areas:
+        for county in area.counties:
+            geoid = crosswalk.california_county(county)
+            if geoid is None:
+                unresolved.append(county)
+                continue
+            claims.setdefault(geoid, []).append(area)
+    return CountyIndex(
+        areas_by_county={
+            geoid: claimed[0]
+            for geoid, claimed in claims.items()
+            if len({area.area_name for area in claimed}) == 1
+        },
+        unresolved_counties=tuple(sorted(set(unresolved))),
+        crosswalk=crosswalk,
+    )
+
+
+def area_for_zip(
+    zip_code: str | None, index: CountyIndex | None
+) -> tuple[edd_lmi.ProjectionArea | None, str | None]:
+    """The one area every county of this ZIP belongs to, or None and the reason why not.
+
+    Every county, not the main one. The ZIP is placed only when the whole of it lies inside a
+    single EDD area, so a ZIP spanning two areas is refused and so is a ZIP that reaches into
+    ground no area claims -- including an out-of-state county, which is why the crosswalk
+    keeps the non-California half of a border ZIP rather than filtering it out. Refusing on
+    the full county set is what makes a placement a statement about where the program *is*
+    rather than about where most of its ZIP is.
+
+    Returns ``(area, None)`` on a placement and ``(None, reason)`` on a refusal, so a caller
+    can count why it declined instead of publishing an undifferentiated null.
+    """
+    if index is None:
+        return None, UNPLACED_CROSSWALK_NOT_READ
+    if zip_county.normalise_zip(zip_code) is None:
+        return None, UNPLACED_NO_ZIP
+    counties = index.crosswalk.counties(zip_code)
+    if counties is None:
+        return None, UNPLACED_ZIP_NOT_IN_CROSSWALK
+    claimed = {index.areas_by_county.get(county) for county in counties}
+    if claimed == {None}:
+        return None, UNPLACED_COUNTY_OUTSIDE_AREAS
+    if len(claimed) != 1:
+        return None, UNPLACED_STRADDLES_AREAS
+    placed = claimed.pop()
+    if placed is None:  # pragma: no cover - unreachable; the two branches above cover it
+        return None, UNPLACED_COUNTY_OUTSIDE_AREAS
+    return placed, None
+
+
+def place_program(
+    program: dol_etp.Program,
+    city_areas: Mapping[str, edd_lmi.ProjectionArea] | None,
+    counties: CountyIndex | None,
+) -> tuple[edd_lmi.ProjectionArea | None, str | None, str | None]:
+    """Place one program, city rule first, county rule second.
+
+    Returns ``(area, matched_on, unplaced_reason)``; exactly one of ``matched_on`` and
+    ``unplaced_reason`` is set.
+
+    The order is stated rather than incidental, but it is not currently load-bearing.
+    Measured on the 2026-08-04 snapshot: of the 1,525 programs the city rule places, 1,440
+    have a ZIP the county rule also resolves cleanly, and the two rules agree on **1,440 of
+    1,440** -- zero disagreements. The city rule goes first because it needs no third
+    publisher to reach its answer, and if the two ever do disagree the reader is told which
+    one spoke through ``matched_on`` either way.
+    """
+    area = area_for_city(program.city, city_areas)
+    if area is not None:
+        return area, AREA_MATCH_PRINCIPAL_CITY, None
+    area, reason = area_for_zip(program.zip_code, counties)
+    if area is not None:
+        return area, AREA_MATCH_COUNTY, None
+    return None, None, reason
 
 
 def program_payload(
@@ -1961,6 +2125,7 @@ def program_payload(
     link_checks: Mapping[str, link_check.LinkCheck] | None = None,
     centers: Sequence[local_help.AmericanJobCenter] | None = None,
     reviewer: link_review.OffsiteReviewer | None = None,
+    counties: CountyIndex | None = None,
 ) -> dict[str, Any]:
     """One program record, with its outcomes labelled by who they actually describe.
 
@@ -1984,13 +2149,18 @@ def program_payload(
     such redirect unresolved and offers no front page at all, so neither is linked, which is
     the safe half of the answer: a caller who forgot it publishes fewer links, never a
     hijacked one.
+
+    ``counties`` is the ZIP-to-county index behind the second placement rule. Omitting it
+    leaves the county rule unattempted and every unplaced program labelled
+    ``crosswalk_not_read`` -- "nobody looked", which is a statement about the build and not
+    about the program, and is kept apart from the four ways the rule can look and decline.
     """
     integrity = (
         cohort
         if cohort is not None
         else dol_etp.cohort_integrity([dol_etp.CohortFiling.of(program)])[0]
     )
-    area = area_for_city(program.city, city_areas)
+    area, matched_on, unplaced_reason = place_program(program, city_areas, counties)
     area_name = None if area is None else area.area_name
     matched = [
         occupation_summary(occupations[match.soc_code], match, area_name)
@@ -2022,16 +2192,23 @@ def program_payload(
             "lat": program.lat,
             "lon": program.lon,
         },
-        # Null means this program's city is not one EDD names, so no regional figure is
-        # claimed for it anywhere in this record. Not "statewide"; not "unknown region".
+        # Null means neither placement rule could put this program in an EDD area, so no
+        # regional figure is claimed for it anywhere in this record. Not "statewide"; not
+        # "unknown region".
         "region": None
         if area is None
         else {
             "area_name": area.area_name,
             "area_short_name": area.short_name,
             "area_type": area.area_type,
-            "matched_on": AREA_MATCH_PRINCIPAL_CITY,
+            "matched_on": matched_on,
         },
+        # Why `region` is null, and null itself when it is not. Two rules can decline for
+        # five different reasons, and a single undifferentiated null would render a program
+        # in a ZIP straddling two areas -- a refusal this pipeline makes deliberately --
+        # identically to one nobody had a crosswalk for. The coverage counts are recomputed
+        # from this field rather than typed, which is only possible because it is here.
+        "region_unplaced_reason": unplaced_reason,
         # A fourth state beside a reported length, a suppressed one and an unfiled one:
         # `competency_based` says the provider filed this program as ending when the student
         # can do the work, so it has no clock length to publish. `weeks` and `hours` are null
@@ -2248,6 +2425,11 @@ def area_coverage(
     placed = Counter(
         payload["region"]["area_name"] for payload in payloads if payload["region"] is not None
     )
+    by_rule: Counter[tuple[str, str | None]] = Counter(
+        (payload["region"]["area_name"], payload["region"].get("matched_on"))
+        for payload in payloads
+        if payload["region"] is not None
+    )
     return [
         {
             "area_name": area.area_name,
@@ -2257,9 +2439,71 @@ def area_coverage(
             # A genuine zero: we counted, and nothing mapped here. Unlike every measure in
             # this dataset, this number is ours, so it can be zero without ambiguity.
             "programs": placed.get(area.area_name, 0),
+            # Split by rule, so "this area has members at all" and "this area has members
+            # the city rule could reach" stay separate questions. The Consortium regions can
+            # only ever be non-zero on the second line.
+            "programs_by_principal_city": by_rule.get(
+                (area.area_name, AREA_MATCH_PRINCIPAL_CITY), 0
+            ),
+            "programs_by_county": by_rule.get((area.area_name, AREA_MATCH_COUNTY), 0),
         }
         for area in areas
     ]
+
+
+AREA_UNPLACED_REASONS: Final = (
+    UNPLACED_CROSSWALK_NOT_READ,
+    UNPLACED_NO_ZIP,
+    UNPLACED_ZIP_NOT_IN_CROSSWALK,
+    UNPLACED_COUNTY_OUTSIDE_AREAS,
+    UNPLACED_STRADDLES_AREAS,
+)
+"""Every reason a program can end up with no area. Enumerated so the coverage block carries
+a zero for each rather than omitting the ones that did not occur -- an absent key reads as
+"this cannot happen" where a zero reads as "it did not happen in this build"."""
+
+
+def area_placement_coverage(
+    payloads: Sequence[Mapping[str, Any]], unresolved_counties: Iterable[str] = ()
+) -> dict[str, Any]:
+    """How each program came to have an area, or came not to, counted from the records.
+
+    Counted from the emitted payloads for the reason :func:`enrichment_coverage` is: a number
+    typed into a document is a number nothing rechecks, and this one is the headline of the
+    site's whole regional half. The residual is the interesting figure and is never rolled
+    into a single "unplaced" -- a ZIP straddling two areas is a refusal this pipeline chose,
+    a ZIP with no crosswalk row is a limit of the crosswalk, and a build that read no
+    crosswalk at all made no finding about geography whatsoever.
+    """
+    by_rule: Counter[str | None] = Counter()
+    by_reason: Counter[str | None] = Counter()
+    for payload in payloads:
+        region = payload.get("region")
+        if region is None:
+            by_reason[payload.get("region_unplaced_reason")] += 1
+        else:
+            by_rule[region.get("matched_on")] += 1
+    placed = sum(by_rule.values())
+    return {
+        "placed": placed,
+        "placed_by_rule": {
+            AREA_MATCH_PRINCIPAL_CITY: by_rule.get(AREA_MATCH_PRINCIPAL_CITY, 0),
+            AREA_MATCH_COUNTY: by_rule.get(AREA_MATCH_COUNTY, 0),
+        },
+        "unplaced": len(payloads) - placed,
+        "unplaced_by_reason": {
+            reason: by_reason.get(reason, 0) for reason in AREA_UNPLACED_REASONS
+        },
+        # An unplaced record carrying no reason at all -- a payload built before this field
+        # existed, or by a caller that bypassed `program_payload`. Counted rather than folded
+        # into one of the reasons above, because attributing it to any of them would be this
+        # dataset's own defect class committed in the block that measures it.
+        "unplaced_reason_absent": by_reason.get(None, 0),
+        # Counties EDD's own area titles name that the crosswalk does not know as California
+        # counties. Empty is the expected state; anything here means placement silently
+        # stopped reaching an area.
+        "counties_unresolved": sorted(set(unresolved_counties)),
+    }
 
 
 def aggregate_match_coverage(payloads: list[dict[str, Any]]) -> AggregateMatchCoverage:
@@ -2349,8 +2593,11 @@ def unmapped_cities(payloads: list[dict[str, Any]]) -> dict[str, int]:
     """Cities this build declined to place, with how many programs each cost.
 
     The refusals are the interesting half of the coverage story, so they ship rather than
-    being summarised away: whoever reads this can see exactly which places would be
-    recovered by adding a documented address-to-county source, and how much each is worth.
+    being summarised away. This list was written when the city rule was the only rule and it
+    answered "which places would a documented address-to-county source recover"; that source
+    is now read (D8), so what remains here is the residual after both rules -- the cities
+    whose ZIPs straddle two areas, and the ones no crosswalk row covers.
+    ``area_placement.unplaced_by_reason`` says which of those each one is.
     """
     counts = Counter(
         payload["location"]["city"]
@@ -2572,6 +2819,11 @@ def build(
     )
     areas = edd_lmi.area_definitions(projections)
     city_areas = edd_lmi.principal_city_areas(areas)
+    # The second placement rule's index, read from the committed Census extract (D8). No
+    # network: the 2020 relationship file is a decennial product, so the extract is a
+    # snapshot of something that has stopped moving rather than a cache going stale, and a
+    # build does not depend on a third publisher being reachable to know its own geography.
+    counties = county_index(areas, zip_county.load_vendored())
 
     # Judged over the whole snapshot before any record is built: a cohort republished across
     # a provider's programs, and a provider filing many impossible ones, are both invisible
@@ -2595,6 +2847,7 @@ def build(
             link_checks=link_checks,
             centers=centers,
             reviewer=reviewer,
+            counties=counties,
         )
         for p, c in zip(programs, integrity, strict=True)
     ]
@@ -2653,6 +2906,7 @@ def build(
         "occupation_match_pct": report.occupation_match_pct,
         "area_match_pct": report.area_match_pct,
         "areas": area_coverage(payloads, areas),
+        "area_placement": area_placement_coverage(payloads, counties.unresolved_counties),
         "unmapped_cities": unmapped_cities(payloads),
         # The counts, plus the centre directory the program records point into and
         # the guidance the site publishes with them. Overrides the plain counts

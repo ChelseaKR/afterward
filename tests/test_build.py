@@ -1144,6 +1144,8 @@ class TestCoverageCounts:
                 1 for p in payloads if p["outcomes"]["completion_rate"] is not None
             ),
             "outcome_coverage_pct": round(100.0 * with_any / total, 1) if total else 0.0,
+            "programs_mapped_to_area": sum(1 for p in payloads if p.get("region") is not None),
+            "programs_without_area": sum(1 for p in payloads if p.get("region") is None),
         }
         return document | overrides
 

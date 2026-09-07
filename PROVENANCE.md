@@ -36,6 +36,73 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D5 | O\*NET Web Services (USDOL/ETA), including Mi Próximo Paso | `https://api-v2.onetcenter.org` | 2026-08-04 | O\*NET Web Services Terms of Service and Data License. **Attribution and a link are required in any product using the Services.** Registered with O\*NET under the project name "Camino", which is what this site was called until 2026-08-05; the registration is unchanged. Key is per-user and never committed. | Spanish occupation titles and descriptions from Mi Próximo Paso, on the 600 of California's 670 occupations it covers. Nothing is translated by this project: an occupation Mi Próximo Paso does not carry keeps its English name. |
 | D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook, and typical experience / on-the-job training. Also carries the national education attainment distribution, which is parsed and typed but **not rendered anywhere on the site**; see the note below |
 | D7 | Credential Engine — CTDL schema, JSON-LD context and term definitions (credreg.net) | `https://credreg.net/ctdl/schema/context/json`, `https://credreg.net/ctdl/terms/<Term>/json` | 2026-08-06 | Credential Engine publishes CTDL openly for exactly this use. Schema definitions only; **no registry data is read, and nothing is published to any registry.** | The vocabulary for the demonstration CTDL export (`make ctdl-export`): the context is vendored at `src/afterward/ctdl/ctdl-context.json` with retrieval provenance beside it, and every emitted class and property was checked against the fetched term definitions |
+| D8 | U.S. Census Bureau — 2020 ZCTA-to-county relationship file | `https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt` | 2026-09-07 | U.S. Government work, public domain (17 U.S.C. §105) | The ZIP-to-county link behind the second program-placement rule. A California extract is vendored at `src/afterward/sources/zcta-county-ca-2020.csv` with retrieval provenance beside it; see the note below for why this file and not HUD's, and for what it cannot answer |
+
+### Notes on D8 — why the Census relationship file and not HUD's crosswalk (#126)
+
+`area_for_city` places a program only when EDD's own area title names its city, which left
+**1,741 of 3,266 programs — 53% — unplaced**, including Van Nuys, Clovis and Pleasant Hill.
+A second rule places a program by the county its ZIP resolves to, where an area's own title
+names that county. That rule needs a ZIP-to-county crosswalk, and there are two candidates.
+This is the decision, written down before the code as #126 required, with what it was
+measured on.
+
+**Chosen: the Census Bureau's 2020 ZCTA-to-county relationship file.** Four reasons.
+
+1. **The only thing this rule asks of a crosswalk is a county *set*, not a share.** HUD's
+   USPS crosswalk gives residential and business address ratios per ZIP-county pair, and the
+   rule here is "one area or unplaced" — never "the county with the largest share", which
+   would be a judgement of exactly the kind this project avoids. The ratios are therefore
+   not an advantage; they are a temptation the rule has already refused.
+2. **It is decennial, not periodic.** The 2020 relationship files are a fixed product of the
+   2020 census and do not move until the 2030 geography is published. HUD's is republished
+   quarterly, so a vendored copy of it would be stale the quarter after it was taken and a
+   live fetch would put a placement rule behind a third publisher's uptime. A snapshot of
+   something that has stopped changing can be committed, diffed and cited.
+3. **It needs no credential.** HUD's crosswalk is served through an API that requires a
+   registered token. D5 and D6 already require per-user credentials and are already the two
+   sources a build can silently do without; a third would put the site's geography behind a
+   registration nobody but the owner can perform.
+4. **It carries the county FIPS code, so the join can be keyed on the code rather than the
+   name.** That is not cosmetic. The national file has a Lake County in Oregon and
+   California has a Lake County of its own in a different EDD area, and a name-keyed join
+   would read one as the other.
+
+**What it cannot answer, measured rather than estimated.** A ZCTA is a census tabulation
+geography, not a mailing ZIP, and DOL files a mailing ZIP in `field_zip`. Against the
+2026-08-04 snapshot: **3,228 of 3,266 program ZIPs exist as ZCTAs; 38 records across 4
+distinct ZIPs do not** — 90239, 93380, 93403 and 95343, which are PO Box ranges and one ZIP
+unique to a single campus. Those stay unplaced and are counted under
+`area_placement.unplaced_by_reason.zip_not_in_crosswalk` rather than absorbed into the
+residual. HUD's file, being built from USPS delivery points, would answer for them; that is
+the one thing it does better and it is worth 5 of the 1,741.
+
+**What the rule does to the dataset, computed by the pipeline rather than typed.** On the
+same snapshot, placement goes from 1,525 (46.7%) to **3,101 of 3,266 (94.9%)**: 1,525 by the
+city rule and 1,576 by the county rule. The residual is 165 — **160 whose ZIP straddles two
+EDD areas** (La Palma and Cypress across Los Angeles/Orange; Davis and Dixon across
+Solano/Yolo; Truckee across Nevada/Placer) and the 5 with no crosswalk row. Nothing is
+placed by proximity and nothing is placed on a share. The three rural Consortium regions,
+which no program could ever reach by the city rule because their names are EDD coinages
+rather than CBSA titles, gain 71 programs between them.
+
+**The two rules were checked against each other before the second was trusted.** Of the
+1,525 programs the city rule places, 1,440 have a ZIP the county rule also resolves cleanly,
+and the two agree on **1,440 of 1,440** — no disagreements. The city rule still goes first,
+because it reaches its answer without a third publisher, and `region.matched_on` on every
+record says which rule spoke.
+
+**The vendored extract keeps the out-of-state half of every border ZCTA**, which is the one
+thing about it that looks like an inefficiency and is not. Seven of its 2,003 rows name a
+county in Nevada or Oregon. Dropping them would complete those ZCTAs' county sets and turn a
+refusal into a placement — ZCTA 89439 is half in Sierra County, California and half in Washoe
+County, Nevada, and without the Washoe row it would place cleanly in the North Valley region.
+The subset rule is therefore *every row of every ZCTA that touches California*, stated on the
+extract's own retrieval record and enforced by a test that names those rows individually.
+
+`scripts/zip_county_refresh.py` (`make zip-county-refresh`) re-derives the extract from the
+national file and recomputes every figure in the retrieval record, so the extract is
+reproducible rather than trusted. Nothing in a build fetches it.
 
 ### Note on D7 — the second opinion, and what it could and could not see
 
