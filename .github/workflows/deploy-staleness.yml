@@ -144,11 +144,16 @@ jobs:
           fi
           # Only ever an issue this workflow itself wrote: the marker is in the body, and a
           # human report of the same problem would not carry it.
+          #
+          # Written to a file rather than inlined. A heredoc or a multi-line argument inside
+          # this block would have to start its own lines at column zero, which ends the YAML
+          # block scalar and makes the workflow unparseable -- and nothing in this repository
+          # lints workflows, so it would fail as "this workflow is invalid" at dispatch time
+          # rather than in CI.
+          {
+            printf 'The deployed site has caught up with `main`.\n\n'
+            printf '```\n%s\n```\n' "$REPORT"
+          } > "$RUNNER_TEMP/caught-up.md"
           gh api -X POST "repos/${REPOSITORY}/issues/${existing}/comments" \
-            -f "body=The deployed site has caught up with \`main\`.
-
-\`\`\`
-${REPORT}
-\`\`\`
-"
+            -f "body=$(cat "$RUNNER_TEMP/caught-up.md")" --jq '.html_url'
           gh api -X PATCH "repos/${REPOSITORY}/issues/${existing}" -f state=closed --jq '.state'

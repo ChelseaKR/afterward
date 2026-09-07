@@ -16,6 +16,7 @@ must end in a refusal, never in a reassuring zero.
 from __future__ import annotations
 
 import importlib.util
+import re
 import subprocess
 import sys
 from datetime import UTC, datetime, timedelta
@@ -278,6 +279,60 @@ class TestRefusingAMeaninglessComparison:
         assert [paths for _sha, _when, paths in commits] == [["web/page.tsx"], ["notes.md"]]
         drift = staleness.measure(_record(), commits, now=NOW, max_age_days=14)
         assert (drift.total_commits, drift.shipping_commits) == (2, 1)
+
+
+WORKFLOWS = REPO_ROOT / ".github" / "workflows"
+
+#: A line that ends a YAML block scalar: it starts in column zero, so it is read as a new
+#: top-level key rather than as content of the `run:` above it. A top-level key is the only
+#: legitimate thing at column zero in these files.
+_TOP_LEVEL_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_.-]*:(?:\s|$)")
+
+
+def _lines_that_escape_their_block(text: str) -> list[str]:
+    return [
+        line
+        for line in text.splitlines()
+        if line.strip()
+        and not line[0].isspace()
+        and not line.startswith("#")
+        and not _TOP_LEVEL_KEY.match(line)
+    ]
+
+
+class TestNoWorkflowLineEscapesItsBlock:
+    """Nothing in this repository lints workflow YAML, and the failure is silent until use.
+
+    Written because it happened while writing the sentinel. A `gh api -f "body=..."` argument
+    spanning several lines put a ``` fence and a `${REPORT}` expansion in column zero, inside
+    a `run: |` block. YAML reads column zero as a new top-level key, so the whole file stopped
+    parsing — and `ci.yml` would not have said so, because no job here reads a workflow file.
+    GitHub would have reported it as "this workflow is invalid" at dispatch time, on a
+    workflow that only runs weekly.
+
+    The rule is narrow on purpose: it is not a YAML parser and does not pretend to be. It
+    catches the one mistake that is easy to make inside a block scalar and impossible to see
+    in review, across every workflow rather than the one that made it.
+    """
+
+    def test_the_reader_can_fail(self) -> None:
+        escaping = "jobs:\n  a:\n    steps:\n      - run: |\n        echo x\n```\n"
+        assert _lines_that_escape_their_block(escaping) == ["```"]
+        clean = "name: x\non:\n  push:\njobs:\n  a:\n    steps:\n      - run: echo x\n# a comment\n"
+        assert _lines_that_escape_their_block(clean) == []
+
+    def test_every_workflow_keeps_its_block_scalars_intact(self) -> None:
+        files = sorted(path for path in WORKFLOWS.iterdir() if path.suffix in {".yml", ".yaml"})
+        assert files, f"no workflow files under {WORKFLOWS}; this gate would be vacuous"
+        offenders = {
+            path.name: escaped
+            for path in files
+            if (escaped := _lines_that_escape_their_block(path.read_text(encoding="utf-8")))
+        }
+        assert not offenders, (
+            f"these lines sit in column zero and are read as new top-level keys: {offenders}. "
+            "Inside a `run: |` block that ends the block and the file stops parsing."
+        )
 
 
 class TestTheSentinelCannotDeploy:
