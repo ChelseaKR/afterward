@@ -65,15 +65,22 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
+          # `shell: bash` above is `bash --noprofile --norc -e -o pipefail {0}` -- GitHub
+          # applies `-e` itself, and `set -uo pipefail` does not take it off again. With `-e`
+          # still on, the redirect below aborts the step the instant the script exits
+          # non-zero: before `verdict=$?`, before the report is printed, before the summary
+          # is written. Measured on run 34162849149, the first deliberately-red dispatch of
+          # this workflow: the whole output was `Process completed with exit code 2`, and the
+          # refusal it was supposed to report appeared nowhere. A failing run is the run whose
+          # report matters most, so `-e` is turned off here explicitly and the step's verdict
+          # comes from the final `exit` instead.
+          set +e
           set -uo pipefail
           args=(--repo "${GITHUB_REPOSITORY}")
           if [ -n "${RELEASE_TAG}" ]; then
             args+=(--tag "${RELEASE_TAG}")
           fi
-          # Not `set -e`, and the redirect is not a pipe. The report is the point of the run,
-          # and a failing run is the run whose report matters most -- with `-e` the step would
-          # abort before writing the summary, and through a pipe the exit code read would be
-          # `tee`'s rather than the script's.
+          # The redirect is not a pipe: through one, the exit code read would be `tee`'s.
           python3 scripts/release_integrity.py "${args[@]}" > "${RUNNER_TEMP}/report.txt" 2>&1
           verdict=$?
           cat "${RUNNER_TEMP}/report.txt"
