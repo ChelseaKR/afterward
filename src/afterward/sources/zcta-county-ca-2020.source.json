@@ -1,0 +1,19 @@
+{
+  "file": "zcta-county-ca-2020.csv",
+  "source_url": "https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt",
+  "retrieved": "2026-09-07",
+  "sha256": "03e5a51eedf2fffa82f41e7eb513724295b6ebe89ba9b50e629e913204f25b66",
+  "upstream_sha256": "3ed41278d637dc249e0323306f68be8a6c234e3090f4de88ef328dee71aeaaaf",
+  "upstream_bytes": 6821287,
+  "publisher": "U.S. Census Bureau, 2020 Census ZIP Code Tabulation Area (ZCTA5) to County relationship file",
+  "license": "U.S. Government work, public domain (17 U.S.C. §105)",
+  "vintage": "2020 decennial geography; the 2020 relationship files are a fixed product and are not republished on a cycle",
+  "subset_rule": "Every row of every ZCTA that touches a California county -- not every California row. The seven rows naming a county outside California are kept deliberately: they are the out-of-state halves of border ZCTAs, and dropping them would complete those ZCTAs' county sets and turn a refusal into a placement.",
+  "rows": 2003,
+  "zctas": 1808,
+  "california_counties": 58,
+  "out_of_state_rows": 7,
+  "columns": "zcta5, county_geoid, county_name -- renamed from GEOID_ZCTA5_20, GEOID_COUNTY_20 and NAMELSAD_COUNTY_20; the other fifteen columns of the upstream file are land and water areas, which nothing here reads",
+  "purpose": "Place a training program in an EDD labor market area by the county its ZIP resolves to, where the area's own published title names that county. See PROVENANCE.md, source D8 and the note on D8 recording why this file was chosen over HUD's USPS ZIP-county crosswalk.",
+  "refresh": "make zip-county-refresh -- re-downloads the national file, re-derives this extract, and rewrites this record. The extract is derived, never hand-edited."
+}
