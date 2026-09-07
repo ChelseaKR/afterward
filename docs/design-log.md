@@ -381,3 +381,32 @@ The eval numbers. They are committed only from a recorded live run that names pr
 model, prompt version, commit and date, and a test rejects a results file without them. The
 first such run, if it happens in this series, will be on Bedrock Sonnet 4.6 because that is
 what this account can invoke today, and the results file will say so.
+
+---
+
+## 2026-09-07 — Postscript: the county placement rule moved D15's figures
+
+D15 above records that regional wages attach only where EDD's own area label names the city,
+and that "1,741 programs across 178 cities are deliberately left unmapped." It names Pleasant
+Hill as the case the rule refuses: in Contra Costa and therefore the Oakland MD, but EDD did
+not say so.
+
+D15 is not rewritten and its decision did not change. What changed is that a second
+restatement of the same published definition became available. `PROVENANCE.md` D8 records the
+crosswalk decision and the measurement; this is the concordance, on the same 2026-08-04
+snapshot D15 was measured against.
+
+| Recorded in D15 | As of 2026-09-07 | Why it moved |
+| --- | --- | --- |
+| 1,741 programs left unmapped | **165** | A program is now also placed when the county its ZIP resolves to is one the area's own title names — a restatement of EDD's definition, like the city rule, not an inference about California geography |
+| 1,525 placed (46.7%) | **3,101 (94.9%)** | 1,525 still by the city rule, 1,576 by the county rule |
+| Pleasant Hill unmapped | **placed in the Oakland MD** | Contra Costa is named in that area's own title. EDD did say so; the pipeline was reading only half of what it said |
+
+The 165 residual is the part worth reading: **160 whose ZIP straddles two EDD areas** and 5
+whose mailing ZIP has no ZCTA at all. The first group is D15's principle intact — either
+answer would render identically to the other, so neither is given — and the second is the one
+thing the chosen crosswalk cannot do, recorded rather than absorbed.
+
+The pattern D15 named holds and is the reason this was possible: prefer the source that
+states the relationship over the one that implies it. The county gloss in EDD's area titles
+was a stated relationship sitting unread in the pipeline for a month, used only for display.

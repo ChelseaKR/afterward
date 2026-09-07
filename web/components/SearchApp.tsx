@@ -179,14 +179,18 @@ export function SearchApp({
   /*
     Region and city, and why both survive.
 
-    Region is the better grain and is therefore the primary control: in this snapshot it
-    collapses a 227-entry city list into 27 published labour-market areas, and someone
-    weighing a move thinks in "the Bakersfield area", not in city limits. Counts below are
-    that snapshot's; the code reads them from the data. Region cannot replace city
-    outright, because California's published areas are titled after two or three principal
-    cities and a program joins one only when its city is one of those. That leaves 1,741
-    programs — 53% — in cities no area title names, and city is the only geographic handle
-    they have. Dropping city would take the last one away from more than half the dataset.
+    Region is the better grain and is therefore the primary control: someone weighing a move
+    thinks in "the Bakersfield area", not in city limits. Every count below is read from the
+    data rather than written here.
+
+    Region still cannot replace city outright, and the reason changed when the county
+    placement rule landed. It used to be scarcity: placement went by principal city alone, so
+    1,741 of 3,266 programs sat in cities no area title names and city was their only handle.
+    The county rule cut that residual to 165 on the same snapshot — but it also made an area a
+    much coarser thing. A program placed because its ZIP resolves to Los Angeles County is
+    somewhere in Los Angeles County, which is not a neighbourhood. So city now earns its place
+    by being finer than a region rather than by being all some programs have, and it is still
+    the only handle for the 165.
 
     Two independent controls would let a reader ask for Fresno MSA and Visalia at once and
     get a blank screen with no explanation, so the city list derives from the region
@@ -194,10 +198,12 @@ export function SearchApp({
     changing region clears a stale city. One control narrows the other; neither can
     contradict it.
 
-    What neither control does is guess. A region never absorbs a nearby unplaced city, so
-    Clovis stays out of Fresno MSA and Pleasant Hill stays out of the Oakland MD even though
-    both sit in those areas' counties. Everything below exists to make that visible instead
-    of letting the filter imply a catchment it does not have.
+    What neither control does is guess. Both placement rules are restatements of EDD's own
+    published area titles — the title names the city, or the title names the county the ZIP
+    resolves to — and a region never absorbs a program on proximity or on a share. A ZIP
+    straddling two areas stays unplaced rather than going to the larger one. Everything below
+    exists to make that visible instead of letting the filter imply a catchment it does not
+    have.
   */
   const cityOptions = useMemo(
     () => cities(programs.filter((program) => matchesArea(program, area))),
@@ -678,9 +684,11 @@ export function SearchApp({
               </option>
             ))}
             {/*
-              Named and selectable, never a silent remainder. Without this option the 53% of
-              programs the state places nowhere would be reachable only by leaving the filter
-              alone, which is indistinguishable from hiding them.
+              Named and selectable, never a silent remainder. Without this option the programs
+              neither placement rule reaches would be reachable only by leaving the filter
+              alone, which is indistinguishable from hiding them. The count is small now — 165
+              on the 2026-08-04 snapshot against 1,741 before the county rule — and that is
+              exactly when a residual is easiest to drop and least defensible to.
             */}
             {stats.unplaced > 0 && (
               <option value={areaOptionValue(UNPLACED_AREA)}>

@@ -720,12 +720,13 @@ export interface SearchEntry {
   p: string | null;
   c: string | null;
   /**
-   * Short name of the published EDD labour-market area this program's city sits in
-   * ("Fresno MSA"), or null when California's own area titles name no such city.
+   * Short name of the published EDD labour-market area this program was placed in
+   * ("Fresno MSA"), or null when neither placement rule reached it.
    *
    * Null means unplaced, which is a third state distinct from both "not reported" and any
-   * area — 1,741 of 3,266 programs are in it. An unplaced program is never attributed to a
-   * nearby area, however obvious the geography looks.
+   * area — 165 of 3,266 programs on the 2026-08-04 snapshot, down from 1,741 before the
+   * county rule. An unplaced program is never attributed to a nearby area, however obvious
+   * the geography looks.
    */
   a: string | null;
   $: number | null;
