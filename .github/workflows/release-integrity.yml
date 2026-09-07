@@ -1,0 +1,91 @@
+# Is every published dataset release still the dataset it says it is?
+#
+# ADR 0001 declares the semver release pipeline N/A here, with a reason: nothing consumes an
+# afterward *version*. What this project releases through GitHub Releases is the dataset --
+# `make dataset-publish` cuts `dataset-<snapshot>` with a tarball and a sha256 beside it -- and
+# `deploy.yml` consumes exactly that. The release is the handshake between a workstation that
+# can reach DOL and a runner that cannot.
+#
+# `deploy.yml` checks that handshake well, and checks it exactly once per deploy, for the one
+# tag somebody typed into a dispatch form. It is dispatch-only by design and on 2026-09-07 it
+# had not run for 21 days. So between publishing a release and the next deploy -- which may be
+# never -- nothing anywhere asks whether the artifact is intact, whether its assets are still
+# there, or whether the snapshot inside it is the snapshot its tag names.
+#
+# This asks, of every release rather than one, and it publishes nothing and holds no deploy
+# credential. Red here means a published artifact is not what it claims, or that the check
+# could not be made at all -- which is deliberately also red, because "0 releases checked, 0
+# problems" is a green signal over an empty set, and that is the defect class this repository
+# grades other people's datasets on.
+#
+# Weekly, and on demand (Actions > release integrity > Run workflow), optionally for one tag.
+name: release integrity
+
+on:
+  schedule:
+    # Thursdays. The dataset refreshes on a quarterly-ish cadence, so this is watching for rot
+    # and for a mis-cut release rather than for churn; weekly is the useful grain.
+    - cron: "13 14 * * 4"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Check one release instead of all of them (e.g. dataset-2026-08-17)"
+        required: false
+        type: string
+
+permissions:
+  contents: read # `gh api` for the release list and `gh release download` for the assets
+
+concurrency:
+  # Named for the workflow rather than the ref, and never cancelled in progress: two runs would
+  # download the same ~20 MB of release assets for no reason, and a cancelled run reports
+  # nothing rather than reporting that nothing is wrong.
+  group: release-integrity
+  cancel-in-progress: false
+
+jobs:
+  releases:
+    name: every published dataset release is the dataset its tag names
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Verify the published releases
+        # `shell: bash` rather than the default, so `pipefail` is on: the default is
+        # `bash -e {0}` without it, and this step's exit code is the whole verdict.
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -uo pipefail
+          args=(--repo "${GITHUB_REPOSITORY}")
+          if [ -n "${RELEASE_TAG}" ]; then
+            args+=(--tag "${RELEASE_TAG}")
+          fi
+          # Not `set -e`, and the redirect is not a pipe. The report is the point of the run,
+          # and a failing run is the run whose report matters most -- with `-e` the step would
+          # abort before writing the summary, and through a pipe the exit code read would be
+          # `tee`'s rather than the script's.
+          python3 scripts/release_integrity.py "${args[@]}" > "${RUNNER_TEMP}/report.txt" 2>&1
+          verdict=$?
+          cat "${RUNNER_TEMP}/report.txt"
+          {
+            echo '## Published dataset releases'
+            echo
+            echo '```'
+            cat "${RUNNER_TEMP}/report.txt"
+            echo '```'
+            if [ "${verdict}" -eq 2 ]; then
+              echo
+              echo 'Exit 2: the check could **not be made**. That is not a clean bill of health.'
+            fi
+          } >> "${GITHUB_STEP_SUMMARY}"
+          exit "${verdict}"

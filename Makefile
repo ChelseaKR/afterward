@@ -4,7 +4,7 @@
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
 	ctdl-statements ctdl-package csv-export dataset-diff ask-serve ask ask-eval ask-eval-dry \
-	ci-artifact-check zip-county-refresh
+	ci-artifact-check zip-county-refresh release-check
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -150,6 +150,14 @@ SITE_URL ?= https://afterward.chelseakr.com
 # for the release download; pass --dataset to compare against one on disk.
 live-check:
 	uv run python scripts/verify_live_site.py --url "$(SITE_URL)"
+
+# Are the published dataset releases still what their tags say they are?
+#
+# ADR 0001 makes the dataset release this project's delivery, and `deploy.yml` verifies one
+# release at the moment somebody deploys it. This asks the same questions of every published
+# release, on a schedule, and publishes nothing. Read-only; needs `gh` authenticated.
+release-check:
+	uv run python scripts/release_integrity.py --repo ChelseaKR/afterward
 
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
