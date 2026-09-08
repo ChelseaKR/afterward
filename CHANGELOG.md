@@ -8,6 +8,27 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **A dataset release can no longer be published and never deployed without something saying
+  so.** ADR 0001 makes the dataset this project's delivery, and it was the one thing with no
+  currency check on it: `make dataset-publish` cuts the release on a workstation, `deploy.yml`
+  is dispatch-only, and between those two steps there was no clock. The three existing
+  sentinels each stay green through the gap — `live-integrity.yml` asks whether the site serves
+  the dataset it *names*, which a site six weeks behind answers correctly every day;
+  `deploy-staleness.yml` asks how far behind `main` the deployed *commit* is, and a data
+  refresh moves no commit; `release-integrity.yml` checks artifacts rather than currency. New
+  `scripts/dataset_currency.py` and `dataset-currency.yml` join
+  `release_integrity.list_releases` with `verify_live_site.live_coverage` rather than
+  re-deriving either, and report three states: `current`, `behind` (exit 0, and the workflow
+  opens an issue, on `deploy_staleness.py`'s reasoning that a job which is red for weeks is a
+  job that is ignored), and unmeasurable (exit 1, reason named, no number reported) for no
+  published release, an unreadable site, a release with no parseable timestamp, and a live
+  snapshot **newer** than everything published — which is not "current" and not "ahead" but a
+  site serving something that was never released. Two clocks are reported rather than one: the
+  distance between the two snapshot dates is how much staler the reader's data is, and the age
+  of the oldest undeployed release is how long the operator has been sitting on it. The first
+  real run reported `current` against `dataset-2026-08-17`. `list_releases` now carries
+  `published_at`, `created_at` and `html_url` for it, and a test pins those field names because
+  nothing in `release_integrity.py` itself reads them. (#135, #137)
 - **DOL's bulk export is now read beside the search API for the one thing it has that the API
   does not: `de129`, the actual denominator of the published Q2 employment rate.** Issue #25
   established that this site publishes a rate whose denominator it cannot show, and
