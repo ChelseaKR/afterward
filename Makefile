@@ -159,6 +159,15 @@ live-check:
 release-check:
 	uv run python scripts/release_integrity.py --repo ChelseaKR/afterward
 
+# Is the dataset a visitor is served the newest dataset this project has published?
+#
+# `release-check` asks whether every release is intact, `live-check` whether the site serves
+# the dataset it names, and `deploy_staleness.py` how far behind main the deployed commit is.
+# A release published on the workstation and never deployed passes all three. Read-only;
+# needs `gh` authenticated and reaches the live site.
+currency-check:
+	uv run python scripts/dataset_currency.py --repo ChelseaKR/afterward --url "$(SITE_URL)"
+
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
 
