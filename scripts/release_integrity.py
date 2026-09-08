@@ -109,14 +109,22 @@ def _gh(args: list[str]) -> str:
 
 
 def list_releases(repo: str) -> list[dict[str, object]]:
-    """Every published release, newest first, as the API reports them."""
+    """Every published release, newest first, as the API reports them.
+
+    `published_at`, `created_at` and `html_url` are carried for `dataset_currency.py`, which
+    asks a different question of the same list -- not whether a release is intact, but
+    whether the newest one ever reached the site. One listing call, one definition of what
+    counts as a release; a second copy of this would be free to drift from the one this file
+    enforces. Nothing below reads them.
+    """
     raw = _gh(
         [
             "api",
             f"repos/{repo}/releases",
             "--paginate",
             "--jq",
-            ".[] | {tag_name, draft, prerelease, assets: [.assets[].name]}",
+            ".[] | {tag_name, draft, prerelease, published_at, created_at, html_url, "
+            "assets: [.assets[].name]}",
         ]
     )
     releases: list[dict[str, object]] = []
