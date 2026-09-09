@@ -780,8 +780,18 @@ def export_csv(dataset_dir: Path, output_dir: Path) -> ExportReport:
         json.dumps(package, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
-    problems = data_package_problems(package, output_dir)
-    if problems:  # pragma: no cover - the writer just wrote every file it declares
+    # Read the descriptor back off disk rather than checking the dict still in hand: the
+    # claim is about the package a reader downloads, and a truncated or unreadable
+    # `datapackage.json` is invisible to the variable it was serialized from.
+    #
+    # This cannot catch a *missing* resource, and that is worth saying rather than implying:
+    # `_resource` measures each file's bytes to build its entry, so a file the writer did
+    # not bring raises there first, before any entry naming it exists. Measured -- deleting
+    # the `copyfile` above fails at `_resource` with `FileNotFoundError`, not here. The
+    # guard against that is the up-front refusal at the top of this function.
+    written = json.loads(package_path.read_text(encoding="utf-8"))
+    problems = data_package_problems(written, output_dir)
+    if problems:  # pragma: no cover - reachable only by a failed write, not by a bad build
         raise ValueError(
             "the data package does not describe what was written:\n  " + "\n  ".join(problems)
         )
