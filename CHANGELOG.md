@@ -83,6 +83,21 @@ All notable changes to this project are documented here. The format follows
   recomputes its retrieval record, so the extract can be reproduced and diffed rather than
   trusted. Network-bound, run by hand, and in no build.
 
+- **The print sheet is audited (part of #111).** `globals.css` has carried an `@media print`
+  block since the print stylesheet landed — it hides the navigation, unfolds every
+  `<details>` so nothing a disclosure was holding is silently absent from the paper, and
+  keeps the non-affiliation notice on the page — and no gate had ever rendered it. `npm run
+  a11y` parses the export with jsdom, which resolves no media query, and every pass in
+  `a11y-rendered.mjs` ran in screen media. The rendered gate now prints a program page in
+  both languages, chosen from the build's own data as the first program by uuid whose source
+  filed no number for an outcome, so the page audited is one where an absence has to become
+  the words "Not reported" / "No reportado". It proves the medium changed and that the print
+  rules reached *this page* before trusting the audit — emulating print over a page the
+  stylesheet never touched would audit the screen layout and print `pass` — and it checks the
+  absence labels are still words rather than blanks, because on paper there is no title
+  attribute to hover and a blank is a zero. The "Print this page" control and the print-token
+  contrast pass #111 also asks for are not here.
+
 ### Changed
 
 - `check_coverage_counts` now recomputes `programs_mapped_to_area` and `programs_without_area`
