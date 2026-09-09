@@ -314,12 +314,30 @@ QData term was verified against the schema encoding fetched 2026-08-07 from cred
 that same file. `qdata:DataSetTimeFrame` is deliberately not emitted: the source states no
 reporting-period dates, and the export does not invent them.
 
-## Flat CSV export
+## Flat CSV export, as a data package
 
-`make csv-export` writes the whole dataset as one table into `dist/csv/`, beside a
-Frictionless Table Schema generated from the same column definitions in the same pass, and a
-`SHA256SUMS` for both. For the reader most likely to check these figures — a journalist or a
-researcher with a spreadsheet — sharded JSON is the wrong shape.
+`make csv-export` writes `dist/csv/` as a complete [Frictionless Data
+Package](https://datapackage.org/): the whole dataset as one table, a Table Schema generated
+from the same column definitions in the same pass, the three emitted JSON files
+(`programs.json`, `occupations.json`, `coverage.json`) copied in beside it, a
+`datapackage.json` declaring every one of them with its size and sha256, and a `SHA256SUMS`
+derived from that descriptor rather than a hand-kept list. For the reader most likely to check
+these figures — a journalist or a researcher with a spreadsheet — sharded JSON is the wrong
+shape.
+
+The JSON files are **copied** rather than referenced. A descriptor naming a file it did not
+bring has a path that resolves for whoever built the package and for nobody who downloaded it,
+which is a broken package that reads as a complete one. The export refuses to finish if the
+descriptor ends up declaring a file that is not there, or one whose bytes do not match the hash
+beside it.
+
+The descriptor carries the two sentences a reader needs before quoting a blank — which
+providers must report performance and which are exempt (`PROVENANCE.md` I7–I11), and why there
+is no `suppressed` state — inside the package, rather than only in a README they may never have
+downloaded.
+
+No clock is consulted and the package version is the snapshot date, so the same snapshot writes
+byte-identical output.
 
 The design is one rule: **no blank ever carries a meaning.** Every measure has a state column
 beside it, the state column is never empty, and a value cell is empty only where the state
