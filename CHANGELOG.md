@@ -8,6 +8,23 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **The flat CSV now travels as a Frictionless Data Package (part of #110).** `make
+  csv-export` writes `dist/csv/` as a package a researcher can open with a standard reader:
+  `programs.csv`, its Table Schema, the three emitted JSON files copied in beside it, and a
+  `datapackage.json` declaring every one with its size and sha256. The copies are the point —
+  a descriptor that named `programs.json` and left it in `web/public/data` would have a path
+  that resolves for whoever built the package and for nobody who downloaded it, which is a
+  broken package that reads as a complete one. `tabular.data_package_problems` reads the
+  written descriptor back against the files on disk, and the export refuses rather than
+  leaving a package whose paths or hashes are wrong; a dataset directory missing one of the
+  three JSON files is refused before anything is written at all. `SHA256SUMS` is now derived
+  from the descriptor's own resource list rather than a hand-kept filename list, so a resource
+  added to the package cannot be left out of the checksums. The descriptor carries the
+  reporting-obligation record (`PROVENANCE.md` I7–I11) and the reason there is no `suppressed`
+  state, inside the package rather than only in a README. No clock is consulted and the
+  version is the snapshot date, so the same snapshot writes byte-identical output. The
+  `/[lang]/data/` page #110 also asks for is not here.
+
 - **A dataset release can no longer be published and never deployed without something saying
   so.** ADR 0001 makes the dataset this project's delivery, and it was the one thing with no
   currency check on it: `make dataset-publish` cuts the release on a workstation, `deploy.yml`

@@ -285,20 +285,31 @@ dataset-publish: dataset-package
 	echo; \
 	echo "Now run the Deploy workflow with dataset_tag=dataset-$$1"
 
-# Flat CSV of the working dataset plus its Table Schema, into dist/ (gitignored).
+# A Frictionless Data Package of the working dataset, into dist/ (gitignored): the flat CSV, its
+# Table Schema, the three emitted JSON files, and a datapackage.json declaring every one with its
+# size and sha256.
 #
 # The reader most likely to check this project's figures is a journalist or a researcher with a
 # spreadsheet, and sharded JSON is not that. Deliberately its own target, like `ctdl-export`: not
 # part of `data`, `build` or `verify`, so it can never slow or break the main pipeline, and it
 # writes nothing into $(DATASET_DIR), so the bytes the site serves are untouched.
 #
-# Deterministic -- rows sort by uuid, so the same snapshot writes byte-identical output -- and it
-# refuses to write at all if any measure cell would end up with a blank state word beside it.
+# The JSON files are copied rather than referenced. A descriptor naming a file it did not bring
+# has a path that resolves for whoever built the package and for nobody who downloaded it.
+#
+# Deterministic -- rows sort by uuid, no clock is consulted, and the package version is the
+# snapshot date, so the same snapshot writes byte-identical output -- and it refuses to write at
+# all if any measure cell would end up with a blank state word beside it, or if the descriptor
+# ends up declaring a file that is not there.
+#
+# SHA256SUMS is derived from the descriptor rather than a hand-kept list, so a resource added to
+# the package cannot be left out of the checksums.
 csv-export:
 	uv run afterward export-csv --dataset-dir $(DATASET_DIR) --output-dir $(DIST_DIR)/csv
-	@( cd $(DIST_DIR)/csv && if command -v sha256sum >/dev/null 2>&1; then \
-		sha256sum programs.csv programs.schema.json > SHA256SUMS; \
-	else shasum -a 256 programs.csv programs.schema.json > SHA256SUMS; fi )
+	@( cd $(DIST_DIR)/csv && files=$$(uv run python -c 'import json,sys;print(" ".join(r["path"] for r in json.load(open("datapackage.json"))["resources"]))') && \
+		if command -v sha256sum >/dev/null 2>&1; then \
+			sha256sum $$files programs.schema.json datapackage.json > SHA256SUMS; \
+		else shasum -a 256 $$files programs.schema.json datapackage.json > SHA256SUMS; fi )
 	@echo "checksums -> $(DIST_DIR)/csv/SHA256SUMS"
 
 # What changed between a previous dataset and the working one, into dist/ (gitignored).

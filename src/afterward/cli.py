@@ -353,7 +353,7 @@ def export_csv_command(
         help="Emitted dataset to flatten; the same files the site serves.",
     ),
     output_dir: Path = typer.Option(
-        Path("dist/csv"), "--output-dir", help="Where to write the table and its Table Schema."
+        Path("dist/csv"), "--output-dir", help="Where to write the data package."
     ),
 ) -> None:
     """Write the dataset as one CSV in which no blank ever carries a meaning.
@@ -368,7 +368,13 @@ def export_csv_command(
     time a measure reaches this dataset the cause is gone. Naming one would be a claim nothing
     here measured.
 
-    Deterministic: rows sort by `uuid`, so the same snapshot writes byte-identical output.
+    The output directory is a complete Frictionless Data Package: the table, its Table
+    Schema, the three emitted JSON files copied in beside it, and a `datapackage.json`
+    declaring every one with its size and sha256. The copies are what make the descriptor's
+    paths resolve for somebody who downloaded it rather than only for whoever built it.
+
+    Deterministic: rows sort by `uuid`, no clock is consulted, and the package version is the
+    snapshot date -- so the same snapshot writes byte-identical output.
     """
     report = export_csv(dataset_dir, output_dir)
     typer.echo(f"Snapshot {report.snapshot_date} -> {report.table_path}")
@@ -379,6 +385,9 @@ def export_csv_command(
     for state, count in report.states.items():
         typer.echo(f"    {state:<24}{count:>6}")
     typer.echo(f"  Table Schema -> {report.schema_path}")
+    typer.echo(f"  Data Package -> {report.package_path}")
+    for name in report.resources:
+        typer.echo(f"    declares {name}")
 
 
 @app.command("validate-ctdl")
