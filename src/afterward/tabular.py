@@ -76,6 +76,7 @@ __all__ = [
     "to_csv",
     "to_data_package",
     "to_table_schema",
+    "value_of",
 ]
 
 TABLE_FILENAME: Final = "programs.csv"
@@ -354,6 +355,18 @@ def _render(value: object) -> str:
     if isinstance(value, (list, tuple)):
         return " ".join(str(item) for item in value)
     return str(value)
+
+
+def value_of(record: Mapping[str, Any], column: Column) -> object:
+    """The raw value one column reads out of a record, or ``None`` where the path breaks.
+
+    Public because the receipt beside each program record
+    (:mod:`afterward.receipts`) has to read exactly the values this table reads. Two readers
+    of "what is this measure worth" would eventually answer differently for the same record,
+    and a receipt that disagreed with the CSV about a suppressed cell would be worse than no
+    receipt at all.
+    """
+    return _at(record, column.path)
 
 
 def state_of(record: Mapping[str, Any], column: Column) -> str:

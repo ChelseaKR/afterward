@@ -8,6 +8,48 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Every program record now carries a receipt, and `afterward verify-record` replays one
+  (#113).** `scripts/verify_live_site.py` already asks whether the bytes the site serves are
+  the bytes of the release it names; that check is the operator's — it needs `gh`, downloads
+  the whole tarball, and runs on a schedule nobody outside this repository sees. A
+  `receipts/<uuid>.json` beside every record hands the same question to the reader, one
+  record at a time: the sha256 of the exact bytes of `programs/<uuid>.json` (so
+  `shasum -a 256` settles it, with no canonicalisation rule to reimplement), every measure's
+  state in the flat CSV's own three-word vocabulary read through `tabular.state_of` rather
+  than a second copy of the rule, how the occupation join reached each occupation beside the
+  program's own SOC codes, and the link verdict with the classifier version that reached it.
+  **A measure that is not reported carries no number** — its entry is exactly
+  `{"state": "not_reported"}`, no `value` key, no null, no zero, and the test for it reads
+  the receipt's own bytes rather than the parsed dict, because a machine that never saw the
+  page's caveats is what parses this. `afterward verify-record <uuid> --dataset <tarball|dir>`
+  recomputes the receipt and reports agreement field by field: changing one measure in a copy
+  of the dataset names that field and no other, and editing a field no receipt describes
+  still fails the digest. Three exit codes, and the third is not a pass: **2** covers no such
+  record, no receipt beside it, a dataset that cannot say which snapshot it is, and a schema
+  version this build does not know, each with its own sentence, and the word "verified" is
+  never printed on that path. Emitted from `emit_site_bundle`, which is where both build
+  paths meet — a receipt written only by `build` would be absent from every dataset CI
+  produces. New `scripts/receipt_check.py` consumes the pairing on the packaging path
+  (`make dataset-verify`) and the publishing path (`deploy.yml` GUARD 1c); it is standard
+  library only, like `dataset_shape_check.py`, because the deploy job installs no Python
+  toolchain, and it reports three states rather than two — a dataset built before receipts
+  existed carries none, which passes and says so by name, while a dataset holding *some* is
+  refused as records and receipts from two different builds. Measured on the 2026-08-17
+  snapshot: 1,352 bytes per receipt, 551 gzipped, 4.21 MB across 3,266 records. Two things
+  the issue asked for are deliberately absent with the reasoning recorded in
+  `src/afterward/receipts.py`: the tarball's own sha256 (which would be a digest of an
+  archive computed inside that archive) and the D1 source row's hash (which `build_offline`
+  cannot produce at all, and which no downstream reader holds the row to check).
+
+- **A published link verdict now names the classifier that reached it.** `provider_link`
+  gains `classifier_version`, null exactly where `verdict` is null. `CLASSIFIER_VERSION`
+  exists because a verdict from an older classifier is *unasked* rather than wrong — the
+  cache refuses to serve one and `stale_classifier` names them in a report — but a report
+  read into a build carries whatever version it was written by, so until now a stale verdict
+  and a current one were the same three keys in the dataset a reader downloads. A record
+  built before this field carries no version and the receipt says null rather than reading
+  the absence as zero or as the current version.
+
 - **The flat CSV now travels as a Frictionless Data Package (part of #110).** `make
   csv-export` writes `dist/csv/` as a package a researcher can open with a standard reader:
   `programs.csv`, its Table Schema, the three emitted JSON files copied in beside it, and a

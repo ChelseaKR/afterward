@@ -229,6 +229,23 @@ jobs:
         # current dataset looks like.
         run: python3 scripts/dataset_shape_check.py web/public/data
 
+      - name: Refuse to publish records and receipts from two different builds
+        # GUARD 1c. Every program record carries a receipt attesting the sha256 of that
+        # record's exact bytes, and a pairing field nothing consumes is not a check. GUARD 1
+        # counts, GUARD 1a asks whether the records are current -- neither can see a dataset
+        # directory holding records from one build beside receipts from another, which is
+        # what an interrupted `make data` leaves behind, since it overwrites in place.
+        #
+        # Standard library only and shared verbatim with `make dataset-verify`, on the same
+        # terms as GUARD 1a: the packaging path is not the only way a dataset reaches a
+        # reader.
+        #
+        # A release built before receipts existed carries none, and this reports that state
+        # by name and passes -- otherwise every tag before 2026-09 would become undeployable
+        # over an absence that is simply history. It refuses the mixed state, which has no
+        # benign reading.
+        run: python3 scripts/receipt_check.py web/public/data
+
       - name: Refuse to publish a link nobody vouched for
         # GUARD 1b. The dataset above is fetched by tag, so it can be older than the code in
         # this repository -- and on 2026-08-15 it was: production was serving a snapshot in

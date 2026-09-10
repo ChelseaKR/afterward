@@ -16,6 +16,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Final
 
+from afterward import receipts
 from afterward.sources import (
     careeronestop,
     dol_bulk,
@@ -2824,11 +2825,23 @@ def emit_site_bundle(
     output_dir: Path,
     snapshot: str,
     state: str,
+    is_fixture: bool,
 ) -> None:
     """Write the sharded artifacts a static front end consumes.
 
     One slim index for search and filtering, plus per-program and per-occupation detail
-    fetched only when something is opened.
+    fetched only when something is opened, plus a receipt beside every program record.
+
+    The receipts are written here rather than in either build function because this is the
+    one place both build paths meet: a receipt emitted from :func:`build` alone would be
+    absent from every dataset CI produces, which is every dataset any test ever reads.
+
+    ``is_fixture`` is required rather than defaulted. The only thing it decides is whether a
+    receipt names a dataset release, and defaulting it either way puts a wrong answer in a
+    machine-readable artifact for a caller who simply did not think about it: default False
+    and every fixture receipt points at a real published release holding different programs;
+    default True and a genuine build publishes receipts that decline to name the archive they
+    came from. See :func:`afterward.receipts.release_tag_for`.
     """
     (output_dir / "search-index.json").write_text(
         json.dumps(
@@ -2846,10 +2859,25 @@ def emit_site_bundle(
     )
 
     program_dir = _fresh_dir(output_dir / "programs")
+    receipt_dir = _fresh_dir(output_dir / receipts.RECEIPT_DIRNAME)
     for payload in payloads:
         if payload["uuid"]:
-            (program_dir / f"{payload['uuid']}.json").write_text(
-                json.dumps(payload, separators=(",", ":")), encoding="utf-8"
+            # The receipt attests to the bytes actually written, not to a re-serialisation of
+            # the same dict: a digest over a second rendering would keep agreeing with itself
+            # after the writer's separators changed underneath it, which is the one thing it
+            # exists to notice.
+            record_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+            (program_dir / f"{payload['uuid']}.json").write_bytes(record_bytes)
+            (receipt_dir / f"{payload['uuid']}.json").write_bytes(
+                receipts.receipt_bytes(
+                    receipts.receipt_for(
+                        payload,
+                        record_bytes,
+                        snapshot_date=snapshot,
+                        state=state,
+                        is_fixture=is_fixture,
+                    )
+                )
             )
 
     occupation_dir = _fresh_dir(output_dir / "occupations")
@@ -2986,6 +3014,11 @@ def build_offline(
         output_dir=output_dir,
         snapshot=snapshot,
         state=programs_doc.get("state", DEFAULT_STATE),
+        # Read from the coverage document rather than assumed from the function's name: this
+        # path is also how an operator rebuilds the site bundle from an unpacked release,
+        # which is not a fixture and whose receipts should name the release it came from.
+        # Absent means a real build -- see afterward.receipts on that convention.
+        is_fixture=bool(coverage.get("is_fixture", False)),
     )
     return len(payloads)
 
@@ -3127,7 +3160,16 @@ def build(
         json.dumps({"snapshot_date": snapshot, "occupations": occupations}, indent=1),
         encoding="utf-8",
     )
-    emit_site_bundle(payloads, occupations, output_dir=output_dir, snapshot=snapshot, state=state)
+    # `build` fetches the live sources, so what it emits is never the fixture. The one path
+    # that can produce one is `make_fixture.py`, which writes the flag itself.
+    emit_site_bundle(
+        payloads,
+        occupations,
+        output_dir=output_dir,
+        snapshot=snapshot,
+        state=state,
+        is_fixture=False,
+    )
     coverage = asdict(report) | {
         "outcome_coverage_pct": report.outcome_coverage_pct,
         "occupation_match_pct": report.occupation_match_pct,
