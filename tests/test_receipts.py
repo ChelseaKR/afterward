@@ -23,6 +23,7 @@ passes every unit test over a two-field dict and disagrees with the pipeline.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import re
 import shutil
@@ -42,6 +43,20 @@ from afterward.sources import link_check
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURE_DIR = REPO_ROOT / "fixtures" / "data"
+SCRIPTS = REPO_ROOT / "scripts"
+
+
+def _script(name: str) -> Any:
+    """Load a gate script by path, the way the sibling gate tests do."""
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    spec = importlib.util.spec_from_file_location(name, SCRIPTS / f"{name}.py")
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
 
 runner = CliRunner()
 
@@ -707,3 +722,55 @@ class TestTheRefusals:
             "measures.median_earnings.state: receipt 'not_reported', dataset 'reported'"
             in result.output
         )
+
+
+class TestTheLiveSentinelAlreadyCoversReceipts:
+    """`verify_live_site.py` needs no receipts pass, and this is why -- pinned, not asserted.
+
+    #113 asks that "the live sentinel samples receipts against the release". It does better
+    than sample and it needed no change: `extract` returns **every** file in the tarball and
+    `compare` maps over all of them, so receipts are compared byte for byte with what the
+    origin serves the moment they are in a release.
+
+    That is a sentence in a PR body, which is exactly the kind of claim this campaign keeps
+    finding to be false -- a second, narrower reader that nobody noticed. So it is a test.
+    A prefix filter, a `programs/`-only walk, or an extension check added to `extract` later
+    would each turn the sentence into a lie with nothing to say so; each fails here.
+    """
+
+    def test_the_comparison_universe_is_every_file_in_the_release(
+        self, built: Path, uuids: list[str], tmp_path: Path
+    ) -> None:
+        sentinel = _script("verify_live_site")
+        tarball = tmp_path / "afterward-dataset-2026-08-07.tar.gz"
+        with tarfile.open(tarball, "w:gz") as archive:
+            archive.add(built, arcname=".")
+
+        files = sentinel.extract(tarball, tmp_path / "unpacked")
+
+        on_disk = {
+            path.relative_to(built).as_posix() for path in built.rglob("*") if path.is_file()
+        }
+        assert set(files) == on_disk
+        receipts_seen = sorted(k for k in files if k.startswith(f"{receipts.RECEIPT_DIRNAME}/"))
+        assert receipts_seen == [f"{receipts.RECEIPT_DIRNAME}/{u}.json" for u in uuids]
+        # The floor: a universe of only receipts, or only programs, would satisfy one half of
+        # the pair above on its own.
+        assert len([k for k in files if k.startswith("programs/")]) == len(uuids)
+        assert len(files) > 2 * len(uuids)
+
+    def test_the_bytes_it_would_compare_are_the_receipt_bytes(
+        self, built: Path, uuids: list[str], tmp_path: Path
+    ) -> None:
+        """`extract` returns a path-to-bytes map and `_compare_one` fails on any inequality,
+        so the comparison is over exactly these bytes. Asserting the map's contents is what
+        makes "receipts are covered" a statement about the sentinel rather than about a
+        filename appearing in a list."""
+        sentinel = _script("verify_live_site")
+        tarball = tmp_path / "afterward-dataset-2026-08-07.tar.gz"
+        with tarfile.open(tarball, "w:gz") as archive:
+            archive.add(built, arcname=".")
+        files = sentinel.extract(tarball, tmp_path / "unpacked")
+        for uuid in uuids:
+            key = f"{receipts.RECEIPT_DIRNAME}/{uuid}.json"
+            assert files[key] == (built / receipts.RECEIPT_DIRNAME / f"{uuid}.json").read_bytes()
