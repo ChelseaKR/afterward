@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import typer
 
+from afterward import receipts
 from afterward.build import (
     CLOSE_ENOUGH_MILES,
     LINK_CACHE_DIR,
@@ -314,6 +315,70 @@ def build_offline_command(
     """Emit the site dataset from the committed fixture, without touching the network."""
     count = build_offline(fixture_dir, output_dir=output_dir, bulk_export_path=bulk_export)
     typer.echo(f"Built {count} fixture programs from {fixture_dir} -> {output_dir}")
+
+
+@app.command("verify-record")
+def verify_record_command(
+    record_id: str = typer.Argument(..., help="The program's uuid, as the page's URL carries it."),
+    dataset: Path = typer.Option(
+        ...,
+        "--dataset",
+        help="A dataset release tarball (afterward-dataset-<date>.tar.gz) or an unpacked "
+        "dataset directory.",
+    ),
+    receipt: Path | None = typer.Option(
+        None,
+        "--receipt",
+        help="A receipt to hold the dataset to -- the one a page served you, say. Defaults to "
+        "the receipt inside the dataset.",
+    ),
+) -> None:
+    """Replay one program's receipt against the dataset and report agreement field by field.
+
+    The site publishes a receipt beside every program record: the record's sha256, every
+    measure's state in the same vocabulary the flat CSV uses, how the occupation join reached
+    each occupation, and what the link checker found. This recomputes that receipt from the
+    dataset and says whether the two agree, naming every field that does not.
+
+    With no ``--receipt`` it asks whether the archive is internally consistent -- whether the
+    record and the receipt beside it were written by one build. A bucket synced half from one
+    snapshot and half from another passes every count and every digest of the whole; this is
+    what sees it. With ``--receipt`` pointing at a receipt a page served, it asks the reader's
+    question instead: is the page I am reading describing the record in this release?
+
+    Exit codes: **0** they agree, **1** they disagree, **2** nothing was compared -- no such
+    record, no receipt beside it, a dataset that cannot say which snapshot it is, or a receipt
+    schema this build does not know. Two is never a pass, and the word "verified" is not
+    printed on that path.
+    """
+    try:
+        with receipts.open_dataset(dataset) as dataset_dir:
+            result = receipts.verify_record(dataset_dir, record_id, receipt_path=receipt)
+    except receipts.ReceiptError as exc:
+        typer.echo(f"cannot check: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+
+    if result.status == "cannot_check":
+        typer.echo(f"cannot check {record_id}: {result.reason}", err=True)
+        raise typer.Exit(code=2)
+
+    typer.echo(f"record {result.uuid}")
+    typer.echo(f"  dataset   {dataset}")
+    typer.echo(
+        f"  digest    {'matches' if result.digest_agrees else 'DOES NOT MATCH'}"
+        f"  receipt {result.attested_digest}"
+    )
+    if not result.digest_agrees:
+        typer.echo(f"                             dataset {result.actual_digest}")
+    agreeing = result.fields_compared - len(result.fields)
+    typer.echo(f"  fields    {agreeing} of {result.fields_compared} agree")
+    for disagreement in result.fields:
+        typer.echo(f"    {disagreement}")
+    if result.status == "agrees":
+        typer.echo("\nThe receipt and this dataset agree.")
+        return
+    typer.echo("\nThe receipt and this dataset DISAGREE.")
+    raise typer.Exit(code=1)
 
 
 @app.command("export-ctdl")

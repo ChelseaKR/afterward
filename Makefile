@@ -262,6 +262,7 @@ dataset-verify:
 	@uv run python scripts/dataset_shape_check.py $(DATASET_DIR)
 	@uv run python scripts/provider_link_check.py $(DATASET_DIR)
 	@uv run python scripts/outcome_claims_check.py $(DATASET_DIR)
+	@uv run python scripts/receipt_check.py $(DATASET_DIR)
 
 # Tarball plus checksum, into dist/ (gitignored). COPYFILE_DISABLE keeps macOS from
 # packing ._* companions, which would otherwise arrive as bogus programs/*.json.

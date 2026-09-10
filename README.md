@@ -367,6 +367,61 @@ at all if any measure cell would end up with a blank state beside it, so a faile
 no partial file to mistake for a good one. It writes nothing into `web/public/data/`, so the
 bytes the site serves are untouched.
 
+## A receipt for every program, and a verb that replays one
+
+Every program record in the dataset has a `receipt.json` beside it, at
+`/data/receipts/<uuid>.json`, and it says what this project published about that one record:
+
+- **`record_sha256`** — the digest of the exact bytes of `programs/<uuid>.json`. Not of a
+  canonical re-rendering: a reader runs `shasum -a 256 programs/<uuid>.json` on the release
+  tarball and compares the string, with no rule to reimplement and nothing to take on trust.
+- **Every measure's state**, in the same three-word vocabulary the flat CSV uses, read
+  through the same function, so the two cannot come to different opinions about a blank.
+- **How the occupation join reached each occupation**, and the program's own SOC codes, so the
+  join can be audited against the table it cites.
+- **What the link checker found**, and which version of the classifier found it.
+
+**A measure that is not reported carries no number.** Its entry is exactly
+`{"state": "not_reported"}` — no `value` key, no null, no zero. That rule matters more here
+than on the page: a receipt is read by machines that never saw the page's caveats, and an
+absence that leaks into one as a zero travels further than one on a screen.
+
+```
+afterward verify-record <uuid> --dataset afterward-dataset-<date>.tar.gz
+```
+
+recomputes that record's receipt from the dataset and reports agreement field by field.
+Change one measure in a copy of the dataset and it names that field and no other. Exit codes
+are **0** they agree, **1** they disagree, and **2** *nothing was compared* — no such record,
+no receipt beside it, a dataset that cannot say which snapshot it is, or a schema version this
+build does not know. Two is never a pass, and the word "verified" is not printed on that path.
+
+`--receipt <path>` holds the dataset to a receipt from somewhere else — the one a page served
+you — which is the reader's own question: is the page I am reading describing the record in
+this release? With no `--receipt` it asks whether the archive is internally consistent, which
+is the state a half-finished `make data` or a partly-synced bucket leaves behind and which no
+digest of the whole archive can see.
+
+`scripts/receipt_check.py` runs the pairing over a whole dataset on both the packaging path
+(`make dataset-verify`) and the publishing path (`deploy.yml`). It is standard library only
+for the same reason `dataset_shape_check.py` is: the deploy job installs Node and no Python
+toolchain, and a check the publishing path cannot run guards only the path a stale dataset
+never arrives by. A dataset built before receipts existed carries none; that is reported by
+name and passes, because three published releases predate the feature — but it is never
+reported silently, since "nothing was compared" and "everything checked out" must not print
+the same way.
+
+Two things a receipt deliberately does not carry. **The tarball's own sha256**, because
+`make dataset-package` archives the whole dataset directory, receipts included, so a digest of
+the archive inside the archive is a fixed point that does not exist. And **anything signed** —
+ADR 0001 records that this project does not sign releases, so a receipt proves that a record
+and its receipt were written by one build and claims nothing about who ran it.
+
+Measured on the 2026-08-17 snapshot: about 1.3 KB per receipt uncompressed and about 0.5 KB
+over the wire, which is roughly half again the sharded program bytes and a little over four
+megabytes for the whole dataset. Deterministic, like the other artifacts: no clock is read,
+measure order follows the table's own column list, and the same record writes the same bytes.
+
 ## What changed between two datasets
 
 Every refresh replaces the dataset wholesale, and the only review it gets is the shape floors in
