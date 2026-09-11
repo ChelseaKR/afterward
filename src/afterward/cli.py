@@ -41,7 +41,15 @@ def cli() -> None:
 
 @app.command("build")
 def build_command(
-    state: str = typer.Option("CA", "--state", help="Two-letter state code to extract."),
+    state: str = typer.Option(
+        "CA",
+        "--state",
+        help="Two-letter state code to extract. Validated against the states the ETP feed "
+        "actually reports programs for, so an unrecognised code is refused rather than "
+        "fetched as an empty dataset. California reads its projections from EDD; every "
+        "other state reads Projections Central, which publishes no wage and no regions -- "
+        "`coverage.json` says which source a dataset came from and what it does not carry.",
+    ),
     output_dir: Path = typer.Option(
         Path("data/processed"), "--output-dir", help="Where to write the emitted JSON."
     ),
@@ -61,7 +69,7 @@ def build_command(
     ),
 ) -> None:
     """Fetch source data, join it, and emit the site dataset."""
-    typer.echo(f"Fetching {state} training programs and California occupation projections...")
+    typer.echo(f"Fetching {state} training programs and occupation projections...")
     report = build(
         state,
         output_dir=output_dir,
