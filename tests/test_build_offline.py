@@ -163,3 +163,48 @@ class TestFixtureShapeMatchesReal:
         details = sorted((out / "occupations").glob("*.json"))
         spreads = [json.loads(p.read_text()).get("wage_spread", "MISSING") for p in details]
         assert spreads and all(s is None for s in spreads), "expected null, not a missing key"
+
+    def test_every_record_says_why_it_is_unplaced_rather_than_carrying_no_key(
+        self, tmp_path: Path
+    ) -> None:
+        """#129 put `region_unplaced_reason` on every record a real build writes. The committed
+        fixture predates it -- last regenerated 2026-08-07 in 904c231 -- so until the offline
+        build learned to write the field, every dataset CI produced carried the key nowhere: a
+        shape no real build emits, and the one in which a page reading it meets `undefined`
+        rather than a reason. Same defect, same fix, as the wage spread above."""
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        records = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        assert records
+        absent = [r["uuid"] for r in records if "region_unplaced_reason" not in r]
+        assert absent == [], f"region_unplaced_reason absent (not null) in: {absent[:5]}"
+
+    def test_the_offline_reason_is_the_one_that_means_nobody_looked(self, tmp_path: Path) -> None:
+        """Both directions, because a rule that wrote one word everywhere would satisfy either
+        half alone. A placed program carries null -- the answer for a placed program, not an
+        absence. An unplaced one carries `crosswalk_not_read` and nothing else: this build holds
+        no ZIP-to-county index, so naming one of the four outcomes the county rule can reach
+        would publish a specific reason nobody computed."""
+        from afterward.build import UNPLACED_CROSSWALK_NOT_READ
+
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        records = json.loads((tmp_path / "programs.json").read_text(encoding="utf-8"))["programs"]
+        placed = [r for r in records if r["region"] is not None]
+        unplaced = [r for r in records if r["region"] is None]
+        # Floors: a fixture holding only one kind would make one half of this vacuous.
+        assert placed, "no placed program in the fixture"
+        assert unplaced, "no unplaced program in the fixture"
+        assert {r["region_unplaced_reason"] for r in placed} == {None}
+        assert {r["region_unplaced_reason"] for r in unplaced} == {UNPLACED_CROSSWALK_NOT_READ}
+
+    def test_the_shards_the_site_renders_from_carry_it_too(self, tmp_path: Path) -> None:
+        """The pages read `programs/<uuid>.json`, not `programs.json`. Asserting only the
+        aggregate would pass over shards written from a different copy of the payloads."""
+        build_offline(FIXTURE_DIR, output_dir=tmp_path)
+        shards = sorted((tmp_path / "programs").glob("*.json"))
+        assert shards
+        absent = [
+            p.name
+            for p in shards
+            if "region_unplaced_reason" not in json.loads(p.read_text(encoding="utf-8"))
+        ]
+        assert absent == [], f"region_unplaced_reason absent in shards: {absent[:5]}"
