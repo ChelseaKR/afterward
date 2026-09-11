@@ -3050,7 +3050,9 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
         payload["outcomes"]["cohort"] = verdict.as_dict()
 
 
-def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
+def _attach_unplaced_reason(
+    payloads: list[dict[str, Any]], *, areas_published: bool = True
+) -> None:
     """Say why each unplaced record has no region, in place, for a build that has no index.
 
     The sixth block the offline build has to write for itself, and the one that was missed.
@@ -3074,11 +3076,18 @@ def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
     What this deliberately does **not** do is re-run placement. Guessing which of the four
     county-rule outcomes a program would have reached, with no crosswalk in the process,
     would put a specific reason nobody computed into a published record.
+
+    ``areas_published`` is false when the state's projection source publishes no sub-state
+    geography, and then ``crosswalk_not_read`` would be the wrong word for the opposite
+    reason: it says a crosswalk was not consulted, when the truth is there was nowhere for
+    it to place anything. That distinction matters on this path too, because this is also
+    how an operator rebuilds a site bundle from an unpacked release of any state.
     """
+    unplaced = (
+        UNPLACED_CROSSWALK_NOT_READ if areas_published else UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+    )
     for payload in payloads:
-        payload["region_unplaced_reason"] = (
-            None if payload.get("region") is not None else UNPLACED_CROSSWALK_NOT_READ
-        )
+        payload["region_unplaced_reason"] = None if payload.get("region") is not None else unplaced
 
 
 def build_offline(
@@ -3113,15 +3122,16 @@ def build_offline(
     payloads = programs_doc["programs"]
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
+    offline_state = str(programs_doc.get("state", DEFAULT_STATE))
+    offline_source = projection_source.source_for(offline_state)
     _attach_cohort_integrity(payloads)
-    _attach_unplaced_reason(payloads)
+    _attach_unplaced_reason(payloads, areas_published=offline_source.publishes.regions)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
     # The fixture predates the wage spread and carries no such key, so without this every
     # occupation reaches the page with the field absent rather than null -- a shape no real
     # build produces, which is how a page that guards `!== null` still crashed the export.
     # With no OEWS extract on the machine this attaches null everywhere, which is the honest
     # answer: nothing published a spread here, so the pages say the median alone.
-    offline_state = str(programs_doc.get("state", DEFAULT_STATE))
     _attach_wage_spread(
         occupations,
         load_wage_spread(state=offline_state),
@@ -3156,7 +3166,7 @@ def build_offline(
     # source is EDD, and the declaration is written from the code rather than copied -- the
     # check below then reads it back against the occupations actually emitted.
     coverage[PROJECTION_SOURCE_KEY] = projection_source.fixture_read(
-        projection_source.source_for(offline_state),
+        offline_source,
         state=offline_state,
         periods=[
             occupation["period"] for occupation in occupations.values() if occupation.get("period")

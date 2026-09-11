@@ -209,3 +209,98 @@ class TestTheCoverageDeclarationIsEnforced:
     def test_a_declaration_that_is_not_a_table_is_refused(self) -> None:
         with pytest.raises(ValueError, match="not the measure-by-measure table"):
             check_projection_source({"projection_source": {"publishes": "all of them"}}, {})
+
+
+class TestTheOfflinePathForASecondState:
+    """``build-offline`` is also how an operator rebuilds a bundle from an unpacked release.
+
+    The fixture below is the committed California one with its state changed and the seven
+    measures Projections Central does not publish removed. It is synthetic and says so: the
+    figures in it are California's. What it exercises is the *shape* of a second state
+    through the emit path -- which reason an unplaced record carries, and which declaration
+    the coverage document ends up with -- and nothing here reads a number as a measurement.
+    """
+
+    @staticmethod
+    def _fixture(tmp_path: Path) -> Path:
+        source = Path("fixtures/data")
+        fixture = tmp_path / "nv-shaped"
+        fixture.mkdir()
+        programs = json.loads((source / "programs.json").read_text(encoding="utf-8"))
+        programs["state"] = "NV"
+        for payload in programs["programs"]:
+            payload["region"] = None
+            for occupation in payload.get("occupations", []):
+                occupation["region"] = None
+        occupations = json.loads((source / "occupations.json").read_text(encoding="utf-8"))
+        for occupation in occupations["occupations"].values():
+            for measure in projection_source.PROJECTIONS_CENTRAL_MEASURES.absent:
+                occupation[measure] = [] if measure == "regions" else None
+        coverage = json.loads((source / "coverage.json").read_text(encoding="utf-8"))
+        # The counts the fixture carries for placement describe the California build it was
+        # cut from, and `check_coverage_counts` recomputes them from the records being
+        # emitted -- so they have to say what this fixture actually contains.
+        coverage["programs_mapped_to_area"] = 0
+        coverage["programs_without_area"] = len(programs["programs"])
+        coverage["programs_with_regional_projection"] = 0
+        for name, document in (
+            ("programs.json", programs),
+            ("occupations.json", occupations),
+            ("coverage.json", coverage),
+        ):
+            (fixture / name).write_text(json.dumps(document), encoding="utf-8")
+        return fixture
+
+    def test_it_builds_and_declares_the_second_state_source(self, tmp_path: Path) -> None:
+        from afterward.build import build_offline
+
+        fixture = self._fixture(tmp_path)
+        out = tmp_path / "out"
+        assert build_offline(fixture, output_dir=out) == 60
+        coverage = json.loads((out / "coverage.json").read_text(encoding="utf-8"))
+        declared = coverage["projection_source"]
+        assert declared["state"] == "NV"
+        assert declared["source"] == "D9"
+        assert declared["figures_read_from"] == "committed_fixture"
+        assert declared["measures_this_source_does_not_publish"] == list(
+            projection_source.PROJECTIONS_CENTRAL_MEASURES.absent
+        )
+
+    def test_every_unplaced_record_says_the_source_publishes_no_areas(self, tmp_path: Path) -> None:
+        """``crosswalk_not_read`` here would blame a crosswalk for a state that has no
+        areas for one to place anything in."""
+        from afterward.build import build_offline
+
+        fixture = self._fixture(tmp_path)
+        out = tmp_path / "out"
+        build_offline(fixture, output_dir=out)
+        programs = json.loads((out / "programs.json").read_text(encoding="utf-8"))["programs"]
+        reasons = {payload["region_unplaced_reason"] for payload in programs}
+        assert reasons == {UNPLACED_SOURCE_PUBLISHES_NO_AREAS}
+
+    def test_california_still_gets_the_crosswalk_word_on_the_same_path(
+        self, tmp_path: Path
+    ) -> None:
+        from afterward.build import build_offline
+
+        out = tmp_path / "ca-out"
+        build_offline(Path("fixtures/data"), output_dir=out)
+        programs = json.loads((out / "programs.json").read_text(encoding="utf-8"))["programs"]
+        unplaced = {
+            payload["region_unplaced_reason"] for payload in programs if payload["region"] is None
+        }
+        assert unplaced == {UNPLACED_CROSSWALK_NOT_READ}
+
+    def test_a_wage_left_in_the_occupations_is_refused_against_the_declaration(
+        self, tmp_path: Path
+    ) -> None:
+        """The guard, exercised end to end rather than on a hand-built document."""
+        from afterward.build import build_offline
+
+        fixture = self._fixture(tmp_path)
+        occupations = json.loads((fixture / "occupations.json").read_text(encoding="utf-8"))
+        first = next(iter(occupations["occupations"].values()))
+        first["median_annual_wage"] = 52000.0
+        (fixture / "occupations.json").write_text(json.dumps(occupations), encoding="utf-8")
+        with pytest.raises(ValueError, match="median_annual_wage"):
+            build_offline(fixture, output_dir=tmp_path / "out")
