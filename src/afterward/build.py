@@ -2919,6 +2919,37 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
         payload["outcomes"]["cohort"] = verdict.as_dict()
 
 
+def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
+    """Say why each unplaced record has no region, in place, for a build that has no index.
+
+    The sixth block the offline build has to write for itself, and the one that was missed.
+    ``_attach_cohort_integrity``, ``_attach_provider_links``, ``_attach_wage_spread``,
+    ``_attach_local_help`` and ``_attach_bulk_denominator`` all exist for one reason, stated
+    in each of their docstrings: **a fixture predating a field carries no block, and
+    defaulting one in would publish "we checked this" about a build that did not.** #129 added
+    ``region_unplaced_reason`` to every record :func:`build` writes and nothing taught this
+    path about it, so every dataset CI produces carried the key nowhere at all -- which is a
+    shape no real build emits, and the shape in which a page reading the field meets
+    ``undefined`` rather than a reason.
+
+    ``crosswalk_not_read`` is the honest answer here and not a placeholder. This build holds
+    no EDD area definitions and no ZIP-to-county index, so the county rule was not attempted:
+    that is a statement about the build, which is exactly what
+    :data:`UNPLACED_CROSSWALK_NOT_READ` means, and :func:`place_program` writes the same word
+    for a real build handed no ``counties``. The city rule's own result is already in the
+    record, so a program the fixture placed keeps its region and gets ``None`` -- the answer
+    for a placed program, not an absence.
+
+    What this deliberately does **not** do is re-run placement. Guessing which of the four
+    county-rule outcomes a program would have reached, with no crosswalk in the process,
+    would put a specific reason nobody computed into a published record.
+    """
+    for payload in payloads:
+        payload["region_unplaced_reason"] = (
+            None if payload.get("region") is not None else UNPLACED_CROSSWALK_NOT_READ
+        )
+
+
 def build_offline(
     fixture_dir: Path,
     *,
@@ -2952,6 +2983,7 @@ def build_offline(
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
     _attach_cohort_integrity(payloads)
+    _attach_unplaced_reason(payloads)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
     # The fixture predates the wage spread and carries no such key, so without this every
     # occupation reaches the page with the field absent rather than null -- a shape no real
