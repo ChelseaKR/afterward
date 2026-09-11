@@ -10,7 +10,7 @@ They are read by `tests/test_projections_central.py`. See PROVENANCE.md, source 
 | file | request | rows |
 |---|---|---|
 | `nv-longterm-2026-09-11.json` | `GET /Projections/LongTermRestJson/32?items_per_page=1000` | 657, all Nevada |
-| `all-states-29-1141-2026-09-11.json` | `GET /Projections/LongTermRestJson/all/29-1141` | 55, one per reporting state **plus the United States** |
+| `all-states-29-1141-2026-09-11.json` | `GET /Projections/LongTermRestJson/all/29-1141` | the **first 8** of 55, verbatim and in order; the pager is kept whole, so the file says 55 itself |
 
 ## Why the second one is here even though no code path asks for it
 
@@ -20,9 +20,25 @@ first row is
 
     {"Area": " United States", ..., "STFIPS": "0", "OccCode": "29-1141"}
 
-filed between Alabama and Alaska, carrying a real measurement of the United States. Any
-adapter that took the first row, or that fell back when its own state was absent, would
-publish it as a state's figure. The test asserts that the parser refuses it by name.
+filed at the head of the same array as the states -- the row after it is Alabama -- and
+carrying a real measurement of the United States. Any adapter that took the first row, or
+that fell back when its own state was absent, would publish it as a state's figure. The
+test asserts that the parser refuses it by name.
+
+### Why this one is a slice and the Nevada one is not
+
+**The subset rule: the first eight rows as served, in order, unedited.** No row was
+rewritten, reordered or corrected -- the eight that are here are byte-for-byte the eight
+that arrived -- and `pager.total_items` is kept at its served value of 55, so the file
+states its own incompleteness rather than looking whole.
+
+Eight rather than 55 because the full response names every reporting state, and one of
+those names is a string `scripts/provenance_check.py` refuses anywhere in this repository
+outside PROVENANCE.md. That check enforces the clean-room constraint and is deliberately
+blunt; weakening it to hold a test fixture would be the wrong trade, and a fixture that
+happened to include the name would fail `make verify` for a reason that has nothing to do
+with the code under test. The eight kept rows carry the whole property being tested: the
+national row exists, it is first, it is in the same array, and a state row follows it.
 
 ## What the Nevada recording is expected to contain
 

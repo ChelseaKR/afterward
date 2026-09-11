@@ -71,6 +71,12 @@ class TestTheNationalRow:
         assert all_states_rows.index(national[0]) == 0
         # Filed among the states, not appended after them: the row after it is a state.
         assert all_states_rows[1]["Area"] == "Alabama"
+        assert all_states_rows[1]["STFIPS"] == "1"
+        # And the recording says how much of the response it is. Eight rows are kept and
+        # the served pager is not; see fixtures/projections-central/RECORDED.md.
+        recording = recorded("all-states-29-1141-2026-09-11.json")
+        assert recording["pager"]["total_items"] == 55
+        assert len(all_states_rows) == 8
 
     def test_it_is_refused_by_name_rather_than_filtered_out(
         self, all_states_rows: list[dict[str, Any]]

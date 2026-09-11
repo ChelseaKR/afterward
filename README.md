@@ -167,9 +167,48 @@ been made. See PROVENANCE.md, "Notes on D1B".
 | U.S. DOL ETP bulk export (`DownloadPrograms.xlsx`) | One column, read beside the scorecard and never instead of it: `de129`, the denominator behind the published employment rate |
 | CA EDD Long-Term Occupational Employment Projections (2024–2034) | Wages, job openings, growth, entry-level education, by region |
 | CA EDD OEWS | Wage detail |
+| Projections Central (state long-term projections) | The occupation side of a build for any state other than California: employment now, employment projected, and the change between them |
+| U.S. Census ANSI/FIPS state codes | The link between the two-letter code the ETP feed reports and the numeric code Projections Central is keyed by |
 
 Full source list, licensing, access dates, and this project's provenance constraints are in
 [PROVENANCE.md](PROVENANCE.md).
+
+## Building a second state, and what a second state does not get
+
+`afterward build --state NV` produces a dataset for another state. The program side has
+always been state-parameterised — the ETP scorecard reports 55 states and territories, and
+`--state` is checked against that list before a build starts, so an unrecognised code is a
+refusal rather than a successful fetch of nothing. What is new is the occupation side:
+California reads EDD directly, every other state reads Projections Central, and the two
+sources do not publish the same things.
+
+**They agree where they overlap.** Projections Central's California rows are EDD's own
+figures republished: across the 56 occupations in the committed dataset, base employment,
+projected employment, numeric change and percentage change agree 56 of 56 exactly.
+
+**Seven of eleven occupation measures are absent from a second state's dataset**, and the
+dataset says which. Every `coverage.json` now carries a `projection_source` block naming the
+publisher, the endpoint, the period, and the measures that publisher has no column for:
+
+| Measure | California (EDD) | Any other state (Projections Central) |
+|---|---|---|
+| Employment now, projected, and the change | yes | yes |
+| Median annual and hourly wage | yes | **no column exists** |
+| OEWS 10th–90th percentile spread | yes | no — that extract is California's |
+| Ten-year job openings | yes | **no** — the source publishes an *annual average*, which is a different measure and is not carried |
+| Entry-level education, work experience, on-the-job training | yes | no |
+| Regional (sub-state) figures | 31 areas | no — the source publishes one figure per state |
+| Spanish occupation titles | O\*NET, where it has them | the same: O\*NET is keyed by occupation, not by state |
+| Occupation descriptions, skills, tasks, related occupations | CareerOneStop and O\*NET | the same |
+
+So a second state's occupation pages would lead with growth rather than pay, and every
+program would carry `region: null` with the reason `source_publishes_no_areas` — a fact
+about the publisher, not a failed lookup. That last distinction is the point of the whole
+block: without it, a null wage in a Nevada record is byte-identical to a California wage
+EDD withheld, and `afterward.build.check_projection_source` refuses any dataset that
+contradicts its own declaration in either direction.
+
+**Hosting a second site is out of scope.** What exists is the dataset and the method.
 
 ## CTDL export (demonstration)
 
