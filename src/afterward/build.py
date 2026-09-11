@@ -2790,6 +2790,19 @@ AREA_UNPLACED_REASONS: Final = (
 a zero for each rather than omitting the ones that did not occur -- an absent key reads as
 "this cannot happen" where a zero reads as "it did not happen in this build"."""
 
+UNPLACED_REASONS_WITH_PUBLISHED_AREAS: Final = tuple(
+    reason for reason in AREA_UNPLACED_REASONS if reason != UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+)
+"""The reasons reachable in a build whose projection source publishes areas.
+
+Which is every California build, and every build the site has ever been given. The sixth
+word exists only for a state whose source publishes no sub-state geography at all, so a
+consumer whose job is to cover the reasons a *published* dataset can carry -- the site's
+copy for the unplaced panel, for one -- wants this tuple rather than the whole vocabulary.
+Derived from :data:`AREA_UNPLACED_REASONS` rather than typed beside it, so a seventh reason
+lands in both or in neither.
+"""
+
 
 def area_placement_coverage(
     payloads: Sequence[Mapping[str, Any]], unresolved_counties: Iterable[str] = ()

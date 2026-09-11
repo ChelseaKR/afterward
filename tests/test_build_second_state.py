@@ -304,3 +304,38 @@ class TestTheOfflinePathForASecondState:
         (fixture / "occupations.json").write_text(json.dumps(occupations), encoding="utf-8")
         with pytest.raises(ValueError, match="median_annual_wage"):
             build_offline(fixture, output_dir=tmp_path / "out")
+
+
+class TestTheReasonVocabularySplitsByWhetherAreasExist:
+    """A consumer covering a published dataset's reasons does not need the sixth word."""
+
+    def test_the_subset_is_the_whole_vocabulary_minus_the_one_about_the_publisher(
+        self,
+    ) -> None:
+        from afterward.build import (
+            AREA_UNPLACED_REASONS,
+            UNPLACED_REASONS_WITH_PUBLISHED_AREAS,
+        )
+
+        assert set(AREA_UNPLACED_REASONS) - set(UNPLACED_REASONS_WITH_PUBLISHED_AREAS) == {
+            UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+        }
+
+    def test_a_build_with_published_areas_can_never_reach_the_sixth_word(self) -> None:
+        """The property the subset rests on, exercised rather than asserted."""
+        from afterward.build import UNPLACED_REASONS_WITH_PUBLISHED_AREAS
+
+        reached = set()
+        for city in ("Fresno", None):
+            for zip_code in ("93721", "00000", None):
+                _, _, reason = place_program(
+                    program(city=city, zip_code=zip_code),
+                    city_areas={},
+                    counties=None,
+                    areas_published=True,
+                )
+                if reason is not None:
+                    reached.add(reason)
+        assert reached
+        assert reached <= set(UNPLACED_REASONS_WITH_PUBLISHED_AREAS)
+        assert UNPLACED_SOURCE_PUBLISHES_NO_AREAS not in reached
