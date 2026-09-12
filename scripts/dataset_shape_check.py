@@ -106,6 +106,17 @@ def problems(programs: Sequence[dict[str, Any]]) -> list[str]:
             "reported no length, and the site publishes 'Length: Not reported' over a fact."
         )
 
+    predates_county = sum(1 for program in programs if "region_unplaced_reason" not in program)
+    if predates_county:
+        found.append(
+            f"{predates_county} of {total} records carry no region_unplaced_reason key. "
+            "This dataset was built by a pipeline older than commit 522debe, so every "
+            "program was placed in an EDD area by its city alone, and every unplaced one "
+            "carries a single undifferentiated null where five distinct reasons belong. A ZIP "
+            "straddling two areas -- a refusal this pipeline makes deliberately -- is "
+            "indistinguishable from a program nobody had a crosswalk for."
+        )
+
     return found
 
 
