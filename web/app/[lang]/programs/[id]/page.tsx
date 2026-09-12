@@ -1424,7 +1424,19 @@ export default async function ProgramPage({
               <p>
                 <strong>{t.regionUnplaced}</strong>
               </p>
-              <p style={{ marginBottom: 0 }}>{t.regionUnplacedBody(location.city)}</p>
+              {/*
+               * The reason comes from the record, not from this component.
+               *
+               * `region_unplaced_reason` is optional on the type because a record built
+               * before the field existed carries no such key. Passing `undefined` through is
+               * deliberate: the dictionary's default branch names no cause at all, which is
+               * the only honest thing to say about a record that did not record one. Reading
+               * an absent key as any particular reason would be this site's own defect class
+               * committed in the panel that exists to avoid it.
+               */}
+              <p style={{ marginBottom: 0 }}>
+                {t.regionUnplacedBody(location.city, program.region_unplaced_reason)}
+              </p>
             </div>
           )}
 

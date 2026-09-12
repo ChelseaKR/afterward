@@ -287,14 +287,67 @@ const en = {
   regionNoRow: (area: string) =>
     `California publishes no separate figure for this job in ${area}. The statewide ` +
     `figures above are the only ones there are.`,
-  /** The city could not be placed in a published area at all. */
-  regionUnplaced: "No regional figures for this program's city",
-  regionUnplacedBody: (city: string | null) =>
-    `${city ?? "This program's city"} is not one of the metropolitan or rural areas ` +
-    `California names when it publishes wages and openings. A neighbouring area's ` +
-    `figures would look exactly like a correct answer, so none are shown and the ` +
-    `statewide figures stand alone. About half of California's programs are in this ` +
-    `position.`,
+  /** Neither placement rule could put this program in a published area. */
+  regionUnplaced: "No regional figures for this program",
+  /**
+   * Why this program has no region, in the words of the rule that declined.
+   *
+   * A single sentence used to stand here for every unplaced program, and it said the
+   * program's city is not one California names. That was the whole truth while placement went
+   * by principal city alone. It stopped being true for every one of them when the county rule
+   * landed (#126, #129): a program reaching this panel today is one whose *ZIP* could not be
+   * resolved to a single area, and its city has nothing to do with it.
+   *
+   * `region_unplaced_reason` on the record says which of five things happened. Rendering one
+   * stated cause for all of them would be this site's own headline failure — an absence
+   * published under a specific, defensible-sounding reason that nobody measured — so each
+   * reason gets its own sentence and an unrecognised one gets a sentence that names no cause
+   * at all.
+   */
+  regionUnplacedBody: (city: string | null, reason: string | null | undefined) => {
+    const where = city ?? "This program's city";
+    switch (reason) {
+      case "straddles_areas":
+        return (
+          `This program's ZIP code reaches into more than one of the labour-market areas ` +
+          `California publishes, and nothing in the state's own area titles says which one ` +
+          `it belongs to. Either answer would look exactly like a correct answer here, so ` +
+          `neither is given and the statewide figures stand alone.`
+        );
+      case "zip_not_in_crosswalk":
+        return (
+          `This program's ZIP code is a mailing ZIP with no matching census area — a PO Box ` +
+          `range, or a ZIP issued to a single recipient — so there is no county to place it ` +
+          `by, and ${where} is not named in any area title either. The statewide figures ` +
+          `stand alone.`
+        );
+      case "county_outside_areas":
+        return (
+          `This program's ZIP code falls only in counties that none of California's ` +
+          `published labour-market areas covers, so there is no area whose wages and ` +
+          `openings would be this program's. The statewide figures stand alone.`
+        );
+      case "no_zip":
+        return (
+          `This program's record carries no ZIP code, and ${where} is not named in any of ` +
+          `California's published area titles, so there is nothing left to place it by. The ` +
+          `statewide figures stand alone.`
+        );
+      case "crosswalk_not_read":
+        return (
+          `This dataset was built without the ZIP-to-county file, so the second of the two ` +
+          `placement rules was never tried for this program. That is a gap in how this ` +
+          `dataset was built, not a finding about where the program is.`
+        );
+      default:
+        return (
+          `Neither of the two rules that place a program in a region reached this one, and ` +
+          `this record does not say which of them declined. A neighbouring area's figures ` +
+          `would look exactly like a correct answer, so none are shown and the statewide ` +
+          `figures stand alone.`
+        );
+    }
+  },
 
   compareTitle: "Side by side",
   /**
@@ -382,26 +435,30 @@ const en = {
     "Compared with the median California program that reported this same measure. Programs reporting nothing are not in the comparison, so this is a comparison among those willing to publish.",
 
   areaNote: (unplaced: number, total: number) =>
-    `California's labour-market regions are each named after two or three cities, and a ` +
-    `program counts as being in one only when its city is one of those. That leaves ` +
-    `${fmt(unplaced)} of these ${fmt(total)} programs in no region at all — some in the ` +
-    `same county as a region listed here, some right next door to one. Choosing a region ` +
-    `hides those ${fmt(unplaced)}; it does not move them somewhere else.`,
+    `A program is in one of California's labour-market regions when the state's own title ` +
+    `for that region names its city, or names the county its ZIP code is in. Neither rule ` +
+    `guesses. That leaves ${fmt(unplaced)} of these ${fmt(total)} programs in no region at ` +
+    `all — a ZIP code reaching into two regions at once is left in neither, because either ` +
+    `answer would look exactly as correct as the other. Choosing a region hides those ` +
+    `${fmt(unplaced)}; it does not move them somewhere else.`,
   unplacedOption: (n: number) => `Not placed in a region (${fmt(n)})`,
   anyCityInArea: "Any city in this region",
   anyCityUnplaced: "Any city with no region",
   areaHidesUnplaced: (n: number) =>
-    `${fmt(n)} more programs match this search but are in cities California places in no ` +
-    `region. They are not shown here, and they are not somewhere else.`,
+    `${fmt(n)} more programs match this search but California places them in no region. ` +
+    `They are not shown here, and they are not somewhere else.`,
   unplacedHeading: "Programs California places in no region",
   unplacedBody:
-    "Their cities are not named in any published labour-market area, so no region's pay " +
-    "figures are claimed for them. That is a gap in the state's geography rather than a " +
-    "judgement about the programs, and it covers cities inside the regions listed above as " +
-    "well as cities far from any of them.",
+    "Two rules place a program, and both of them restate California's own published area " +
+    "titles: the title names the program's city, or it names the county its ZIP code is in. " +
+    "These are the programs neither rule reaches. A ZIP code straddling two regions is left " +
+    "in neither, because either answer would look exactly as correct as the other; a mailing " +
+    "ZIP with no census area behind it has nothing to place it by at all. No neighbouring " +
+    "region's pay figures are claimed for any of them.",
   statUnplaced: (unplaced: number, total: number) =>
-    `${fmt(unplaced)} of the ${fmt(total)} are in cities California's own published ` +
-    `regions do not name, so no region's pay or openings figures are claimed for them.`,
+    `${fmt(unplaced)} of the ${fmt(total)} are in no region: California's own published ` +
+    `area titles name neither their city nor a single county their ZIP code is in, so no ` +
+    `region's pay or openings figures are claimed for them.`,
 
   onetCredit:
     "This site incorporates information from O*NET Web Services by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). O*NET\u00ae is a trademark of USDOL/ETA.",
@@ -734,7 +791,7 @@ const en = {
   aboutLimitUnmatched: (unmatched: string) =>
     `${unmatched} programs show no occupation figures at all. California publishes no projection for the occupation they are tagged with, and no nearby occupation is substituted, because a similar-sounding job with a different wage would look exactly like a correct answer.`,
   aboutLimitArea: (unplaced: string) =>
-    `${unplaced} programs show no regional pay figure. Their city is not one of the metropolitan or rural areas California names when it publishes wages, and a neighbouring area's numbers are not borrowed to fill the gap.`,
+    `${unplaced} programs show no regional pay figure. California's own area titles name neither their city nor a single county their ZIP code is in — a ZIP code reaching two areas at once is left in neither, because either answer would look exactly as correct as the other — and a neighbouring area's numbers are not borrowed to fill the gap.`,
   aboutLimitUrl: (noUrl: string) =>
     `${noUrl} programs have no working website link. Most never filed one, and a handful filed something that was not a web address at all, which is dropped rather than turned into a link.`,
   aboutLimitProjections:
@@ -1530,13 +1587,52 @@ const es: Dictionary = {
   regionNoRow: (area: string) =>
     `California no publica una cifra aparte para esta ocupación en ${area}. Las cifras ` +
     `estatales de arriba son las únicas que existen.`,
-  regionUnplaced: "Sin cifras regionales para la ciudad de este programa",
-  regionUnplacedBody: (city: string | null) =>
-    `${city ?? "La ciudad de este programa"} no es una de las áreas metropolitanas o ` +
-    `rurales que California nombra al publicar salarios y vacantes. Las cifras de un ` +
-    `área vecina se verían igual que una respuesta correcta, así que no se muestra ` +
-    `ninguna y las cifras estatales quedan solas. Cerca de la mitad de los programas de ` +
-    `California están en esta situación.`,
+  regionUnplaced: "Sin cifras regionales para este programa",
+  regionUnplacedBody: (city: string | null, reason: string | null | undefined) => {
+    const where = city ?? "La ciudad de este programa";
+    switch (reason) {
+      case "straddles_areas":
+        return (
+          `El código postal de este programa abarca más de una de las regiones laborales ` +
+          `que California publica, y nada en los títulos que el estado mismo les da indica ` +
+          `a cuál pertenece. Cualquiera de las dos respuestas se vería aquí igual que una ` +
+          `respuesta correcta, así que no se da ninguna y las cifras estatales quedan solas.`
+        );
+      case "zip_not_in_crosswalk":
+        return (
+          `El código postal de este programa es un código de correo sin área censal ` +
+          `equivalente — un rango de apartados postales, o un código asignado a un solo ` +
+          `destinatario — así que no hay condado con el cual ubicarlo, y ${where} tampoco ` +
+          `aparece en el título de ninguna región. Las cifras estatales quedan solas.`
+        );
+      case "county_outside_areas":
+        return (
+          `El código postal de este programa cae únicamente en condados que ninguna de las ` +
+          `regiones laborales publicadas de California cubre, así que no hay región cuyos ` +
+          `salarios y vacantes sean los de este programa. Las cifras estatales quedan solas.`
+        );
+      case "no_zip":
+        return (
+          `El registro de este programa no trae código postal, y ${where} no aparece en el ` +
+          `título de ninguna de las regiones publicadas de California, así que no queda ` +
+          `nada con lo cual ubicarlo. Las cifras estatales quedan solas.`
+        );
+      case "crosswalk_not_read":
+        return (
+          `Estos datos se armaron sin el archivo que enlaza códigos postales con condados, ` +
+          `así que la segunda de las dos reglas de ubicación nunca se intentó para este ` +
+          `programa. Eso es una carencia de cómo se armaron estos datos, no un hallazgo ` +
+          `sobre dónde está el programa.`
+        );
+      default:
+        return (
+          `Ninguna de las dos reglas que ubican un programa en una región alcanzó a este, ` +
+          `y este registro no dice cuál de las dos declinó. Las cifras de una región vecina ` +
+          `se verían igual que una respuesta correcta, así que no se muestra ninguna y las ` +
+          `cifras estatales quedan solas.`
+        );
+    }
+  },
 
   compareTitle: "Lado a lado",
   compareTrayLabel: "Programas seleccionados para comparar",
@@ -1590,27 +1686,32 @@ const es: Dictionary = {
     "Comparado con el programa típico de California que reportó esta misma medida. Los programas que no reportan nada no entran en la comparación.",
 
   areaNote: (unplaced: number, total: number) =>
-    `Las regiones laborales de California llevan el nombre de dos o tres ciudades cada ` +
-    `una, y un programa cuenta como parte de una región solo si su ciudad es una de esas. ` +
-    `Por eso ${fmt(unplaced)} de estos ${fmt(total)} programas no quedan en ninguna ` +
-    `región: algunos están en el mismo condado que una región de esta lista, y algunos ` +
-    `justo al lado de una. Elegir una región oculta esos ${fmt(unplaced)}; no los coloca ` +
-    `en otro lugar.`,
+    `Un programa queda en una de las regiones laborales de California cuando el título que ` +
+    `el estado mismo le da a esa región nombra su ciudad, o nombra el condado donde está ` +
+    `su código postal. Ninguna de las dos reglas adivina. Por eso ${fmt(unplaced)} de ` +
+    `estos ${fmt(total)} programas no quedan en ninguna región: un código postal que ` +
+    `abarca dos regiones a la vez no queda en ninguna, porque cualquiera de las dos ` +
+    `respuestas se vería igual de correcta que la otra. Elegir una región oculta esos ` +
+    `${fmt(unplaced)}; no los coloca en otro lugar.`,
   unplacedOption: (n: number) => `Sin región asignada (${fmt(n)})`,
   anyCityInArea: "Cualquier ciudad de esta región",
   anyCityUnplaced: "Cualquier ciudad sin región",
   areaHidesUnplaced: (n: number) =>
-    `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero están en ciudades que ` +
-    `California no ubica en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
+    `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero California no los ubica ` +
+    `en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
   unplacedHeading: "Programas que California no ubica en ninguna región",
   unplacedBody:
-    "Sus ciudades no aparecen en ninguna área laboral publicada, así que no se les atribuye " +
-    "el pago de ninguna región. Es un vacío en la geografía del estado, no un juicio sobre " +
-    "los programas, y abarca tanto ciudades dentro de las regiones de arriba como ciudades " +
-    "lejos de todas ellas.",
+    "Dos reglas ubican un programa, y las dos repiten los títulos que California misma le " +
+    "da a sus regiones publicadas: el título nombra la ciudad del programa, o nombra el " +
+    "condado donde está su código postal. Estos son los programas que ninguna de las dos " +
+    "alcanza. Un código postal que abarca dos regiones no queda en ninguna, porque " +
+    "cualquiera de las dos respuestas se vería igual de correcta que la otra; y un código " +
+    "de correo sin área censal detrás no tiene nada con qué ubicarse. A ninguno de ellos se " +
+    "le atribuye el pago de una región vecina.",
   statUnplaced: (unplaced: number, total: number) =>
-    `${fmt(unplaced)} de los ${fmt(total)} están en ciudades que las regiones publicadas ` +
-    `de California no nombran, así que no se les atribuye el pago ni las vacantes de ` +
+    `${fmt(unplaced)} de los ${fmt(total)} no quedan en ninguna región: los títulos que ` +
+    `California misma les da a sus regiones no nombran ni su ciudad ni un solo condado ` +
+    `donde esté su código postal, así que no se les atribuye el pago ni las vacantes de ` +
     `ninguna región.`,
 
   onetCredit:
@@ -1867,7 +1968,7 @@ const es: Dictionary = {
   aboutLimitUnmatched: (unmatched: string) =>
     `${unmatched} programas no muestran ninguna cifra ocupacional. California no publica proyección para la ocupación con la que están etiquetados, y no se sustituye por una ocupación parecida, porque un oficio de nombre similar con otro salario se vería exactamente igual que una respuesta correcta.`,
   aboutLimitArea: (unplaced: string) =>
-    `${unplaced} programas no muestran una cifra de pago regional. Su ciudad no es una de las áreas metropolitanas o rurales que California nombra al publicar salarios, y no se toman prestadas las cifras de un área vecina para llenar el hueco.`,
+    `${unplaced} programas no muestran una cifra de pago regional. Los títulos que California misma les da a sus regiones no nombran ni su ciudad ni un solo condado donde esté su código postal — un código postal que abarca dos regiones a la vez no queda en ninguna, porque cualquiera de las dos respuestas se vería igual de correcta que la otra — y no se toman prestadas las cifras de una región vecina para llenar el hueco.`,
   aboutLimitUrl: (noUrl: string) =>
     `${noUrl} programas no tienen un enlace de sitio web utilizable. La mayoría nunca presentó uno, y unos pocos presentaron algo que no era una dirección web, que se descarta en vez de convertirse en un enlace.`,
   aboutLimitProjections:
