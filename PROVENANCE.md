@@ -38,6 +38,99 @@ NJ-workforce reference appears anywhere in the repository outside this file.
 | D6 | CareerOneStop Web API (U.S. DOL) | `https://api.careeronestop.org/v1` | 2026-08-04 | U.S. Government work. Requires free registration; credentials are per-user and are **never** committed. | Occupation descriptions, O\*NET skill ratings, tasks, alternate job titles, O\*NET related occupations, Bright Outlook, and typical experience / on-the-job training. Also carries the national education attainment distribution, which is parsed and typed but **not rendered anywhere on the site**; see the note below |
 | D7 | Credential Engine — CTDL schema, JSON-LD context and term definitions (credreg.net) | `https://credreg.net/ctdl/schema/context/json`, `https://credreg.net/ctdl/terms/<Term>/json` | 2026-08-06 | Credential Engine publishes CTDL openly for exactly this use. Schema definitions only; **no registry data is read, and nothing is published to any registry.** | The vocabulary for the demonstration CTDL export (`make ctdl-export`): the context is vendored at `src/afterward/ctdl/ctdl-context.json` with retrieval provenance beside it, and every emitted class and property was checked against the fetched term definitions |
 | D8 | U.S. Census Bureau — 2020 ZCTA-to-county relationship file | `https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt` | 2026-09-07 | U.S. Government work, public domain (17 U.S.C. §105) | The ZIP-to-county link behind the second program-placement rule. A California extract is vendored at `src/afterward/sources/zcta-county-ca-2020.csv` with retrieval provenance beside it; see the note below for why this file and not HUD's, and for what it cannot answer |
+| D9 | Projections Central — state long-term occupational employment projections (Projections Managing Partnership) | `https://public.projectionscentral.org/Projections/LongTermRestJson/<state FIPS>` | 2026-09-11 | **No licence or public-domain statement is served with the data.** The site publishes a disclaimer — *"Projection data accessible from this site are the responsibility of each agency that developed the projections"* — and the Partnership is funded by USDOL/ETA, but neither the site nor the endpoint states terms. Recorded as found rather than asserted; see the note below | The occupation side of a build for any state other than California: base and projected employment, numeric and percentage change. Fetched at build time, never vendored |
+| D9B | U.S. Census Bureau — ANSI/FIPS state and equivalent codes | `https://www2.census.gov/geo/docs/reference/state.txt` | 2026-09-11 | U.S. Government work, public domain (17 U.S.C. §105) | The only link between the two-letter state code the ETP feed (D1) reports and the numeric code D9 is keyed by. A two-column extract is vendored at `src/afterward/sources/state-fips-ansi.csv` with retrieval provenance beside it |
+
+### Note on D9 — what a second state's dataset does not get, measured (#105)
+
+`afterward build --state NV` reads its occupation figures from Projections Central rather
+than from EDD, because EDD publishes California and nothing else. The adapter and the
+choices behind it are in `src/afterward/sources/projections_central.py`; this records the
+four measurements that shaped them, all made against the live service on 2026-09-11.
+
+**1. The national row is served in the same array as the states.** The all-states endpoint
+answers with one row per reporting state *plus* `{"Area": " United States", "STFIPS": "0"}`,
+filed first, between nothing and Alabama. An adapter that took the first row, or that fell
+back when its own state was absent, would publish a national figure as a state one — a real
+measurement of the wrong population, which is worse than a blank because nothing on the page
+contradicts it. This project asks the per-state endpoint instead, and checks every row's
+`STFIPS` against the code it requested; the national row is refused by name, not filtered
+out.
+
+**2. There is no wage column at all, and the openings column is a different measure.** The
+whole column set is `Area, Title, Base, Projected, Change, PercentChange, AvgAnnualOpenings,
+STFIPS, StateURL, OccCode, BaseYear, ProjYear`. No median wage, no percentile spread, no
+regional breakdown, no entry-level education, work experience or on-the-job training.
+`AvgAnnualOpenings` is an annual average where this project's `total_job_openings` is EDD's
+ten-year total: checked against the committed California dataset, EDD's figure is **10.0
+times** the Projections Central figure for **all 56** occupations in it (22,890 a year
+against 228,840 over the cycle for Registered Nurses). So the source's openings figure has
+no field in this schema and is not carried.
+
+Seven of the eleven occupation measures are therefore absent from a Projections Central
+state, and every dataset now says which those are: `coverage.json` carries a
+`projection_source` block naming the publisher, the endpoint, the period and the measures
+that publisher has no column for, and `afterward.build.check_projection_source` refuses a
+dataset that contradicts it in either direction. Without that, a Nevada occupation's
+`median_annual_wage: null` is byte-identical to a California occupation whose wage EDD
+withheld — one a fact about a publisher, the other a fact about a job.
+
+**3. The bulk CSV the site offers is a cycle older than the JSON.**
+`projections/file/longterm/csv` hands back a presigned link to `ltprojections.csv`, whose
+metadata reports `lastModified 08/13/2026`. All **36,073** of its rows are the **2022-2032**
+cycle, while `projections/daterange/longterm` and the JSON endpoint both serve
+**2024-2034**; it also omits one state entirely (FIPS 15 — 54 states against the JSON's 55).
+One download would have been cheaper than seven paginated requests and would have published
+a cycle-old projection under a current date. Every record's period is read from the record.
+
+**4. An unusable query parameter answers 404 "No results found." — the same answer a state
+with no data gets.** `items_per_page` accepts 10, 25, 50, 100 and 1000; 5, 20, 200, 500 and
+2000 were each measured and each answered 404. A 404 is therefore never read as "this state
+publishes nothing": the adapter sends only an accepted page size, and a 404 raises.
+
+**On the licence column.** There is no licence statement to cite, and the entry says so
+rather than assuming one. That is also why nothing from this source is vendored: the two
+recorded responses under `tests/fixtures/projections-central/` are test material, named as
+such, and the build fetches live — the same shape as D2, and the safer one while the terms
+are unstated. This is the one source in this file whose terms are not established, and a
+second state's dataset should not be redistributed on the strength of an assumption about
+them.
+
+**What a second state gets, measured on Nevada, 2026-09-11.** 1,069 ETP programs from D1;
+657 published projection rows, of which 649 are detailed occupations, 7 are broad
+occupations and one is the all-occupations total; 648 occupations indexed after one refusal
+(below); 1,042 of 1,069 programs joined to at least one occupation (97.5%). Every program is
+unplaced, for the named reason `source_publishes_no_areas` — not because a crosswalk failed,
+but because this source publishes no sub-state geography for any state.
+
+**One Nevada row is refused rather than published.** `45-4029 Logging Workers, All Other`
+arrives as `Base: "0", Projected: "0", Change: "0", PercentChange: "25"`. Employment is
+published to the nearest ten, so the zeros are a rounding floor and the percentage was
+computed before rounding. Publishing `base_employment: 0` would say nobody in Nevada does
+this work, and `percent_change: 25` beside it would say a workforce of nobody is growing by
+a quarter. The row contradicts itself, so it is dropped, counted, and named in
+`coverage.json` under `projection_source.rows_refused`.
+
+**And the adapter was checked against the source this project already trusts.** Projections
+Central's California rows are EDD's own figures republished: over the 56 occupations in the
+committed dataset, base employment, projected employment, numeric change and percentage
+change agree **56 of 56, exactly**, with no rounding tolerance applied. That is what makes
+the absent columns a statement about the publisher rather than a suspicion about the reader.
+
+### Note on D9B — a code table with no names in it
+
+The extract at `src/afterward/sources/state-fips-ansi.csv` carries the upstream file's
+`STATE` and `STUSAB` columns and drops `STATE_NAME` and `STATENS`. Nothing in this
+repository joins on a state's name: D1 keys on the two-letter code, D9 keys on the numeric
+code, and every check the adapter makes against a fetched payload compares codes. A name
+column would be fifty-seven spellings to keep in step with no join to serve.
+
+A row in it is not a claim that anybody publishes anything for that state. Whether the ETP
+feed reports programs for a state is asked of the feed (`afterward.sources.dol_etp
+.fetch_states`, one aggregation, 55 reporters on 2026-09-11) and whether Projections Central
+publishes projections for it is asked of Projections Central. `--state` is refused up front
+against the first of those, so an unreported code is a named refusal rather than a
+successful fetch of nothing.
 
 ### Notes on D8 — why the Census relationship file and not HUD's crosswalk (#126)
 

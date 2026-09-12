@@ -32,6 +32,7 @@ class Counts(TypedDict):
     so nothing said so.
     """
 
+    state: str
     programs: int
     occupations: int
     snapshot_date: str | None
@@ -39,8 +40,21 @@ class Counts(TypedDict):
     occupations_with_wage_spread: int
 
 
+DEFAULT_STATE = "CA"
 MANIFEST = Path("data-manifest.json")
+"""California's manifest, under the name it has always had.
+
+A second state's goes beside it as ``data-manifest-<STATE>.json`` rather than renaming this
+one, so the path every existing runbook and workflow names keeps working.
+"""
+
 DATA = Path("web/public/data")
+
+
+def manifest_for(state: str) -> Path:
+    """Where the manifest for ``state`` lives."""
+    code = (state or "").strip().upper()
+    return MANIFEST if code == DEFAULT_STATE else Path(f"data-manifest-{code}.json")
 
 
 def counts() -> Counts:
@@ -48,6 +62,10 @@ def counts() -> Counts:
     occupations = json.loads((DATA / "occupations.json").read_text())
     occ = occupations["occupations"]
     return Counts(
+        # From the dataset rather than from an argument, because the whole point of this
+        # gate is to answer "is the thing on disk the thing we think it is" without being
+        # told what to think.
+        state=str(programs.get("state") or DEFAULT_STATE).strip().upper(),
         programs=len(programs["programs"]),
         occupations=len(occ),
         snapshot_date=programs.get("snapshot_date"),
@@ -68,6 +86,20 @@ def problems(actual: Counts, expected: Counts) -> list[str]:
     cannot.
     """
     found: list[str] = []
+
+    # Before any count is compared, because comparing two states' counts answers a question
+    # nobody asked. A Nevada dataset against California's manifest reads as 1,069 programs
+    # where 3,266 belong -- "REFUSING: your dataset is corrupt", about a dataset that is
+    # perfectly sound and simply is not this one. A manifest predating the state key is
+    # read as California, which is what every manifest written before 2026-09-11 describes.
+    expected_state = str(expected.get("state") or DEFAULT_STATE).strip().upper()
+    if actual["state"] != expected_state:
+        return [
+            f"the dataset is {actual['state']} and the manifest describes {expected_state}. "
+            "These are two different datasets, so every count below would compare one "
+            f"state's figures against another's. Write {manifest_for(actual['state'])} "
+            "with `make dataset-manifest` once that state's dataset is known good."
+        ]
 
     # A shortfall is corruption. A surplus is a refresh, which is fine and expected, so only
     # the downward direction fails: a real refresh should never lose most of the dataset.
@@ -106,21 +138,24 @@ def main(argv: list[str]) -> int:
         print(f"dataset-check: dataset unreadable — {exc}")
         return 1
 
+    manifest = manifest_for(actual["state"])
+
     if "--write" in argv:
-        MANIFEST.write_text(json.dumps(actual, indent=2) + "\n")
+        manifest.write_text(json.dumps(actual, indent=2) + "\n")
         print(
-            f"dataset-check: manifest written — {actual['programs']} programs, "
-            f"{actual['occupations']} occupations"
+            f"dataset-check: {manifest} written — {actual['state']}, "
+            f"{actual['programs']} programs, {actual['occupations']} occupations"
         )
         return 0
 
-    if not MANIFEST.exists():
+    if not manifest.exists():
         print(
-            "dataset-check: no manifest; run `make dataset-manifest` once the dataset is known good"
+            f"dataset-check: no {manifest} for the {actual['state']} dataset on disk; run "
+            "`make dataset-manifest` once it is known good"
         )
         return 1
 
-    expected = cast(Counts, json.loads(MANIFEST.read_text()))
+    expected = cast(Counts, json.loads(manifest.read_text()))
     found = problems(actual, expected)
 
     if found:
@@ -131,7 +166,8 @@ def main(argv: list[str]) -> int:
         return 1
 
     print(
-        f"dataset-check: {actual['programs']} programs, {actual['occupations']} occupations, "
+        f"dataset-check: {actual['state']}, {actual['programs']} programs, "
+        f"{actual['occupations']} occupations, "
         f"{actual['occupations_with_spanish']} Spanish, "
         f"{actual['occupations_with_wage_spread']} wage spreads"
     )

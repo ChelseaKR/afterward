@@ -79,7 +79,22 @@ def _to_text(value: Any) -> str | None:
 
 @dataclass(frozen=True)
 class OccupationProjection:
-    """One occupation's outlook for one geography, from the EDD long-term projections."""
+    """One occupation's outlook for one geography, from a state's long-term projections.
+
+    Shared with :mod:`afterward.sources.projections_central`, which reads the same measures
+    for a state other than California. It stays in this module because EDD is the source
+    that publishes every field on it; a second state's source fills in what it publishes and
+    leaves the rest null, and says which is which through
+    :class:`afterward.sources.projection_source.PublishedMeasures` rather than by leaving the
+    reader to infer it from a null.
+
+    ``is_statewide`` and ``is_detailed_occupation`` are stored rather than derived. They were
+    properties computed from ``area_name == "California"`` and from EDD's own ``SOC Level``
+    column, neither of which a second state's source has: Projections Central publishes no
+    level column and no sub-state geography at all. A source that cannot answer the question
+    the way EDD does now has to answer it in its own terms at parse time, where the reasoning
+    can be written down beside the rule.
+    """
 
     area_type: str | None
     area_name: str | None
@@ -97,23 +112,17 @@ class OccupationProjection:
     entry_level_education: str | None
     work_experience: str | None
     job_training: str | None
+    is_statewide: bool
+    is_detailed_occupation: bool
+    """True only for real occupations, not statistical roll-ups.
 
-    @property
-    def is_statewide(self) -> bool:
-        return (self.area_name or "").strip() == STATEWIDE_AREA
-
-    @property
-    def is_detailed_occupation(self) -> bool:
-        """True only for real occupations, not statistical roll-ups.
-
-        EDD publishes its own hierarchy level, so use it. An earlier version guessed from
-        the code shape and rejected only major groups (``XX-0000``); minor groups end
-        ``-1000``, ``-2000`` and so on and slipped through, putting ~100 aggregates such as
-        "Top Executives" into the index as though they were jobs. EDD publishes no wage for
-        an aggregate, so each arrived carrying a median wage of 0 and rendered as "$0 a
-        year" -- a suppressed-versus-zero failure reached by a different route.
-        """
-        return self.soc_level == DETAILED_SOC_LEVEL and self.soc_code is not None
+    EDD publishes its own hierarchy level, so :func:`parse_projections` uses it. An earlier
+    version guessed from the code shape and rejected only major groups (``XX-0000``); minor
+    groups end ``-1000``, ``-2000`` and so on and slipped through, putting ~100 aggregates
+    such as "Top Executives" into the index as though they were jobs. EDD publishes no wage
+    for an aggregate, so each arrived carrying a median wage of 0 and rendered as "$0 a
+    year" -- a suppressed-versus-zero failure reached by a different route.
+    """
 
 
 # --------------------------------------------------------------------------------------
@@ -280,12 +289,14 @@ def _download_csv(url: str, client: httpx.Client | None = None) -> str:
 def parse_projections(text: str) -> Iterator[OccupationProjection]:
     for row in csv.DictReader(io.StringIO(text)):
         soc_level = _to_float(row.get("SOC Level"))
+        area_name = _to_text(row.get("Area Name"))
+        soc_code = _to_text(row.get("Standard Occupational Classification (SOC)"))
         yield OccupationProjection(
             area_type=_to_text(row.get("Area Type")),
-            area_name=_to_text(row.get("Area Name")),
+            area_name=area_name,
             period=_to_text(row.get("Period")),
             soc_level=int(soc_level) if soc_level is not None else None,
-            soc_code=_to_text(row.get("Standard Occupational Classification (SOC)")),
+            soc_code=soc_code,
             title=_to_text(row.get("Occupational Title")),
             base_employment=_to_float(row.get("Base Year Employment Estimate")),
             projected_employment=_to_float(row.get("Projected Year Employment Estimate")),
@@ -297,6 +308,12 @@ def parse_projections(text: str) -> Iterator[OccupationProjection]:
             entry_level_education=_to_text(row.get("Entry Level Education")),
             work_experience=_to_text(row.get("Work Experience")),
             job_training=_to_text(row.get("Job Training")),
+            is_statewide=(area_name or "").strip() == STATEWIDE_AREA,
+            is_detailed_occupation=(
+                soc_level is not None
+                and int(soc_level) == DETAILED_SOC_LEVEL
+                and soc_code is not None
+            ),
         )
 
 
