@@ -23,11 +23,7 @@ MAKEFILE = ROOT / "Makefile"
 def _recipe(target: str) -> str:
     """The recipe lines for one target: tab-indented lines under `target:`."""
     lines = MAKEFILE.read_text(encoding="utf-8").splitlines()
-    start = next(
-        i
-        for i, line in enumerate(lines)
-        if re.match(rf"^{re.escape(target)}\s*:", line)
-    )
+    start = next(i for i, line in enumerate(lines) if re.match(rf"^{re.escape(target)}\s*:", line))
     body: list[str] = []
     for line in lines[start + 1 :]:
         if line.startswith("\t"):
