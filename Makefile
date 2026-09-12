@@ -58,14 +58,25 @@ zip-county-refresh:
 # Refresh the dataset from DOL and CA EDD. Network-bound; not part of `verify`.
 # Emits straight into the web app's public directory, which is where the site reads it.
 #
-# CareerOneStop credentials (.env.local) add two things and are optional for both: the
+# CareerOneStop credentials live in .env.local, which this target loads when it is present.
+# They add two things and are optional for both: the
 # occupation descriptions, and the America's Job Centers each program page names as the place
 # to ask about having the training paid for. Without them the build is complete and simply
 # claims nothing about where the nearest office is -- which is what CI does. The centre
 # directory is one request for the whole state and is cached under data/raw/cos-cache.
 # Backs up first, and the backup refuses to run over a dataset that does not look real.
 data: backup-data
-	uv run afterward build --output-dir web/public/data
+	@if [ -f .env.local ]; then \
+	  echo "loading credentials from .env.local"; \
+	else \
+	  echo "no .env.local; building without the optional CareerOneStop enrichment"; \
+	fi
+	@if [ -f .env.local ]; then \
+	  set -a; . ./.env.local; set +a; \
+	  uv run afterward build --output-dir web/public/data; \
+	else \
+	  uv run afterward build --output-dir web/public/data; \
+	fi
 	@$(MAKE) dataset-check
 
 # Copy the built dataset somewhere a mistake cannot reach.
