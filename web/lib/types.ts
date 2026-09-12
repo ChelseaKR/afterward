@@ -787,6 +787,21 @@ export interface SearchIndex {
    * empty table -- the same absent-key convention `cb` uses on `SearchEntry`.
    */
   altTitles?: Record<string, string[]>;
+  /**
+   * SOC code -> the Department's own Spanish job titles ("Enfermeras Registradas"), for
+   * search matching only. O*NET's Mi Próximo Paso text, carried through the pipeline
+   * untouched; nothing here is translated by this project.
+   *
+   * A SOC a program feeds is present exactly when a Spanish record exists for it. That is a
+   * stronger guarantee than `altTitles` makes -- there, a missing key conflates "no record"
+   * with "no term worth indexing" -- and it is what lets the search page tell a reader that
+   * a job has no Spanish name on record rather than that no programs train for it.
+   *
+   * Optional, and absent means the index predates the field. That is not the same as "no
+   * occupation has a Spanish name": a build that did not look has found nothing, and the
+   * search page says something different for each. See `spanishTitleGap` in lib/search.ts.
+   */
+  esTitles?: Record<string, string[]>;
 }
 
 export interface StateBenchmark {

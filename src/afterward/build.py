@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import time
+import unicodedata
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
@@ -2524,6 +2525,80 @@ def alternate_title_index(
     return table
 
 
+def spanish_title_index(
+    payloads: list[dict[str, Any]], occupations: dict[str, dict[str, Any]]
+) -> dict[str, list[str]]:
+    """SOC code -> the Department's own Spanish titles, for search matching only.
+
+    Nothing here is translated by this project. Every string is O*NET's Mi Proximo Paso text,
+    already attached to the occupation record by :func:`_attach_spanish`, and this only
+    reshapes it into the same kind of table :func:`alternate_title_index` builds and for the
+    same reason: an occupation repeats across many programs, so the terms belong beside the
+    rows rather than inside each one.
+
+    **A missing key means one thing and only one thing: the Department publishes no Spanish
+    record for that occupation.** That is a stronger guarantee than the alternate-title table
+    makes, where a missing key conflates "no record" with "no term worth indexing", and it is
+    the guarantee the interface needs -- a Spanish reader whose search finds nothing has to be
+    able to tell "no programs train for this" from "this job has no Spanish name on record
+    here". ``spanish["title"]`` is required wherever a record exists, so a record can never
+    produce an empty list and no key can ever be absent for the other reason.
+
+    The occupation's own Spanish title comes first and its ``also_called`` terms follow, which
+    is Mi Proximo Paso's own ordering. Terms are de-duplicated case- and accent-insensitively
+    against each other, because ``also_called`` sometimes repeats the title with different
+    accenting and an index does not need it twice; nothing is dropped for matching an English
+    string, since the two are scored separately.
+    """
+    used_socs = {soc for payload in payloads for soc in payload.get("soc_codes") or []}
+    table: dict[str, list[str]] = {}
+    for soc in sorted(used_socs):
+        occupation = occupations.get(soc)
+        if occupation is None:
+            continue
+        spanish = occupation.get("spanish")
+        if not isinstance(spanish, dict):
+            continue
+        title = spanish.get("title")
+        if not isinstance(title, str) or not title.strip():
+            continue
+        seen: set[str] = set()
+        kept: list[str] = []
+        for raw in [title, *(spanish.get("also_called") or [])]:
+            if not isinstance(raw, str):
+                continue
+            trimmed = raw.strip()
+            key = fold_accents(trimmed).lower()
+            if not trimmed or key in seen:
+                continue
+            seen.add(key)
+            kept.append(trimmed)
+        if kept:
+            table[soc] = kept
+    return table
+
+
+def fold_accents(text: str) -> str:
+    """Drop combining marks, so ``enfermeria`` and ``enfermería`` are the same search term.
+
+    NFD-decompose and discard the combining characters, the same operation ``foldAccents`` in
+    ``web/lib/search.ts`` performs on the query and on the indexed text.
+
+    What each side uses it for is different, and worth being precise about. The front end
+    folds both sides of a comparison, so a reader typing ``enfermeria`` -- which is what a
+    phone keyboard set to English produces -- reaches the same rows as one typing
+    ``enfermería``. Here it is used only to decide whether two terms are the same term for
+    de-duplication. **The emitted strings keep their accents**, so a difference between the
+    two implementations could only change which duplicate survives, never whether a search
+    matches. Neither side is derived from the other and neither has to be.
+
+    Deliberately not a general transliteration. ``ñ`` decomposes to ``n``, which is what a
+    reader without a Spanish keyboard types for it, and that is the whole point; nothing here
+    maps letters that are not accented forms of another letter.
+    """
+    return "".join(c for c in unicodedata.normalize("NFD", text) if not unicodedata.combining(c))
+
+
 def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     """One row of the client-side search index.
 
@@ -2852,6 +2927,11 @@ def emit_site_bundle(
                 # Search-only, never rendered: see alternate_title_index for why this is a
                 # table beside the rows rather than a field folded into each one.
                 "altTitles": alternate_title_index(payloads, occupations),
+                # The same shape, for the Department's own Spanish occupation titles. A SOC
+                # a program feeds is present here exactly when Mi Proximo Paso publishes a
+                # Spanish record for it, so the front end can tell a Spanish search that
+                # found nothing from a job that has no Spanish name on record.
+                "esTitles": spanish_title_index(payloads, occupations),
             },
             separators=(",", ":"),
         ),
