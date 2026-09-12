@@ -8,6 +8,86 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Every program record now carries a receipt, and `afterward verify-record` replays one
+  (#113).** `scripts/verify_live_site.py` already asks whether the bytes the site serves are
+  the bytes of the release it names; that check is the operator's — it needs `gh`, downloads
+  the whole tarball, and runs on a schedule nobody outside this repository sees. A
+  `receipts/<uuid>.json` beside every record hands the same question to the reader, one
+  record at a time: the sha256 of the exact bytes of `programs/<uuid>.json` (so
+  `shasum -a 256` settles it, with no canonicalisation rule to reimplement), every measure's
+  state in the flat CSV's own three-word vocabulary read through `tabular.state_of` rather
+  than a second copy of the rule, how the occupation join reached each occupation beside the
+  program's own SOC codes, and the link verdict with the classifier version that reached it.
+  **A measure that is not reported carries no number** — its entry is exactly
+  `{"state": "not_reported"}`, no `value` key, no null, no zero, and the test for it reads
+  the receipt's own bytes rather than the parsed dict, because a machine that never saw the
+  page's caveats is what parses this. `afterward verify-record <uuid> --dataset <tarball|dir>`
+  recomputes the receipt and reports agreement field by field: changing one measure in a copy
+  of the dataset names that field and no other, and editing a field no receipt describes
+  still fails the digest. Three exit codes, and the third is not a pass: **2** covers no such
+  record, no receipt beside it, a dataset that cannot say which snapshot it is, and a schema
+  version this build does not know, each with its own sentence, and the word "verified" is
+  never printed on that path. Emitted from `emit_site_bundle`, which is where both build
+  paths meet — a receipt written only by `build` would be absent from every dataset CI
+  produces. New `scripts/receipt_check.py` consumes the pairing on the packaging path
+  (`make dataset-verify`) and the publishing path (`deploy.yml` GUARD 1c); it is standard
+  library only, like `dataset_shape_check.py`, because the deploy job installs no Python
+  toolchain, and it reports three states rather than two — a dataset built before receipts
+  existed carries none, which passes and says so by name, while a dataset holding *some* is
+  refused as records and receipts from two different builds. Measured on the 2026-08-17
+  snapshot: 1,352 bytes per receipt, 551 gzipped, 4.21 MB across 3,266 records. Two things
+  the issue asked for are deliberately absent with the reasoning recorded in
+  `src/afterward/receipts.py`: the tarball's own sha256 (which would be a digest of an
+  archive computed inside that archive) and the D1 source row's hash (which `build_offline`
+  cannot produce at all, and which no downstream reader holds the row to check).
+
+- **A published link verdict now names the classifier that reached it.** `provider_link`
+  gains `classifier_version`, null exactly where `verdict` is null. `CLASSIFIER_VERSION`
+  exists because a verdict from an older classifier is *unasked* rather than wrong — the
+  cache refuses to serve one and `stale_classifier` names them in a report — but a report
+  read into a build carries whatever version it was written by, so until now a stale verdict
+  and a current one were the same three keys in the dataset a reader downloads. A record
+  built before this field carries no version and the receipt says null rather than reading
+  the absence as zero or as the current version.
+
+- **The flat CSV now travels as a Frictionless Data Package (part of #110).** `make
+  csv-export` writes `dist/csv/` as a package a researcher can open with a standard reader:
+  `programs.csv`, its Table Schema, the three emitted JSON files copied in beside it, and a
+  `datapackage.json` declaring every one with its size and sha256. The copies are the point —
+  a descriptor that named `programs.json` and left it in `web/public/data` would have a path
+  that resolves for whoever built the package and for nobody who downloaded it, which is a
+  broken package that reads as a complete one. `tabular.data_package_problems` reads the
+  written descriptor back against the files on disk, and the export refuses rather than
+  leaving a package whose paths or hashes are wrong; a dataset directory missing one of the
+  three JSON files is refused before anything is written at all. `SHA256SUMS` is now derived
+  from the descriptor's own resource list rather than a hand-kept filename list, so a resource
+  added to the package cannot be left out of the checksums. The descriptor carries the
+  reporting-obligation record (`PROVENANCE.md` I7–I11) and the reason there is no `suppressed`
+  state, inside the package rather than only in a README. No clock is consulted and the
+  version is the snapshot date, so the same snapshot writes byte-identical output. The
+  `/[lang]/data/` page #110 also asks for is not here.
+
+- **A dataset release can no longer be published and never deployed without something saying
+  so.** ADR 0001 makes the dataset this project's delivery, and it was the one thing with no
+  currency check on it: `make dataset-publish` cuts the release on a workstation, `deploy.yml`
+  is dispatch-only, and between those two steps there was no clock. The three existing
+  sentinels each stay green through the gap — `live-integrity.yml` asks whether the site serves
+  the dataset it *names*, which a site six weeks behind answers correctly every day;
+  `deploy-staleness.yml` asks how far behind `main` the deployed *commit* is, and a data
+  refresh moves no commit; `release-integrity.yml` checks artifacts rather than currency. New
+  `scripts/dataset_currency.py` and `dataset-currency.yml` join
+  `release_integrity.list_releases` with `verify_live_site.live_coverage` rather than
+  re-deriving either, and report three states: `current`, `behind` (exit 0, and the workflow
+  opens an issue, on `deploy_staleness.py`'s reasoning that a job which is red for weeks is a
+  job that is ignored), and unmeasurable (exit 1, reason named, no number reported) for no
+  published release, an unreadable site, a release with no parseable timestamp, and a live
+  snapshot **newer** than everything published — which is not "current" and not "ahead" but a
+  site serving something that was never released. Two clocks are reported rather than one: the
+  distance between the two snapshot dates is how much staler the reader's data is, and the age
+  of the oldest undeployed release is how long the operator has been sitting on it. The first
+  real run reported `current` against `dataset-2026-08-17`. `list_releases` now carries
+  `published_at`, `created_at` and `html_url` for it, and a test pins those field names because
+  nothing in `release_integrity.py` itself reads them. (#135, #137)
 - **DOL's bulk export is now read beside the search API for the one thing it has that the API
   does not: `de129`, the actual denominator of the published Q2 employment rate.** Issue #25
   established that this site publishes a rate whose denominator it cannot show, and
@@ -61,6 +141,21 @@ All notable changes to this project are documented here. The format follows
 - `make zip-county-refresh`: re-derives the vendored D8 extract from the Census file and
   recomputes its retrieval record, so the extract can be reproduced and diffed rather than
   trusted. Network-bound, run by hand, and in no build.
+
+- **The print sheet is audited (part of #111).** `globals.css` has carried an `@media print`
+  block since the print stylesheet landed — it hides the navigation, unfolds every
+  `<details>` so nothing a disclosure was holding is silently absent from the paper, and
+  keeps the non-affiliation notice on the page — and no gate had ever rendered it. `npm run
+  a11y` parses the export with jsdom, which resolves no media query, and every pass in
+  `a11y-rendered.mjs` ran in screen media. The rendered gate now prints a program page in
+  both languages, chosen from the build's own data as the first program by uuid whose source
+  filed no number for an outcome, so the page audited is one where an absence has to become
+  the words "Not reported" / "No reportado". It proves the medium changed and that the print
+  rules reached *this page* before trusting the audit — emulating print over a page the
+  stylesheet never touched would audit the screen layout and print `pass` — and it checks the
+  absence labels are still words rather than blanks, because on paper there is no title
+  attribute to hover and a blank is a zero. The "Print this page" control and the print-token
+  contrast pass #111 also asks for are not here.
 
 ### Changed
 

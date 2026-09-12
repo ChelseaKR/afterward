@@ -17,6 +17,16 @@
  * `a11y-browser.mjs` does, and can run as part of `verify` without changing what a
  * developer has to remember to do first.
  *
+ * It also prints. `@media print` in `globals.css` hides the navigation, unfolds every
+ * `<details>` so nothing a disclosure was holding is silently absent from the paper, and
+ * keeps the non-affiliation notice on the page -- and no gate had ever rendered it. jsdom
+ * resolves no media query and every other pass here runs in screen media, so the sheet a
+ * reader takes to a job-centre appointment (#111) was shipping unread. This emulates print
+ * media on a program page whose source filed no number for at least one outcome, proves the
+ * stylesheet actually reached the page before trusting the audit, and checks that "Not
+ * reported" is still words rather than a blank -- on paper there is no title attribute to
+ * hover and a blank is a zero.
+ *
  * The assistant panel is the exception this file used to make and no longer does. It exists
  * in a build only when `NEXT_PUBLIC_ASK_URL` was set, which no build sets, so the panel's
  * branch never ran -- and the verdict printed underneath said "no violations in the rendered
@@ -65,7 +75,9 @@ function serveExport(root) {
     if (file.endsWith(path.sep)) file = path.join(file, "index.html");
     try {
       const body = await readFile(file);
-      res.writeHead(200, { "Content-Type": MIME[path.extname(file)] ?? "application/octet-stream" });
+      res.writeHead(200, {
+        "Content-Type": MIME[path.extname(file)] ?? "application/octet-stream",
+      });
       res.end(body);
     } catch {
       res.writeHead(404);
@@ -92,7 +104,9 @@ function listen(server) {
 async function auditPage(page, label) {
   await page.addScriptTag({ content: AXE });
   const result = await page.evaluate(async () => {
-    const rules = Object.fromEntries(window.axe.getRules().map((r) => [r.ruleId, { enabled: true }]));
+    const rules = Object.fromEntries(
+      window.axe.getRules().map((r) => [r.ruleId, { enabled: true }]),
+    );
     const { violations } = await window.axe.run(document, {
       resultTypes: ["violations"],
       rules,
@@ -117,7 +131,69 @@ async function auditPage(page, label) {
   return result.reduce((n, v) => n + v.nodes.length, 0);
 }
 
-const ASSISTANT_EXPECTED = askServiceConfigured(process.env.NEXT_PUBLIC_ASK_URL);
+/**
+ * The program page this run prints, and the measure that makes printing it worth checking.
+ *
+ * `@media print` in `globals.css` is a published surface no gate has ever read: `npm run
+ * a11y` parses the static export with jsdom, which resolves no media query, and every pass
+ * below this one runs in screen media. So the rules that hide the navigation, unfold every
+ * `<details>` and keep the non-affiliation notice on the paper have been shipping unaudited
+ * (#111).
+ *
+ * The page is chosen by its data rather than hardcoded: the first program, by uuid, that has
+ * an outcome its source never filed. On paper an absent measure has to be the words "Not
+ * reported" / "No reportado" -- there is no title attribute to hover and no colour to read --
+ * so a print pass over a program whose every measure is present would prove nothing about the
+ * one rule this site is built around. If the fixture has no such program, that is a failure
+ * here rather than a pass over a page where the failure is impossible.
+ */
+function programWithAnUnreportedMeasure(outDir) {
+  const document = JSON.parse(
+    readFileSync(path.join(outDir, "data", "programs.json"), "utf-8"),
+  );
+  const programs = [...document.programs].sort((a, b) =>
+    String(a.uuid).localeCompare(String(b.uuid)),
+  );
+  const chosen = programs.find((program) =>
+    Object.values(program.outcomes ?? {}).some((value) => value === null),
+  );
+  if (!chosen) {
+    throw new Error(
+      "no program in this build has an unreported outcome, so a print audit of one would " +
+        "read as a pass over a page where the defect it looks for cannot appear",
+    );
+  }
+  return String(chosen.uuid);
+}
+
+/**
+ * What the print stylesheet must have done to the page, read off the live computed styles.
+ *
+ * Emulating print media and auditing is not enough on its own: if the stylesheet had failed
+ * to load, or its rules had been renamed out from under this pass, axe would audit the screen
+ * layout and print `pass`, and the verdict underneath would claim a print sheet nobody read.
+ * So the pass first proves the medium changed, then proves the medium changed *this page* --
+ * a control the gate carries with it rather than one somebody has to remember to run.
+ */
+async function printRulesAreInForce(page) {
+  return page.evaluate(() => {
+    const shown = (selector) => {
+      const element = document.querySelector(selector);
+      return element ? getComputedStyle(element).display : null;
+    };
+    return {
+      mediaIsPrint: window.matchMedia("print").matches,
+      nav: shown(".site-nav"),
+      summary: shown("details > summary"),
+    };
+  });
+}
+
+const ASSISTANT_EXPECTED = askServiceConfigured(
+  process.env.NEXT_PUBLIC_ASK_URL,
+);
+
+const PRINT_PROGRAM = programWithAnUnreportedMeasure(OUT_DIR);
 
 const server = serveExport(OUT_DIR);
 const port = await listen(server);
@@ -133,7 +209,9 @@ try {
     ["en", "English"],
     ["es", "Spanish"],
   ]) {
-    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const page = await browser.newPage({
+      viewport: { width: 1280, height: 900 },
+    });
     // Every request the browser makes while this page is driven, so the no-off-origin rule
     // (SECURITY.md; ADR 0003) is checked in a real browser and not only in a unit test: the
     // static site makes no request beyond its own origin, and opening the assistant panel
@@ -153,7 +231,9 @@ try {
 
     // Two programs selected, same as a reader comparing options, so the comparison table
     // — never audited before #29 — is actually in the DOM for this pass.
-    const checkboxes = page.locator(".card .compare-check input[type=checkbox]");
+    const checkboxes = page.locator(
+      ".card .compare-check input[type=checkbox]",
+    );
     await checkboxes.nth(0).check();
     await checkboxes.nth(1).check();
     await page.locator("button.compare-open").click();
@@ -204,6 +284,85 @@ try {
     }
 
     await page.close();
+
+    // The print sheet. A separate page, because `emulateMedia` is a property of the page and
+    // leaving it set would silently print-audit whatever ran next.
+    const sheet = await browser.newPage({
+      viewport: { width: 1280, height: 900 },
+    });
+    await sheet.goto(`${base}/${lang}/programs/${PRINT_PROGRAM}/`, {
+      waitUntil: "networkidle",
+    });
+
+    // Presence before absence, and before print: the words this pass exists to find have to
+    // be on the screen page first, or every assertion below holds over a page that never
+    // carried them.
+    const unreportedOnScreen = await sheet.locator(".unreported").count();
+    if (unreportedOnScreen === 0) {
+      console.log(`FAIL  Program sheet (${label})`);
+      console.log(
+        `        /${lang}/programs/${PRINT_PROGRAM}/ shows no unreported measure on screen, ` +
+          "so printing it proves nothing about how an absence reads on paper.",
+      );
+      failures += 1;
+    } else {
+      const onScreen = await printRulesAreInForce(sheet);
+      await sheet.emulateMedia({ media: "print" });
+      const onPaper = await printRulesAreInForce(sheet);
+
+      const brokenControls = [];
+      if (!onPaper.mediaIsPrint)
+        brokenControls.push("print media did not take effect");
+      if (onScreen.nav === null)
+        brokenControls.push(".site-nav is not on this page");
+      else if (onScreen.nav === "none")
+        brokenControls.push(".site-nav is hidden on screen too");
+      else if (onPaper.nav !== "none")
+        brokenControls.push(`.site-nav prints as ${onPaper.nav}`);
+      if (onScreen.summary !== null && onPaper.summary !== "none") {
+        brokenControls.push(`a <details> toggle prints as ${onPaper.summary}`);
+      }
+
+      if (brokenControls.length > 0) {
+        // Not "no violations": a print audit of a page the print stylesheet did not reach is
+        // an audit of the screen, and reporting it as a pass is the failure this whole file
+        // was rewritten to stop making.
+        console.log(`FAIL  Print stylesheet not in force (${label})`);
+        for (const reason of brokenControls) console.log(`          ${reason}`);
+        failures += brokenControls.length;
+      } else {
+        const words = await sheet.evaluate(() =>
+          [...document.querySelectorAll(".unreported")].map((element) => ({
+            text: (element.textContent ?? "").trim(),
+            display: getComputedStyle(element).display,
+            visibility: getComputedStyle(element).visibility,
+          })),
+        );
+        const lost = words.filter(
+          (w) =>
+            w.text === "" || w.display === "none" || w.visibility === "hidden",
+        );
+        if (lost.length > 0) {
+          console.log(`FAIL  Unreported measures on paper (${label})`);
+          console.log(
+            `        ${lost.length} of ${words.length} "not reported" labels print blank or ` +
+              "hidden. On paper a blank is a zero to whoever is holding it.",
+          );
+          failures += lost.length;
+        } else {
+          console.log(
+            `pass  Unreported measures print as words (${label}): ${words[0].text}`,
+          );
+        }
+
+        failures += await auditPage(
+          sheet,
+          `Program sheet, print media (${label})`,
+        );
+        audited.push(`the program sheet under print media (${label})`);
+      }
+    }
+    await sheet.close();
   }
 } finally {
   await browser.close();

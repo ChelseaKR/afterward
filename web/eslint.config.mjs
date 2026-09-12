@@ -47,6 +47,7 @@ const NODE_GLOBALS = {
   // code in one module; the alternative is `no-undef` off, which is worse.
   window: "readonly",
   document: "readonly",
+  getComputedStyle: "readonly",
 };
 
 export default [

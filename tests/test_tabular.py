@@ -20,6 +20,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -84,6 +85,25 @@ def _record(uuid: str, **overrides: Any) -> dict[str, Any]:
         else:
             base[key] = value
     return base
+
+
+def _minimal_dataset(source: Path, *, records: list[dict[str, Any]] | None = None) -> Path:
+    """A dataset directory carrying every file a complete data package declares.
+
+    `occupations.json` is here because the export copies it into the package rather than
+    naming it and leaving it behind: a descriptor whose paths resolve only on the machine
+    that built it is a broken package that reads as a complete one.
+    """
+    source.mkdir(parents=True, exist_ok=True)
+    (source / "programs.json").write_text(
+        json.dumps({"programs": records if records is not None else [_record("a")]}),
+        encoding="utf-8",
+    )
+    (source / "occupations.json").write_text(json.dumps({"occupations": []}), encoding="utf-8")
+    (source / "coverage.json").write_text(
+        json.dumps({"snapshot_date": "2026-08-07"}), encoding="utf-8"
+    )
+    return source
 
 
 class TestTheOneRule:
@@ -421,14 +441,7 @@ class TestTheExportRefusesRatherThanWritingAPartialFile:
     def test_a_broken_rule_leaves_no_file_behind(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        source = tmp_path / "data"
-        source.mkdir()
-        (source / "programs.json").write_text(
-            json.dumps({"programs": [_record("a")]}), encoding="utf-8"
-        )
-        (source / "coverage.json").write_text(
-            json.dumps({"snapshot_date": "2026-08-07"}), encoding="utf-8"
-        )
+        source = _minimal_dataset(tmp_path / "data")
         out = tmp_path / "out"
 
         good = tabular.to_csv([_record("a")])
@@ -446,14 +459,7 @@ class TestTheExportRefusesRatherThanWritingAPartialFile:
 
     def test_without_the_sabotage_the_same_export_succeeds(self, tmp_path: Path) -> None:
         """The control's control: the refusal above is caused by the fault, not by the setup."""
-        source = tmp_path / "data"
-        source.mkdir()
-        (source / "programs.json").write_text(
-            json.dumps({"programs": [_record("a")]}), encoding="utf-8"
-        )
-        (source / "coverage.json").write_text(
-            json.dumps({"snapshot_date": "2026-08-07"}), encoding="utf-8"
-        )
+        source = _minimal_dataset(tmp_path / "data")
         out = tmp_path / "out"
 
         report = tabular.export_csv(source, out)
@@ -524,3 +530,166 @@ class TestTheMakefileTargetIsTheOneDescribed:
         phony = makefile.split(".PHONY:")[1].split("\n\n")[0]
 
         assert "csv-export" in phony
+
+
+class TestTheDataPackage:
+    """The descriptor has to describe the directory a reader downloaded, not the one it was built in.
+
+    Every assertion here reads files off disk rather than the values the writer held in
+    memory. A check that re-derives its expectation from the function that produced the
+    answer compares a value to itself and cannot fail — the same reason
+    `state_column_problems` parses the rendered CSV instead of inspecting the records.
+    """
+
+    @pytest.fixture
+    def package_dir(self, tmp_path: Path) -> Path:
+        tabular.export_csv(FIXTURE_DIR, tmp_path)
+        return tmp_path
+
+    def test_every_declared_resource_is_in_the_package(self, package_dir: Path) -> None:
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+
+        assert tabular.data_package_problems(descriptor, package_dir) == []
+
+    def test_it_declares_the_table_and_all_three_emitted_json_files(
+        self, package_dir: Path
+    ) -> None:
+        """A package holding only the CSV would send a reader back to the sharded JSON."""
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+
+        declared = [resource["path"] for resource in descriptor["resources"]]
+        assert declared == [tabular.TABLE_FILENAME, *(name for name, _ in tabular.JSON_RESOURCES)]
+
+    def test_the_json_resources_are_copies_of_the_dataset_byte_for_byte(
+        self, package_dir: Path
+    ) -> None:
+        for name, _description in tabular.JSON_RESOURCES:
+            assert (package_dir / name).read_bytes() == (FIXTURE_DIR / name).read_bytes()
+
+    def test_the_table_resource_carries_the_same_schema_that_was_written_beside_it(
+        self, package_dir: Path
+    ) -> None:
+        """Two copies of a schema that can disagree are worse than one."""
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+        beside = json.loads((package_dir / tabular.SCHEMA_FILENAME).read_text(encoding="utf-8"))
+
+        assert descriptor["resources"][0]["schema"] == beside
+
+    def test_the_declared_dialect_is_the_one_the_writer_uses(self, package_dir: Path) -> None:
+        """`to_csv` overrides csv's `\\r\\n` default; a reader told otherwise parses a stray CR."""
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+        table = (package_dir / tabular.TABLE_FILENAME).read_bytes().decode("utf-8")
+
+        terminator = descriptor["resources"][0]["dialect"]["lineTerminator"]
+        assert terminator == "\n"
+        assert table.endswith(terminator)
+        assert "\r" not in table
+
+    def test_the_version_is_the_snapshot_the_dataset_declares(self, package_dir: Path) -> None:
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+        coverage = json.loads((FIXTURE_DIR / "coverage.json").read_text(encoding="utf-8"))
+
+        assert descriptor["version"] == coverage["snapshot_date"]
+
+    def test_the_same_snapshot_writes_the_same_descriptor(self, tmp_path: Path) -> None:
+        """No clock is consulted, so two exports of one snapshot are byte-identical."""
+        first, second = tmp_path / "one", tmp_path / "two"
+        tabular.export_csv(FIXTURE_DIR, first)
+        tabular.export_csv(FIXTURE_DIR, second)
+
+        assert (first / tabular.DATA_PACKAGE_FILENAME).read_bytes() == (
+            second / tabular.DATA_PACKAGE_FILENAME
+        ).read_bytes()
+
+    def test_it_names_the_reporting_obligations_and_the_absent_suppressed_state(
+        self, package_dir: Path
+    ) -> None:
+        """The two sentences a reader needs before quoting a blank, inside the package.
+
+        A README they may never have downloaded is not where the caveat belongs: the
+        scorecard serves a suppressed cell and an unreported cell as the same `-1`, and a
+        reader who does not know that will read `not_reported` as "nobody was suppressed".
+        """
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+        provenance = descriptor["afterward:provenance"]
+
+        assert "PROVENANCE.md I7-I11" in provenance["reportingObligations"]
+        assert "apprenticeship" in provenance["reportingObligations"].lower()
+        assert "no 'suppressed' word" in provenance["suppression"]
+        assert descriptor["citation"][0]["text"].endswith("https://github.com/ChelseaKR/afterward")
+
+    def test_a_resource_the_package_does_not_hold_is_a_problem_not_a_pass(
+        self, package_dir: Path
+    ) -> None:
+        """The control for the checker: it must fail on a descriptor whose path is a lie."""
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+        (package_dir / "occupations.json").unlink()
+
+        problems = tabular.data_package_problems(descriptor, package_dir)
+
+        assert [p for p in problems if "occupations.json" in p], problems
+
+    def test_a_resource_whose_bytes_changed_is_a_problem(self, package_dir: Path) -> None:
+        """A hash nothing compares is a hash nobody can trust."""
+        descriptor = json.loads(
+            (package_dir / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+        table = package_dir / tabular.TABLE_FILENAME
+        table.write_bytes(table.read_bytes() + b"x")
+
+        problems = tabular.data_package_problems(descriptor, package_dir)
+
+        assert any("hash" in p for p in problems), problems
+
+    def test_an_empty_resource_list_is_refused_rather_than_read_as_clean(self) -> None:
+        """`all([])` over no resources is the shape this project keeps finding."""
+        assert tabular.data_package_problems({"resources": []}, Path(".")) != []
+        assert tabular.data_package_problems({}, Path(".")) != []
+
+    def test_a_dataset_missing_a_declared_file_is_refused_before_anything_is_written(
+        self, tmp_path: Path
+    ) -> None:
+        source = _minimal_dataset(tmp_path / "data")
+        (source / "occupations.json").unlink()
+        out = tmp_path / "out"
+
+        with pytest.raises(ValueError, match=re.escape("occupations.json")):
+            tabular.export_csv(source, out)
+
+        assert not (out / tabular.DATA_PACKAGE_FILENAME).exists()
+
+    def test_the_report_names_every_file_the_descriptor_declares(self, tmp_path: Path) -> None:
+        report = tabular.export_csv(FIXTURE_DIR, tmp_path)
+        descriptor = json.loads(
+            (tmp_path / tabular.DATA_PACKAGE_FILENAME).read_text(encoding="utf-8")
+        )
+
+        assert list(report.resources) == [r["path"] for r in descriptor["resources"]]
+
+
+class TestTheChecksumsCoverWhatWasWritten:
+    """SHA256SUMS is derived from the descriptor, so a new resource cannot be left out."""
+
+    def test_the_recipe_reads_the_resource_list_rather_than_naming_files(self) -> None:
+        makefile = (REPO_ROOT / "Makefile").read_text(encoding="utf-8")
+        recipe = makefile[makefile.index("\ncsv-export:") :].split("\n\n")[0]
+
+        assert 'json.load(open("datapackage.json"))["resources"]' in recipe
+        assert "SHA256SUMS" in recipe
+        # The two files that are *not* resources still have to be named, because a
+        # descriptor cannot list itself.
+        assert "programs.schema.json datapackage.json > SHA256SUMS" in recipe

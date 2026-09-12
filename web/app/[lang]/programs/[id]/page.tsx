@@ -1055,9 +1055,12 @@ export default async function ProgramPage({
   const occupations = program.occupations;
 
   /*
-   * The EDD area this program's city was placed in, if any. Null for 1,741 of California's
-   * 3,266 programs, which makes it the common case rather than an edge one, and it gets a
-   * stated explanation below rather than silence.
+   * The EDD area this program was placed in, if any — by its city or by the county its ZIP
+   * resolves to, both of them restatements of EDD's own area title. Null for 165 of
+   * California's 3,266 programs on the 2026-08-04 snapshot, down from 1,741 before the
+   * county rule. It is now the uncommon case rather than the common one, which is a reason
+   * to keep the stated explanation below and not a reason to drop it: a reader on one of
+   * those 165 pages needs it more, not less, now that most pages carry a region.
    *
    * `area_name` carries the county gloss and reads correctly in a sentence; `area_short_name`
    * is what fits next to a number. Either could in principle be null, and a nameless area is
@@ -1492,9 +1495,10 @@ export default async function ProgramPage({
                   * region is not uniformly lower, it is differently shaped, and someone
                   * deciding where to train cannot see that from medians alone.
                   *
-                  * Only for a program whose city California's own area titles name. The 1,741
-                  * unplaced programs get nothing here rather than the nearest area's figures,
-                  * which is the same rule the rest of this page follows.
+                  * Only for a program California's own area titles place, by its city or by
+                  * its ZIP's county. A program neither rule reaches gets nothing here rather
+                  * than the nearest area's figures, which is the same rule the rest of this
+                  * page follows.
                   */}
                 {(() => {
                   // Guarded first so the area label below is a string, not a maybe-string.

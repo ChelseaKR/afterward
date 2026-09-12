@@ -1730,7 +1730,19 @@ class TestDecisionSerialisation:
             "notice": NOTICE_UNREACHABLE,
             "substitution": SUBSTITUTION_FRONT_PAGE,
             "redirect": None,
+            "classifier_version": CLASSIFIER_VERSION,
         }
+
+    def test_a_verdict_carries_the_classifier_that_reached_it_not_the_current_one(self) -> None:
+        """A report read into a build carries whatever classifier wrote it. Until this field
+        existed, a stale verdict and a current one were the same three keys in the dataset a
+        reader downloads -- and `stale_classifier` could only say so about a report on disk,
+        never about the published record."""
+        stale = replace(checked(PAGE, "ok"), classifier_version=CLASSIFIER_VERSION - 1)
+        decision = decide(results(stale), PAGE)
+        assert decision is not None
+        assert decision.verdict == "alive"
+        assert decision.as_dict()["classifier_version"] == CLASSIFIER_VERSION - 1
 
     def test_an_offsite_decision_publishes_what_was_established_about_it(self) -> None:
         """The field a packaging gate reads. Without it, a dataset built before any redirect
@@ -1760,6 +1772,9 @@ class TestDecisionSerialisation:
             "notice": None,
             "substitution": None,
             "redirect": None,
+            # Null here and not the current version: no classifier ran, and naming one would
+            # claim a judgement was made about every address in the feed.
+            "classifier_version": None,
         }
 
 
