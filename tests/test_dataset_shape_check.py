@@ -44,6 +44,9 @@ def _program(**over: Any) -> dict[str, Any]:
         "provider_name": "Animal Behavior College",
         "description": "Veterinary assistant training.",
         "length": {"weeks": None, "hours": None, "competency_based": True},
+        # Present and null is the answer for the 3,101 programs the two placement rules do
+        # place. The marker below is the key's *absence*, not its value.
+        "region_unplaced_reason": None,
     }
     return {**base, **over}
 
@@ -94,6 +97,60 @@ class TestALengthNobodyCanReadIsRefused:
         assert dataset_shape_check.problems([current]) == []
 
 
+class TestAPlacementRuleOlderThanTheCodeIsRefused:
+    """The third instance of this script's own failure shape, and it is live today.
+
+    `522debe` (#129) added the county placement rule and put `region_unplaced_reason` on
+    every record. It landed 2026-09-07; the newest published dataset release is
+    `dataset-2026-08-17`, three weeks older. Measured against that release: **3,266 of 3,266
+    records carry no such key**, 1,741 programs have `region: null`, and every one of those
+    nulls is undifferentiated -- where the current pipeline would place all but 165 of them
+    and give each remaining one of five named reasons.
+
+    The gate knew about two markers and not this one, which is exactly how the previous two
+    got in: a repair lands in the repository, correct and tested, and nothing teaches the
+    staleness check about it. The module docstring calls that "the failure this project keeps
+    meeting", and the check for it has now missed its next instance.
+    """
+
+    def test_a_record_from_before_the_county_rule_is_refused(self) -> None:
+        stale = _program()
+        del stale["region_unplaced_reason"]
+        found = dataset_shape_check.problems([stale])
+        assert found
+        assert "region_unplaced_reason" in found[0]
+        assert "522debe" in found[0]
+
+    def test_a_placed_program_carries_the_key_as_null_and_passes(self) -> None:
+        """Null is the answer for a program that *was* placed, and it is the commonest
+        record in the dataset. Refusing it would make the gate unpassable, which is this
+        file's own stated rule about `competency_based: False`."""
+        placed = _program(region={"area_name": "Fresno County", "matched_on": "principal_city"})
+        assert dataset_shape_check.problems([placed]) == []
+
+    def test_an_unplaced_program_that_says_why_passes(self) -> None:
+        unplaced = _program(region=None, region_unplaced_reason="zip_straddles_two_areas")
+        assert dataset_shape_check.problems([unplaced]) == []
+
+    def test_the_two_older_markers_still_fire_beside_it(self) -> None:
+        """One record can be stale in more than one way, and each has to be named: a reader
+        told only about the oldest marker fixes it and meets the next one on the next run."""
+        ancient = {
+            "uuid": "u",
+            "description": "12345|Some course.",
+            "length": {"weeks": None, "hours": None},
+        }
+        found = dataset_shape_check.problems([ancient])
+        assert len(found) == 3
+        assert [
+            any(marker in line for line in found) for marker in ("ec25f6d", "904c231", "522debe")
+        ] == [
+            True,
+            True,
+            True,
+        ]
+
+
 class TestTheRowIdLeakIsStillRefused:
     """Moved out of the Makefile so the deploy workflow can run it too. Same check, and now
     with the test it never had while it was a shell one-liner."""
@@ -121,6 +178,11 @@ class TestTheGateItself:
 
     def test_a_stale_dataset_exits_nonzero(self, tmp_path: Path) -> None:
         stale = _program(length={"weeks": None, "hours": None})
+        assert dataset_shape_check.main([str(_dataset(tmp_path, stale))]) == 1
+
+    def test_a_dataset_predating_the_county_rule_exits_nonzero(self, tmp_path: Path) -> None:
+        stale = _program()
+        del stale["region_unplaced_reason"]
         assert dataset_shape_check.main([str(_dataset(tmp_path, stale))]) == 1
 
     def test_a_current_dataset_exits_zero(self, tmp_path: Path) -> None:

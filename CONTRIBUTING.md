@@ -81,3 +81,12 @@ make fixture   # re-derive fixtures/data from it
 
 Tests assert the fixture still covers every case the UI renders differently. If one of those
 fails, the fixture stopped exercising something — fix the fixture, do not weaken the test.
+
+## Commercial solicitation
+
+Issues here are not open to bids. They are design records — written so a decision is
+reconstructable later — not scope documents for outside quoting, and unsolicited offers to
+implement one for a fee will be declined.
+
+Contributions through the normal fork-and-PR process are welcome, and `good first issue` is the
+place to start.

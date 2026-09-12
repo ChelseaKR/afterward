@@ -466,6 +466,17 @@ export interface ProviderLink {
    * link, which is how the packaging gate recognises it.
    */
   redirect: "same_provider" | "unrelated" | "for_sale" | "unresolved" | null;
+  /**
+   * Which version of the link classifier reached `verdict`, and null exactly where `verdict`
+   * is null — no classifier ran, so naming one would claim a judgement nobody made.
+   *
+   * A verdict published without it asserts its own currency and nothing can contradict it: a
+   * report read into a build carries whatever classifier version it was written by, and a
+   * stale one and a current one were previously the same three keys in the dataset. Optional
+   * because a dataset built before this field carries none, and an absent field must not be
+   * read as version zero.
+   */
+  classifier_version?: number | null;
 }
 
 /* ============================================================================================

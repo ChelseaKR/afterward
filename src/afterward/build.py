@@ -17,6 +17,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any, Final
 
+from afterward import receipts
 from afterward.sources import (
     careeronestop,
     dol_bulk,
@@ -2899,11 +2900,23 @@ def emit_site_bundle(
     output_dir: Path,
     snapshot: str,
     state: str,
+    is_fixture: bool,
 ) -> None:
     """Write the sharded artifacts a static front end consumes.
 
     One slim index for search and filtering, plus per-program and per-occupation detail
-    fetched only when something is opened.
+    fetched only when something is opened, plus a receipt beside every program record.
+
+    The receipts are written here rather than in either build function because this is the
+    one place both build paths meet: a receipt emitted from :func:`build` alone would be
+    absent from every dataset CI produces, which is every dataset any test ever reads.
+
+    ``is_fixture`` is required rather than defaulted. The only thing it decides is whether a
+    receipt names a dataset release, and defaulting it either way puts a wrong answer in a
+    machine-readable artifact for a caller who simply did not think about it: default False
+    and every fixture receipt points at a real published release holding different programs;
+    default True and a genuine build publishes receipts that decline to name the archive they
+    came from. See :func:`afterward.receipts.release_tag_for`.
     """
     (output_dir / "search-index.json").write_text(
         json.dumps(
@@ -2926,10 +2939,25 @@ def emit_site_bundle(
     )
 
     program_dir = _fresh_dir(output_dir / "programs")
+    receipt_dir = _fresh_dir(output_dir / receipts.RECEIPT_DIRNAME)
     for payload in payloads:
         if payload["uuid"]:
-            (program_dir / f"{payload['uuid']}.json").write_text(
-                json.dumps(payload, separators=(",", ":")), encoding="utf-8"
+            # The receipt attests to the bytes actually written, not to a re-serialisation of
+            # the same dict: a digest over a second rendering would keep agreeing with itself
+            # after the writer's separators changed underneath it, which is the one thing it
+            # exists to notice.
+            record_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+            (program_dir / f"{payload['uuid']}.json").write_bytes(record_bytes)
+            (receipt_dir / f"{payload['uuid']}.json").write_bytes(
+                receipts.receipt_bytes(
+                    receipts.receipt_for(
+                        payload,
+                        record_bytes,
+                        snapshot_date=snapshot,
+                        state=state,
+                        is_fixture=is_fixture,
+                    )
+                )
             )
 
     occupation_dir = _fresh_dir(output_dir / "occupations")
@@ -2971,6 +2999,37 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
         payload["outcomes"]["cohort"] = verdict.as_dict()
 
 
+def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
+    """Say why each unplaced record has no region, in place, for a build that has no index.
+
+    The sixth block the offline build has to write for itself, and the one that was missed.
+    ``_attach_cohort_integrity``, ``_attach_provider_links``, ``_attach_wage_spread``,
+    ``_attach_local_help`` and ``_attach_bulk_denominator`` all exist for one reason, stated
+    in each of their docstrings: **a fixture predating a field carries no block, and
+    defaulting one in would publish "we checked this" about a build that did not.** #129 added
+    ``region_unplaced_reason`` to every record :func:`build` writes and nothing taught this
+    path about it, so every dataset CI produces carried the key nowhere at all -- which is a
+    shape no real build emits, and the shape in which a page reading the field meets
+    ``undefined`` rather than a reason.
+
+    ``crosswalk_not_read`` is the honest answer here and not a placeholder. This build holds
+    no EDD area definitions and no ZIP-to-county index, so the county rule was not attempted:
+    that is a statement about the build, which is exactly what
+    :data:`UNPLACED_CROSSWALK_NOT_READ` means, and :func:`place_program` writes the same word
+    for a real build handed no ``counties``. The city rule's own result is already in the
+    record, so a program the fixture placed keeps its region and gets ``None`` -- the answer
+    for a placed program, not an absence.
+
+    What this deliberately does **not** do is re-run placement. Guessing which of the four
+    county-rule outcomes a program would have reached, with no crosswalk in the process,
+    would put a specific reason nobody computed into a published record.
+    """
+    for payload in payloads:
+        payload["region_unplaced_reason"] = (
+            None if payload.get("region") is not None else UNPLACED_CROSSWALK_NOT_READ
+        )
+
+
 def build_offline(
     fixture_dir: Path,
     *,
@@ -3004,6 +3063,7 @@ def build_offline(
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
     _attach_cohort_integrity(payloads)
+    _attach_unplaced_reason(payloads)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
     # The fixture predates the wage spread and carries no such key, so without this every
     # occupation reaches the page with the field absent rather than null -- a shape no real
@@ -3066,6 +3126,11 @@ def build_offline(
         output_dir=output_dir,
         snapshot=snapshot,
         state=programs_doc.get("state", DEFAULT_STATE),
+        # Read from the coverage document rather than assumed from the function's name: this
+        # path is also how an operator rebuilds the site bundle from an unpacked release,
+        # which is not a fixture and whose receipts should name the release it came from.
+        # Absent means a real build -- see afterward.receipts on that convention.
+        is_fixture=bool(coverage.get("is_fixture", False)),
     )
     return len(payloads)
 
@@ -3207,7 +3272,16 @@ def build(
         json.dumps({"snapshot_date": snapshot, "occupations": occupations}, indent=1),
         encoding="utf-8",
     )
-    emit_site_bundle(payloads, occupations, output_dir=output_dir, snapshot=snapshot, state=state)
+    # `build` fetches the live sources, so what it emits is never the fixture. The one path
+    # that can produce one is `make_fixture.py`, which writes the flag itself.
+    emit_site_bundle(
+        payloads,
+        occupations,
+        output_dir=output_dir,
+        snapshot=snapshot,
+        state=state,
+        is_fixture=False,
+    )
     coverage = asdict(report) | {
         "outcome_coverage_pct": report.outcome_coverage_pct,
         "occupation_match_pct": report.occupation_match_pct,

@@ -4,7 +4,7 @@
 	link-check dataset-verify dataset-package dataset-publish backup-data deploy-check live-check \
 	publish-preflight publish dataset-check dataset-manifest ctdl-export ctdl-validate \
 	ctdl-statements ctdl-package csv-export dataset-diff ask-serve ask ask-eval ask-eval-dry \
-	ci-artifact-check zip-county-refresh
+	ci-artifact-check zip-county-refresh release-check
 
 # Where `make data` leaves the site dataset, and where `make dataset-package` picks it up.
 DATASET_DIR ?= web/public/data
@@ -151,6 +151,23 @@ SITE_URL ?= https://afterward.chelseakr.com
 live-check:
 	uv run python scripts/verify_live_site.py --url "$(SITE_URL)"
 
+# Are the published dataset releases still what their tags say they are?
+#
+# ADR 0001 makes the dataset release this project's delivery, and `deploy.yml` verifies one
+# release at the moment somebody deploys it. This asks the same questions of every published
+# release, on a schedule, and publishes nothing. Read-only; needs `gh` authenticated.
+release-check:
+	uv run python scripts/release_integrity.py --repo ChelseaKR/afterward
+
+# Is the dataset a visitor is served the newest dataset this project has published?
+#
+# `release-check` asks whether every release is intact, `live-check` whether the site serves
+# the dataset it names, and `deploy_staleness.py` how far behind main the deployed commit is.
+# A release published on the workstation and never deployed passes all three. Read-only;
+# needs `gh` authenticated and reaches the live site.
+currency-check:
+	uv run python scripts/dataset_currency.py --repo ChelseaKR/afterward --url "$(SITE_URL)"
+
 deploy-check:
 	uv run python scripts/deploy_check.py "$(SITE_URL)"
 
@@ -245,6 +262,7 @@ dataset-verify:
 	@uv run python scripts/dataset_shape_check.py $(DATASET_DIR)
 	@uv run python scripts/provider_link_check.py $(DATASET_DIR)
 	@uv run python scripts/outcome_claims_check.py $(DATASET_DIR)
+	@uv run python scripts/receipt_check.py $(DATASET_DIR)
 
 # Tarball plus checksum, into dist/ (gitignored). COPYFILE_DISABLE keeps macOS from
 # packing ._* companions, which would otherwise arrive as bogus programs/*.json.
@@ -268,20 +286,31 @@ dataset-publish: dataset-package
 	echo; \
 	echo "Now run the Deploy workflow with dataset_tag=dataset-$$1"
 
-# Flat CSV of the working dataset plus its Table Schema, into dist/ (gitignored).
+# A Frictionless Data Package of the working dataset, into dist/ (gitignored): the flat CSV, its
+# Table Schema, the three emitted JSON files, and a datapackage.json declaring every one with its
+# size and sha256.
 #
 # The reader most likely to check this project's figures is a journalist or a researcher with a
 # spreadsheet, and sharded JSON is not that. Deliberately its own target, like `ctdl-export`: not
 # part of `data`, `build` or `verify`, so it can never slow or break the main pipeline, and it
 # writes nothing into $(DATASET_DIR), so the bytes the site serves are untouched.
 #
-# Deterministic -- rows sort by uuid, so the same snapshot writes byte-identical output -- and it
-# refuses to write at all if any measure cell would end up with a blank state word beside it.
+# The JSON files are copied rather than referenced. A descriptor naming a file it did not bring
+# has a path that resolves for whoever built the package and for nobody who downloaded it.
+#
+# Deterministic -- rows sort by uuid, no clock is consulted, and the package version is the
+# snapshot date, so the same snapshot writes byte-identical output -- and it refuses to write at
+# all if any measure cell would end up with a blank state word beside it, or if the descriptor
+# ends up declaring a file that is not there.
+#
+# SHA256SUMS is derived from the descriptor rather than a hand-kept list, so a resource added to
+# the package cannot be left out of the checksums.
 csv-export:
 	uv run afterward export-csv --dataset-dir $(DATASET_DIR) --output-dir $(DIST_DIR)/csv
-	@( cd $(DIST_DIR)/csv && if command -v sha256sum >/dev/null 2>&1; then \
-		sha256sum programs.csv programs.schema.json > SHA256SUMS; \
-	else shasum -a 256 programs.csv programs.schema.json > SHA256SUMS; fi )
+	@( cd $(DIST_DIR)/csv && files=$$(uv run python -c 'import json,sys;print(" ".join(r["path"] for r in json.load(open("datapackage.json"))["resources"]))') && \
+		if command -v sha256sum >/dev/null 2>&1; then \
+			sha256sum $$files programs.schema.json datapackage.json > SHA256SUMS; \
+		else shasum -a 256 $$files programs.schema.json datapackage.json > SHA256SUMS; fi )
 	@echo "checksums -> $(DIST_DIR)/csv/SHA256SUMS"
 
 # What changed between a previous dataset and the working one, into dist/ (gitignored).

@@ -1234,6 +1234,21 @@ class LinkDecision:
     unreviewed redirect and a confirmed one looked identical in every earlier build.
     """
 
+    classifier_version: int | None = None
+    """Which version of this module's judgement produced :attr:`verdict`.
+
+    ``None`` exactly where ``verdict`` is ``None``: no classifier ran, so naming one would
+    claim a judgement nobody made.
+
+    Carried into the emitted record because the published verdict otherwise asserts its own
+    currency and nothing can contradict it. :data:`CLASSIFIER_VERSION` exists precisely
+    because a verdict from an older classifier is *unasked* rather than wrong -- the cache
+    refuses to serve one, and :func:`stale_classifier` names them in a report -- but a report
+    that has been read into a build carries whatever version it carries, and until this field
+    existed a stale verdict and a current one were the same three keys in the dataset a
+    reader downloads.
+    """
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "url": self.url,
@@ -1246,6 +1261,7 @@ class LinkDecision:
             "notice": self.notice,
             "substitution": self.substitution,
             "redirect": self.redirect,
+            "classifier_version": self.classifier_version,
         }
 
 
@@ -1305,6 +1321,7 @@ def _offsite(
             notice=None,
             substitution=SUBSTITUTION_HTTPS if upgraded else None,
             redirect=redirect.resolution,
+            classifier_version=check.classifier_version,
         )
     return LinkDecision(
         url=check.url,
@@ -1317,6 +1334,7 @@ def _offsite(
         notice=NOTICE_BY_RESOLUTION[redirect.resolution],
         substitution=None,
         redirect=redirect.resolution,
+        classifier_version=check.classifier_version,
     )
 
 
@@ -1389,6 +1407,7 @@ def decide(
             checked_on=checked_on,
             notice=None,
             substitution=SUBSTITUTION_HTTPS if upgraded else None,
+            classifier_version=check.classifier_version,
         )
 
     if check.verdict == "indeterminate":
@@ -1404,6 +1423,7 @@ def decide(
             checked_on=checked_on,
             notice=None,
             substitution=None,
+            classifier_version=check.classifier_version,
         )
 
     front = publishable_front_page(checks, url, reviewer)
@@ -1417,6 +1437,7 @@ def decide(
         checked_on=checked_on,
         notice=NOTICE_FOR_SALE if check.reason == "domain_for_sale" else NOTICE_UNREACHABLE,
         substitution=SUBSTITUTION_FRONT_PAGE if front is not None else None,
+        classifier_version=check.classifier_version,
     )
 
 

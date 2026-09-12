@@ -5,6 +5,13 @@ for the reader most likely to check this project's figures: a journalist or a re
 spreadsheet. This module writes that dataset as one table, beside a Frictionless Table Schema
 generated from the same column definitions in the same pass, so the two cannot drift.
 
+It writes a Frictionless **Data Package** around the pair: ``datapackage.json``, plus the three
+emitted JSON files copied in beside the table, so every path in the descriptor resolves inside
+the directory a reader downloaded. A descriptor that named ``programs.json`` and left it in the
+site's public directory would resolve for whoever built it and for nobody else -- a broken
+package that reads as a complete one. :func:`data_package_problems` reads the written
+descriptor back against the files on disk and is what the export refuses on.
+
 The whole design is one rule. **Every measure carries a state word beside it, and the state word
 is never blank.** A value cell is empty only where the state cell says why it is empty. An empty
 cell on its own means nothing, and a reader who does not know that is one `fillna(0)` away from
@@ -45,8 +52,10 @@ whatever order the build emitted in.
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import json
+import shutil
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -54,19 +63,25 @@ from typing import Any, Final, Literal
 
 __all__ = [
     "COLUMNS",
+    "DATA_PACKAGE_FILENAME",
+    "JSON_RESOURCES",
     "SCHEMA_FILENAME",
     "STATES",
     "TABLE_FILENAME",
     "Column",
     "ExportReport",
+    "data_package_problems",
     "export_csv",
     "state_column_problems",
     "to_csv",
+    "to_data_package",
     "to_table_schema",
+    "value_of",
 ]
 
 TABLE_FILENAME: Final = "programs.csv"
 SCHEMA_FILENAME: Final = "programs.schema.json"
+DATA_PACKAGE_FILENAME: Final = "datapackage.json"
 
 STATE_SUFFIX: Final = "_state"
 
@@ -342,6 +357,18 @@ def _render(value: object) -> str:
     return str(value)
 
 
+def value_of(record: Mapping[str, Any], column: Column) -> object:
+    """The raw value one column reads out of a record, or ``None`` where the path breaks.
+
+    Public because the receipt beside each program record
+    (:mod:`afterward.receipts`) has to read exactly the values this table reads. Two readers
+    of "what is this measure worth" would eventually answer differently for the same record,
+    and a receipt that disagreed with the CSV about a suppressed cell would be worse than no
+    receipt at all.
+    """
+    return _at(record, column.path)
+
+
 def state_of(record: Mapping[str, Any], column: Column) -> str:
     """The state word for one measure in one record. Never empty, and never guessed.
 
@@ -429,6 +456,199 @@ def to_table_schema(snapshot_date: str, *, path: str = TABLE_FILENAME) -> dict[s
     }
 
 
+#: The emitted JSON files a data package copies beside the table, with the sentence each
+#: gets in the descriptor. The site serves these; a reader who wants the joins rather than
+#: the flat table needs them, and a descriptor that names a file it did not bring is a
+#: descriptor whose paths do not resolve.
+JSON_RESOURCES: Final[tuple[tuple[str, str], ...]] = (
+    (
+        "programs.json",
+        (
+            "Every programme as the site serves it, with the nested cost, length, outcome and "
+            "occupation-join objects the flat table flattens away."
+        ),
+    ),
+    (
+        "occupations.json",
+        (
+            "Every occupation the programmes above feed, with its wages, its ten-year "
+            "projection and the SOC vintage each figure was published under."
+        ),
+    ),
+    (
+        "coverage.json",
+        (
+            "This snapshot's account of itself: how many programmes reported each measure, how "
+            "many were placed in a region and by which rule, and what was left unplaced. Read "
+            "this before quoting any figure from the other two."
+        ),
+    ),
+)
+
+
+def to_data_package(
+    snapshot_date: str, *, resources: Sequence[Mapping[str, Any]]
+) -> dict[str, Any]:
+    """A Frictionless Data Package descriptor for one snapshot's published files.
+
+    ``resources`` is the measured half — one mapping per file, carrying at least ``name``,
+    ``path``, ``bytes`` and ``hash``. It is passed in rather than read here so that the
+    descriptor is a pure function of its inputs and the writer is the only thing that
+    touches a filesystem: a descriptor that measured the files itself could not be tested
+    against a file set it did not create.
+
+    No clock is consulted. ``version`` is the snapshot date, which is the identity that
+    matters for this dataset — the same snapshot must produce byte-identical output, so a
+    ``created`` timestamp would make every export differ from the last for no reason a
+    reader could use. That is also why the releases are date-tagged rather than semver
+    (``docs/adr/0001-release-and-versioning-na.md``).
+    """
+    return {
+        "$schema": "https://datapackage.org/profiles/2.0/datapackage.json",
+        "name": f"afterward-california-training-programs-{snapshot_date}",
+        "title": f"Afterward: California training programmes, snapshot {snapshot_date}",
+        "description": (
+            "Every California training programme reported under WIOA, its outcomes as the "
+            "state filed them, and the occupations it leads to. Absence is never a number "
+            "here: an outcome the source did not file is absent in the value column and "
+            "explained in the state column beside it, and coverage.json states how much of "
+            "each measure is present. A blank is not a zero."
+        ),
+        "version": snapshot_date,
+        "homepage": "https://afterward.chelseakr.com",
+        "licenses": [
+            {
+                "name": "Apache-2.0",
+                "path": "https://www.apache.org/licenses/LICENSE-2.0",
+                "title": (
+                    "Apache License 2.0 — covers the joins, derivations and column "
+                    "definitions this project contributes."
+                ),
+            }
+        ],
+        "sources": [
+            {
+                "title": (
+                    "U.S. Department of Labor, Training Provider Results (ETP scorecard) — "
+                    "the programmes, their costs, lengths and outcome measures"
+                ),
+                "path": "https://www.trainingproviderresults.gov/",
+            },
+            {
+                "title": (
+                    "California EDD Labor Market Information Division — the ten-year "
+                    "occupational projections and the projection areas"
+                ),
+                "path": "https://labormarketinfo.edd.ca.gov/",
+            },
+            {
+                "title": (
+                    "U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics"
+                ),
+                "path": "https://www.bls.gov/oes/",
+            },
+            {
+                "title": (
+                    "O*NET — occupation titles, including the Spanish titles from Mi Proximo Paso"
+                ),
+                "path": "https://www.onetcenter.org/",
+            },
+        ],
+        "contributors": [{"title": "Afterward contributors", "role": "author"}],
+        "keywords": [
+            "california",
+            "workforce",
+            "wioa",
+            "training-programs",
+            "labor-market",
+            "open-data",
+        ],
+        # Both sentences a reader needs before quoting anything out of this package, in the
+        # package itself rather than only in a README they may never have downloaded. The
+        # reporting-obligation record they point at is PROVENANCE.md I7-I11.
+        "citation": [
+            {
+                "text": (
+                    "Kelly-Reif, C. Afterward: California training programs, their reported "
+                    f"outcomes, and where they lead. Snapshot {snapshot_date}. "
+                    "https://github.com/ChelseaKR/afterward"
+                ),
+                "path": "https://github.com/ChelseaKR/afterward/blob/main/CITATION.cff",
+            }
+        ],
+        "afterward:provenance": {
+            "path": "https://github.com/ChelseaKR/afterward/blob/main/PROVENANCE.md",
+            "sourceData": (
+                "Source data is U.S. Government work (public domain) and California open "
+                "data; per-source terms are recorded in PROVENANCE.md."
+            ),
+            "reportingObligations": (
+                "Which providers must report performance, and which are exempt, is recorded "
+                "in PROVENANCE.md I7-I11 with the primary texts: 20 CFR 677.230, 680.450, "
+                "680.470 and 680.490; WIOA sec. 116(d)(4) and 116(d)(6)(C); the ETP Data "
+                "Dictionary v4.0; and California EDD directive WSD25-02. Registered "
+                "apprenticeship is the only category exempt from ETP performance reporting. "
+                "A community college's blank row is not an exemption being used."
+            ),
+            "suppression": (
+                "WIOA suppresses small-cohort cells, and the ETP scorecard serves a "
+                "suppressed cell and an unreported cell as the same -1. By the time a "
+                "measure reaches this package the cause is gone, so the state vocabulary "
+                "carries no 'suppressed' word: naming one would be a claim nothing here "
+                "measured. WIOA sec. 116(d)(6)(C) states a standard, not a numeric "
+                "threshold, and no minimum cell size is published, so none is stated."
+            ),
+        },
+        "resources": list(resources),
+    }
+
+
+def data_package_problems(descriptor: Mapping[str, Any], root: Path) -> list[str]:
+    """Read a written descriptor back and report every resource it cannot account for.
+
+    Deliberately reads the files from disk rather than the values the writer held in
+    memory. A check that re-derives its expectation from the function that produced the
+    answer compares a value to itself; this asks what a downloader would find.
+    """
+    problems: list[str] = []
+    resources = descriptor.get("resources")
+    if not isinstance(resources, list) or not resources:
+        return ["the descriptor declares no resources, so it describes nothing"]
+    for resource in resources:
+        name = resource.get("name", "<unnamed>")
+        path = resource.get("path")
+        if not isinstance(path, str):
+            problems.append(f"{name}: no path")
+            continue
+        target = root / path
+        if not target.is_file():
+            problems.append(f"{name}: declares {path!r}, which is not in the package")
+            continue
+        payload = target.read_bytes()
+        if resource.get("bytes") != len(payload):
+            problems.append(
+                f"{name}: declares {resource.get('bytes')} bytes, {path!r} is {len(payload)}"
+            )
+        expected = f"sha256:{hashlib.sha256(payload).hexdigest()}"
+        if resource.get("hash") != expected:
+            problems.append(f"{name}: declared hash does not match {path!r}")
+    return problems
+
+
+def _resource(path: Path, *, name: str, description: str, **extra: Any) -> dict[str, Any]:
+    """One descriptor entry, measured from the bytes actually written."""
+    payload = path.read_bytes()
+    entry: dict[str, Any] = {
+        "name": name,
+        "path": path.name,
+        "description": description,
+        "bytes": len(payload),
+        "hash": f"sha256:{hashlib.sha256(payload).hexdigest()}",
+    }
+    entry.update(extra)
+    return entry
+
+
 def state_column_problems(text: str) -> list[str]:
     """Read a rendered table back and report every way it breaks the one rule.
 
@@ -486,17 +706,38 @@ class ExportReport:
     measures: int
     table_path: Path
     schema_path: Path
+    package_path: Path
+    resources: tuple[str, ...]
+    """Every file the descriptor declares, in descriptor order."""
+
     states: Mapping[str, int]
     """How many cells reached each state word, across every measure column."""
 
 
 def export_csv(dataset_dir: Path, output_dir: Path) -> ExportReport:
-    """Write the flat table and its Table Schema from the dataset at ``dataset_dir``.
+    """Write the flat table, its Table Schema, and a Data Package around both.
 
     Reads the same ``programs.json`` the site serves, so the export cannot disagree with the
     site about what the data says. The rule is checked against the rendered bytes before
     anything is written: a failed check leaves no partial file to mistake for a good one.
+
+    ``output_dir`` ends up a **complete** Frictionless Data Package: the table, its schema,
+    the three emitted JSON files copied in beside it, and ``datapackage.json`` declaring
+    every one with its size and sha256. The copies are the point. A descriptor that named
+    ``programs.json`` while leaving it in ``web/public/data`` would have a path that
+    resolves for whoever built it and for nobody who downloaded it, which is a broken
+    package that reads as a complete one.
+
+    Nothing is written into ``dataset_dir``: the bytes the site serves are untouched, and
+    the descriptor is written last, after every file it measures exists.
     """
+    missing = [name for name, _ in JSON_RESOURCES if not (dataset_dir / name).is_file()]
+    if missing:
+        raise ValueError(
+            f"{dataset_dir} is missing {', '.join(missing)}, so a complete data package "
+            "cannot be written from it. Run `make data` (or `make data-offline`) first."
+        )
+
     dataset = json.loads((dataset_dir / "programs.json").read_text(encoding="utf-8"))
     coverage = json.loads((dataset_dir / "coverage.json").read_text(encoding="utf-8"))
     programs: list[dict[str, Any]] = dataset["programs"]
@@ -514,6 +755,60 @@ def export_csv(dataset_dir: Path, output_dir: Path) -> ExportReport:
         json.dumps(schema, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
 
+    resources = [
+        _resource(
+            table_path,
+            name="programs",
+            description=(
+                "One row per programme. Every measure carries a state word beside it and the "
+                "state word is never blank: a value cell is empty only where the state cell "
+                "says why."
+            ),
+            profile="tabular-data-resource",
+            mediatype="text/csv",
+            encoding="utf-8",
+            # `to_csv` passes `lineterminator="\n"` explicitly, against csv's `\r\n`
+            # default, so the descriptor has to say so or a strict reader parses a
+            # trailing `\r` into the last column of every row.
+            dialect={"delimiter": ",", "lineTerminator": "\n", "header": True},
+            schema=schema,
+        )
+    ]
+    for filename, description in JSON_RESOURCES:
+        copied = output_dir / filename
+        shutil.copyfile(dataset_dir / filename, copied)
+        resources.append(
+            _resource(
+                copied,
+                name=filename.removesuffix(".json") + "-json",
+                description=description,
+                mediatype="application/json",
+                encoding="utf-8",
+            )
+        )
+
+    package = to_data_package(snapshot_date, resources=resources)
+    package_path = output_dir / DATA_PACKAGE_FILENAME
+    package_path.write_text(
+        json.dumps(package, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+
+    # Read the descriptor back off disk rather than checking the dict still in hand: the
+    # claim is about the package a reader downloads, and a truncated or unreadable
+    # `datapackage.json` is invisible to the variable it was serialized from.
+    #
+    # This cannot catch a *missing* resource, and that is worth saying rather than implying:
+    # `_resource` measures each file's bytes to build its entry, so a file the writer did
+    # not bring raises there first, before any entry naming it exists. Measured -- deleting
+    # the `copyfile` above fails at `_resource` with `FileNotFoundError`, not here. The
+    # guard against that is the up-front refusal at the top of this function.
+    written = json.loads(package_path.read_text(encoding="utf-8"))
+    problems = data_package_problems(written, output_dir)
+    if problems:  # pragma: no cover - reachable only by a failed write, not by a bad build
+        raise ValueError(
+            "the data package does not describe what was written:\n  " + "\n  ".join(problems)
+        )
+
     counts = dict.fromkeys(STATES, 0)
     for record in programs:
         for column in _MEASURES:
@@ -526,5 +821,7 @@ def export_csv(dataset_dir: Path, output_dir: Path) -> ExportReport:
         measures=len(_MEASURES),
         table_path=table_path,
         schema_path=schema_path,
+        package_path=package_path,
+        resources=tuple(str(entry["path"]) for entry in resources),
         states=counts,
     )

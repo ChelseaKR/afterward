@@ -1,0 +1,153 @@
+# Is the dataset a visitor is served the newest dataset this project has published?
+#
+# What this project releases is the dataset. `make dataset-publish` cuts `dataset-<snapshot>`
+# on a workstation that can reach DOL, and `deploy.yml` -- dispatch-only, for the reason its
+# own header gives -- publishes exactly one of those to the site. The two steps are separate
+# on purpose, and until now nothing anywhere noticed when the second one never happened.
+#
+# The three sentinels already here each ask a real question and none of them asks this one.
+# `live-integrity.yml` asks whether the site serves the dataset it *names*, which a site six
+# weeks behind answers correctly every day. `deploy-staleness.yml` asks how far behind `main`
+# the deployed *commit* is, and a data refresh moves no commit. `release-integrity.yml` asks
+# whether every release is intact, which is about artifacts rather than currency.
+#
+# So: publish, get distracted, never dispatch Deploy. Every badge stays green while a reader
+# is served withdrawn programs, stale costs and outcome figures the state has since revised,
+# under a snapshot date that is honestly reported and simply old.
+#
+# The output is an issue, not a red run, on the same reasoning as the staleness sentinel: a
+# scheduled workflow that fails whenever a deploy is overdue is red for weeks and then
+# ignored. This run goes red only when the comparison cannot be made -- no published release,
+# a site that cannot be read, or a live snapshot newer than anything ever released -- because
+# a detector that cannot tell must not be reporting a comfortable word.
+#
+# It deploys nothing and holds no credential that would let it.
+name: dataset currency sentinel
+
+on:
+  schedule:
+    # Mondays, a little after the staleness sentinel, so the two reports land together
+    # and a week's worth of "nothing was deployed" is one reading rather than two.
+    - cron: "53 15 * * 1"
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: "Days a published-but-undeployed dataset may wait before this reports"
+        required: false
+        default: "7"
+        type: string
+
+permissions:
+  contents: read # checkout, and reading this repository's own release list
+  issues: write # the report itself; nothing else here writes anywhere
+
+concurrency:
+  group: dataset-currency
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Compare the live snapshot with the newest published release
+        id: measure
+        env:
+          # `gh api repos/<this repo>/releases` and nothing else. contents: read is the
+          # whole permission this step needs.
+          GH_TOKEN: ${{ github.token }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '7' }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python3 scripts/dataset_currency.py \
+            --repo "$REPOSITORY" \
+            --max-age-days "$MAX_AGE_DAYS" \
+            | tee "$RUNNER_TEMP/report.txt"
+          {
+            echo "## Dataset currency"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/report.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or refresh the report issue
+        if: steps.measure.outputs.verdict == 'behind'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          REPORT: ${{ steps.measure.outputs.report }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          marker='<!-- dataset-currency-sentinel -->'
+          {
+            echo "$marker"
+            echo
+            echo "A dataset release has been published and the site is still serving an"
+            echo "older one. Nothing is broken and nothing is wrong with the release; it"
+            echo "simply has not been deployed, and this is the workflow that says so."
+            echo
+            echo '```'
+            echo "$REPORT"
+            echo '```'
+            echo
+            echo "To catch the site up: Actions → Deploy → Run workflow, naming the newest"
+            echo "\`dataset-*\` tag above. There is no need to rebuild anything — the release"
+            echo "already exists and the guards on the deploy path check it on the way in."
+            echo
+            echo "This issue is rewritten in place rather than reopened, and is commented on"
+            echo "and shut automatically once the site is serving the newest release."
+            echo
+            echo "Reported by [this run]($RUN_URL)."
+          } > "$RUNNER_TEMP/body.md"
+
+          existing="$(gh api "repos/${REPOSITORY}/issues?state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null) | select(.body != null and (.body | contains(\"${marker}\"))) | .number] | first // empty")"
+
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/${REPOSITORY}/issues/${existing}" \
+              -f "body=$(cat "$RUNNER_TEMP/body.md")" --jq '.html_url'
+          else
+            gh api -X POST "repos/${REPOSITORY}/issues" \
+              -f "title=A published dataset release has not been deployed" \
+              -f "body=$(cat "$RUNNER_TEMP/body.md")" --jq '.html_url'
+          fi
+
+      - name: Shut the report issue once the newest release is live
+        if: steps.measure.outputs.verdict == 'current'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          REPORT: ${{ steps.measure.outputs.report }}
+        run: |
+          set -euo pipefail
+          marker='<!-- dataset-currency-sentinel -->'
+          existing="$(gh api "repos/${REPOSITORY}/issues?state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null) | select(.body != null and (.body | contains(\"${marker}\"))) | .number] | first // empty")"
+          if [ -z "$existing" ]; then
+            echo "The newest release is live and no report issue is open. Nothing to do."
+            exit 0
+          fi
+          # Only ever an issue this workflow itself wrote: the marker is in the body, and a
+          # human report of the same problem would not carry it.
+          #
+          # Written to a file rather than inlined, for the reason the staleness sentinel
+          # records: a heredoc inside this block would have to start its own lines at column
+          # zero, which ends the YAML block scalar and makes the workflow unparseable.
+          {
+            printf 'The site is now serving the newest published dataset release.\n\n'
+            printf '```\n%s\n```\n' "$REPORT"
+          } > "$RUNNER_TEMP/caught-up.md"
+          gh api -X POST "repos/${REPOSITORY}/issues/${existing}/comments" \
+            -f "body=$(cat "$RUNNER_TEMP/caught-up.md")" --jq '.html_url'
+          gh api -X PATCH "repos/${REPOSITORY}/issues/${existing}" -f state=closed --jq '.state'
