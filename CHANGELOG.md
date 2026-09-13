@@ -8,6 +8,47 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **The pipeline builds a second state, and the dataset says what that state's source does
+  not publish (#105).** The occupation side was California's alone: it read CA EDD directly.
+  It now reads a `ProjectionSource` — EDD (D2) for California, Projections Central (D9) for
+  every other state — and `afterward build --state NV` emits a dataset that passes
+  `scripts/dataset_shape_check.py`. Measured on Nevada, 2026-09-11: 1,069 ETP programs, 657
+  published projection rows, 648 occupations indexed, **1,042 of 1,069 programs (97.5%)
+  joined to at least one occupation**. `--state` is checked against the 55 states the ETP
+  feed actually reports for, in one aggregation, so an unrecognised code is a named refusal
+  rather than a successful fetch of nothing. **The declaration is the substance of this
+  change.** Projections Central publishes no wage of any kind, no regional breakdown, and no
+  education or training columns — seven of the eleven occupation measures — so without a
+  statement somewhere, a Nevada occupation's `median_annual_wage: null` is byte-identical to
+  a California occupation whose wage EDD withheld: a fact about a publisher rendered as a
+  fact about a job. Every `coverage.json` now carries a `projection_source` block naming the
+  publisher, the endpoint, the period read off the rows themselves, and the measures that
+  publisher has no column for; `build.check_projection_source` refuses a dataset that
+  contradicts it in **either** direction — a measure declared absent that some record
+  carries, or a measure declared published that no record does. Four things the adapter
+  refuses, each measured against the live service rather than read out of documentation: the
+  **national row**, which the all-states endpoint serves in the same array as the states
+  (`STFIPS: "0"`, first, before Alabama) and which is refused by name rather than filtered
+  out; **`AvgAnnualOpenings`**, which is an annual average where EDD's `total_job_openings`
+  is a ten-year total — the ratio is 10.0 across all 56 occupations in the committed dataset,
+  so the source's openings figure has no field here and is not carried; a **404**, which the
+  endpoint answers both to a state it holds nothing for and to a page size it does not accept
+  (10, 25, 50, 100 and 1000 are accepted; 5, 20, 200, 500 and 2000 each answered 404), so a
+  404 raises rather than becoming an empty projection set; and **one Nevada row that
+  contradicts itself** — `45-4029 Logging Workers, All Other`, published as `Base: "0"` with
+  `PercentChange: "25"` — which is dropped, counted and named under
+  `projection_source.rows_refused`. A new unplaced reason, `source_publishes_no_areas`, keeps
+  "this publisher has no sub-state geography" apart from "the crosswalk could not place it",
+  and `load_wage_spread` now refuses to read California's OEWS extract into another state's
+  build, which would have attached California percentiles to Nevada occupations. The adapter
+  was checked against the source this project already trusts: Projections Central's
+  California rows agree with EDD's on base employment, projected employment, numeric change
+  and percentage change for **56 of 56** occupations in the committed dataset, exactly. **The
+  California build is unchanged except for the declaration**: over a real 3,266-program
+  build, **7,205 of 7,206 emitted files are byte-identical**, and `coverage.json` gains
+  exactly two things, both additive — the `projection_source` block and a
+  `source_publishes_no_areas: 0` entry in `area_placement.unplaced_by_reason`.
+
 - **Every program record now carries a receipt, and `afterward verify-record` replays one
   (#113).** `scripts/verify_live_site.py` already asks whether the bytes the site serves are
   the bytes of the release it names; that check is the operator's — it needs `gh`, downloads

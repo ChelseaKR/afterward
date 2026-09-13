@@ -1,0 +1,17 @@
+{
+  "file": "state-fips-ansi.csv",
+  "source_url": "https://www2.census.gov/geo/docs/reference/state.txt",
+  "retrieved": "2026-09-11",
+  "sha256": "f352ccd99fe901e18eec2d6ef617c05db53689c1143f29e0345f7c5baf97628e",
+  "upstream_sha256": "bea4e03f71a1fa0045ae732aabad11fa541e5932b071c2369bb0d325e8cba5a0",
+  "upstream_bytes": 1485,
+  "publisher": "U.S. Census Bureau, ANSI/FIPS state and equivalent codes (FIPS 5-2 successor, INCITS 38)",
+  "license": "U.S. Government work, public domain (17 U.S.C. §105)",
+  "vintage": "The code set is a standard, not a survey: a code is assigned once and is not revised on a cycle. This is a snapshot of something that has stopped moving, like the D8 relationship file, rather than a cache that goes stale.",
+  "subset_rule": "Two of the upstream file's four columns, every row. STATE -> state_fips and STUSAB -> usps are kept; STATE_NAME and STATENS are dropped. Nothing in this repository joins on a state's name -- the ETP feed (D1) keys on the two-letter code and Projections Central (D9) keys on the FIPS code, and this file is the only link between them -- so a name column would be 57 spellings to keep in step with no join to serve, and one more text surface for the clean-room check in scripts/provenance_check.py to police.",
+  "rows": 57,
+  "columns": "state_fips (two digits, zero-padded), usps (two uppercase letters)",
+  "purpose": "Turn `afterward build --state NV` into the FIPS code Projections Central's long-term endpoint is keyed by. See PROVENANCE.md, source D9.",
+  "derivation": "curl -s https://www2.census.gov/geo/docs/reference/state.txt | python3 -c \"import csv,sys; rows=sorted(csv.DictReader(sys.stdin, delimiter='|'), key=lambda r: r['STATE']); print('state_fips,usps'); [print(r['STATE'] + ',' + r['STUSAB']) for r in rows]\"",
+  "not_a_claim_about_coverage": "A row here says only that the Census Bureau assigns that code to that abbreviation. It says nothing about whether the ETP feed reports programs for it or whether Projections Central publishes projections for it, both of which are asked of those sources at build time and neither of which is assumed here."
+}

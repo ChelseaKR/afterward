@@ -1,8 +1,16 @@
-"""Join California training programs to occupation outlook data and emit the site dataset.
+"""Join a state's training programs to occupation outlook data and emit the site dataset.
 
 The join is the product: a program's reported WIOA outcomes on one side, and the state's
 own projection of what the occupation it feeds actually pays and how many openings it has
 on the other. Nothing in California publishes those two facts next to each other today.
+
+The program side has always been state-parameterised -- ``build --state XX`` asks DOL for
+that state's ETP scorecard. The occupation side is too, behind
+:mod:`afterward.sources.projection_source`: California reads EDD, which publishes the most,
+and every other state reads Projections Central, which publishes the same four growth
+measures for all of them and no wage at all. ``coverage.json`` says which source a dataset
+was built from and which measures that source does not publish, so a null in a second
+state's record is a fact about the publisher rather than an unexplained blank.
 """
 
 from __future__ import annotations
@@ -26,6 +34,7 @@ from afterward.sources import (
     link_review,
     local_help,
     onet,
+    projection_source,
     soc_vintage,
     zip_county,
 )
@@ -505,6 +514,74 @@ def check_coverage_shape(document: Mapping[str, Any]) -> None:
             "coverage.json is missing what the site reads from it: "
             + "; ".join(problems)
             + ". Pages would render with those comparisons silently absent rather than fail."
+        )
+
+
+PROJECTION_SOURCE_KEY: Final = "projection_source"
+
+
+def check_state_is_reported(state: str, *, reported: Mapping[str, int] | None = None) -> str:
+    """Return the state code, or refuse it naming the states the ETP feed actually carries.
+
+    Asked of the feed rather than of a list kept here, because a state that files no
+    programs is not a typo and the two have to be told apart *before* a build runs. Without
+    this, ``--state XZ`` is a successful fetch of nothing: the Elasticsearch filter matches
+    no documents, the build emits a dataset with zero programs, and the only thing that
+    stops it reaching anybody is the empty-dataset refusal in
+    ``scripts/dataset_shape_check.py``, which says the dataset is old rather than that the
+    state was wrong.
+    """
+    code = (state or "").strip().upper()
+    counted = dol_etp.fetch_states() if reported is None else dict(reported)
+    if code not in counted:
+        raise ValueError(
+            f"the ETP scorecard reports no programs for {state!r}. It carries "
+            f"{len(counted)} reporters today: " + ", ".join(sorted(counted)) + "."
+        )
+    return code
+
+
+def check_projection_source(
+    document: Mapping[str, Any], occupations: Mapping[str, Mapping[str, Any]]
+) -> None:
+    """Refuse a dataset whose occupations contradict its own declaration of their source.
+
+    The declaration is the only thing in a second state's dataset that distinguishes
+    "Projections Central publishes no wage for anybody" from "this occupation's wage was
+    withheld". A declaration nothing checks is a sentence, so this checks it, and it checks
+    it against the records that were actually emitted rather than against the source object
+    that was meant to write them.
+
+    Loud rather than repaired, like every other check on this path: a measure quietly
+    dropped here to make the declaration true would delete a published figure to satisfy a
+    sentence about it.
+    """
+    declaration = document.get(PROJECTION_SOURCE_KEY)
+    if not isinstance(declaration, Mapping):
+        raise ValueError(
+            f"coverage.json carries no {PROJECTION_SOURCE_KEY} block, so nothing says which "
+            "publisher the occupation figures came from or which measures that publisher "
+            "does not carry. Every null in the dataset then reads as a withheld value."
+        )
+    published = declaration.get("publishes")
+    if not isinstance(published, Mapping):
+        raise ValueError(
+            f"coverage.json {PROJECTION_SOURCE_KEY}.publishes is "
+            f"{type(published).__name__}, not the measure-by-measure table this reads."
+        )
+    try:
+        measures = projection_source.PublishedMeasures(**dict(published))
+    except TypeError as exc:
+        raise ValueError(
+            f"coverage.json {PROJECTION_SOURCE_KEY}.publishes does not name the same "
+            f"measures this code knows about -- {exc}. A table that has drifted from the "
+            "record shape cannot say anything about the records."
+        ) from exc
+    problems = projection_source.unpublished_measures_carrying_values(occupations, measures)
+    if problems:
+        raise ValueError(
+            "the emitted occupations contradict the projection source declared beside "
+            "them: " + "; ".join(problems)
         )
 
 
@@ -991,7 +1068,21 @@ ONET_CACHE_DIR = COS_CACHE_DIR
 WAGE_SPREAD_PATH = Path("data/interim/oews-statewide.json")
 
 
-def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]:
+WAGE_SPREAD_STATE: Final = DEFAULT_STATE
+"""The one state the OEWS extract at :data:`WAGE_SPREAD_PATH` can be about.
+
+Source D3 is *California* EDD's OEWS panel, and the file it leaves behind carries no state
+column -- it is keyed by SOC code and by the area names California's projections publish.
+Read into a build for another state it would attach California percentiles to that state's
+occupations under the heading "what this pays", which is a correct measurement of the wrong
+population: the failure this project names most often, arriving through a file that is
+simply in the working directory from the last time somebody built California.
+"""
+
+
+def load_wage_spread(
+    path: Path = WAGE_SPREAD_PATH, *, state: str = DEFAULT_STATE
+) -> dict[str, dict[str, Any]]:
     """Read the OEWS statewide percentiles a previous fetch left, or an empty mapping.
 
     A separate step for the same reason `check-links` is one: the published extract is the
@@ -999,7 +1090,12 @@ def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]
     resource. No build should pay that to learn a set of numbers that changes annually, and a
     build with no file is complete -- the pages then say what they said before, which is the
     median alone.
+
+    Empty for any state but :data:`WAGE_SPREAD_STATE`, whatever is on disk. See that
+    constant for why the file cannot answer for a second state.
     """
+    if state.strip().upper() != WAGE_SPREAD_STATE:
+        return {}
     if not path.exists():
         return {}
     try:
@@ -1010,14 +1106,20 @@ def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]
     return occupations if isinstance(occupations, dict) else {}
 
 
-def load_wage_regions(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]:
+def load_wage_regions(
+    path: Path = WAGE_SPREAD_PATH, *, state: str = DEFAULT_STATE
+) -> dict[str, dict[str, Any]]:
     """The same extract's per-area percentiles, keyed by SOC then by published area name.
 
     Areas are kept under the names OEWS publishes. Those are the strings the projections use
     before their parenthetical county gloss, so joining is an equality test: a vintage that
     renamed an area drops out here rather than being repaired by a prefix or edit-distance
     match, which could attribute one region's wages to another.
+
+    Empty for any state but :data:`WAGE_SPREAD_STATE`, for the reason recorded there.
     """
+    if state.strip().upper() != WAGE_SPREAD_STATE:
+        return {}
     if not path.exists():
         return {}
     try:
@@ -2085,6 +2187,19 @@ rule exists not to make, and a program on the Los Angeles side of a Los Angeles/
 renders identically to one on the Orange side.
 """
 
+UNPLACED_SOURCE_PUBLISHES_NO_AREAS = "source_publishes_no_areas"
+"""This state's projection source publishes no sub-state geography, so there is nowhere to
+place a program.
+
+A statement about the publisher, and the only one of these six that is. Both placement rules
+restate a geography somebody else published -- the city rule reads EDD's own area titles and
+the county rule joins a ZIP to the counties those titles name -- and Projections Central
+(D9) publishes one figure per state and no areas at all. Without this word every program in
+such a build would be unplaced for ``zip_not_in_crosswalk``, which says the crosswalk let
+the program down when in fact nothing was ever going to place it, and the coverage block
+would read as a broken join rather than as a source that does not publish regions.
+"""
+
 
 def regional_projection(
     occupation: Mapping[str, Any], area_name: str | None
@@ -2287,11 +2402,18 @@ def place_program(
     program: dol_etp.Program,
     city_areas: Mapping[str, edd_lmi.ProjectionArea] | None,
     counties: CountyIndex | None,
+    *,
+    areas_published: bool = True,
 ) -> tuple[edd_lmi.ProjectionArea | None, str | None, str | None]:
     """Place one program, city rule first, county rule second.
 
     Returns ``(area, matched_on, unplaced_reason)``; exactly one of ``matched_on`` and
     ``unplaced_reason`` is set.
+
+    ``areas_published`` is false when this state's projection source publishes no sub-state
+    geography. Neither rule is then attempted -- both restate somebody else's published
+    areas and there are none -- and the reason says so, rather than letting the record fall
+    through to a crosswalk verdict about a join that was never going to happen.
 
     The order is stated rather than incidental, but it is not currently load-bearing.
     Measured on the 2026-08-04 snapshot: of the 1,525 programs the city rule places, 1,440
@@ -2300,6 +2422,8 @@ def place_program(
     publisher to reach its answer, and if the two ever do disagree the reader is told which
     one spoke through ``matched_on`` either way.
     """
+    if not areas_published:
+        return None, None, UNPLACED_SOURCE_PUBLISHES_NO_AREAS
     area = area_for_city(program.city, city_areas)
     if area is not None:
         return area, AREA_MATCH_PRINCIPAL_CITY, None
@@ -2318,6 +2442,7 @@ def program_payload(
     centers: Sequence[local_help.AmericanJobCenter] | None = None,
     reviewer: link_review.OffsiteReviewer | None = None,
     counties: CountyIndex | None = None,
+    areas_published: bool = True,
 ) -> dict[str, Any]:
     """One program record, with its outcomes labelled by who they actually describe.
 
@@ -2346,13 +2471,18 @@ def program_payload(
     leaves the county rule unattempted and every unplaced program labelled
     ``crosswalk_not_read`` -- "nobody looked", which is a statement about the build and not
     about the program, and is kept apart from the four ways the rule can look and decline.
+
+    ``areas_published`` is false when this state's projection source publishes no areas to
+    place a program in; see :func:`place_program`.
     """
     integrity = (
         cohort
         if cohort is not None
         else dol_etp.cohort_integrity([dol_etp.CohortFiling.of(program)])[0]
     )
-    area, matched_on, unplaced_reason = place_program(program, city_areas, counties)
+    area, matched_on, unplaced_reason = place_program(
+        program, city_areas, counties, areas_published=areas_published
+    )
     area_name = None if area is None else area.area_name
     matched = [
         occupation_summary(occupations[match.soc_code], match, area_name)
@@ -2654,10 +2784,24 @@ AREA_UNPLACED_REASONS: Final = (
     UNPLACED_ZIP_NOT_IN_CROSSWALK,
     UNPLACED_COUNTY_OUTSIDE_AREAS,
     UNPLACED_STRADDLES_AREAS,
+    UNPLACED_SOURCE_PUBLISHES_NO_AREAS,
 )
 """Every reason a program can end up with no area. Enumerated so the coverage block carries
 a zero for each rather than omitting the ones that did not occur -- an absent key reads as
 "this cannot happen" where a zero reads as "it did not happen in this build"."""
+
+UNPLACED_REASONS_WITH_PUBLISHED_AREAS: Final = tuple(
+    reason for reason in AREA_UNPLACED_REASONS if reason != UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+)
+"""The reasons reachable in a build whose projection source publishes areas.
+
+Which is every California build, and every build the site has ever been given. The sixth
+word exists only for a state whose source publishes no sub-state geography at all, so a
+consumer whose job is to cover the reasons a *published* dataset can carry -- the site's
+copy for the unplaced panel, for one -- wants this tuple rather than the whole vocabulary.
+Derived from :data:`AREA_UNPLACED_REASONS` rather than typed beside it, so a seventh reason
+lands in both or in neither.
+"""
 
 
 def area_placement_coverage(
@@ -2919,7 +3063,9 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
         payload["outcomes"]["cohort"] = verdict.as_dict()
 
 
-def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
+def _attach_unplaced_reason(
+    payloads: list[dict[str, Any]], *, areas_published: bool = True
+) -> None:
     """Say why each unplaced record has no region, in place, for a build that has no index.
 
     The sixth block the offline build has to write for itself, and the one that was missed.
@@ -2943,11 +3089,18 @@ def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
     What this deliberately does **not** do is re-run placement. Guessing which of the four
     county-rule outcomes a program would have reached, with no crosswalk in the process,
     would put a specific reason nobody computed into a published record.
+
+    ``areas_published`` is false when the state's projection source publishes no sub-state
+    geography, and then ``crosswalk_not_read`` would be the wrong word for the opposite
+    reason: it says a crosswalk was not consulted, when the truth is there was nowhere for
+    it to place anything. That distinction matters on this path too, because this is also
+    how an operator rebuilds a site bundle from an unpacked release of any state.
     """
+    unplaced = (
+        UNPLACED_CROSSWALK_NOT_READ if areas_published else UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+    )
     for payload in payloads:
-        payload["region_unplaced_reason"] = (
-            None if payload.get("region") is not None else UNPLACED_CROSSWALK_NOT_READ
-        )
+        payload["region_unplaced_reason"] = None if payload.get("region") is not None else unplaced
 
 
 def build_offline(
@@ -2982,15 +3135,21 @@ def build_offline(
     payloads = programs_doc["programs"]
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
+    offline_state = str(programs_doc.get("state", DEFAULT_STATE))
+    offline_source = projection_source.source_for(offline_state)
     _attach_cohort_integrity(payloads)
-    _attach_unplaced_reason(payloads)
+    _attach_unplaced_reason(payloads, areas_published=offline_source.publishes.regions)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
     # The fixture predates the wage spread and carries no such key, so without this every
     # occupation reaches the page with the field absent rather than null -- a shape no real
     # build produces, which is how a page that guards `!== null` still crashed the export.
     # With no OEWS extract on the machine this attaches null everywhere, which is the honest
     # answer: nothing published a spread here, so the pages say the median alone.
-    _attach_wage_spread(occupations, load_wage_spread(), load_wage_regions())
+    _attach_wage_spread(
+        occupations,
+        load_wage_spread(state=offline_state),
+        load_wage_regions(state=offline_state),
+    )
     # No centres are looked up here, for the same reason no links are checked: this is the
     # hermetic build, and a distance copied out of another machine's read would be an
     # observation this build did not make. The pages it produces carry the funding route and
@@ -3014,11 +3173,24 @@ def build_offline(
         local_help_coverage(payloads, None), None, payloads
     )
     coverage["peer_medians"] = peer_medians(payloads)
+    # Recomputed for the sixth time for the reason the five above are: a fixture predating
+    # the field carries no block, and inheriting one would let a fixture assert which
+    # publisher figures came from. The fixture is a slice of a California build, so the
+    # source is EDD, and the declaration is written from the code rather than copied -- the
+    # check below then reads it back against the occupations actually emitted.
+    coverage[PROJECTION_SOURCE_KEY] = projection_source.fixture_read(
+        offline_source,
+        state=offline_state,
+        periods=[
+            occupation["period"] for occupation in occupations.values() if occupation.get("period")
+        ],
+    ).declaration(occupations_indexed=len(occupations))
     # The fixture's own coverage block is carried through untouched apart from the keys above,
     # so a fixture older than a field the site reads would ship a document missing it. Checked
     # before anything is written, so the failure is a build that stops rather than a site that
     # quietly renders one section fewer.
     check_coverage_shape(coverage)
+    check_projection_source(coverage, occupations)
     # And the headline counts it carried through are checked against the programs actually
     # being written here, because "carried through untouched" is exactly how they would come
     # to describe some other dataset. See check_coverage_counts.
@@ -3080,9 +3252,11 @@ def build(
     snapshot = snapshot or date.today().isoformat()
     link_checks = load_link_checks(link_checks_path)
 
+    source = projection_source.source_for(check_state_is_reported(state))
     programs = list(dol_etp.fetch_programs(state))
     benchmark = dol_etp.fetch_state_benchmark(state)
-    projections = edd_lmi.fetch_projections()
+    read = source.fetch()
+    projections = list(read.rows)
     # Enrichment first, so the occupation index is built once with it rather than rewritten.
     # Empty when no credentials are configured, which is a complete build, not a failed one.
     enrichment = fetch_enrichment(
@@ -3091,9 +3265,10 @@ def build(
     # O*NET's Spanish records, for the same occupations and on the same terms: absent
     # without a key, absent for the occupations Mi Próximo Paso does not carry.
     spanish = fetch_spanish_occupations(detailed_soc_codes(projections))
-    # Whatever a previous `afterward fetch-wages` left behind; absent is a complete build.
-    wage_spread = load_wage_spread()
-    wage_regions = load_wage_regions()
+    # Whatever a previous `afterward fetch-wages` left behind; absent is a complete build,
+    # and so is a build for a state the California OEWS extract cannot answer for.
+    wage_spread = load_wage_spread(state=state)
+    wage_regions = load_wage_regions(state=state)
     occupations = index_occupations(
         projections,
         enrichment=enrichment,
@@ -3101,7 +3276,9 @@ def build(
         wage_spread=wage_spread,
         wage_regions=wage_regions,
     )
-    areas = edd_lmi.area_definitions(projections)
+    # Empty for a source that publishes no sub-state geography, which both placement rules
+    # then decline to attempt rather than reaching a verdict about a join with no right side.
+    areas = edd_lmi.area_definitions(projections) if source.publishes.regions else []
     city_areas = edd_lmi.principal_city_areas(areas)
     # The second placement rule's index, read from the committed Census extract (D8). No
     # network: the 2020 relationship file is a decennial product, so the extract is a
@@ -3132,6 +3309,7 @@ def build(
             centers=centers,
             reviewer=reviewer,
             counties=counties,
+            areas_published=source.publishes.regions,
         )
         for p, c in zip(programs, integrity, strict=True)
     ]
@@ -3218,8 +3396,13 @@ def build(
         # employed against a 69% median among reporting programs).
         "state_benchmark": benchmark.as_dict() if benchmark else None,
         "peer_medians": peer_medians(payloads),
+        # Which publisher these occupation figures came from, and which measures that
+        # publisher does not carry at all. Without it a null wage in a second state's
+        # dataset is byte-identical to a wage California's source withheld.
+        PROJECTION_SOURCE_KEY: read.declaration(occupations_indexed=len(occupations)),
     }
     check_coverage_shape(coverage)
+    check_projection_source(coverage, occupations)
     # The report counted `programs`; the site is served `payloads`. Nothing sits between the
     # two today, and this is what says so out loud if anything ever does.
     check_coverage_counts(coverage, payloads)

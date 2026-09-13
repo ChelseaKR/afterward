@@ -1,0 +1,122 @@
+{
+ "rows": [
+  {
+   "Area": " United States",
+   "Title": "Registered Nurses",
+   "Base": "3391000",
+   "Projected": "3557100",
+   "Change": "166100",
+   "PercentChange": "4.9",
+   "AvgAnnualOpenings": "189100",
+   "STFIPS": "0",
+   "StateURL": "https://www.bls.gov/emp/",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "Alabama",
+   "Title": "Registered Nurses",
+   "Base": "56140",
+   "Projected": "59990",
+   "Change": "3850",
+   "PercentChange": "6.9",
+   "AvgAnnualOpenings": "3270",
+   "STFIPS": "1",
+   "StateURL": "https://www2.labor.alabama.gov/",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "Alaska",
+   "Title": "Registered Nurses",
+   "Base": "6580",
+   "Projected": "7250",
+   "Change": "670",
+   "PercentChange": "10.2",
+   "AvgAnnualOpenings": "410",
+   "STFIPS": "2",
+   "StateURL": "https://live.laborstats.alaska.gov/occfcst/occupations",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "Arizona",
+   "Title": "Registered Nurses",
+   "Base": "68470",
+   "Projected": "81220",
+   "Change": "12760",
+   "PercentChange": "18.6",
+   "AvgAnnualOpenings": "4990",
+   "STFIPS": "4",
+   "StateURL": "https://oeo.az.gov/labor-market/employment-projections",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "Arkansas",
+   "Title": "Registered Nurses",
+   "Base": "29060",
+   "Projected": "32610",
+   "Change": "3550",
+   "PercentChange": "12.2",
+   "AvgAnnualOpenings": "1890",
+   "STFIPS": "5",
+   "StateURL": "https://www.discover.arkansas.gov/",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "California",
+   "Title": "Registered Nurses",
+   "Base": "344100",
+   "Projected": "390600",
+   "Change": "46500",
+   "PercentChange": "13.5",
+   "AvgAnnualOpenings": "22890",
+   "STFIPS": "6",
+   "StateURL": "https://www.labormarketinfo.edd.ca.gov/?PAGEID=94",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "Colorado",
+   "Title": "Registered Nurses",
+   "Base": "55520",
+   "Projected": "66420",
+   "Change": "10900",
+   "PercentChange": "19.6",
+   "AvgAnnualOpenings": "4140",
+   "STFIPS": "8",
+   "StateURL": "https://cdle.colorado.gov/lmi",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  },
+  {
+   "Area": "Connecticut",
+   "Title": "Registered Nurses",
+   "Base": "41160",
+   "Projected": "43880",
+   "Change": "2720",
+   "PercentChange": "6.6",
+   "AvgAnnualOpenings": "2380",
+   "STFIPS": "9",
+   "StateURL": "https://www.ct.gov/DOLResearch",
+   "OccCode": "29-1141",
+   "BaseYear": "2024",
+   "ProjYear": "2034"
+  }
+ ],
+ "pager": {
+  "current_page": 0,
+  "total_items": 55,
+  "total_pages": 1,
+  "items_per_page": 100
+ }
+}

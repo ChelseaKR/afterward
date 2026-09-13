@@ -731,6 +731,12 @@ def cohort_integrity(programs: Sequence[CohortFiling]) -> list[CohortIntegrity]:
 
 STATES_INDEX = "etp_scorecard_states"
 
+STATE_BUCKETS = 100
+"""Upper bound on the number of reporting states one aggregation may return.
+
+Above the 55 measured on 2026-09-11 and above the 57 codes the Census table carries, so the
+bucket list cannot be silently truncated by this number."""
+
 
 @dataclass(frozen=True)
 class StateBenchmark:
@@ -974,6 +980,51 @@ def fetch_state_benchmark(
     finally:
         if owns_client:
             http.close()
+
+
+def fetch_states(*, client: httpx.Client | None = None) -> dict[str, int]:
+    """Every state the ETP scorecard reports programs for, and how many, in one request.
+
+    An aggregation rather than a scroll: the programs index holds well over ten thousand
+    records across all reporters, and the only question here is which two-letter codes a
+    ``--state`` is allowed to be.
+
+    The list is asked of the feed rather than kept in this repository because it is not a
+    list of states -- it is a list of *reporters*, and it moves. On 2026-09-11 it held 55
+    entries including four territories, with counts from 4,996 down to 1, and a state that
+    stops filing leaves it. A hard-coded list would let a build ask for a state that reports
+    nothing and emit an empty dataset, which reads as a state with no training programs.
+    """
+    body = {
+        "size": 0,
+        "query": {"bool": {"filter": [{"term": {"_index": PROGRAMS_INDEX}}]}},
+        "aggs": {"states": {"terms": {"field": "field_state", "size": STATE_BUCKETS}}},
+    }
+    owns_client = client is None
+    http = client or build_client()
+    try:
+        response = get_with_retry(
+            http,
+            f"{BASE_URL}/_search",
+            params={"source": json.dumps(body), "source_content_type": "application/json"},
+        )
+        buckets = response.json().get("aggregations", {}).get("states", {}).get("buckets", [])
+    finally:
+        if owns_client:
+            http.close()
+    counted = {
+        str(bucket["key"]).strip().upper(): int(bucket.get("doc_count") or 0)
+        for bucket in buckets
+        if str(bucket.get("key") or "").strip()
+    }
+    if not counted:
+        raise FetchError(
+            f"{BASE_URL} returned no states at all for the ETP programs index. Refused "
+            "rather than treated as 'no state reports programs': an empty aggregation is a "
+            "read that failed, and every `--state` would then be rejected as unknown.",
+            url=BASE_URL,
+        )
+    return counted
 
 
 def _query_body(state: str, page_size: int, after: list[Any] | None) -> dict[str, Any]:
