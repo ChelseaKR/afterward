@@ -32,6 +32,7 @@ const GATES: ReadonlyArray<readonly [string, string]> = [
   ["test", "the unit suite, including the assistant panel's axe pass"],
   ["contrast", "34 token pairings at WCAG 2.2 AAA, light and dark"],
   ["build", "the static export, and the first-visit page-weight budget"],
+  ["seo", "a canonical and a reciprocal hreflang set on every page in the export"],
   ["a11y", "axe over 22 built pages in both languages"],
   ["a11y:rendered", "axe in Chromium over what only exists after hydration"],
 ];

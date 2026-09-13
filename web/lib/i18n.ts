@@ -405,6 +405,27 @@ const en = {
 
   onetCredit:
     "This site incorporates information from O*NET Web Services by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). O*NET\u00ae is a trademark of USDOL/ETA.",
+  /*
+   * The link back to the source, in the footer of every page.
+   *
+   * This is not a courtesy to developers. This site is built with California's official
+   * design system and publishes figures about California training providers while being no
+   * part of California's government, and `notAffiliated` says so on every page. A reader who
+   * doubts that sentence, or doubts a number printed beside a school's name, has no way to
+   * check either unless the page tells them where the code and the pipeline that produced it
+   * live. The source is the evidence for the disclaimer.
+   *
+   * It also satisfies DISC-02 of the portfolio's Discovery & Adoption standard, which
+   * requires the homepage named in the repository's About to link back to that repository --
+   * measured on the live site and failing, because no page here linked to it at all.
+   *
+   * `sourceCodeLabel` is the visible link text and is deliberately distinct from every other
+   * link in the chrome: axe's `identical-links-same-purpose` rule (AAA 2.4.9) is enabled in
+   * this repository's audit, and two links reading the same words and going to different
+   * places is exactly what it fails on.
+   */
+  sourceCode: "This site is open source.",
+  sourceCodeLabel: "Read the code and the data pipeline on GitHub",
   aboutData: "Where this comes from",
   snapshot: (d: string) => `Data snapshot: ${d}`,
   viewProgram: "Program details",
@@ -1615,6 +1636,8 @@ const es: Dictionary = {
 
   onetCredit:
     "Este sitio incorpora información de O*NET Web Services del Departamento de Trabajo de Estados Unidos, Administración de Empleo y Capacitación (USDOL/ETA). O*NET\u00ae es una marca registrada de USDOL/ETA.",
+  sourceCode: "Este sitio es de código abierto.",
+  sourceCodeLabel: "Consulta el código y el proceso de datos en GitHub",
   aboutData: "De dónde vienen estos datos",
   snapshot: (d: string) => `Datos actualizados: ${d}`,
   viewProgram: "Detalles del programa",
