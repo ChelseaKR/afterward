@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
-import { shareMetadata } from "@/lib/site";
+import { REPO_URL, homeDescription, homeTitle, shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
@@ -29,7 +29,10 @@ export function generateStaticParams() {
  * every program, provider and occupation page is a duplicate of the home page. For a site
  * whose whole purpose is being findable when someone searches a provider's name, that is the
  * most expensive line of code it could contain. A per-URL canonical belongs in each page's
- * own metadata or nowhere; absent, engines self-canonicalise, which is correct here.
+ * own metadata or nowhere, and it is now in each page's own metadata: `pageMetadata` in
+ * `lib/site.ts` cannot be called without being told which path it is describing, and every
+ * `page.tsx` under this layout calls it. This file calls `shareMetadata`, which is the same
+ * object without those two claims, because it is the one file here that has no single URL.
  *
  * `openGraph.images` IS declared here, and the distinction is the point of the paragraph
  * above rather than an exception to it. What made a canonical URL unsafe to inherit is that
@@ -59,11 +62,7 @@ export async function generateMetadata({
   // large variant renders as an empty banner above the text when no image is supplied; with
   // a card to show, the reason for the small variant is gone and the large one is what the
   // 1200x630 card is cut for.
-  return shareMetadata(
-    lang,
-    `${t.siteName} — ${t.tagline}`,
-    `${t.notAffiliated} ${t.siteSummary}`,
-  );
+  return shareMetadata(lang, homeTitle(lang), homeDescription(lang));
 }
 
 /**
@@ -312,6 +311,25 @@ export default async function LangLayout({
               {t.onetCredit}{" "}
               <a href="https://services.onetcenter.org/" rel="noopener noreferrer">
                 O*NET Web Services
+              </a>
+            </p>
+
+            {/*
+              The link back to the source, on every page rather than only on `/about/`.
+              `notAffiliated` sits directly above it on purpose: the sentence claims this is
+              an independent project built from public data, and the line under it is the
+              only way a reader can check that claim rather than take it. See `sourceCode` in
+              `lib/i18n.ts`.
+
+              A plain `<a>`, not a `<Link>`: it leaves the site. `rel="noopener noreferrer"`
+              matches the O*NET credit above and is the house rule for every outbound link
+              here -- `noreferrer` because this site sends no referrer anywhere, which is the
+              same reason it carries no analytics.
+            */}
+            <p>
+              {t.sourceCode}{" "}
+              <a href={REPO_URL} rel="noopener noreferrer">
+                {t.sourceCodeLabel}
               </a>
             </p>
 

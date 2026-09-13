@@ -16,7 +16,7 @@ import {
 import { getCoverage } from "@/lib/data";
 import { count, percent } from "@/lib/format";
 import { LANGUAGES, type Copy, type Lang, dict, feedTextLang, isLang } from "@/lib/i18n";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return shareMetadata(lang, `${t.ctdlTitle} | ${t.siteName}`, t.ctdlLede);
+  return pageMetadata(lang, "ctdl/", `${t.ctdlTitle} | ${t.siteName}`, t.ctdlLede);
 }
 
 const REPO = "https://github.com/ChelseaKR/afterward";

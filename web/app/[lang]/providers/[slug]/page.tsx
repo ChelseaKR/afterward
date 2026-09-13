@@ -9,7 +9,7 @@ import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
 import { findProvider, groupByProvider } from "@/lib/providers";
 import { isShrinking } from "@/lib/search";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   const providers = groupByProvider(getSearchIndex().programs);
@@ -53,8 +53,9 @@ export async function generateMetadata({
   // provider publishes nothing at all, which is a fact and is the point of showing it.
   const reporting = provider.programs.filter((program) => program.r).length;
 
-  return shareMetadata(
+  return pageMetadata(
     lang,
+    `providers/${slug}/`,
     t.metaProviderTitle(tidyName(provider.name), provider.programs.length, place),
     t.metaProviderDescription(reporting, provider.programs.length),
   );

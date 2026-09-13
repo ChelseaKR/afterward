@@ -43,7 +43,7 @@ import type {
 } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.flatMap((lang) => allProgramIds().map((id) => ({ lang, id })));
@@ -80,7 +80,7 @@ function placeOf(program: Program): string {
  * this program reported anything about the people who took it. Roughly a third did not, and
  * saying so in the result saves a click and cannot be read as a poor result.
  *
- * Both strings are handed to `shareMetadata`, so they are also what a shared link unfurls as.
+ * Both strings are handed to `pageMetadata`, so they are also what a shared link unfurls as.
  * They were previously the search result only: `og:title` is not derived from `title`, so
  * every one of these pages posted into Slack, iMessage or LinkedIn as the site rather than as
  * the program -- the same generic card 6,532 times, on the pages that are the entire reason
@@ -101,8 +101,9 @@ export async function generateMetadata({
   const place = placeOf(program);
   const name = program.program_name ?? place;
 
-  return shareMetadata(
+  return pageMetadata(
     lang,
+    `programs/${id}/`,
     t.metaProgramTitle(name, place),
     program.outcomes.reported ? t.metaProgramReported(place) : t.metaProgramUnreported(place),
   );
