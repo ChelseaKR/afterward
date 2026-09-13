@@ -115,6 +115,44 @@ export function groupByProvider(programs: SearchEntry[]): Provider[] {
   return roster(programs).providers;
 }
 
+/**
+ * How many providers this snapshot describes, reconciled against what the pipeline published.
+ *
+ * One snapshot used to yield three answers. `dataset-2026-09-12` held 3,266 records, and the
+ * About page said **584** providers while the index one click away listed **581** — the About
+ * figure was `coverage.json`'s `distinct_providers`, which counted distinct filed strings, and
+ * the index counts what `slugify` above merges. Three of California's providers file under two
+ * spellings each, so a reader who followed one number to the other found three fewer providers
+ * than they had been promised, with nothing on either page explaining the gap. #155.
+ *
+ * The site had already decided the question everywhere except that one figure: it mints one
+ * provider page per slug, and `etplCoverage.providerSilence` keys its denominator the same way
+ * and says why ("one identity function, one answer"). So the count is derived here, at render
+ * time, from the roster that mints the pages — the number on the About page is now the number
+ * of provider pages a reader can go and count, by construction rather than by coincidence.
+ *
+ * `declared` is `coverage.json`'s own figure, and a disagreement throws rather than picking a
+ * winner. The rule is spelled twice out of necessity — `src/afterward/providers.py` counts for
+ * the published artefact, this file mints the URLs, and neither can call the other across the
+ * language boundary — so the build is where they are made to agree.
+ * `fixtures/provider-identity.json` is the case table both test suites read; this is the check
+ * that the two agree about a whole snapshot rather than about seventeen names.
+ *
+ * Throwing, rather than reporting, because a static export that published two provider counts
+ * is the defect. There is no rendering of this disagreement that is better than not shipping it.
+ */
+export function providerPopulation(programs: SearchEntry[], declared: number): number {
+  const counted = roster(programs).providers.length;
+  if (counted !== declared) {
+    throw new Error(
+      `Two provider counts for one snapshot: the roster holds ${counted} and coverage.json ` +
+        `declares ${declared}. web/lib/providers.ts and src/afterward/providers.py have to ` +
+        `spell the same rule — see fixtures/provider-identity.json and issue #155.`,
+    );
+  }
+  return counted;
+}
+
 /** One provider by slug. A lookup rather than a scan, off the same cached roster. */
 export function findProvider(programs: SearchEntry[], slug: string): Provider | null {
   return roster(programs).bySlug.get(slug) ?? null;

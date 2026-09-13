@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Measure } from "@/components/Measure";
-import { allProgramIds, getCoverage, getProgram } from "@/lib/data";
+import { allProgramIds, getCoverage, getProgram, getSearchIndex } from "@/lib/data";
 import { count } from "@/lib/format";
 import { LANGUAGES, dict, isLang, type Lang } from "@/lib/i18n";
+import { providerPopulation } from "@/lib/providers";
 import { pageMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -117,6 +118,15 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
   const t = dict(lang);
   const coverage = getCoverage();
   const facts = corpusFacts();
+  /*
+    Derived here, from the roster that mints the provider pages, rather than read out of
+    `coverage.json`. The field it used to read counted distinct filed strings and said 584
+    where the index one click away listed 581, because three of California's providers file
+    under two spellings each (#155). `providerPopulation` returns the roster's own count and
+    refuses to build if `coverage.json` has come to disagree with it, so this page cannot go
+    back to publishing a number a reader cannot reconcile with the pages it describes.
+  */
+  const providers = providerPopulation(getSearchIndex().programs, coverage.distinct_providers);
   // Programs with no occupation panel at all: matched is a subset of total, so this is a
   // difference between two counted sets rather than a measure that could be missing.
   const unmatched = coverage.total_programs - coverage.programs_matched_to_occupation;
@@ -167,7 +177,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
         />
         <Measure
           label={t.aboutProvidersNamed}
-          value={tally(coverage.distinct_providers, lang)}
+          value={tally(providers, lang)}
           lang={lang}
         />
         <Measure
@@ -176,7 +186,9 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
           lang={lang}
         />
       </dl>
-      <p className="compare-note">{t.snapshot(coverage.snapshot_date)}</p>
+      <p className="compare-note">
+        {t.snapshot(coverage.snapshot_date)} {t.aboutProvidersCounted}
+      </p>
 
       <h2 id="on-this-page">{t.onThisPage}</h2>
       <nav className="jump-nav" aria-label={t.aboutOnThisPageNav}>
