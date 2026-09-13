@@ -159,6 +159,35 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- **The sitemap's `lastmod` is derived from the pages, or omitted (#156).** It used to be one
+  date — `2026-09-12T00:00:00.000Z` — on all 9,046 URLs, read from
+  `getCoverage().snapshot_date`. That is a real date belonging to a real thing, and the thing
+  it belongs to is the dataset rather than the page, so the claim was wrong in both directions
+  at once: it moved for a program whose row was byte-identical to last month's, and it did not
+  move when a copy change rewrote a sentence on 165 program pages under an unchanged dataset.
+  `app/sitemap.ts` now emits no `lastmod` at all, and the new `web/scripts/lastmod.mjs`
+  (`npm run lastmod`, in the `verify` chain) adds one only where it can point at evidence: it
+  digests every exported page and compares it against the ledger the last deploy published at
+  `/lastmod.json`. **A page whose bytes are unchanged keeps the date it last changed; a page
+  whose bytes differ is dated today, because today is when it changed; a page nothing has yet
+  watched change carries no date at all.** That last rule is what makes "stamp today on
+  everything" impossible to mistake for "stamp today on what moved" — with no ledger, this
+  dates nothing and says so, where the two would otherwise produce identical output. Digesting
+  the whole document is legitimate because the export is reproducible: measured on 2026-09-13,
+  two `npm run build` runs over an unchanged tree produced 284 pages of which 284 differed, and
+  the entire difference was Next's 21-character random build id — normalise that one literal
+  away and **0 of 284 differ**. The build id is read from `.next/BUILD_ID` rather than
+  pattern-matched, and a build id that appears in no page is a refusal rather than a silent
+  no-op that would re-date the site on every deploy. `--check` is the gate: every `<lastmod>`
+  in the sitemap must be backed by a ledger entry whose digest still matches the page in the
+  export, so a date with no evidence and a page edited after it was dated are both failures.
+  `web/scripts/lastmod.test.ts` proves it, over eleven refusals and four dating rules, with the
+  central fixture handing the script a ledger dated `2026-05-01` and a build date of
+  `2026-09-13` and requiring `2026-05-01` in the output. `.github/workflows/deploy.yml` fetches
+  the published ledger over plain HTTPS before dating — no AWS call, no credential, nothing
+  about a reader — and if there is none, that deploy publishes a sitemap with no `lastmod` and
+  says so in the run summary rather than inventing dates to fill the space.
+
 - `check_coverage_counts` now recomputes `programs_mapped_to_area` and `programs_without_area`
   from the emitted programs, as it already did for the outcome counts. Those two are the figures
   the site's whole regional half is measured by, and they were carried through the offline build
