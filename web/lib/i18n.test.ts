@@ -147,3 +147,94 @@ describe("feedTextLang", () => {
     expect(feedTextLang("en")).toBeUndefined();
   });
 });
+
+/**
+ * Why a program has no region.
+ *
+ * Until the county placement rule landed (#126, #129) there was one sentence for every
+ * unplaced program and it said the program's *city* is not one California names. That was
+ * the whole truth while placement went by principal city alone. It is now the reason for
+ * none of them: a program reaching this panel is one whose ZIP could not be resolved to a
+ * single published area, and its city has nothing to do with it.
+ *
+ * These bind each of the pipeline's five refusals to its own sentence, and bind the
+ * unrecognised case to a sentence that names no cause. `tests/test_site_copy.py` holds the
+ * vocabulary itself to `afterward.build.AREA_UNPLACED_REASONS`, so a sixth reason added in
+ * Python cannot quietly fall through to the default branch here.
+ */
+describe("the stated reason a program has no region", () => {
+  /** Exactly `afterward.build.AREA_UNPLACED_REASONS`. */
+  const REASONS = [
+    "crosswalk_not_read",
+    "no_zip",
+    "zip_not_in_crosswalk",
+    "county_outside_areas",
+    "straddles_areas",
+  ];
+
+  for (const lang of LANGUAGES) {
+    const d = dict(lang);
+
+    it(`gives each refusal its own sentence in ${lang}`, () => {
+      const said = REASONS.map((reason) => d.regionUnplacedBody("Truckee", reason));
+      expect(new Set(said).size).toBe(REASONS.length);
+      for (const sentence of said) expect(sentence.length).toBeGreaterThan(40);
+    });
+
+    it(`names no cause at all for a reason it does not recognise, in ${lang}`, () => {
+      // A record built before `region_unplaced_reason` existed carries no key. Reading that
+      // as any particular reason would publish a specific cause nobody measured, which is
+      // the failure this whole panel exists to avoid.
+      const absent = d.regionUnplacedBody("Truckee", undefined);
+      const unknown = d.regionUnplacedBody("Truckee", "some_reason_from_a_later_build");
+      expect(absent).toBe(unknown);
+      for (const reason of REASONS) {
+        expect(d.regionUnplacedBody("Truckee", reason)).not.toBe(absent);
+      }
+    });
+
+    it(`does not blame the city where the city is not the reason, in ${lang}`, () => {
+      // `straddles_areas` and `county_outside_areas` are findings about the ZIP. Naming the
+      // city in them would restore the old sentence's error one program at a time.
+      for (const reason of ["straddles_areas", "county_outside_areas", "crosswalk_not_read"]) {
+        expect(d.regionUnplacedBody("Truckee", reason)).not.toContain("Truckee");
+      }
+    });
+
+    it(`still reads without a city, in ${lang}`, () => {
+      for (const reason of [...REASONS, undefined]) {
+        const sentence = d.regionUnplacedBody(null, reason);
+        expect(sentence).not.toContain("null");
+        expect(sentence.length).toBeGreaterThan(40);
+      }
+    });
+  }
+
+  it("says something different in each language for every reason", () => {
+    for (const reason of [...REASONS, undefined]) {
+      expect(en.regionUnplacedBody("Truckee", reason)).not.toBe(
+        es.regionUnplacedBody("Truckee", reason),
+      );
+    }
+  });
+
+  /**
+   * The old copy said "About half of California's programs are in this position" / "Cerca de
+   * la mitad". On the same snapshot it is now 165 of 3,266 — five per cent. A proportion
+   * written into a string is a number nothing rechecks, so the fix is not to write the new
+   * one: the counts a reader sees come from the dataset, and no string states a share.
+   */
+  it("states no proportion of the dataset in copy", () => {
+    const copy = [
+      ...["crosswalk_not_read", "no_zip", "zip_not_in_crosswalk", "county_outside_areas", "straddles_areas", undefined].flatMap(
+        (reason) => LANGUAGES.map((lang) => dict(lang).regionUnplacedBody("Truckee", reason)),
+      ),
+      ...LANGUAGES.map((lang) => dict(lang).unplacedBody),
+      ...LANGUAGES.map((lang) => dict(lang).areaNote(165, 3266)),
+      ...LANGUAGES.map((lang) => dict(lang).statUnplaced(165, 3266)),
+    ];
+    for (const sentence of copy) {
+      expect(sentence).not.toMatch(/\bhalf\b|\bmitad\b|\bmost of\b|\bmayor[íi]a\b|%/i);
+    }
+  });
+});
