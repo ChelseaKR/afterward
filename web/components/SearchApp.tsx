@@ -22,8 +22,10 @@ import {
   summarise,
   terms,
   unmeasuredLength,
+  spanishTitleGap,
   unplacedMatches,
   type AltTitleIndex,
+  type EsTitleIndex,
   type AreaFilter,
   type Filters,
   type Outlook,
@@ -87,14 +89,45 @@ interface Relaxation {
 export function SearchApp({
   programs,
   altTitles,
+  esTitles,
   lang,
 }: {
   programs: SearchEntry[];
   /** SOC code -> colloquial job titles ("RN", "CDL"), for search matching only. */
   altTitles?: AltTitleIndex;
+  /** SOC code -> the Department's own Spanish job titles. See `esTables` below. */
+  esTitles?: EsTitleIndex;
   lang: Lang;
 }) {
   const t = dict(lang);
+
+  /*
+    The lookup tables every scoring call consults.
+
+    The Spanish table is supplied on the Spanish site only, and that is a decision rather
+    than an oversight. Handing it to the English site would change what an English query
+    scores -- a term that appears in both languages would start matching an occupation it
+    did not match yesterday -- and "the English search behaves exactly as it did" is a
+    property worth being able to state without qualification. A Spanish speaker reading
+    the English pages is served by the language toggle, which is on every page.
+
+    Kept in one memo rather than passed as two arguments because `AltTitleIndex` and
+    `EsTitleIndex` are the same TypeScript type: two positional tables could be transposed
+    with nothing to catch it.
+  */
+  const tables = useMemo(
+    () => ({ alt: altTitles, es: lang === "es" ? esTitles : undefined }),
+    [altTitles, esTitles, lang],
+  );
+
+  /*
+    Occupations these programs feed that the Department publishes no Spanish name for.
+
+    Null when the index carries no Spanish table at all, which is not the same as zero: an
+    index built before the field existed has not found that every occupation has a Spanish
+    name, it has not looked. The empty-results panel says something different for each.
+  */
+  const spanishGap = useMemo(() => spanishTitleGap(programs, esTitles), [programs, esTitles]);
   const [query, setQuery] = useState("");
   const [onlyReported, setOnlyReported] = useState(false);
   const [outlook, setOutlook] = useState<Outlook>("any");
@@ -145,8 +178,8 @@ export function SearchApp({
   }, []);
 
   const results = useMemo(
-    () => runSearch(programs, filters, altTitles),
-    [programs, filters, altTitles],
+    () => runSearch(programs, filters, tables),
+    [programs, filters, tables],
   );
 
   const stats = useMemo(() => summarise(programs), [programs]);
@@ -168,12 +201,12 @@ export function SearchApp({
     inside a bucket labelled "the provider did not say".
   */
   const hiddenNoLength = useMemo(
-    () => unmeasuredLength(programs, filters, altTitles),
-    [programs, filters, altTitles],
+    () => unmeasuredLength(programs, filters, tables),
+    [programs, filters, tables],
   );
   const hiddenCompetency = useMemo(
-    () => competencyBasedLength(programs, filters, altTitles),
-    [programs, filters, altTitles],
+    () => competencyBasedLength(programs, filters, tables),
+    [programs, filters, tables],
   );
 
   /*
@@ -213,8 +246,8 @@ export function SearchApp({
   // Only asked for a named region: under "any" nothing is hidden, and under "unplaced" these
   // programs are the result set rather than the omission from it.
   const hiddenUnplaced = useMemo(
-    () => (area.kind === "area" ? unplacedMatches(programs, filters, altTitles) : 0),
-    [programs, filters, area.kind, altTitles],
+    () => (area.kind === "area" ? unplacedMatches(programs, filters, tables) : 0),
+    [programs, filters, area.kind, tables],
   );
 
   /*
@@ -236,12 +269,12 @@ export function SearchApp({
     let found = 0;
     for (const entry of programs) {
       if (entry.g !== null) continue;
-      if (score(entry, searchTerms, altTitles) < 0) continue;
+      if (score(entry, searchTerms, tables) < 0) continue;
       if (!matchesFilters(entry, ignoringOutlook)) continue;
       found += 1;
     }
     return found;
-  }, [programs, filters, altTitles]);
+  }, [programs, filters, tables]);
 
   function selectArea(next: AreaFilter) {
     setArea(next);
@@ -265,7 +298,7 @@ export function SearchApp({
 
     const options: Relaxation[] = [];
     const found = (override: Partial<Filters>) =>
-      runSearch(programs, { ...filters, ...override }, altTitles).length;
+      runSearch(programs, { ...filters, ...override }, tables).length;
 
     if (filters.query.trim() !== "") {
       options.push({
@@ -340,7 +373,7 @@ export function SearchApp({
     results.length,
     programs,
     filters,
-    altTitles,
+    tables,
     t,
     lang,
     onlyReported,
@@ -1085,13 +1118,26 @@ export function SearchApp({
             )}
 
             {/*
-              Said whenever a search term found nothing, in both languages. It is the whole
-              explanation for a Spanish speaker — the corpus is English-only, so a Spanish
-              term cannot match — and the Spanish wording carries the worked examples for
-              that reason rather than mirroring the English sentence for sentence.
+              Said whenever a search term found nothing, in both languages.
+
+              It used to say the corpus is English-only and a Spanish term cannot match. Half
+              of that is still true and half of it stopped being true when the Department's
+              own Spanish occupation titles were added to the index: a Spanish *job* name now
+              matches, a Spanish program or provider name still cannot, and some occupations
+              have no Spanish name on record at all. Telling a Spanish reader their language
+              does not work, on a search that has just failed for a different reason, would
+              send them away from the one term that would have found what they wanted.
+
+              Three states, not two. `spanishGap` is null when the index carries no Spanish
+              table, and that is a build that has not looked rather than a dataset with no
+              Spanish in it — so it keeps the older sentence, which is exactly true of it.
             */}
             {filters.query.trim() !== "" && (
-              <p style={{ marginBottom: 0 }}>{t.searchEnglishOnly}</p>
+              <p style={{ marginBottom: 0 }}>
+                {spanishGap === null
+                  ? t.searchEnglishOnly
+                  : t.searchSpanishTitles(spanishGap.missing, spanishGap.total)}
+              </p>
             )}
           </div>
         ) : (

@@ -88,6 +88,35 @@ All notable changes to this project are documented here. The format follows
   real run reported `current` against `dataset-2026-08-17`. `list_releases` now carries
   `published_at`, `created_at` and `html_url` for it, and a test pins those field names because
   nothing in `release_integrity.py` itself reads them. (#135, #137)
+- **Search now matches the Department's own Spanish occupation titles**, so "enfermera" finds
+  the nursing programs. The dataset has carried O\*NET Mi Próximo Paso titles for every
+  occupation the Department publishes one for since the enrichment expansion, and the search
+  index never offered them to the scorer — a Spanish reader typing a Spanish job name got an
+  empty result set on a site that promises Spanish from the first release, and an empty result
+  set reads as "California trains nobody for this" rather than "this search cannot hear you".
+  `spanish_title_index` emits an `esTitles` table beside `altTitles`, keyed by the SOC codes a
+  program actually feeds. Nothing is translated by this project; the terms are O\*NET's text,
+  carried through untouched, accents and all.
+  Terms are matched accent-folded, because a phone keyboard set to English types `enfermeria`
+  and the Department writes `Enfermería`; folding both sides means the reader most likely to
+  need this index is not the one it fails.
+  **The table is supplied on the Spanish site only**, which is what makes "English scoring is
+  unchanged" a guarantee rather than a hope: with no table the Spanish arm of `score` is
+  unreachable, and a test asserts identical scores over terms drawn from the Spanish table
+  itself. Scoring it on the English pages too would change what an English query matches, and
+  that is a separate decision.
+  **Index cost, measured on the 60-program fixture** (`make data-offline`): 7,825 → 12,000
+  bytes gzipped, of which the table is 4,175 for 52 occupations and 511 terms. That is the
+  fixture's ratio and not the real snapshot's, and it overstates it heavily — the fixture is 60
+  rows against 3,266, so the per-SOC table is a far larger share of it. The real figure has not
+  been measured, because the production dataset is not in this repository, and a number nobody
+  has taken does not belong in a changelog. For scale, the English alternate-title table costs
+  2,557 gzipped bytes for 470 fixture terms against 23.2 KB for 3,473 on the real snapshot.
+  A reader whose search finds nothing is now told what is actually true: job titles are
+  searched in Spanish, program and provider names are not, and *n* of the *m* occupations these
+  programs lead to have no Spanish name on record — both counted from the index. The previous
+  sentence said a Spanish term "no va a coincidir con ninguno", which stopped being true.
+
 - **DOL's bulk export is now read beside the search API for the one thing it has that the API
   does not: `de129`, the actual denominator of the published Q2 employment rate.** Issue #25
   established that this site publishes a rate whose denominator it cannot show, and

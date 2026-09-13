@@ -21,8 +21,11 @@ import {
   terms,
   unmeasuredLength,
   unplacedMatches,
+  foldAccents,
+  spanishTitleGap,
   unplacedTotal,
   type AltTitleIndex,
+  type EsTitleIndex,
 } from "./search";
 import type { SearchEntry } from "./types";
 
@@ -93,7 +96,7 @@ describe("score with altTitles", () => {
   it("finds an entry by a colloquial title its official name does not contain", () => {
     const nurse = entry({ n: "Nursing Program", s: ["29-1141"], o: ["Registered Nurses"] });
     expect(score(nurse, ["rn"])).toBe(-1);
-    expect(score(nurse, ["rn"], nursingAltTitles)).toBeGreaterThan(0);
+    expect(score(nurse, ["rn"], { alt: nursingAltTitles })).toBeGreaterThan(0);
   });
 
   it("scores an alternate-title match the same as an official-title match", () => {
@@ -101,14 +104,14 @@ describe("score with altTitles", () => {
     const byAlternate = score(
       entry({ n: "Program", s: ["29-1141"], o: ["Registered Nurses"] }),
       ["rn"],
-      nursingAltTitles,
+      { alt: nursingAltTitles },
     );
     expect(byAlternate).toBe(byOfficial);
   });
 
   it("only matches alternate titles for SOC codes the entry actually carries", () => {
     const other = entry({ n: "Program", s: ["31-9092"], o: ["Medical Assistants"] });
-    expect(score(other, ["rn"], nursingAltTitles)).toBe(-1);
+    expect(score(other, ["rn"], { alt: nursingAltTitles })).toBe(-1);
   });
 
   it("does not require a term to match every occupation's alternate titles, only one", () => {
@@ -117,7 +120,7 @@ describe("score with altTitles", () => {
       s: ["29-1141", "31-9092"],
       o: ["Registered Nurses", "Medical Assistants"],
     });
-    expect(score(multi, ["rn"], nursingAltTitles)).toBeGreaterThan(0);
+    expect(score(multi, ["rn"], { alt: nursingAltTitles })).toBeGreaterThan(0);
   });
 
   it("an entry with no SOC codes in the table is unaffected", () => {
@@ -296,7 +299,7 @@ describe("runSearch with altTitles", () => {
   });
 
   it("the same query finds the program once the table is supplied", () => {
-    const ids = runSearch([nurse, other], { ...DEFAULT_FILTERS, query: "rn" }, altTitles).map(
+    const ids = runSearch([nurse, other], { ...DEFAULT_FILTERS, query: "rn" }, { alt: altTitles }).map(
       (e) => e.i,
     );
     expect(ids).toEqual(["nurse"]);
@@ -307,7 +310,7 @@ describe("runSearch with altTitles", () => {
     const ids = runSearch(
       [suppressed],
       { ...DEFAULT_FILTERS, query: "rn", onlyReported: true },
-      altTitles,
+      { alt: altTitles },
     ).map((e) => e.i);
     expect(ids).toEqual([]);
   });
@@ -564,5 +567,166 @@ describe("area option values", () => {
   it("falls back to any for an unrecognised value, hiding nothing", () => {
     expect(areaFromOptionValue("")).toEqual(ANY_AREA);
     expect(areaFromOptionValue("garbage")).toEqual(ANY_AREA);
+  });
+});
+
+/**
+ * The Department's Spanish occupation titles, in search.
+ *
+ * The dataset has carried O*NET's Mi Próximo Paso titles for months and the index did not
+ * offer them to the scorer, so a Spanish reader typing "enfermera" on a site that promises
+ * Spanish from the first release found nothing at all -- and an empty result set reads as
+ * "California trains nobody for this", not as "this search cannot hear you".
+ */
+describe("Spanish occupation titles", () => {
+  const esTitles: EsTitleIndex = {
+    "29-1141": ["Enfermeras Registradas", "Enfermera de Piso"],
+    "51-4121": ["Soldadores"],
+  };
+  const nurse = entry({
+    i: "nurse",
+    n: "Registered Nursing",
+    p: "Fresno City College",
+    s: ["29-1141"],
+    o: ["Registered Nurses"],
+  });
+  /** An occupation Mi Próximo Paso publishes no record for: absent from the table entirely. */
+  const unlisted = entry({
+    i: "unlisted",
+    n: "Sign Language Interpreting",
+    s: ["27-3091"],
+    o: ["Interpreters and Translators"],
+  });
+
+  it("finds a program by the Department's Spanish title for the job it leads to", () => {
+    expect(score(nurse, ["enfermeras"])).toBe(-1);
+    expect(score(nurse, ["enfermeras"], { es: esTitles })).toBeGreaterThan(0);
+  });
+
+  it("finds the same program with the accents a phone keyboard will not produce", () => {
+    // The point of folding: `enfermeria` and `enfermería` are one term, in both directions.
+    const withAccent = score(nurse, ["enfermería"], { es: { "29-1141": ["Enfermería"] } });
+    const without = score(nurse, ["enfermeria"], { es: { "29-1141": ["Enfermería"] } });
+    expect(without).toBe(withAccent);
+    expect(without).toBeGreaterThan(0);
+    expect(score(nurse, ["enfermería"], { es: { "29-1141": ["Enfermeria"] } })).toBe(
+      withAccent,
+    );
+  });
+
+  it("scores a Spanish title match the same as an official English title match", () => {
+    const byOfficial = score(entry({ n: "Program", o: ["Soldadores"] }), ["soldadores"]);
+    const bySpanish = score(
+      entry({ n: "Program", s: ["51-4121"], o: ["Welders"] }),
+      ["soldadores"],
+      { es: esTitles },
+    );
+    expect(bySpanish).toBe(byOfficial);
+  });
+
+  it("matches English only for an occupation with no Spanish record", () => {
+    // "traductores", not "intérprete": the first run of this test used the latter and passed
+    // for the wrong reason, because "interprete" is a substring of "Interpreters" and the
+    // English arm matched it. A Spanish term that happens to be spelled inside its English
+    // counterpart cannot show that the Spanish arm declined.
+    expect(score(unlisted, ["translators"], { es: esTitles })).toBeGreaterThan(0);
+    expect(score(unlisted, ["traductores"], { es: esTitles })).toBe(-1);
+  });
+
+  it("only matches Spanish titles for SOC codes the entry actually carries", () => {
+    expect(score(unlisted, ["enfermeras"], { es: esTitles })).toBe(-1);
+  });
+
+  it("still narrows on a multi-word query mixing the two languages", () => {
+    expect(score(nurse, ["enfermeras", "fresno"], { es: esTitles })).toBeGreaterThan(0);
+    expect(score(nurse, ["enfermeras", "bakersfield"], { es: esTitles })).toBe(-1);
+  });
+
+  it("carries the table through runSearch, not only through score", () => {
+    const ids = runSearch(
+      [nurse, unlisted],
+      { ...DEFAULT_FILTERS, query: "enfermeras" },
+      { es: esTitles },
+    ).map((e) => e.i);
+    expect(ids).toEqual(["nurse"]);
+  });
+
+  it("still applies every other filter to a Spanish-title match", () => {
+    const suppressed = { ...nurse, r: false };
+    const ids = runSearch(
+      [suppressed],
+      { ...DEFAULT_FILTERS, query: "enfermeras", onlyReported: true },
+      { es: esTitles },
+    ).map((e) => e.i);
+    expect(ids).toEqual([]);
+  });
+
+  /**
+   * The property the English site is entitled to: supplying no Spanish table leaves `score`
+   * running the code it ran before the table existed.
+   *
+   * Asserted over every field the scorer reads and over a term drawn from the Spanish table
+   * itself, rather than over one convenient query -- the failure this guards against is a
+   * Spanish term newly matching where it did not, and a query that could never match one
+   * would pass whatever the code did.
+   */
+  it("scores identically with no Spanish table supplied", () => {
+    const queries = [
+      ["registered"],
+      ["nursing"],
+      ["fresno"],
+      ["enfermeras"],
+      ["soldadores"],
+      ["enfermeras", "fresno"],
+      ["welders"],
+    ];
+    for (const rows of [nurse, unlisted, entry()]) {
+      for (const q of queries) {
+        expect(score(rows, q, { alt: { "29-1141": ["RN"] } })).toBe(
+          score(rows, q, { alt: { "29-1141": ["RN"] }, es: undefined }),
+        );
+      }
+    }
+  });
+});
+
+describe("foldAccents", () => {
+  it("drops the accents Spanish actually uses", () => {
+    expect(foldAccents("Enfermería")).toBe("Enfermeria");
+    expect(foldAccents("Diseñador Gráfico")).toBe("Disenador Grafico");
+    expect(foldAccents("Técnico de Farmacia")).toBe("Tecnico de Farmacia");
+  });
+
+  it("leaves text with nothing to fold exactly as it was", () => {
+    // Every English string in the index goes through this on the Spanish site.
+    for (const text of ["Registered Nurses", "CDL", "Fresno City College", ""]) {
+      expect(foldAccents(text)).toBe(text);
+    }
+  });
+});
+
+describe("spanishTitleGap", () => {
+  const rows = [
+    entry({ i: "a", s: ["29-1141"] }),
+    entry({ i: "b", s: ["29-1141", "27-3091"] }),
+    entry({ i: "c", s: [] }),
+  ];
+
+  it("counts the occupations with no Spanish record, not the programs", () => {
+    // Two distinct SOC codes are reached; one of them has a Spanish record.
+    expect(spanishTitleGap(rows, { "29-1141": ["Enfermeras Registradas"] })).toEqual({
+      missing: 1,
+      total: 2,
+    });
+  });
+
+  it("is null, never zero, when the index carries no Spanish table", () => {
+    // Zero would say every occupation has a Spanish name. Null says nobody looked, and the
+    // search page has a different sentence for each.
+    expect(spanishTitleGap(rows, undefined)).toBeNull();
+  });
+
+  it("reports every occupation missing when the table is present and empty", () => {
+    expect(spanishTitleGap(rows, {})).toEqual({ missing: 2, total: 2 });
   });
 });
