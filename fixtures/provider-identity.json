@@ -1,0 +1,53 @@
+{
+  "_comment": [
+    "Who counts as one provider, written down once, in a file neither language owns.",
+    "",
+    "The provider identity is expressed twice and has to be: web/lib/providers.ts mints the",
+    "URL a reader visits, and src/afterward/providers.py counts the providers coverage.json",
+    "publishes, and neither can call the other. Two expressions of one rule are two things",
+    "that can drift, so this table is the thing they are both tested against -- web's",
+    "lib/providers.test.ts and tests/test_providers.py each read this file and assert every",
+    "row. A change to one implementation that this file does not sanction turns one suite red.",
+    "",
+    "An empty slug means the name carries no identity: it is excluded from every count rather",
+    "than pooled with the other blanks, which would merge two anonymous filers into one.",
+    "",
+    "The four colliding pairs are not invented. Three are the filings that made dataset-",
+    "2026-09-12 publish 584 providers on one page and 581 on another (#155); the Fresno pair",
+    "is the case web/lib/providers.ts was written for."
+  ],
+  "cases": [
+    { "name": "Fresno City College", "slug": "fresno-city-college" },
+    { "name": "FRESNO CITY COLLEGE", "slug": "fresno-city-college" },
+    { "name": "Procareer Academy", "slug": "procareer-academy" },
+    { "name": "PROCAREER ACADEMY", "slug": "procareer-academy" },
+    { "name": "Dialysis Education Services, LLC", "slug": "dialysis-education-services-llc" },
+    { "name": "DIALYSIS EDUCATION SERVICES LLC", "slug": "dialysis-education-services-llc" },
+    {
+      "name": "Virtual Design & Construction Institute",
+      "slug": "virtual-design-and-construction-institute"
+    },
+    {
+      "name": "Virtual Design and Construction Institute",
+      "slug": "virtual-design-and-construction-institute"
+    },
+    { "name": "Colegio Español", "slug": "colegio-espanol" },
+    { "name": "Institución Técnica de Salud", "slug": "institucion-tecnica-de-salud" },
+    { "name": "  ...Adult Education!  ", "slug": "adult-education" },
+    { "name": "Merced   College", "slug": "merced-college" },
+    { "name": "Merced Adult School", "slug": "merced-adult-school" },
+    { "name": "!!!", "slug": "" },
+    { "name": "   ", "slug": "" },
+    { "name": "", "slug": "" },
+    {
+      "name": "Los Angeles County Regional Consortium for Advanced Manufacturing and Logistics Careers",
+      "slug": "los-angeles-county-regional-consortium-for-advanced-manufacturing-and-logistics-"
+    }
+  ],
+  "collisions": [
+    ["Fresno City College", "FRESNO CITY COLLEGE"],
+    ["Procareer Academy", "PROCAREER ACADEMY"],
+    ["Dialysis Education Services, LLC", "DIALYSIS EDUCATION SERVICES LLC"],
+    ["Virtual Design & Construction Institute", "Virtual Design and Construction Institute"]
+  ]
+}

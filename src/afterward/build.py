@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from afterward import receipts
+from afterward.providers import count_providers
 from afterward.sources import (
     careeronestop,
     dol_bulk,
@@ -2775,12 +2776,14 @@ def cohort_integrity_coverage(payloads: list[dict[str, Any]]) -> CohortIntegrity
         oversized_for_one_program=sum(
             1 for cohort in cohorts if cohort["oversized_for_one_program"]
         ),
-        oversized_providers=len(
-            {
-                dol_etp.normalise_provider(payload["provider_name"])
-                for payload in payloads
-                if payload["outcomes"]["cohort"]["oversized_for_one_program"]
-            }
+        # Keyed on the published identity, like every other provider count here. The flags
+        # themselves are still grouped by the duplicate pass's own key, which is a different
+        # and narrower question; this line only counts the providers those flags landed on,
+        # and it is a number a reader meets, so it counts them the way the site does.
+        oversized_providers=count_providers(
+            payload["provider_name"]
+            for payload in payloads
+            if payload["outcomes"]["cohort"]["oversized_for_one_program"]
         ),
         not_attributable=sum(1 for cohort in cohorts if not cohort["attributable"]),
     )
@@ -3014,6 +3017,14 @@ def build_offline(
         local_help_coverage(payloads, None), None, payloads
     )
     coverage["peer_medians"] = peer_medians(payloads)
+    # Counted from the fixture's own records rather than carried across, so that the number
+    # the offline build publishes is one this rule produced today. The site derives the same
+    # figure from the roster it mints provider pages from and refuses to build if the two
+    # disagree (`providerPopulation` in web/lib/providers.ts), and that check is only worth
+    # having if this side of it is a count rather than a constant. #155.
+    coverage["distinct_providers"] = count_providers(
+        payload.get("provider_name") for payload in payloads
+    )
     # The fixture's own coverage block is carried through untouched apart from the keys above,
     # so a fixture older than a field the site reads would ship a document missing it. Checked
     # before anything is written, so the failure is a build that stops rather than a site that
@@ -3167,7 +3178,12 @@ def build(
         programs_with_soc=sum(1 for p in programs if p.soc_codes),
         programs_matched_to_occupation=sum(1 for p in payloads if p["occupations"]),
         aggregate_matches=aggregate_match_coverage(payloads),
-        distinct_providers=len({p.provider_name for p in programs if p.provider_name}),
+        # One rule, one number. `count_providers` is the same identity the site mints
+        # provider URLs from, so this figure is the number of provider pages a reader can
+        # go and count -- it used to be the number of distinct strings filed, which was
+        # three higher and reconcilable with nothing the site publishes. See #155 and
+        # afterward/providers.py.
+        distinct_providers=count_providers(p.provider_name for p in programs),
         distinct_occupations_matched=len(matched_socs),
         occupation_rows_loaded=len(occupations),
         programs_mapped_to_area=mapped_to_area,

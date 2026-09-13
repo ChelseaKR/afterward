@@ -678,6 +678,13 @@ const en = {
   aboutProgramsCounted: "Programs described here",
   aboutProvidersNamed: "Providers named here",
   aboutProgramsReporting: "Programs that report any outcome",
+  /*
+    One sentence, next to the snapshot date, because the number above it is three lower than
+    the count of names the state filed and a reader who noticed deserves to know why rather
+    than to wonder. 584 filings, 581 providers: three of them file under two spellings each.
+  */
+  aboutProvidersCounted:
+    "Providers are counted by name, and a provider that files under two spellings of its own name is counted once.",
 
   /* ---- About page jump nav ----
    *
@@ -1823,6 +1830,8 @@ const es: Dictionary = {
   aboutProgramsCounted: "Programas descritos aquí",
   aboutProvidersNamed: "Instituciones nombradas aquí",
   aboutProgramsReporting: "Programas que reportan algún resultado",
+  aboutProvidersCounted:
+    "Las instituciones se cuentan por su nombre, y una institución que presenta su información bajo dos grafías del mismo nombre se cuenta una sola vez.",
 
   aboutOnThisPageNav: "Ir a una sección de esta página",
   aboutShortSelfReported: "Las instituciones reportan sus propios resultados y nadie los audita",
