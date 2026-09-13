@@ -26,9 +26,13 @@ build just produced, so it can only ever see a dataset that is new by constructi
 ran it on the packaging path or the publishing path, which are the two places a dataset older
 than the code can actually arrive.
 
-Standard library only, and no `afterward` import, deliberately: the deploy workflow installs
-Node and no Python toolchain, so a check it cannot run there is a check that only guards the
-half of the path that was never the problem.
+Standard library only: the deploy workflow installs Node and no Python toolchain, so a check
+it cannot run there is a check that only guards the half of the path that was never the
+problem. The one `afterward` import below is the exception that proves the rule -- it reaches
+a leaf module whose whole dependency list is `re` and `unicodedata`, off `src/` in the
+checkout with nothing installed, and it is imported precisely so that the provider-identity
+rule is not spelled a third time in a file that exists to catch a dataset counted by the
+wrong rule.
 
 Usage: python3 scripts/dataset_shape_check.py [dataset-dir]
 """
@@ -41,6 +45,11 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from afterward.providers import count_providers  # noqa: E402
 
 DATA = Path("web/public/data")
 
@@ -155,6 +164,43 @@ def miscounted(dataset_dir: Path, programs: Sequence[dict[str, Any]]) -> list[st
     return []
 
 
+def provider_count_disagrees(dataset_dir: Path, programs: Sequence[dict[str, Any]]) -> list[str]:
+    """Whether the dataset's own provider count is one this code would have written.
+
+    `dataset-2026-09-12` published **584** providers in `coverage.json` and the site built
+    **581** provider pages from the same 3,266 records, because three of California's
+    providers file under two spellings each and the count applied no normalisation (#155).
+    The site now derives that figure from the roster it mints the pages from and refuses to
+    render a page whose `coverage.json` disagrees -- which is the right refusal in the wrong
+    place if it first happens mid-prerender on the deploy path, six minutes into a build,
+    as a stack trace out of a React component.
+
+    So it is asked here, where every other "this dataset predates the code" question is
+    asked, and answered by recounting rather than by trusting: `count_providers` is the
+    function `build.py` itself uses, so a dataset it disagrees with was written by a pipeline
+    that counted differently. Recounting rather than checking for a marker key also means a
+    hand-edited coverage file cannot assert its way past this.
+    """
+    coverage_path = dataset_dir / "coverage.json"
+    if not coverage_path.exists():
+        # `miscounted` has already said so, and saying it twice helps nobody.
+        return []
+    try:
+        claimed = json.loads(coverage_path.read_text(encoding="utf-8"))["distinct_providers"]
+    except (OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        return [f"{coverage_path} is unreadable or carries no distinct_providers — {exc}"]
+    counted = count_providers(program.get("provider_name") for program in programs)
+    if claimed != counted:
+        return [
+            f"coverage.json claims {claimed!r} providers and these {len(programs)} records "
+            f"describe {counted}. This dataset was built by a pipeline older than the one "
+            "that counts a provider filing under two spellings of its own name once, so the "
+            "About page and the provider index would publish two different numbers from one "
+            "snapshot (#155)."
+        ]
+    return []
+
+
 def main(argv: Sequence[str]) -> int:
     dataset_dir = Path(argv[0]) if argv else DATA
     if not (dataset_dir / "programs.json").exists():
@@ -166,7 +212,11 @@ def main(argv: Sequence[str]) -> int:
         print(f"dataset-shape-check: dataset unreadable — {exc}")
         return 1
 
-    found = miscounted(dataset_dir, programs) + problems(programs)
+    found = (
+        miscounted(dataset_dir, programs)
+        + provider_count_disagrees(dataset_dir, programs)
+        + problems(programs)
+    )
     if found:
         print("dataset-shape-check: REFUSING — this dataset is not one this code would write")
         for line in found:
