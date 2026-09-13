@@ -8,6 +8,32 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Every page now says which URL it is, and where its other language lives (#156).** A crawl
+  of the live site on 2026-09-13 read 27 URLs out of a `sitemap.xml` holding 9,046 and found
+  **no `<link rel="canonical">` on any of them**; the only canonical anywhere in the export
+  was on `/`, and it was the relative string `/en/`. `/en/`, `/en` and `/en/index.html` all
+  return 200 with identical bytes and nothing to collapse them. Every page under `/[lang]/`
+  now declares an absolute canonical of its own, through `pageMetadata` in `web/lib/site.ts`,
+  which cannot be called without being told the path it describes — deliberately not in
+  `app/[lang]/layout.tsx`, where one inherited value once became the canonical of all ~9,000
+  pages. The same crawl reported **no `hreflang` anywhere**, which was true of the head and
+  false of the site: `app/sitemap.ts` has published 18,092 reciprocal `<xhtml:link
+  rel="alternate" hreflang>` entries all along. It is now declared in each page's head as
+  well — the declaration that survives a page being reached from a link, a share or a search
+  result for the other language — and both sets gain an `x-default` neither carried. The two
+  cannot disagree by construction: `languageAlternates` in `web/lib/site.ts` is the only
+  expression of the en/es relationship and `web/lib/routes.ts` the only list of pages, so the
+  sitemap and each head are one expression read twice. **None of it had ever been gated.**
+  `web/scripts/seo-audit.mjs` (`npm run seo`, in the `verify` chain) reads the built export and
+  refuses a canonical that is missing, relative, duplicated or names another URL; a head whose
+  `hreflang` set differs from the sitemap's for the same URL; an alternate set that is not
+  reciprocal; a sitemap URL with no page behind it; and an indexable page outside the sitemap
+  that names no URL. It refuses to report a pass over nothing — an empty export, a sitemap with
+  no absolute URLs, a collapsed sweep and a route the export never built are failures rather
+  than a short run printing "0 problems". `web/scripts/seo-audit.test.ts` proves it can fail by
+  running it over twelve synthetic exports, each wrong in exactly one of those ways, having
+  first asserted that the intact one passes.
+
 - **Every program record now carries a receipt, and `afterward verify-record` replays one
   (#113).** `scripts/verify_live_site.py` already asks whether the bytes the site serves are
   the bytes of the release it names; that check is the operator's — it needs `gh`, downloads
