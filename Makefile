@@ -131,7 +131,7 @@ publish: publish-preflight
 	  --cache-control "public, max-age=31536000, immutable"
 	@echo "2/4 uploading HTML (every asset it references is already there)"
 	aws s3 sync web/out/ "s3://$(SITE_BUCKET)/" --delete \
-	  --cache-control "public, max-age=300, must-revalidate" --exclude "_next/static/*"
+	  --cache-control "public, max-age=0, must-revalidate" --exclude "_next/static/*"
 	@echo "3/4 invalidating"
 	@id=$$(aws cloudfront create-invalidation --distribution-id $(DISTRIBUTION_ID) \
 	  --paths "/*" --query 'Invalidation.Id' --output text); \
