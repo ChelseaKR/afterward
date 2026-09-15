@@ -25,12 +25,12 @@
     "@cagovweb/design-system": "^0.2.0",
     "next": "^16.3.3",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
+    "@types/react-dom": "^19.3.0",
     "@vitest/coverage-v8": "^5.0.0",
     "axe-core": "^4.13.0",
     "eslint": "^10.10.0",
