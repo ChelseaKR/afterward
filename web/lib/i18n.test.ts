@@ -158,7 +158,7 @@ describe("feedTextLang", () => {
  * single published area, and its city has nothing to do with it.
  *
  * These bind each of the pipeline's five refusals to its own sentence, and bind the
- * unrecognised case to a sentence that names no cause. `tests/test_site_copy.py` holds the
+ * unrecognized case to a sentence that names no cause. `tests/test_site_copy.py` holds the
  * vocabulary itself to `afterward.build.AREA_UNPLACED_REASONS`, so a sixth reason added in
  * Python cannot quietly fall through to the default branch here.
  */
@@ -181,7 +181,7 @@ describe("the stated reason a program has no region", () => {
       for (const sentence of said) expect(sentence.length).toBeGreaterThan(40);
     });
 
-    it(`names no cause at all for a reason it does not recognise, in ${lang}`, () => {
+    it(`names no cause at all for a reason it does not recognize, in ${lang}`, () => {
       // A record built before `region_unplaced_reason` existed carries no key. Reading that
       // as any particular reason would publish a specific cause nobody measured, which is
       // the failure this whole panel exists to avoid.
