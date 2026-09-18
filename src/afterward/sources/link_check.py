@@ -2,7 +2,7 @@
 
 Every program in source D1 may carry a ``field_program_url``, which the site renders as
 "Provider's website". That link is an assertion, and the feed does not maintain it: schools
-close, adult-education domains lapse, and a catalogue page outlives its URL by years. When
+close, adult-education domains lapse, and a catalog page outlives its URL by years. When
 the assertion is wrong the reader is sent nowhere useful by a page that promised otherwise.
 
 This module answers one question per URL, and it answers it in three values, not two:
@@ -18,7 +18,7 @@ This module answers one question per URL, and it answers it in three values, not
     to connect to a name that *does* resolve may just as easily be this end of the wire.
 
 The third value is the whole point. Wrongly marking a real provider's live website as dead
-is its own harm -- it hides a school from someone trying to enrol -- so anything short of
+is its own harm -- it hides a school from someone trying to enroll -- so anything short of
 evidence lands in ``indeterminate`` and the caller must decide what to do with a URL that
 could not be judged.
 
@@ -40,9 +40,9 @@ Manners, since every host here is a small college or an adult school rather than
 GET per URL, its body read only as far as ``</title>`` and never past
 :data:`BODY_READ_CAP` (median 529 characters on the real corpus), one request at a time per
 site with a pause between them, bounded concurrency across sites, retries only for what is
-plausibly transient, ``Retry-After`` honoured, and the honest
+plausibly transient, ``Retry-After`` honored, and the honest
 :data:`~afterward.sources.dol_etp.USER_AGENT` this project uses everywhere else. No browser
-impersonation: a host that wants to refuse this client is entitled to recognise it and do so,
+impersonation: a host that wants to refuse this client is entitled to recognize it and do so,
 which is exactly why a refusal is classified ``indeterminate`` instead of ``dead``.
 
 There was a HEAD before that GET until the body became part of the question. Dropping it
@@ -224,7 +224,7 @@ rest of this module accepts.
 """
 
 CLASSIFIER_VERSION: Final = 2
-"""What this module's judgement is worth, bumped whenever the same response would now be
+"""What this module's judgment is worth, bumped whenever the same response would now be
 classified differently.
 
 ``1`` was the status code and the redirect chain. ``2`` is that plus what a 2xx says it is,
@@ -351,7 +351,7 @@ class LinkCheck:
     attempts: int
     """HTTP requests spent on this URL, so politeness is auditable after the fact."""
     classifier_version: int = CLASSIFIER_VERSION
-    """Which version of this module's judgement produced the verdict.
+    """Which version of this module's judgment produced the verdict.
 
     Written on every check and read by the cache. An entry from an older classifier is not
     wrong -- it is unasked, about whatever the newer one would have looked at -- so it is
@@ -379,7 +379,7 @@ class LinkCheck:
 
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> LinkCheck:
-        """Rebuild from :meth:`as_dict`. Raises on anything it does not recognise."""
+        """Rebuild from :meth:`as_dict`. Raises on anything it does not recognize."""
         reason = payload["reason"]
         if reason not in VERDICT_BY_REASON:
             raise ValueError(f"unknown reason {reason!r}")
@@ -1168,7 +1168,7 @@ NOTICE_FOR_SALE: Final[LinkNotice] = "domain_for_sale"
 """The recorded address answered with a listing offering the domain for sale.
 
 Also a statement about our reading on a date, and deliberately not one about the school. A
-lapsed domain does not mean a closed school: the LAUSD adult centres behind the corpus's
+lapsed domain does not mean a closed school: the LAUSD adult centers behind the corpus's
 largest dead domain are open and teaching, at a different address. What is gone is the
 address, and that is the only thing this notice claims.
 """
@@ -1235,10 +1235,10 @@ class LinkDecision:
     """
 
     classifier_version: int | None = None
-    """Which version of this module's judgement produced :attr:`verdict`.
+    """Which version of this module's judgment produced :attr:`verdict`.
 
     ``None`` exactly where ``verdict`` is ``None``: no classifier ran, so naming one would
-    claim a judgement nobody made.
+    claim a judgment nobody made.
 
     Carried into the emitted record because the published verdict otherwise asserts its own
     currency and nothing can contradict it. :data:`CLASSIFIER_VERSION` exists precisely
@@ -1352,7 +1352,7 @@ def decide(
 
     * **unchecked** -- link it as filed. An unchecked URL is not a dead URL.
     * **alive** -- link it, swapped for a verified ``https`` equivalent where one was
-      observed. A deep path that answered only at the site root is relabelled, not
+      observed. A deep path that answered only at the site root is relabeled, not
       suppressed: the provider is there, the specific page is not.
     * **alive, from another domain** (``redirected_offsite``) -- link it only where
       :mod:`afterward.sources.link_review` establishes that the destination is still this
@@ -1362,9 +1362,9 @@ def decide(
     * **indeterminate** -- link it as filed, say nothing. A 403 is a statement about the
       requester and a timeout is a statement about the wire; neither is evidence about a
       school, and printing "we could not reach this" next to a working institution's WIOA
-      figures would be a false claim about a named organisation.
+      figures would be a false claim about a named organization.
     * **dead** -- do not link the dead path. Where the same host's front page answers *and*
-      no review has found that host is not the provider's, link *that*, labelled as the
+      no review has found that host is not the provider's, link *that*, labeled as the
       provider's home page. Where either half is missing, publish no link and keep the URL as
       plain text. A page that answered 200 while saying in its own title that it is not there
       is dead on exactly these terms: the reader's situation is identical, so the treatment
@@ -1509,7 +1509,7 @@ class LinkCheckSummary:
     upgradeable_pages: int
 
 
-def summarise(
+def summarize(
     checks: Mapping[str, LinkCheck],
     *,
     pages_per_url: Mapping[str, int] | None = None,

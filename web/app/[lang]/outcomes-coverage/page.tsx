@@ -22,7 +22,7 @@ import {
   feedTextLang,
   isLang,
 } from "@/lib/i18n";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 import type { Program } from "@/lib/types";
 
 export function generateStaticParams() {
@@ -33,7 +33,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return shareMetadata(lang, `${t.coverageTitle} | ${t.siteName}`, t.coverageLede);
+  return pageMetadata(
+    lang,
+    "outcomes-coverage/",
+    `${t.coverageTitle} | ${t.siteName}`,
+    t.coverageLede,
+  );
 }
 
 /** Where a reader can check the sources, and where someone can say this got something wrong. */
@@ -166,7 +171,7 @@ function categoryName(t: Copy, lang: Lang, filed: string): string {
 /**
  * Every program record, walked once, and the counts that fall out of it.
  *
- * Memoised at module scope so the English and Spanish pages share a single pass, exactly as
+ * Memoized at module scope so the English and Spanish pages share a single pass, exactly as
  * `corpusFacts` does on the methodology page. The cost is roughly 3,300 file reads, which is
  * negligible beside an export that renders about nine thousand pages out of the same
  * directory, and it is the only way to reach `entity_type` and the cohort counts: the search
@@ -198,7 +203,7 @@ function corpusReport(): EtplCoverageReport {
  *
  * That makes the page useful and also makes it dangerous, in a specific way. A table of who
  * publishes least, sorted, on a site that already names hundreds of real California
- * organisations, would read as an accusation whatever the surrounding prose said. Three
+ * organizations, would read as an accusation whatever the surrounding prose said. Three
  * things hold it to being a measurement instead:
  *
  * 1. Every figure is a count over the dataset taken at build time. Nothing is typed into the

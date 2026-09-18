@@ -13,7 +13,7 @@
  *
  * 1. A null measure is not a zero. Nothing below sums, averages or sorts a null as if it
  *    were one; nulls are counted as their own category and reported as such.
- * 2. Absence is not delinquency. This module measures records, not organisations. Several
+ * 2. Absence is not delinquency. This module measures records, not organizations. Several
  *    provider categories have different federal reporting obligations, so a category with a
  *    high blank rate is a fact about obligations and data plumbing before it is a fact about
  *    anyone's conduct, and the page built on this must say so.
@@ -451,7 +451,7 @@ export interface ProviderSilence {
 /**
  * Provider-level silence, keyed exactly as the provider index keys it.
  *
- * `slugify` rather than a normalisation written here, and that is the whole point: the
+ * `slugify` rather than a normalization written here, and that is the whole point: the
  * browse index this page links to publishes its own count of providers publishing at least
  * one outcome, and two pages one click apart disagreeing about how many training providers
  * California has would undermine both. One identity function, one answer. It also merges the

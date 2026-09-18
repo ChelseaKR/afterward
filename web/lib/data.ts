@@ -136,7 +136,7 @@ export function programsForOccupation(soc: string): SearchIndex["programs"] {
  * An occupation's title in the reader's language: O*NET's Spanish where it exists, the
  * English otherwise.
  *
- * Centralised because the alternative is worse than not translating at all. When only the
+ * Centralized because the alternative is worse than not translating at all. When only the
  * occupation detail page spoke Spanish, a Spanish reader met "Pharmacy Technicians" on a
  * program page, clicked it, and arrived at "Técnicos de Farmacia" — two names for one job,
  * with nothing on either page explaining that they are the same. Consistency is the point.

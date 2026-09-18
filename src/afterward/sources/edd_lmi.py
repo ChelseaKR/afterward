@@ -150,7 +150,7 @@ _COUNTY_SEPARATOR = re.compile(r",|\band\b", re.IGNORECASE)
 _WHITESPACE = re.compile(r"\s+")
 
 
-def normalise_place(name: str | None) -> str | None:
+def normalize_place(name: str | None) -> str | None:
     """Casefold and collapse whitespace so two place names can be compared exactly.
 
     Exactly, and only exactly. No prefix, substring, or edit-distance matching is offered
@@ -246,7 +246,7 @@ def principal_city_areas(areas: Iterable[ProjectionArea]) -> dict[str, Projectio
         if not area.is_metropolitan:
             continue
         for city in area.principal_cities:
-            key = normalise_place(city)
+            key = normalize_place(city)
             if key is not None:
                 claims.setdefault(key, []).append(area)
     return {

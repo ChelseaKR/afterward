@@ -6,7 +6,7 @@ Please report security issues privately through GitHub's
 [private vulnerability reporting](https://github.com/ChelseaKR/afterward/security/advisories/new)
 rather than in a public issue.
 
-Expect an acknowledgement within a week. This is a personal project, not a staffed service,
+Expect an acknowledgment within a week. This is a personal project, not a staffed service,
 so please size your expectations accordingly.
 
 ## Scope
@@ -37,7 +37,10 @@ verifier. The things genuinely worth reporting:
 
 ## Data handling
 
-This project collects nothing. There are no accounts, no cookies set by the application, no
-analytics, and no personally identifiable information in the dataset. The upstream federal
+There are no accounts, no cookies set by the application's own code, and no personally
+identifiable information in the dataset. The site does run Google Analytics 4 (owner decision,
+2026-09-17), which sets its own `_ga` cookies outside the EEA, the UK and Switzerland and is
+off under Global Privacy Control, Do Not Track or the footer opt-out; the About page's
+"Privacy and analytics" section describes exactly what it receives. The upstream federal
 data is aggregated and small cohorts are suppressed at source; that suppression is preserved
 rather than reversed, and no attempt is made to re-identify anyone.

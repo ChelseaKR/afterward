@@ -3,73 +3,57 @@ import type { MetadataRoute } from "next";
 // Required for `output: "export"`: these are files on disk, not routes.
 export const dynamic = "force-static";
 
-import { allOccupationCodes, allProgramIds, getCoverage, getSearchIndex } from "@/lib/data";
 import { LANGUAGES } from "@/lib/i18n";
-import { groupByProvider } from "@/lib/providers";
+import { pathOf, sitePaths } from "@/lib/routes";
 import { SITE_URL } from "@/lib/site";
 
 /**
  * Every page, in both languages, cross-linked with hreflang alternates.
  *
- * Search is how someone finds out that the program they were about to enrol in reports
- * nothing, or trains for work the state expects less of. Being findable is part of the
- * point, not an afterthought.
+ * This is where the site declares its en/es pairing, and the only place it does: 18,092
+ * `<xhtml:link rel="alternate" hreflang>` entries over 9,046 URLs. Sitemap-level hreflang is
+ * a first-class declaration, and at this scale it is the one that does not put three extra
+ * tags in the head of every page. The pages themselves deliberately carry none -- see
+ * `pageAlternates` in `lib/site.ts` -- because two declarations of one relationship are two
+ * things that can disagree, with nothing to say which a crawler believed.
+ *
+ * Which makes the reciprocity of what is written here load-bearing, and it went ungated for
+ * months. A one-way annotation is discarded by search engines, so a bug that made `/en/x/`
+ * name `/es/x/` without being named back would cost the site its entire bilingual-search
+ * story while showing no symptom and building green. `lib/alternates.test.ts` now checks
+ * every URL in both directions, and `scripts/seo-audit.mjs` repeats it over the built file.
+ *
+ * ---- No `lastModified` here, deliberately ----
+ *
+ * It used to be `new Date(getCoverage().snapshot_date)` -- one date, on all 9,046 URLs. That
+ * was a real date belonging to a real thing, and the thing it belongs to is the dataset rather
+ * than the page, so the claim was wrong in both directions at once. It moved for a program
+ * whose row was byte-identical to last month's, because the corpus around it refreshed. And it
+ * did not move when a copy change rewrote a sentence on 165 program pages under an unchanged
+ * dataset, because this site deploys code and data separately. `lastmod` is the one field in a
+ * sitemap that is a factual claim about the content, and nothing this function can see knows
+ * when any one page's content last changed.
+ *
+ * `scripts/lastmod.mjs` does know, because it runs after the export exists and can digest the
+ * bytes: a page whose digest matches the ledger published beside the last deploy keeps the date
+ * it last changed, one whose digest differs is dated now, and one that nothing has yet watched
+ * change carries no date at all. So the dates are added there, from evidence, or not added. That
+ * script refuses an export whose sitemap is already dated, which is what keeps this function
+ * honest after this comment stops being read.
+ *
+ * The URL list itself is `lib/routes.ts`, because each page now emits a canonical derived
+ * from the same list and the two have to agree. It also used to hold a
+ * `replace(/^\/(en|es)\//, ...)` -- a third hand-written copy of `LANGUAGES` that a third
+ * locale would not have updated.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date(getCoverage().snapshot_date);
-  const providers = groupByProvider(getSearchIndex().programs);
-
-  const paths = [
-    ...LANGUAGES.map((lang) => ({ path: `/${lang}/`, priority: 1 })),
-    // The browse indexes rank above any single occupation or provider: each one is the
-    // whole set in one page, and they are the two pages a crawler needs in order to reach
-    // the rest of the site without executing the search.
-    ...LANGUAGES.flatMap((lang) => [
-      { path: `/${lang}/occupations/`, priority: 0.8 },
-      { path: `/${lang}/providers/`, priority: 0.8 },
-      // The funding rules, which used to be repeated inside every program page and are now
-      // one page those pages link to. A crawler that never reaches it would see 6,532 links
-      // pointing at a page absent from the sitemap.
-      { path: `/${lang}/paying-for-training/`, priority: 0.8 },
-      // The coverage page is meant to be cited, by people who will find it through a search
-      // rather than by walking the site. It is the only page here that answers a question
-      // about California's training data as a whole rather than about one program, so a
-      // crawler that cannot reach it is the difference between the page existing and the
-      // page being useful.
-      { path: `/${lang}/outcomes-coverage/`, priority: 0.8 },
-      // The CTDL export's account of itself. Same reasoning as the coverage page and a
-      // narrower audience: the people who would check a mapping against the schema will
-      // arrive from a search or a link, never by walking a training-program site.
-      { path: `/${lang}/ctdl/`, priority: 0.6 },
-    ]),
-    ...LANGUAGES.flatMap((lang) =>
-      allOccupationCodes().map((soc) => ({
-        path: `/${lang}/occupations/${soc}/`,
-        priority: 0.7,
-      })),
-    ),
-    ...LANGUAGES.flatMap((lang) =>
-      providers.map((provider) => ({
-        path: `/${lang}/providers/${provider.slug}/`,
-        priority: 0.6,
-      })),
-    ),
-    ...LANGUAGES.flatMap((lang) =>
-      allProgramIds().map((id) => ({ path: `/${lang}/programs/${id}/`, priority: 0.5 })),
-    ),
-  ];
-
-  return paths.map(({ path, priority }) => ({
-    url: `${SITE_URL}${path}`,
-    lastModified,
+  return sitePaths().map(({ lang, rest, priority }) => ({
+    url: `${SITE_URL}${pathOf({ lang, rest })}`,
     changeFrequency: "yearly" as const,
     priority,
     alternates: {
       languages: Object.fromEntries(
-        LANGUAGES.map((other) => [
-          other,
-          `${SITE_URL}${path.replace(/^\/(en|es)\//, `/${other}/`)}`,
-        ]),
+        LANGUAGES.map((other) => [other, `${SITE_URL}${pathOf({ lang: other, rest })}`]),
       ),
     },
   }));

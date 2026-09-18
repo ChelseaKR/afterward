@@ -112,7 +112,7 @@ export interface OccupationTally {
   unknown: number;
 }
 
-export function summariseOccupations(rows: readonly OccupationRow[]): OccupationTally {
+export function summarizeOccupations(rows: readonly OccupationRow[]): OccupationTally {
   const tally: OccupationTally = { total: rows.length, shrinking: 0, steady: 0, growing: 0, unknown: 0 };
   for (const row of rows) tally[outlookBand(row.change)] += 1;
   return tally;
@@ -202,7 +202,7 @@ export interface ProviderGroup {
  *
  * Alphabetical, unlike the occupation index, because the task here is different: nobody
  * browses 580 training providers looking for the interesting one, they arrive knowing the
- * name of the school they were about to enrol in. The substance goes in the columns.
+ * name of the school they were about to enroll in. The substance goes in the columns.
  */
 export function groupProvidersByLetter(providers: readonly ProviderRow[]): ProviderGroup[] {
   const byLetter = new Map<string, ProviderRow[]>();
@@ -230,7 +230,7 @@ export interface ProviderTally {
   reportingSome: number;
 }
 
-export function summariseProviders(rows: readonly ProviderRow[]): ProviderTally {
+export function summarizeProviders(rows: readonly ProviderRow[]): ProviderTally {
   let programs = 0;
   let reportingSome = 0;
   for (const row of rows) {
@@ -240,7 +240,7 @@ export function summariseProviders(rows: readonly ProviderRow[]): ProviderTally 
   return { providers: rows.length, programs, reportingSome };
 }
 
-/** How many cities to name in a table cell before summarising the rest. */
+/** How many cities to name in a table cell before summarizing the rest. */
 export const CITY_PREVIEW = 3;
 
 /**

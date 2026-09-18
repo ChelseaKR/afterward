@@ -55,9 +55,9 @@ Raising the bar from AA to AAA on 2026-08-05 surfaced real defects, not paperwor
 - The design system's primary button was white on `--primary-70`: 4.6:1 at 18px/600, which
   WCAG does not count as large text, so the threshold was 7:1 and not 4.5:1.
 - Regulation citation links sat on a panel rather than the page — 5.72:1, not the 7.02:1 the
-  same colour reaches on white. Those are the links a reader uses to check a claim about
+  same color reaches on white. Those are the links a reader uses to check a claim about
   someone else's money against the actual rule.
-- The not-reported grey was 6.63:1. It is the most repeated string on the site.
+- The not-reported gray was 6.63:1. It is the most repeated string on the site.
 - The first run of `npm run a11y:rendered` (#29) found two defects in a region no gate had
   ever rendered before: the design system's own `:is(button, a.button):where(:hover)` rule
   outranks `.compare-open`'s un-hovered background on specificity, so hovering or focusing
@@ -69,11 +69,11 @@ Raising the bar from AA to AAA on 2026-08-05 surfaced real defects, not paperwor
 
 ## What no tool can check, and what was done instead
 
-These AAA criteria are judgements. They are listed so their absence is a decision on record
+These AAA criteria are judgments. They are listed so their absence is a decision on record
 rather than a gap nobody noticed.
 
-- **1.4.8 Visual Presentation** — line length, justification, and user-settable colours. The
-  measure is capped at 62ch and text is never justified; user-settable colour is not offered.
+- **1.4.8 Visual Presentation** — line length, justification, and user-settable colors. The
+  measure is capped at 62ch and text is never justified; user-settable color is not offered.
 - **2.4.9 Link Purpose (Link Only)** — axe's rule catches identical text pointing at different
   places, which passes. Whether "Provider's website →" is self-describing out of context is a
   human call; it is judged to be, given its heading.
@@ -90,7 +90,7 @@ rather than a gap nobody noticed.
   rule, in axe or anywhere else, detects that an attribute is *missing*, so `npm run a11y`
   reported zero violations while every Spanish program page carried an unmarked English `<h1>`
   and an unmarked English description paragraph — the two longest, most consequential passages
-  on the page, read to a Spanish-set synthesiser as English words in Spanish phonemes. Found by
+  on the page, read to a Spanish-set synthesizer as English words in Spanish phonemes. Found by
   reading rendered output rather than by any gate (issue #27). `program_name`, `description`
   and `provider_name` have no Spanish counterpart in the feed at all, for any program, and are
   now wrapped in `lang="en"` at every render site — program and provider pages, an occupation's

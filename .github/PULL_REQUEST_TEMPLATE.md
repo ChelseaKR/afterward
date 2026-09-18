@@ -24,7 +24,7 @@ thousand dollars, and a figure that overstates what is known does them real harm
 
 - [ ] Works at 390px wide
 - [ ] Keyboard-reachable, with a visible focus ring
-- [ ] Any new colour pairing is added to `web/scripts/contrast-audit.mjs` — it checks the
+- [ ] Any new color pairing is added to `web/scripts/contrast-audit.mjs` — it checks the
       pairings it is told about and nothing else, so a control that is not listed is
       unchecked rather than passing
 

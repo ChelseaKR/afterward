@@ -146,7 +146,7 @@ measured on.
 1. **The only thing this rule asks of a crosswalk is a county *set*, not a share.** HUD's
    USPS crosswalk gives residential and business address ratios per ZIP-county pair, and the
    rule here is "one area or unplaced" — never "the county with the largest share", which
-   would be a judgement of exactly the kind this project avoids. The ratios are therefore
+   would be a judgment of exactly the kind this project avoids. The ratios are therefore
    not an advantage; they are a temptation the rule has already refused.
 2. **It is decennial, not periodic.** The 2020 relationship files are a fixed product of the
    2020 census and do not move until the 2030 geography is published. HUD's is republished
@@ -384,7 +384,7 @@ denominators), `CIP_Title`, `provider_unique_id` and `de172`. The API in turn ho
 dictionary-deprecated `field_tags`, plus Drupal search-index internals that are not data.
 
 That makes the bulk file worth reading **beside** the API for one specific gap, on its own
-vintage and labelled as such, and not worth reading instead of it. Nothing in this change
+vintage and labeled as such, and not worth reading instead of it. Nothing in this change
 ingests it.
 
 ### Notes on D1B: reading the bulk export beside the API, measured 2026-09-07
@@ -453,7 +453,7 @@ it: the DOL endpoint answers a runner with 403 and nothing here fetches the file
 carry the reconstruction rate, and no program page shows a denominator, because whether a
 denominator on an older vintage may sit on a program page beside a newer rate at all — or may
 appear only on `/outcomes-coverage/` as a methodological statement about the measure — is a
-judgement about what this site claims, in two languages, and #127 says so. The data half is
+judgment about what this site claims, in two languages, and #127 says so. The data half is
 built and measured; the rendering decision is not made here. `employment_denominator` is
 deliberately absent from `SITE_COVERAGE_KEYS` for that reason: the site does not read it, and
 the shape check must not claim it does.
@@ -503,7 +503,7 @@ was read via the Wayback Machine's 2024 capture) name three distinct elements:
 
 - **DE121** (`total_exited`) — "the total number of students who completed, withdrew, or
   transferred from this program of study **in the reporting period**."
-- **DE123** (`employed_q2`) — explicitly labelled "**(Numerator)**" — "the total number of
+- **DE123** (`employed_q2`) — explicitly labeled "**(Numerator)**" — "the total number of
   ... exiters who were in the 2nd quarter after exit and have been determined to be in
   unsubsidized employment ... within the reporting period."
 - **DE129**, the rate's actual denominator (`c_q2_employment_percent` = DE123/DE129, per the

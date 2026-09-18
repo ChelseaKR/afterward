@@ -81,7 +81,7 @@
           "entity_type": 3266
         },
         "ctdl_term": "ceterms:agentSectorType",
-        "reason": "The source's provider category -- 'Higher Ed: Associate's Degree' and the like -- does not map onto CTDL's agent-sector concept scheme without judgement calls, and credreg.net serves that scheme as an HTML page rather than as fetchable data. The organization carries the name the source filed and nothing else."
+        "reason": "The source's provider category -- 'Higher Ed: Associate's Degree' and the like -- does not map onto CTDL's agent-sector concept scheme without judgment calls, and credreg.net serves that scheme as an HTML page rather than as fetchable data. The organization carries the name the source filed and nothing else."
       },
       "wioa_funded_cost": {
         "reported_in_source": 3266,

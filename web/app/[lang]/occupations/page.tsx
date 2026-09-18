@@ -9,7 +9,7 @@ import {
   groupOccupations,
   programCount,
   programCountsBySoc,
-  summariseOccupations,
+  summarizeOccupations,
 } from "@/lib/browse";
 import {
   allOccupationCodes,
@@ -20,7 +20,7 @@ import {
 } from "@/lib/data";
 import { count, money, signedPercent } from "@/lib/format";
 import { LANGUAGES, type Lang, dict, isLang } from "@/lib/i18n";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 import { translateTerm } from "@/lib/vocabulary";
 
 type Dictionary = ReturnType<typeof dict>;
@@ -33,8 +33,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   const { lang } = await params;
   if (!isLang(lang)) return {};
   const t = dict(lang);
-  return shareMetadata(
+  return pageMetadata(
     lang,
+    "occupations/",
     `${t.browseOccupationsTitle} | ${t.siteName}`,
     t.browseOccupationsIntro,
   );
@@ -104,7 +105,7 @@ export default async function OccupationsIndexPage({
   }
 
   const bands = groupOccupations(rows);
-  const tally = summariseOccupations(rows);
+  const tally = summarizeOccupations(rows);
 
   return (
     <div className="shell browse">

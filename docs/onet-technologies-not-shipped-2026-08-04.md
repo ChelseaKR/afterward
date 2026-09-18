@@ -59,5 +59,5 @@ outcomes everywhere else on the site.
 ## What would change the answer
 
 An importance or frequency rating per occupation-software pair, which O*NET publishes for
-tasks but not here. With that, "the software this work actually centres on" becomes a claim
+tasks but not here. With that, "the software this work actually centers on" becomes a claim
 the data can support. Rarity is a proxy for it and, as measured above, not a good one.

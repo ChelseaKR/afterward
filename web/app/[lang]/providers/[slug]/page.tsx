@@ -9,7 +9,7 @@ import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
 import { findProvider, groupByProvider } from "@/lib/providers";
 import { isShrinking } from "@/lib/search";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   const providers = groupByProvider(getSearchIndex().programs);
@@ -21,7 +21,7 @@ export function generateStaticParams() {
  *
  * These are the pages people reach by searching a school's name, which makes them the most
  * consequential results on the site: this is where someone finds out what the college they
- * were about to enrol in publishes about itself. The name leads, the city follows, and the
+ * were about to enroll in publishes about itself. The name leads, the city follows, and the
  * site's own name appears nowhere — a result reading "… | Afterward" spends its most valuable
  * characters on the one word a stranger cannot use.
  *
@@ -31,7 +31,7 @@ export function generateStaticParams() {
  * would name Fresno on a page listing programs in Fresno, Madera and Visalia.
  *
  * The same pair is what a shared link now unfurls as. Someone sending a colleague the page
- * for the college they were about to enrol in was, until this, sending them a card with the
+ * for the college they were about to enroll in was, until this, sending them a card with the
  * site's name on it and the school's name nowhere.
  */
 export async function generateMetadata({
@@ -53,8 +53,9 @@ export async function generateMetadata({
   // provider publishes nothing at all, which is a fact and is the point of showing it.
   const reporting = provider.programs.filter((program) => program.r).length;
 
-  return shareMetadata(
+  return pageMetadata(
     lang,
+    `providers/${slug}/`,
     t.metaProviderTitle(tidyName(provider.name), provider.programs.length, place),
     t.metaProviderDescription(reporting, provider.programs.length),
   );

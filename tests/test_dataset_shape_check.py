@@ -22,6 +22,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from afterward.providers import count_providers
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 
@@ -51,22 +53,30 @@ def _program(**over: Any) -> dict[str, Any]:
     return {**base, **over}
 
 
-def _dataset(tmp_path: Path, *programs: dict[str, Any], claims: int | None = None) -> Path:
+def _dataset(
+    tmp_path: Path,
+    *programs: dict[str, Any],
+    claims: int | None = None,
+    providers: int | None = None,
+) -> Path:
     """A dataset directory in the shape both gate paths hand this script.
 
     ``coverage.json`` is written beside ``programs.json`` because that is what a real dataset
     directory holds, on the operator's disk and inside the release tarball alike, and the
-    count in it is what this gate now checks the programs list against. ``claims`` overrides
-    it, which is the only way to write the shape being tested: the two files disagreeing.
+    counts in it are what this gate checks the programs list against. ``claims`` and
+    ``providers`` override them, which is the only way to write the shapes being tested: the
+    two files disagreeing about how many programs, or about how many providers.
     """
     (tmp_path / "programs.json").write_text(
         json.dumps({"snapshot_date": "2026-08-07", "programs": list(programs)}), encoding="utf-8"
     )
+    counted = count_providers(program.get("provider_name") for program in programs)
     (tmp_path / "coverage.json").write_text(
         json.dumps(
             {
                 "snapshot_date": "2026-08-07",
                 "total_programs": len(programs) if claims is None else claims,
+                "distinct_providers": counted if providers is None else providers,
             }
         ),
         encoding="utf-8",
@@ -238,6 +248,63 @@ class TestAGateThatMeasuredNothingHasNotPassed:
 
     def test_agreement_passes(self, tmp_path: Path) -> None:
         assert dataset_shape_check.miscounted(_dataset(tmp_path, _program()), [_program()]) == []
+
+
+class TestADatasetCountingProvidersByTheOldRuleIsRefused:
+    """The shape that was live on 2026-09-13, and why it is caught here rather than later.
+
+    `dataset-2026-09-12` published 584 providers in `coverage.json` over records that
+    describe 581, because three of California's providers file under two spellings each and
+    that count applied no normalization (#155). The site now derives the figure from the
+    roster it mints provider pages from, so it would refuse to render the About page against
+    that dataset -- correctly, but six minutes into a deploy and as a stack trace out of a
+    React component. This asks the same question where every other "the dataset predates the
+    code" question is asked.
+    """
+
+    @staticmethod
+    def _shouting(**over: Any) -> dict[str, Any]:
+        return _program(uuid="f6903298-31e5-11f1-8f5f-00155dd2f085", **over)
+
+    def test_two_spellings_counted_twice_is_refused(self, tmp_path: Path) -> None:
+        one = _program(provider_name="Procareer Academy")
+        other = self._shouting(provider_name="PROCAREER ACADEMY")
+        found = dataset_shape_check.provider_count_disagrees(
+            _dataset(tmp_path, one, other, providers=2), [one, other]
+        )
+        assert found
+        assert "claims 2 providers" in found[0]
+        assert "describe 1" in found[0]
+        assert "#155" in found[0]
+
+    def test_it_exits_nonzero(self, tmp_path: Path) -> None:
+        one = _program(provider_name="Procareer Academy")
+        other = self._shouting(provider_name="PROCAREER ACADEMY")
+        assert dataset_shape_check.main([str(_dataset(tmp_path, one, other, providers=2))]) == 1
+
+    def test_a_dataset_counted_by_the_current_rule_passes(self, tmp_path: Path) -> None:
+        one = _program(provider_name="Procareer Academy")
+        other = self._shouting(provider_name="PROCAREER ACADEMY")
+        dataset = _dataset(tmp_path, one, other)
+        assert dataset_shape_check.provider_count_disagrees(dataset, [one, other]) == []
+        assert dataset_shape_check.main([str(dataset)]) == 0
+
+    def test_it_recounts_rather_than_trusting_a_marker(self, tmp_path: Path) -> None:
+        """A hand-edited coverage file cannot assert its way past this: the number is
+        recomputed from the records, by the same function `build.py` uses."""
+        one = _program(provider_name="Procareer Academy")
+        assert dataset_shape_check.provider_count_disagrees(
+            _dataset(tmp_path, one, providers=99), [one]
+        )
+
+    def test_a_coverage_file_with_no_provider_count_is_refused(self, tmp_path: Path) -> None:
+        (tmp_path / "programs.json").write_text(
+            json.dumps({"programs": [_program()]}), encoding="utf-8"
+        )
+        (tmp_path / "coverage.json").write_text(json.dumps({"total_programs": 1}), encoding="utf-8")
+        found = dataset_shape_check.provider_count_disagrees(tmp_path, [_program()])
+        assert found
+        assert "distinct_providers" in found[0]
 
 
 class TestTheGateIsWiredIntoBothPathsAStaleDatasetTravels:

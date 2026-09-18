@@ -1,7 +1,23 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { describe, expect, it } from "vitest";
 
-import { findProvider, groupByProvider, slugify } from "./providers";
+import { findProvider, groupByProvider, providerPopulation, slugify } from "./providers";
 import type { SearchEntry } from "./types";
+
+/**
+ * The identity table both languages are held to.
+ *
+ * `slugify` here mints the URL; `provider_slug` in `src/afterward/providers.py` counts the
+ * providers `coverage.json` publishes. Neither can call the other, so the rule is written
+ * twice and this file is what stops that from being two rules — `tests/test_providers.py`
+ * asserts the same rows. A change to either implementation that the table does not sanction
+ * turns the other language's suite red. See #155.
+ */
+const IDENTITY = JSON.parse(
+  readFileSync(fileURLToPath(new URL("../../fixtures/provider-identity.json", import.meta.url)), "utf-8"),
+) as { cases: { name: string; slug: string }[]; collisions: [string, string][] };
 
 function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
   return {
@@ -50,6 +66,82 @@ describe("slugify", () => {
 
   it("returns an empty slug for a name with nothing usable", () => {
     expect(slugify("!!!")).toBe("");
+  });
+});
+
+describe("the shared identity table", () => {
+  it("has cases in it", () => {
+    // A table that emptied itself would pass every assertion below it without being read.
+    expect(IDENTITY.cases.length).toBeGreaterThanOrEqual(15);
+    expect(IDENTITY.collisions.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it("slugs every case the way the table says, and so does the pipeline", () => {
+    const wrong = IDENTITY.cases
+      .filter((entry) => slugify(entry.name) !== entry.slug)
+      .map((entry) => ({ name: entry.name, got: slugify(entry.name), want: entry.slug }));
+    expect(wrong).toEqual([]);
+  });
+
+  it("merges every pair the table calls one provider", () => {
+    for (const [first, second] of IDENTITY.collisions) {
+      expect(first).not.toBe(second);
+      expect(slugify(first)).toBe(slugify(second));
+      expect(slugify(first)).not.toBe("");
+    }
+  });
+
+  it("keeps the filings that made the About page and the index disagree", () => {
+    // Named rather than counted, so an edit cannot quietly drop the evidence for #155 while
+    // leaving the table the right size.
+    const names = new Set(IDENTITY.cases.map((entry) => entry.name));
+    for (const name of [
+      "PROCAREER ACADEMY",
+      "Procareer Academy",
+      "DIALYSIS EDUCATION SERVICES LLC",
+      "Dialysis Education Services, LLC",
+      "Virtual Design & Construction Institute",
+      "Virtual Design and Construction Institute",
+    ]) {
+      expect(names).toContain(name);
+    }
+  });
+});
+
+describe("providerPopulation", () => {
+  /** Six filings from three providers: the shape that made one snapshot publish two numbers. */
+  const sixFilings = [
+    entry({ i: "a", p: "PROCAREER ACADEMY" }),
+    entry({ i: "b", p: "Procareer Academy" }),
+    entry({ i: "c", p: "DIALYSIS EDUCATION SERVICES LLC" }),
+    entry({ i: "d", p: "Dialysis Education Services, LLC" }),
+    entry({ i: "e", p: "Virtual Design & Construction Institute" }),
+    entry({ i: "f", p: "Virtual Design and Construction Institute" }),
+  ];
+
+  it("counts the providers a reader can go and visit, not the names on file", () => {
+    expect(new Set(sixFilings.map((e) => e.p)).size).toBe(6);
+    expect(providerPopulation(sixFilings, 3)).toBe(3);
+  });
+
+  it("agrees with the roster that mints the provider pages", () => {
+    expect(providerPopulation(sixFilings, 3)).toBe(groupByProvider(sixFilings).length);
+  });
+
+  it("refuses to build when coverage.json declares a different number", () => {
+    // The old About-page figure, on these six filings. A static export that shipped both is
+    // the defect; there is no rendering of the disagreement better than not shipping it.
+    expect(() => providerPopulation(sixFilings, 6)).toThrow(/Two provider counts for one snapshot/);
+    expect(() => providerPopulation(sixFilings, 6)).toThrow(/roster holds 3 and coverage.json declares 6/);
+  });
+
+  it("does not count a filing whose name carries no identity", () => {
+    const withBlanks = [
+      entry({ i: "a", p: "Merced College" }),
+      entry({ i: "b", p: "!!!" }),
+      entry({ i: "c", p: "   " }),
+    ];
+    expect(providerPopulation(withBlanks, 1)).toBe(1);
   });
 });
 

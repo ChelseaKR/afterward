@@ -98,7 +98,7 @@ describe("tidyName", () => {
   });
 });
 
-describe("localisation", () => {
+describe("localization", () => {
   it("uses US grouping for Spanish, matching what CA Spanish speakers read daily", () => {
     // es-US deliberately, not es-ES: the audience is in California, where a comma is the
     // thousands separator on every pay stub and utility bill they already receive.

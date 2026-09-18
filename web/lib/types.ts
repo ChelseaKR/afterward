@@ -2,7 +2,7 @@
  * Shapes emitted by the Python pipeline (see src/afterward/build.py).
  *
  * Every outcome number is `number | null`. Null means the measure was withheld or never
- * reported, which is not the same as zero, and the type system is the first line of defence
+ * reported, which is not the same as zero, and the type system is the first line of defense
  * against collapsing that distinction.
  */
 
@@ -32,7 +32,7 @@ export interface RegionalProjection extends OccupationSummary {
  */
 export interface ProgramArea {
   area_name: string | null;
-  /** The area title without its county gloss, for labelling a figure inline. */
+  /** The area title without its county gloss, for labeling a figure inline. */
   area_short_name: string | null;
   area_type: string | null;
   /** How the area was decided, emitted so the claim can be audited rather than trusted. */
@@ -91,7 +91,7 @@ export type MatchKind = "exact" | "soc_broad_group" | "bls_hybrid_occupation";
  * a null `entry_level_education` and mean opposite things. True means California *did* publish
  * a typical-entry credential and this project declined to attach it, because a credential
  * assigned to a union of occupations is a different answer rather than an approximate one —
- * a master's degree read off a mental-health-counsellor aggregate is simply wrong about a
+ * a master's degree read off a mental-health-counselor aggregate is simply wrong about a
  * community-college substance-use certificate. False means there was nothing published to
  * attach. Only the second is the provider's silence, and the withheld case must never borrow
  * the interface's "not reported" explanation.
@@ -132,7 +132,7 @@ export interface ProgramOccupation extends OccupationSummary {
  * same collapse this file exists to prevent for wages and openings.
  *
  * The number arrives with no scale attached: the record says `4.12` and nothing about what
- * 4.12 is out of. Consumers can therefore honour the *order* the ratings give but must not
+ * 4.12 is out of. Consumers can therefore honor the *order* the ratings give but must not
  * present the figure as a score, a percentage, or a proportion of any maximum.
  */
 export interface OccupationSkill {
@@ -147,10 +147,10 @@ export interface OccupationSkill {
  * `importance` is O*NET's rating exactly as published, and null means the source named the
  * task without rating it — absence of a rating, never a rating of zero. The pipeline sorts
  * by this and keeps the eight highest, so a null sorted as 0 would silently drop a task the
- * source never judged at all in favour of one it judged unimportant.
+ * source never judged at all in favor of one it judged unimportant.
  *
  * The number arrives with no scale attached, exactly as `OccupationSkill.importance` does.
- * Consumers may honour the *order* it gives and must not print it as a score.
+ * Consumers may honor the *order* it gives and must not print it as a score.
  *
  * `description` is a whole English sentence and is not translated anywhere: the API serves
  * English only. A page showing these has to say so rather than let a Spanish reader take the
@@ -245,7 +245,7 @@ export interface OnetRelatedOccupation {
  * How `Occupation.related` was arrived at. The two are different claims, not two routes to
  * the same one, and anything rendering the list has to say which it is showing.
  *
- * `"onet"` — O*NET's own list: a judgement about the work itself, that someone doing this
+ * `"onet"` — O*NET's own list: a judgment about the work itself, that someone doing this
  * job could plausibly do that one. Kept in O*NET's order, which is its relevance ranking.
  *
  * `"soc_major_group"` — occupations whose SOC code starts with the same two digits. That is
@@ -273,7 +273,7 @@ export interface WagePercentiles {
 export interface WageSpread extends WagePercentiles {
   year: number | null;
   /**
-   * The same percentiles for each published labour-market area, keyed by the area's short
+   * The same percentiles for each published labor-market area, keyed by the area's short
    * name — the string both OEWS and the projections use, so the join is an equality test.
    * Empty for an occupation the Bureau publishes no regional rows for.
    */
@@ -323,7 +323,7 @@ export interface Occupation extends OccupationSummary {
    *
    * Null on a dataset built before any `fetch-wages` run. Each percentile is independently
    * suppressible at source and stays null where it was suppressed — never interpolated from
-   * its neighbours and never read as zero.
+   * its neighbors and never read as zero.
    */
   wage_spread: WageSpread | null;
   /**
@@ -463,12 +463,12 @@ export interface ProviderLink {
    * Only `same_provider` is linked. `unresolved` is the common case and is not a fault: a
    * redirect cannot tell a rebrand from a hijacked domain, so an unconfirmed one is published
    * as unconfirmed. A dataset built before the review carries null on a `redirected_offsite`
-   * link, which is how the packaging gate recognises it.
+   * link, which is how the packaging gate recognizes it.
    */
   redirect: "same_provider" | "unrelated" | "for_sale" | "unresolved" | null;
   /**
    * Which version of the link classifier reached `verdict`, and null exactly where `verdict`
-   * is null — no classifier ran, so naming one would claim a judgement nobody made.
+   * is null — no classifier ran, so naming one would claim a judgment nobody made.
    *
    * A verdict published without it asserts its own currency and nothing can contradict it: a
    * report read into a build carries whatever classifier version it was written by, and a
@@ -485,7 +485,7 @@ export interface ProviderLink {
  * Every program in this dataset was on California's Eligible Training Provider List when the
  * state last reported it, and under 20 CFR 680.410 that listing is what allows an Individual
  * Training Account to pay a provider for someone's training. None of this decides anything:
- * eligibility is determined by a one-stop centre after an interview (20 CFR 680.220), against
+ * eligibility is determined by a one-stop center after an interview (20 CFR 680.220), against
  * policies 45 separate local boards set for themselves.
  *
  * That is why `FundingGuidance.who_decides` is a required field of the same object that carries
@@ -501,9 +501,9 @@ export interface ProviderLink {
  * veterans' representative" — the difference decides whether a veteran makes the trip.
  *
  * `center_type` is the finder's own label, kept verbatim; `is_comprehensive` is the derived
- * reading of it and is null when the record carries no type at all. A comprehensive centre gives
+ * reading of it and is null when the record carries no type at all. A comprehensive center gives
  * access to every required partner program (20 CFR 678.305); an affiliate site need not
- * (678.310). Both are real answers to "where do I go", so both are published and labelled.
+ * (678.310). Both are real answers to "where do I go", so both are published and labeled.
  *
  * Published once per dataset in `Coverage.local_help.centers`, because the same three offices are
  * the nearest ones to hundreds of programs. Program records point into it by id.
@@ -516,7 +516,7 @@ export interface AmericanJobCenter {
   city: string | null;
   state: string | null;
   postal_code: string | null;
-  /** The only channel populated for all 183 California centres. Show it first. */
+  /** The only channel populated for all 183 California centers. Show it first. */
   phone: string | null;
   email: string | null;
   website: string | null;
@@ -534,7 +534,7 @@ export interface AmericanJobCenter {
 }
 
 /**
- * A centre attached to one program, by id, with how far away it is.
+ * A center attached to one program, by id, with how far away it is.
  *
  * `miles` is a straight-line distance, so it is a floor on the journey rather than the journey.
  * Anything showing it has to say "about", and null means the distance is unknown — never zero,
@@ -546,13 +546,13 @@ export interface NearbyCenter {
 }
 
 /**
- * The nearest centres to one program.
+ * The nearest centers to one program.
  *
  * Three states, and collapsing any two of them tells a reader something false:
  *
  * - `centers: null` — none were looked for. The build had no credentials to read the directory,
  *   or the program's own record carries no coordinates to search from.
- * - `centers: []` — looked for, and there is no centre within `radius_miles`. True of 32 of
+ * - `centers: []` — looked for, and there is no center within `radius_miles`. True of 32 of
  *   California's 3,266 programs, and a real finding those pages should state.
  * - a list — the nearest ones, closest first.
  */
@@ -582,7 +582,7 @@ export interface FundingStep {
   citations: FundingCitation[];
 }
 
-/** Who can answer a question. Sending someone to a job centre to ask about a syllabus wastes
+/** Who can answer a question. Sending someone to a job center to ask about a syllabus wastes
  * the appointment, and the reverse wastes a phone call. */
 export type FundingAudience = "job_center" | "provider";
 
@@ -610,7 +610,7 @@ export interface FundingGuidance {
   finders: FundingCitation[];
 }
 
-/** How close the nearest centre is to each city this dataset publishes a program in. */
+/** How close the nearest center is to each city this dataset publishes a program in. */
 export interface CenterCoverageBand {
   miles: number;
   with_any_center: number;
@@ -731,7 +731,7 @@ export interface SearchEntry {
   p: string | null;
   c: string | null;
   /**
-   * Short name of the published EDD labour-market area this program was placed in
+   * Short name of the published EDD labor-market area this program was placed in
    * ("Fresno MSA"), or null when neither placement rule reached it.
    *
    * Null means unplaced, which is a third state distinct from both "not reported" and any

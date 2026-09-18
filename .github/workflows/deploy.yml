@@ -344,7 +344,41 @@ jobs:
         working-directory: web
         env:
           NEXT_PUBLIC_SITE_URL: ${{ env.SITE_URL }}
+          # Google Analytics 4 (owner decision, 2026-09-17). Measurement IDs are public, so
+          # this is a literal, and this is the only place it is set: CI, local and preview
+          # builds carry no ID and load no GA. web/lib/analytics.ts also refuses any host but
+          # afterward.chelseakr.com, and GPC, Do Not Track and the footer opt-out. Set it to
+          # '' to turn GA off on the next deploy.
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: G-GXZNBWJB8D
         run: npm run build
+
+      - name: Date the sitemap from the pages that actually changed
+        # `app/sitemap.ts` publishes no <lastmod>: it has no per-page date to publish one from.
+        # This step does, by digesting every exported page and comparing it against the ledger
+        # the last deploy left behind at ${SITE_URL}/lastmod.json. A page whose bytes are
+        # unchanged keeps the date it last changed; one whose bytes differ is dated today,
+        # because today is when it changed; one nothing has yet watched change carries no date.
+        #
+        # The fetch is of this site's own published file over plain HTTPS -- no AWS call, no
+        # credential, and nothing about a reader. If it fails, or if there is no ledger yet
+        # (the first deploy after this lands is that case), this deploy publishes a sitemap
+        # with no <lastmod> at all and writes the ledger that dates the next one. That is the
+        # honest degradation: an absent field, said out loud in the log and the summary, rather
+        # than a date invented to fill the space.
+        working-directory: web
+        run: |
+          set -euo pipefail
+          previous="${RUNNER_TEMP}/previous-lastmod.json"
+          if curl -fsS --max-time 60 "${SITE_URL}/lastmod.json" -o "$previous"; then
+            bytes=$(wc -c < "$previous")
+            echo "Read the published ledger from ${SITE_URL}/lastmod.json (${bytes} bytes)."
+            echo "LASTMOD_PREVIOUS=published" >> "${GITHUB_ENV}"
+            npm run lastmod -- --previous "$previous"
+          else
+            echo "::warning::No ledger at ${SITE_URL}/lastmod.json -- this deploy publishes a sitemap with no <lastmod>, and the ledger it writes will date the next one."
+            echo "LASTMOD_PREVIOUS=none" >> "${GITHUB_ENV}"
+            npm run lastmod
+          fi
 
       - name: Verify the built artifact before anything leaves the runner
         # GUARD 2, second half, plus a shape check on the export itself. Everything here is
@@ -355,7 +389,7 @@ jobs:
           cd web/out
 
           missing=""
-          for required in index.html 404.html robots.txt sitemap.xml en/index.html es/index.html; do
+          for required in index.html 404.html robots.txt sitemap.xml lastmod.json en/index.html es/index.html; do
             [ -f "$required" ] || missing="${missing} ${required}"
           done
           if [ -n "$missing" ]; then
@@ -627,7 +661,7 @@ jobs:
           print(f"  ok  live dataset {live['snapshot_date']}, {live['total_programs']} programs")
           PY
 
-      - name: Summarise
+      - name: Summarize
         if: always()
         run: |
           {
@@ -640,6 +674,7 @@ jobs:
             echo "| Dataset release | \`${DATASET_TAG:-not downloaded}\` |"
             echo "| Snapshot | ${DATASET_SNAPSHOT:-unknown} |"
             echo "| Programs | ${DATASET_PROGRAMS:-unknown} |"
+            echo "| Sitemap dates from | ${LASTMOD_PREVIOUS:-not reached} |"
             echo "| Objects published | ${UPLOADED_OBJECTS:-none} |"
             echo "| Invalidation | ${INVALIDATION_ID:-none} |"
             echo "| Reason given | ${DEPLOY_REASON:-none} |"

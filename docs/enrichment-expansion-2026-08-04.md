@@ -18,7 +18,7 @@
 `src/camino/sources/careeronestop.py` asked source D6 for two things: `relatedOnetTitles`
 and `skills`. The endpoint returns considerably more. This is the record of what was taken,
 what was refused, what it measures out at across all 670 California occupations, and one
-judgement call that the pipeline has been waiting on.
+judgment call that the pipeline has been waiting on.
 
 The test for inclusion was narrow and applied to every field: **does knowing this change
 whether a person spends a year and several thousand dollars on a training program?** A
@@ -113,12 +113,12 @@ during probing and both were rejected. Knowledge has a real argument in its favo
 domain-concrete ("Medicine and Dentistry", "Building and Construction") where the skills
 list is abstract ("Critical Thinking", "Operations Monitoring"). It was still refused,
 because it does not change the decision — nobody weighing a nursing program is surprised
-that the job involves medicine — and it would put a second unlabelled 1-to-5 O\*NET rating
+that the job involves medicine — and it would put a second unlabeled 1-to-5 O\*NET rating
 scale on a page that already carries one. Two rated lists side by side, on the same
 unexplained scale, dilute rather than inform.
 
 Ability is a firmer no. "Mathematical Reasoning: 3.0", "Category Flexibility: 3.38" is
-aptitude framing. On a page whose purpose is to help someone decide to enrol, a list of
+aptitude framing. On a page whose purpose is to help someone decide to enroll, a list of
 innate capacities scored out of five reads as a screening test, and it is not actionable:
 there is no response to a low ability rating except discouragement. *What would change this:*
 if the interface ever grows a proper explanation of the O\*NET scale, Knowledge is the first
@@ -128,7 +128,7 @@ field to reconsider. Ability is not.
 interest inventories are a guidance instrument that means something when a person has taken
 one, and nothing when it is printed at them.
 
-**`Dwas` (detailed work activities, 41 entries).** These are the generalised forms of the
+**`Dwas` (detailed work activities, 41 entries).** These are the generalized forms of the
 tasks — "Analyze test data or images to inform diagnosis or treatment" where the task says
 "Order, interpret, and evaluate diagnostic tests". Strictly redundant with a field already
 taken, and less concrete. Refused.
@@ -222,7 +222,7 @@ a backfill — writes one the module will accept, rather than duplicating the sh
 
 This did break `tests/test_build.py::TestFetchEnrichment::test_a_warm_cache_is_served_without_a_request`,
 which wrote a bare payload and asserted it was served. That is not a design that survives a
-parameter change: any invalidation rule at all makes a bare, unlabelled entry a miss. The
+parameter change: any invalidation rule at all makes a bare, unlabeled entry a miss. The
 test now asserts the real contract — an entry matching the current parameter set is served
 without a request, and one recorded as fetched without `tasks` is not.
 
@@ -237,7 +237,7 @@ regardless of what is or is not on disk.
 The pipeline withholds `entry_level_education` on **135 program rows** because those
 programs match through an aggregate whose single credential category can be flatly wrong for
 the specific program — `21-1018` reading "Master's degree" onto community-college
-substance-use-counselling certificates. The question put to this task was whether the
+substance-use-counseling certificates. The question put to this task was whether the
 distribution can stand in.
 
 The first finding was discouraging. **All 12 aggregates 404 on this API.** They are BLS
@@ -266,10 +266,10 @@ attainment figures were measured for a *different* population than the page they
 appear on is **zero**. `reported_for_soc` is on the record so that this stays checkable
 rather than assumed.
 
-### The judgement: yes, but not in that slot, and it is not a replacement
+### The judgment: yes, but not in that slot, and it is not a replacement
 
 **It can be published where the category is withheld.** The reason for the withholding does
-not transfer. The category is a *requirement claim* — BLS's judgement of what a person
+not transfer. The category is a *requirement claim* — BLS's judgment of what a person
 typically needs to enter — assigned once to a whole union of occupations, and inherited by a
 member it may not fit. The distribution is a *population measurement* of a group the trainee
 will belong to. It makes no claim about any individual or any member, so it cannot be wrong
@@ -292,7 +292,7 @@ misleading, sourced from the same agency.
    more decimal places. It can only be published as attainment, visibly not a requirement.
 2. **It does not resolve the aggregation problem, it declines to commit the specific error.**
    `21-1018` is a blend of two halves with genuinely different credentials, and 55.7%
-   master's is driven by the mental-health-counselling half. A certificate student could
+   master's is driven by the mental-health-counseling half. A certificate student could
    read it and conclude the field is closed to them. That is the opposite error, and it is
    still an error. The distribution is honest about the union and silent about the split.
 3. **It is national; every other figure on the page is California.** EDD does not publish

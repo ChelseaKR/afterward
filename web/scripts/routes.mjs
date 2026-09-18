@@ -28,7 +28,7 @@ import { join } from "node:path";
 export const APP_DIR = fileURLToPath(new URL("../app", import.meta.url));
 export const I18N_FILE = fileURLToPath(new URL("../lib/i18n.ts", import.meta.url));
 
-/** Next's route groups: a directory in parentheses organises files and is not a URL segment. */
+/** Next's route groups: a directory in parentheses organizes files and is not a URL segment. */
 const ROUTE_GROUP = /^\(.*\)$/;
 
 /**
@@ -116,13 +116,13 @@ export function isPerLanguage(template) {
  * within a rounding error, and measuring both would double a slow pass for no signal.
  */
 export function uncovered(paths, { appDir = APP_DIR, i18nFile = I18N_FILE, langs } = {}) {
-  const normalised = paths.filter(Boolean).map((path) => path.split("\\").join("/"));
+  const normalized = paths.filter(Boolean).map((path) => path.split("\\").join("/"));
   const wanted = langs ?? languages(i18nFile);
   const missing = [];
   for (const template of routeTemplates(appDir)) {
     for (const lang of isPerLanguage(template) ? wanted : [null]) {
       const pattern = exportedPagePattern(template, lang);
-      if (!normalised.some((path) => pattern.test(path))) {
+      if (!normalized.some((path) => pattern.test(path))) {
         missing.push(lang === null ? template : `${template} (${lang})`);
       }
     }
