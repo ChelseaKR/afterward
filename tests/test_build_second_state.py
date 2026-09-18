@@ -47,7 +47,7 @@ def program(city: str | None = "Reno", zip_code: str | None = "89501") -> Progra
 
 
 class TestTheStateIsCheckedAgainstTheFeed:
-    def test_a_reported_state_passes_and_is_normalised(self) -> None:
+    def test_a_reported_state_passes_and_is_normalized(self) -> None:
         assert check_state_is_reported("nv", reported=REPORTED) == "NV"
 
     def test_an_unreported_state_is_refused_with_the_list(self) -> None:

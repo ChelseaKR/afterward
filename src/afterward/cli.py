@@ -45,7 +45,7 @@ def build_command(
         "CA",
         "--state",
         help="Two-letter state code to extract. Validated against the states the ETP feed "
-        "actually reports programs for, so an unrecognised code is refused rather than "
+        "actually reports programs for, so an unrecognized code is refused rather than "
         "fetched as an empty dataset. California reads its projections from EDD; every "
         "other state reads Projections Central, which publishes no wage and no regions -- "
         "`coverage.json` says which source a dataset came from and what it does not carry.",

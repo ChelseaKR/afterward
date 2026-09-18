@@ -186,7 +186,7 @@ Full source list, licensing, access dates, and this project's provenance constra
 
 `afterward build --state NV` produces a dataset for another state. The program side has
 always been state-parameterised — the ETP scorecard reports 55 states and territories, and
-`--state` is checked against that list before a build starts, so an unrecognised code is a
+`--state` is checked against that list before a build starts, so an unrecognized code is a
 refusal rather than a successful fetch of nothing. What is new is the occupation side:
 California reads EDD directly, every other state reads Projections Central, and the two
 sources do not publish the same things.
