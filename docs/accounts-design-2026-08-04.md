@@ -87,6 +87,9 @@ If Phase B happens, the non-negotiables:
   on the About page rather than buried in a policy.
 - **Store ids, not inferences.** Save `["f6900f55…"]`, never "interested in healthcare".
 - **No third-party analytics.** The site has none today; an account must not become the excuse.
+  (2026-09-17: the site now runs Google Analytics 4 for page views, by owner decision, with
+  GPC, Do Not Track and a footer opt-out honoured. An account must still not become a reason
+  to send Google anything more.)
 
 ## Concrete shape, if Phase B happens
 

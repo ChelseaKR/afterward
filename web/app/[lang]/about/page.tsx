@@ -292,6 +292,16 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
       <h2 id="advice">{t.aboutAdviceHeading}</h2>
       <p>{t.aboutAdviceBody}</p>
 
+      {/*
+        Not in the jump list above, which is the nine things that change how a number here
+        should be read. This is about the reader rather than the numbers, and the footer of
+        every page links straight to it.
+      */}
+      <h2 id="privacy">{t.aboutPrivacyHeading}</h2>
+      <p>{t.aboutPrivacyBody}</p>
+      <p>{t.aboutPrivacyCookies}</p>
+      <p>{t.aboutPrivacyOptOut}</p>
+
       <p className="browse-more">
         <Link href={`/${lang}/occupations/`}>{t.browseAllOccupations} →</Link>
         {" · "}

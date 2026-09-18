@@ -781,6 +781,31 @@ const en = {
   aboutAdviceBody:
     "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counsellor before you decide.",
 
+  // ---- Privacy and analytics (About page section, and the footer on every page) ----
+  //
+  // Google Analytics 4, per the owner's 2026-09-17 decision. `lib/analytics.ts` is what
+  // loads it; this copy is what a reader is told, and the two must describe the same thing.
+  aboutPrivacyHeading:
+    "Privacy and analytics",
+  aboutPrivacyBody:
+    "This site has no accounts, and a shortlist you save stays on your device. It does use Google Analytics 4, a service of Google LLC, to count visits, and Google processes that data on this project's behalf. Google Analytics receives each page's address and title, the site you came from, and your browser's language, screen size, browser and operating system, and it uses your IP address to estimate your approximate location, such as your city. The address sent to Google keeps only the page path and campaign tags such as utm_source: your search terms, your filters and any shared shortlist are removed first. With its standard settings, Google Analytics also records scrolling to the end of a page, clicks on links to other sites, and file downloads.",
+  aboutPrivacyCookies:
+    "Google Analytics sets two cookies: _ga, and one whose name begins with _ga_. They hold a random identifier so a return visit can be counted, and they last up to two years. In the European Economic Area, the United Kingdom and Switzerland, the site tells Google not to store these cookies, and Google Analytics receives only cookieless measurements without a stored identifier. Advertising features are off: Google signals and ad personalization are disabled, and advertising storage is denied everywhere. Google Analytics keeps event-level data for 14 months.",
+  aboutPrivacyOptOut:
+    "Google Analytics does not load if your browser sends Global Privacy Control or Do Not Track. The “Opt out of analytics” button at the bottom of every page turns it off too, from the next page on. That choice is saved in this browser's local storage and deletes the Google Analytics cookies already set. “Opt back in” undoes it, and clearing this site's data clears the choice.",
+  analyticsFooter:
+    "This site uses Google Analytics, with its advertising features off.",
+  analyticsFooterLink:
+    "Privacy and analytics",
+  analyticsOptOut:
+    "Opt out of analytics",
+  analyticsOptIn:
+    "Opt back in",
+  analyticsOffStatus:
+    "Analytics is off in this browser.",
+  analyticsOnStatus:
+    "Analytics is back on.",
+
   // ---- What the work actually is (program page) ----
   //
   // A program page used to open on cost, length and enrolment counts: three numbers about a
@@ -1917,6 +1942,28 @@ const es: Dictionary = {
   aboutAdviceHeading: "Esto no es asesoría",
   aboutAdviceBody:
     "Nada de lo que hay aquí es asesoría financiera, legal, educativa ni profesional. Inscribirse en un programa de capacitación es un compromiso económico y personal serio. Use esto como una fuente entre varias, y hable con la institución, con su America's Job Center local o con una persona orientadora antes de decidir.",
+
+  // ---- Privacidad y analíticas (sección de Acerca de y pie de página) ----
+  aboutPrivacyHeading:
+    "Privacidad y analíticas",
+  aboutPrivacyBody:
+    "Este sitio no tiene cuentas, y la lista que usted guarda se queda en su dispositivo. Sí usa Google Analytics 4, un servicio de Google LLC, para contar las visitas, y Google trata esos datos en nombre de este proyecto, como encargado del tratamiento. Google Analytics recibe la dirección y el título de cada página, el sitio del que usted viene y el idioma, el tamaño de pantalla, el navegador y el sistema operativo que usa, y emplea su dirección IP para estimar su ubicación aproximada, como la ciudad. La dirección que se envía a Google conserva solo la ruta de la página y las etiquetas de campaña, como utm_source: sus términos de búsqueda, sus filtros y cualquier lista compartida se eliminan antes. Con su configuración estándar, Google Analytics también registra cuándo se llega al final de una página, los clics en enlaces a otros sitios y las descargas de archivos.",
+  aboutPrivacyCookies:
+    "Google Analytics instala dos cookies: _ga y otra cuyo nombre empieza por _ga_. Guardan un identificador aleatorio para poder contar las visitas repetidas y duran hasta dos años. En el Espacio Económico Europeo, el Reino Unido y Suiza, el sitio le indica a Google que no guarde estas cookies, y Google Analytics recibe solo mediciones sin cookies y sin un identificador guardado. Las funciones publicitarias están desactivadas: Google Signals y la personalización de anuncios están apagadas, y el almacenamiento publicitario está denegado en todas partes. Google Analytics conserva los datos de cada evento durante 14 meses.",
+  aboutPrivacyOptOut:
+    "Google Analytics no se carga si su navegador envía Global Privacy Control o Do Not Track. El botón “Desactivar las analíticas”, al pie de cada página, también lo desactiva a partir de la página siguiente. Esa elección se guarda en el almacenamiento local de este navegador y borra las cookies de Google Analytics que ya estuvieran instaladas. “Volver a activarlas” la deshace, y si borra los datos de este sitio, también se borra la elección.",
+  analyticsFooter:
+    "Este sitio usa Google Analytics, con sus funciones publicitarias desactivadas.",
+  analyticsFooterLink:
+    "Privacidad y analíticas",
+  analyticsOptOut:
+    "Desactivar las analíticas",
+  analyticsOptIn:
+    "Volver a activarlas",
+  analyticsOffStatus:
+    "Las analíticas están desactivadas en este navegador.",
+  analyticsOnStatus:
+    "Las analíticas están activadas de nuevo.",
 
   // ---- En qué consiste el trabajo (página del programa) ----
   workHeading: "En qué consiste este trabajo",

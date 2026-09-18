@@ -613,6 +613,30 @@ td.num {
   color: var(--primary-100);
 }
 
+/*
+ * The analytics opt-out is a button (it changes a setting) dressed as the footer links
+ * around it. Every state restates its colours, for the reason `.compare-open` records: the
+ * design system's own button hover and focus styles would otherwise swap in a background
+ * under text they do not recolour.
+ */
+.footer .analytics-opt-out,
+.footer .analytics-opt-out:hover,
+.footer .analytics-opt-out:focus-visible {
+  background: none;
+  border: 0;
+  color: var(--primary-100);
+  cursor: pointer;
+  font: inherit;
+  min-height: 24px;
+  padding: 0;
+  text-align: start;
+  text-decoration: underline;
+}
+.footer .analytics-opt-out:focus-visible {
+  outline: 2px solid var(--primary-60);
+  outline-offset: 2px;
+}
+
 /* ---------- Browse indexes ---------- */
 
 /*
