@@ -255,7 +255,7 @@ class TestADatasetCountingProvidersByTheOldRuleIsRefused:
 
     `dataset-2026-09-12` published 584 providers in `coverage.json` over records that
     describe 581, because three of California's providers file under two spellings each and
-    that count applied no normalisation (#155). The site now derives the figure from the
+    that count applied no normalization (#155). The site now derives the figure from the
     roster it mints provider pages from, so it would refuse to render the About page against
     that dataset -- correctly, but six minutes into a deploy and as a stack trace out of a
     React component. This asks the same question where every other "the dataset predates the

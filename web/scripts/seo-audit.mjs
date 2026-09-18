@@ -106,7 +106,7 @@ function sitemapEntries(xml) {
 /**
  * Every `<link rel="canonical">` href on a page. More than one is itself a finding.
  *
- * Matched case-insensitively, and that is not defensive tidiness. React serialises the
+ * Matched case-insensitively, and that is not defensive tidiness. React serializes the
  * property name, so the export carries `hrefLang="en"` where the sitemap carries
  * `hreflang="en"` -- HTML attribute names are case-insensitive and both are correct, but a
  * gate that pattern-matched only the lowercase form would find zero alternates on all ~9,000

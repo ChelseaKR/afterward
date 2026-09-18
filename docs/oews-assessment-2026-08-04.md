@@ -50,7 +50,7 @@ estimate, a mean wage, the **10th, 25th, 50th, 75th and 90th percentile wages**,
 relative standard error.
 
 **It is a panel, not a snapshot.** All eighteen annual vintages from 2009 to 2026 are stacked
-in one file, every one labelled `1st Qtr`. EDD's own dataset notes say the estimates "are a
+in one file, every one labeled `1st Qtr`. EDD's own dataset notes say the estimates "are a
 snapshot in time and should not be used as a time series", because area definitions and
 methods change underneath them. Anything reading this file must pick one `Year` and stay in
 it. The client's `latest_year()` and `select()` exist to make that the default rather than a

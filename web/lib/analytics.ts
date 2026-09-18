@@ -215,7 +215,7 @@ export function initGoogleAnalytics(): boolean {
   }
 
   // Google's documented kill switch, read by gtag.js before every hit. A getter rather than
-  // a value, so an opt-out that arrives mid-visit is honoured on the very next hit.
+  // a value, so an opt-out that arrives mid-visit is honored on the very next hit.
   Object.defineProperty(window, `ga-disable-${id}`, {
     configurable: true,
     get: () => analyticsOptedOut(),

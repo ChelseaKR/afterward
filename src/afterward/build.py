@@ -279,6 +279,7 @@ class ProviderLinkCoverage:
     programs_not_linked: int
     programs_upgraded_to_https: int
     programs_sent_to_front_page: int
+    # British spelling kept on purpose: a published coverage.json field name.
     programs_labelled_home_page: int
     earliest_check: str | None
     latest_check: str | None
@@ -289,10 +290,10 @@ class LocalHelpCoverage:
     """How many program pages can name a real office where the funding question is decided.
 
     ``centers_loaded`` carries the one distinction everything else here depends on. ``None``
-    means this build did not read the federal centre directory at all -- no credentials, or
+    means this build did not read the federal center directory at all -- no credentials, or
     the endpoint could not be reached -- and every count below it is then a count of a search
     that never happened. ``0`` would be a different claim entirely: that the directory
-    answered and California has no job centres in it. The same distinction is written on each
+    answered and California has no job centers in it. The same distinction is written on each
     program record, where a null list means "not looked for" and an empty list means "looked
     for, and none within the radius".
 
@@ -309,7 +310,7 @@ class LocalHelpCoverage:
     programs_searched: int
     # Programs that could not be searched even though the directory was read, because the
     # federal record gives them no coordinates. Its own number, never folded into
-    # "no centre nearby" -- one is a fact about California, the other about a filing.
+    # "no center nearby" -- one is a fact about California, the other about a filing.
     programs_not_searched: int
     programs_with_a_center: int
     programs_with_none_within_radius: int
@@ -1170,11 +1171,11 @@ def check_provider_links(
         )
 
     # Front pages are merged into one mapping because that is what `decide` reads, but they
-    # are summarised out of the headline counts: they are evidence about a substitution, not
+    # are summarized out of the headline counts: they are evidence about a substitution, not
     # links this dataset publishes, and counting them would inflate every figure in the
     # report that motivated this work.
     merged = {**checks, **front_pages}
-    summary = link_check.summarise(checks, pages_per_url=pages)
+    summary = link_check.summarize(checks, pages_per_url=pages)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(link_check.checks_document(merged), indent=1), encoding="utf-8"
@@ -1475,17 +1476,17 @@ def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCovera
 # person least likely to be told anywhere else.
 #
 # This site cannot determine anybody's eligibility and must never appear to -- that is done
-# by a one-stop centre after an interview (20 CFR 680.220). What it can do is name the
+# by a one-stop center after an interview (20 CFR 680.220). What it can do is name the
 # nearest offices where the question is answered. Those come from one statewide read of the
 # federal finder, ranked locally, exactly as `afterward.sources.local_help` was built to be
-# used: 183 centres in one request, not 227 requests for the same 183.
+# used: 183 centers in one request, not 227 requests for the same 183.
 # --------------------------------------------------------------------------------------
 
 CENTER_RADIUS_MILES: Final = 25.0
 """How far away an office may be and still be published as somewhere to ask.
 
 Chosen from the measured distribution rather than picked. 3,234 of California's 3,266
-program pages have a centre inside it and the median page's nearest is about three miles;
+program pages have a center inside it and the median page's nearest is about three miles;
 widening it to 50 would gain the last 32 pages at the price of offering somebody a mountain
 pass as "nearby". The 32 are told plainly that there is none within this distance, and given
 the statewide finder instead, which is a better answer than a two-hour drive presented as a
@@ -1495,7 +1496,7 @@ Straight-line, so it is generous rather than conservative wherever the road is n
 """
 
 NEAREST_CENTERS: Final = 3
-"""How many centres to publish per program.
+"""How many centers to publish per program.
 
 One is a single point of failure: a phone nobody answers, an office open two mornings a
 week, a site that turns out to be the wrong side of a county line. Three is enough to make a
@@ -1511,13 +1512,13 @@ def fetch_job_centers(
 ) -> tuple[local_help.AmericanJobCenter, ...] | None:
     """Every America's Job Center the federal finder holds for ``state``, in one request.
 
-    ``None`` means this build established nothing about where the centres are -- no
+    ``None`` means this build established nothing about where the centers are -- no
     credentials are configured, or the endpoint could not be read. That is the CI case and a
     complete build: the pages then carry the funding route and the statewide finder without
     claiming anything about what is nearby. An empty tuple would be the other thing entirely,
     and neither is ever rendered as the other.
 
-    Centres outside the state are dropped. A border search legitimately returns them -- the
+    Centers outside the state are dropped. A border search legitimately returns them -- the
     nearest office to Blythe is in Arizona -- but an Individual Training Account is opened by
     a California local board, so an out-of-state office is not an answer to the question this
     dataset is attaching it to. Nothing is lost today: all 183 California records carry
@@ -1534,7 +1535,7 @@ def fetch_job_centers(
 def local_help_block(
     location: Mapping[str, Any], centers: Sequence[local_help.AmericanJobCenter] | None
 ) -> dict[str, Any]:
-    """The nearest centres to one program, or the record that none were looked for.
+    """The nearest centers to one program, or the record that none were looked for.
 
     ``centers`` is a list of ``{"id", "miles"}`` rather than whole records: the same three
     offices are the nearest ones to hundreds of programs, and copying 183 addresses across
@@ -1545,7 +1546,7 @@ def local_help_block(
 
     * ``None`` -- nothing was looked for. Either no directory was read, or this program's own
       record carries no coordinates to search from.
-    * ``[]`` -- looked for, and there is no centre within :data:`CENTER_RADIUS_MILES`.
+    * ``[]`` -- looked for, and there is no center within :data:`CENTER_RADIUS_MILES`.
     * a list -- the nearest ones, closest first.
 
     ``miles`` is rounded to a tenth because it is a great-circle distance being offered to
@@ -1577,7 +1578,7 @@ def local_help_block(
 def _attach_local_help(
     payloads: list[dict[str, Any]], centers: Sequence[local_help.AmericanJobCenter] | None
 ) -> None:
-    """Write every record's nearest centres, in place.
+    """Write every record's nearest centers, in place.
 
     Always written, like the cohort verdict and the link decision, so that a consumer can
     tell "this build looked and found nothing" from "this record predates the field".
@@ -1589,9 +1590,9 @@ def _attach_local_help(
 def local_help_coverage(
     payloads: list[dict[str, Any]], centers: Sequence[local_help.AmericanJobCenter] | None
 ) -> LocalHelpCoverage:
-    """Count what became of the centres, from the emitted records rather than the fetch."""
-    # `is True`, not truthiness: a centre the directory left unlabelled is not an affiliate,
-    # it is a centre nobody classified, and it must not be counted as either.
+    """Count what became of the centers, from the emitted records rather than the fetch."""
+    # `is True`, not truthiness: a center the directory left unlabeled is not an affiliate,
+    # it is a center nobody classified, and it must not be counted as either.
     comprehensive = {c.center_id for c in centers or () if c.is_comprehensive is True}
     attached = [payload["local_help"]["centers"] for payload in payloads]
     searched = [rows for rows in attached if rows is not None]
@@ -1711,7 +1712,7 @@ def _attach_wage_spread(
     percentiles are the honest bracket around the median already on the page.
 
     Every percentile is independently suppressible at source and stays null when it was
-    suppressed. None is interpolated from its neighbours, and none is read as zero: a
+    suppressed. None is interpolated from its neighbors, and none is read as zero: a
     withheld wage is a wage nobody published, which is the same rule the rest of this
     dataset follows.
     """
@@ -1822,8 +1823,8 @@ def _published_related(
     """O*NET's related occupations, less the ones this dataset cannot open a page for.
 
     O*NET's order is kept: it is a relevance ranking by the source that made the claim, and
-    re-sorting it would quietly restate someone else's judgement as ours. Two O*NET
-    specialisations can collapse onto the same six-digit SOC, so the first mention wins.
+    re-sorting it would quietly restate someone else's judgment as ours. Two O*NET
+    specializations can collapse onto the same six-digit SOC, so the first mention wins.
     """
     if found is None:
         return []
@@ -1964,7 +1965,7 @@ class OccupationMatch:
     """One occupation a program feeds, and how the join reached it.
 
     ``program_soc_codes`` holds the program's own codes that landed here, plural because two
-    of them can resolve to one aggregate: a home health aide programme tagged both 31-1121
+    of them can resolve to one aggregate: a home health aide program tagged both 31-1121
     and 31-1122 gets a single 31-1120 row, and this is what says why it is single.
     """
 
@@ -1992,7 +1993,7 @@ def match_occupations(
     The feed's order is kept, since it is the provider's own priority order, and a target
     appears once however many of the program's codes reached it. Where one code matches a
     published occupation exactly and another reaches the same occupation only as an
-    aggregate, the exact match wins and the row is labelled ``exact``: DOL naming the
+    aggregate, the exact match wins and the row is labeled ``exact``: DOL naming the
     published code itself is a stronger claim than one this pipeline derived, and it is not
     this pipeline's to weaken.
     """
@@ -2066,7 +2067,7 @@ look" is not a finding about the program.
 """
 
 UNPLACED_NO_ZIP = "no_zip"
-"""The record carries no ZIP this can look up. See :func:`zip_county.normalise_zip`."""
+"""The record carries no ZIP this can look up. See :func:`zip_county.normalize_zip`."""
 
 UNPLACED_ZIP_NOT_IN_CROSSWALK = "zip_not_in_crosswalk"
 """A real ZIP the crosswalk has no row for -- a PO Box range, or a ZIP unique to one
@@ -2081,7 +2082,7 @@ a border ZIP, or a California county no area title names."""
 UNPLACED_STRADDLES_AREAS = "straddles_areas"
 """The ZIP reaches counties in more than one area, or reaches into ground no area claims.
 
-Refused rather than resolved. Picking the larger share would be exactly the judgement this
+Refused rather than resolved. Picking the larger share would be exactly the judgment this
 rule exists not to make, and a program on the Los Angeles side of a Los Angeles/Orange ZIP
 renders identically to one on the Orange side.
 """
@@ -2139,7 +2140,7 @@ def occupation_summary(
 
     **``entry_level_education`` is dropped on an aggregate match.** The other figures survive
     because a median wage or an opening count over a wider population is still an estimate of
-    a population the trainee belongs to -- approximate, labelled, and the only one California
+    a population the trainee belongs to -- approximate, labeled, and the only one California
     publishes for those workers. The typical-entry credential is not that kind of figure. It
     is a single category BLS assigns to the whole aggregate, so on a union of occupations with
     different credentials it is not an approximation of the member's answer, it is a different
@@ -2152,8 +2153,8 @@ def occupation_summary(
 
     The rule is mechanical -- every aggregate match, not the ones judged wrong. Deciding
     case by case which aggregate's credential happens to fit a given program is precisely the
-    similarity judgement :mod:`afterward.sources.soc_vintage` refuses to make, and it would put
-    that judgement somewhere nobody could audit it.
+    similarity judgment :mod:`afterward.sources.soc_vintage` refuses to make, and it would put
+    that judgment somewhere nobody could audit it.
 
     Two absences would otherwise reach the page as the same null, so
     ``match.entry_level_education_withheld`` separates them: true means EDD published a
@@ -2192,7 +2193,7 @@ def area_for_city(
     """
     if city_areas is None:
         return None
-    key = edd_lmi.normalise_place(city)
+    key = edd_lmi.normalize_place(city)
     if key is None:
         return None
     return city_areas.get(key)
@@ -2268,7 +2269,7 @@ def area_for_zip(
     """
     if index is None:
         return None, UNPLACED_CROSSWALK_NOT_READ
-    if zip_county.normalise_zip(zip_code) is None:
+    if zip_county.normalize_zip(zip_code) is None:
         return None, UNPLACED_NO_ZIP
     counties = index.crosswalk.counties(zip_code)
     if counties is None:
@@ -2320,7 +2321,7 @@ def program_payload(
     reviewer: link_review.OffsiteReviewer | None = None,
     counties: CountyIndex | None = None,
 ) -> dict[str, Any]:
-    """One program record, with its outcomes labelled by who they actually describe.
+    """One program record, with its outcomes labeled by who they actually describe.
 
     ``cohort`` comes from :func:`afterward.sources.dol_etp.cohort_integrity` run over the whole
     snapshot, because a cohort republished across a provider's programs is invisible from
@@ -2344,7 +2345,7 @@ def program_payload(
     hijacked one.
 
     ``counties`` is the ZIP-to-county index behind the second placement rule. Omitting it
-    leaves the county rule unattempted and every unplaced program labelled
+    leaves the county rule unattempted and every unplaced program labeled
     ``crosswalk_not_read`` -- "nobody looked", which is a statement about the build and not
     about the program, and is kept apart from the four ways the rule can look and decline.
     """
@@ -2456,7 +2457,7 @@ def program_payload(
         },
         "occupations": matched,
         # Where a person can ask whether somebody else will pay for this. Points into the
-        # centre directory published once in coverage.json; null means not looked for.
+        # center directory published once in coverage.json; null means not looked for.
         "local_help": local_help_block({"lat": program.lat, "lon": program.lon}, centers),
     }
 
@@ -2493,9 +2494,9 @@ def alternate_title_index(
     """SOC code -> search-only alternate titles, for every occupation a program actually feeds.
 
     A lookup table beside the rows rather than a field folded into each one. `search_entry`
-    already found this out the hard way for area names: 27 distinct labour-market areas
+    already found this out the hard way for area names: 27 distinct labor-market areas
     inlined per-row would have cost 5.1 KB gzipped where a table would cost 1.9 KB, and was
-    kept inline anyway because an integer means nothing without the table travelling with it.
+    kept inline anyway because an integer means nothing without the table traveling with it.
     Alternate titles make the opposite trade the right one, because the redundancy is far
     larger: measured against the 2026-08-17 snapshot, folding each program's occupations'
     full alternate-title lists directly into its search row more than doubles the index
@@ -2541,7 +2542,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     the direction of understating the cost, because twice as many rows now carry a string.
     The decision it supported is unchanged and does not turn on the size: interning was
     rejected because an integer means nothing without the table, so a table that ever slipped
-    out of step with the rows would attribute programs to the wrong labour market silently,
+    out of step with the rows would attribute programs to the wrong labor market silently,
     which is the one failure this dataset is built to refuse. A row that can be read on its
     own is worth a few kilobytes, and worth more of them than it was.
 
@@ -2557,7 +2558,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     # A program can feed up to three occupations, and 1,521 of California's 3,266 feed more
     # than one. Reading only the first understated the programs training for declining work
     # by more than half (229 against 538 on the current snapshot), because the shrinking
-    # occupation is frequently not the one listed first. Summarise across all of them.
+    # occupation is frequently not the one listed first. Summarize across all of them.
     changes = [o["percent_change"] for o in occupations if o.get("percent_change") is not None]
     openings = [
         o["total_job_openings"] for o in occupations if o.get("total_job_openings") is not None
@@ -2571,7 +2572,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         "n": program["program_name"],
         "p": program["provider_name"],
         "c": program["location"]["city"],
-        # Short name of the EDD labour-market area, or null for "this city is in none of
+        # Short name of the EDD labor-market area, or null for "this city is in none of
         # them". Never a nearest-metro guess and never a catch-all bucket.
         "a": None if region is None else region["area_short_name"],
         "$": program["cost"]["total_out_of_pocket"],
@@ -2605,7 +2606,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         # The values themselves stay, deliberately. Nulling them here would say "not
         # reported", which is false and is the one confusion this dataset refuses to make;
         # dropping the row would hide a real program. So the row is published whole and
-        # labelled, and anything that ranks, badges or sorts on `cr`/`er`/`me` has to read
+        # labeled, and anything that ranks, badges or sorts on `cr`/`er`/`me` has to read
         # this key first.
         "at": outcomes["cohort"]["attributable"],
     }
@@ -2793,7 +2794,7 @@ def unmapped_cities(payloads: list[dict[str, Any]]) -> dict[str, int]:
     """Cities this build declined to place, with how many programs each cost.
 
     The refusals are the interesting half of the coverage story, so they ship rather than
-    being summarised away. This list was written when the city rule was the only rule and it
+    being summarized away. This list was written when the city rule was the only rule and it
     answered "which places would a documented address-to-county source recover"; that source
     is now read (D8), so what remains here is the residual after both rules -- the cities
     whose ZIPs straddle two areas, and the ones no crosswalk row covers.
@@ -2865,7 +2866,7 @@ def emit_site_bundle(
     receipt_dir = _fresh_dir(output_dir / receipts.RECEIPT_DIRNAME)
     for payload in payloads:
         if payload["uuid"]:
-            # The receipt attests to the bytes actually written, not to a re-serialisation of
+            # The receipt attests to the bytes actually written, not to a re-serialization of
             # the same dict: a digest over a second rendering would keep agreeing with itself
             # after the writer's separators changed underneath it, which is the one thing it
             # exists to notice.
@@ -2994,7 +2995,7 @@ def build_offline(
     # With no OEWS extract on the machine this attaches null everywhere, which is the honest
     # answer: nothing published a spread here, so the pages say the median alone.
     _attach_wage_spread(occupations, load_wage_spread(), load_wage_regions())
-    # No centres are looked up here, for the same reason no links are checked: this is the
+    # No centers are looked up here, for the same reason no links are checked: this is the
     # hermetic build, and a distance copied out of another machine's read would be an
     # observation this build did not make. The pages it produces carry the funding route and
     # the statewide finder, and claim nothing about what is near any particular city.
@@ -3225,7 +3226,7 @@ def build(
         "areas": area_coverage(payloads, areas),
         "area_placement": area_placement_coverage(payloads, counties.unresolved_counties),
         "unmapped_cities": unmapped_cities(payloads),
-        # The counts, plus the centre directory the program records point into and
+        # The counts, plus the center directory the program records point into and
         # the guidance the site publishes with them. Overrides the plain counts
         # `asdict(report)` already wrote under this key.
         "local_help": local_help_document(report.local_help, centers, payloads),

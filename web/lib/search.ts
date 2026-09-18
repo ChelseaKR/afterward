@@ -389,7 +389,7 @@ export function competencyBasedLength(
 }
 
 /** Headline counts for the context strip above the results. */
-export function summarise(programs: SearchEntry[]) {
+export function summarize(programs: SearchEntry[]) {
   return {
     total: programs.length,
     reported: programs.filter((p) => p.r).length,
@@ -473,7 +473,7 @@ export function areaOptionValue(area: AreaFilter): string {
   }
 }
 
-/** Anything unrecognised falls back to "any", which hides nothing and claims nothing. */
+/** Anything unrecognized falls back to "any", which hides nothing and claims nothing. */
 export function areaFromOptionValue(value: string): AreaFilter {
   if (value === UNPLACED_OPTION) return UNPLACED_AREA;
   if (value.startsWith(AREA_OPTION_PREFIX)) {

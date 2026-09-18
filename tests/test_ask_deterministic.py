@@ -77,7 +77,7 @@ class TestAnUnresolvedTermEndsTheQuery:
     def test_the_same_criteria_without_the_area_do_return_records(self, dataset: Dataset) -> None:
         """Leaving the area out is a different question, and it is still answerable.
 
-        Together with the test above this pins the behaviour to the *unresolved area* rather
+        Together with the test above this pins the behavior to the *unresolved area* rather
         than to the occupation or the fixture being empty.
         """
         got = answer(Criteria(occupations=(KNOWN_OCCUPATION,)), dataset)
@@ -207,7 +207,7 @@ class TestTheCommandLine:
         assert result.exit_code == 0, result.output
 
     def test_an_unreported_cost_is_never_printed_as_a_dollar_amount(self) -> None:
-        """The line a counsellor reads aloud. "$0" for a price the source never filed would
+        """The line a counselor reads aloud. "$0" for a price the source never filed would
         be the whole defect this project is about, in the smallest possible space."""
         result = self._run("--occupation", KNOWN_OCCUPATION)
         assert "$0\n" not in result.output

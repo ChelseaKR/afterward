@@ -54,7 +54,7 @@ function tally(value: number, lang: Lang): string {
  * claim — "no working website link" — by that many, and would silently undercount it again the
  * next time link handling changes, since it does not read the same field the page renders.
  *
- * The cost is ~3,300 file reads. Memoised at module scope so the English and Spanish pages
+ * The cost is ~3,300 file reads. Memoized at module scope so the English and Spanish pages
  * share one pass, and negligible beside an export that already renders roughly nine thousand
  * pages from the same directory.
  */
@@ -100,7 +100,7 @@ function corpusFacts(): CorpusFacts {
 /**
  * The methodology page.
  *
- * This site publishes outcome figures about several hundred named California organisations,
+ * This site publishes outcome figures about several hundred named California organizations,
  * in public, and puts them side by side in a way that reads as a verdict whether or not one
  * is intended. A page like this is the price of doing that. It is written as prose because a
  * bulleted list of caveats is a way of publishing a disclosure without anyone reading it, and

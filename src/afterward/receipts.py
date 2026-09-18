@@ -13,7 +13,7 @@ A small JSON document written beside every program record, saying:
 * which record it is (``uuid``) and which snapshot it came from;
 * the sha256 of **the exact bytes of the record file beside it** -- so a reader with the
   released tarball can run ``shasum -a 256 programs/<uuid>.json`` and compare, with no
-  canonicalisation rule to reimplement and nothing to trust;
+  canonicalization rule to reimplement and nothing to trust;
 * the state of every measure, in the vocabulary
   :mod:`afterward.tabular` already publishes in the flat CSV -- ``reported``,
   ``not_reported``, ``competency_based`` and no fourth word;
@@ -175,7 +175,7 @@ def _provider_link_entry(record: Mapping[str, Any]) -> dict[str, Any] | None:
         "reason": link.get("reason"),
         "checked_on": link.get("checked_on"),
         # Null wherever the verdict is null: no classifier ran, so naming one would claim a
-        # judgement nobody made. See link_check.CLASSIFIER_VERSION.
+        # judgment nobody made. See link_check.CLASSIFIER_VERSION.
         "classifier_version": link.get("classifier_version"),
     }
 
@@ -191,7 +191,7 @@ def receipt_for(
     """The receipt for one emitted program record.
 
     ``record_bytes`` is the exact bytes written to ``programs/<uuid>.json``, not a
-    re-serialisation of ``record``. Hashing a re-serialisation would attest to a document
+    re-serialization of ``record``. Hashing a re-serialization would attest to a document
     nobody is served, and would go on agreeing with itself after the writer's separators
     changed underneath it.
     """

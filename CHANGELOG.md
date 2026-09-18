@@ -30,7 +30,7 @@ All notable changes to this project are documented here. The format follows
   the whole tarball, and runs on a schedule nobody outside this repository sees. A
   `receipts/<uuid>.json` beside every record hands the same question to the reader, one
   record at a time: the sha256 of the exact bytes of `programs/<uuid>.json` (so
-  `shasum -a 256` settles it, with no canonicalisation rule to reimplement), every measure's
+  `shasum -a 256` settles it, with no canonicalization rule to reimplement), every measure's
   state in the flat CSV's own three-word vocabulary read through `tabular.state_of` rather
   than a second copy of the rule, how the occupation join reached each occupation beside the
   program's own SOC codes, and the link verdict with the classifier version that reached it.
@@ -191,7 +191,7 @@ All notable changes to this project are documented here. The format follows
   dates nothing and says so, where the two would otherwise produce identical output. Digesting
   the whole document is legitimate because the export is reproducible: measured on 2026-09-13,
   two `npm run build` runs over an unchanged tree produced 284 pages of which 284 differed, and
-  the entire difference was Next's 21-character random build id — normalise that one literal
+  the entire difference was Next's 21-character random build id — normalize that one literal
   away and **0 of 284 differ**. The build id is read from `.next/BUILD_ID` rather than
   pattern-matched, and a build id that appears in no page is a refusal rather than a silent
   no-op that would re-date the site on every deploy. `--check` is the gate: every `<lastmod>`
@@ -211,7 +211,7 @@ All notable changes to this project are documented here. The format follows
 
 - `afterward export-csv` and `make csv-export`: the dataset as one flat table in which no blank
   ever carries a meaning. The site's dataset is sharded JSON, which is right for a page loading
-  one programme and wrong for the reader most likely to check these figures — a journalist or a
+  one program and wrong for the reader most likely to check these figures — a journalist or a
   researcher with a spreadsheet, who today has to reverse-engineer the shards. Every measure now
   carries a state column beside it, the state column is never empty, and a value cell is empty
   only where the state cell says why. A reader reaching for `fillna(0)` has been told, in the
@@ -221,8 +221,8 @@ All notable changes to this project are documented here. The format follows
   enum, and `""` declared as the only missing value.
   The vocabulary is `reported`, `not_reported` and `competency_based`, and the missing fourth is
   the point. `competency_based` reaches only `length_weeks` and `length_hours`, from the record's
-  own flag: the ETP data dictionary attaches `-1` on those two elements to a programme that
-  advances on demonstrated competency, which is a fact about the programme and not missing data.
+  own flag: the ETP data dictionary attaches `-1` on those two elements to a program that
+  advances on demonstrated competency, which is a fact about the program and not missing data.
   There is deliberately **no `suppressed`**, which the issue asked for. WIOA does suppress
   small-cohort cells and that is why many of these measures are absent, but the scorecard serves
   a suppressed cell and an unreported cell as the same `-1` and its data dictionary calls the
@@ -243,14 +243,14 @@ All notable changes to this project are documented here. The format follows
 - `afterward diff` and `make dataset-diff`: what changed between two emitted datasets, with the
   kinds of change kept apart. Every refresh replaces the dataset wholesale and the only review it
   gets is the shape floors in `dataset_check.py` — a count that did not collapse — which cannot
-  see a programme that stopped reporting a measure. That is a different event from a programme
+  see a program that stopped reporting a measure. That is a different event from a program
   that left the list, which is a different event again from one that was never on it, and
   collapsing the three into "the number is gone" is the same error, one level up, that this
   codebase spends its life avoiding on a single value.
-  So a programme present on one side only produces exactly one event and **no measure events**:
+  So a program present on one side only produces exactly one event and **no measure events**:
   its measures did not stop being reported, it stopped being listed. Outcome events are counted
   per measure and never summed into one number, because nine measures moving once and one measure
-  moving nine times are different events. Programme titles, provider disappearance, length,
+  moving nine times are different events. Program titles, provider disappearance, length,
   cost, the occupation join's `match.kind` and the link verdict each get their own class.
   **An empty diff means "compared, and nothing moved", never "could not compare".** A dataset
   directory that is missing, holds invalid JSON, states no `snapshot_date`, or carries a record
@@ -259,13 +259,13 @@ All notable changes to this project are documented here. The format follows
   strength of never having looked.
   The Markdown summary is written only from the statement's own counts rather than recounting the
   events, so the two cannot disagree with no way to tell which is wrong. Deterministic: events
-  sort by kind then by programme so the emitted order cannot move the bytes, no wall-clock is
+  sort by kind then by program so the emitted order cannot move the bytes, no wall-clock is
   recorded, and the only dates in the output are the two snapshots' own. Writes into `dist/` only.
 
 - `afterward query` and `GET /query`: the deterministic query layer with no model attached.
   `afterward.ask` structures a sentence with a model, runs a deterministic query over the
   published dataset, then verifies every claim. The middle step is the whole of what a job
-  centre counsellor or a script wants — the same answer every time, offline, with no provider
+  center counselor or a script wants — the same answer every time, offline, with no provider
   configured — and it was reachable only by going through the model. Named criteria go in
   (`--occupation`, `--area`, `--max-cost`, `--max-weeks`, `--min-annual-wage`, `--format`,
   `--projection`, `--reported-only`), records and a written account of what each term resolved
@@ -280,7 +280,7 @@ All notable changes to this project are documented here. The format follows
   looks like the answer to a question nobody ran is an absence rendered as a value. It now
   exits 2 with no records and names the term. The filters that were already careful are left
   alone: an unreported cost is still excluded from `--max-cost` rather than read as zero, a
-  competency-based programme is still not "short", and each exclusion is counted.
+  competency-based program is still not "short", and each exclusion is counted.
   Exit codes are the interface for a script: 0 records found, 1 none found but every term
   resolved, 2 a named term resolved to nothing. `--json` is byte-identical across runs of the
   same criteria and carries a `schema_version`; `--explain` prints the resolution trace.
@@ -498,9 +498,9 @@ All notable changes to this project are documented here. The format follows
 - A CareerOneStop client for occupation descriptions, O*NET skill ratings and O*NET related
   occupations. Optional: the build runs unchanged without credentials.
 - The funding block says what order to do things in. Every program page now carries "Ask
-  before you enroll, not after": under 20 CFR 680.220 a centre has to interview or assess
+  before you enroll, not after": under 20 CFR 680.220 a center has to interview or assess
   somebody before it can find them eligible, and under 680.340 the referral and the account
-  come after that — so the call belongs before the enrolment, and someone who has already
+  come after that — so the call belongs before the enrollment, and someone who has already
   enrolled or paid is told to ask rather than told what will happen, which no regulation read
   for this says. It is a plain paragraph above the offices, not behind the link to the guide.
   The claim and its citations are a new step in `local_help`; `/paying-for-training/` renders
@@ -511,7 +511,7 @@ All notable changes to this project are documented here. The format follows
   the nearest offices anyway, with distance, phone and hours, instead of offering a statewide
   search box. Lemoore's two nearest are 26.7 and 27.0 miles, Coalinga's 38.7 and 39.0, and
   South Lake Tahoe's one at 36.5. Nothing new is fetched: `coverage.json` already publishes
-  all 183 centres with coordinates and each program carries its own.
+  all 183 centers with coordinates and each program carries its own.
 - The comprehensive/affiliate label on an office card is explained in one clause, so a
   federal term of art on the page means something to the reader looking at it.
 - A first-visit transfer budget in the build. `size-report.mjs` measured the export on disk,
@@ -705,7 +705,7 @@ All notable changes to this project are documented here. The format follows
   cache, measured in Chromium. Result cards still prefetch: those are ~8 KiB and are what the
   reader came to open. Measurements and the options considered are in
   `docs/payload-audit-2026-08-05.md`.
-- Phone numbers on office cards dial what they say. 20 of the 183 centres publish a field
+- Phone numbers on office cards dial what they say. 20 of the 183 centers publish a field
   that is not one ten-digit number — two numbers, a number and an extension, a switchboard
   and an EDD line — and stripping non-digits from the whole field produced `tel:` links for
   twenty- and thirteen-digit numbers that dial nothing, on 778 of the 3,234 program pages
@@ -718,7 +718,7 @@ All notable changes to this project are documented here. The format follows
   of the gap was visible to a test. The check now walks every step.
 - Phone links say which office they call. Three offices on one page published three bare
   numbers, and a screen reader announced each as its digits alone (WCAG 2.2 AAA 2.4.9).
-- Programs summarise across every occupation they feed, not just the first. The count of
+- Programs summarize across every occupation they feed, not just the first. The count of
   programs training for declining occupations was understated by more than half (on the
   current snapshot, 229 against 538), and hundreds of detail pages named the wrong job.
 - Statistical aggregates are no longer published as occupations (764 → 670 real ones).
@@ -730,7 +730,7 @@ All notable changes to this project are documented here. The format follows
 - Programs are compared against the median program that reported the same measure, not
   against DOL's statewide aggregate, which is computed on a different basis and made 91% of
   programs read as above average.
-- Earnings are labelled as covering a single quarter, so they are not read as a yearly
+- Earnings are labeled as covering a single quarter, so they are not read as a yearly
   salary beside the annual occupation wage.
 - Program descriptions no longer ship the feed's own row id (`6091|Covers understanding…`)
   on 3,223 of 3,266 records. The site stripped it in one component, so only readers of the
@@ -796,7 +796,7 @@ All notable changes to this project are documented here. The format follows
   site, an Indonesian lottery site, a Baltimore charity, and five domain listings). Neither is
   fixable from the repository: `make data` reads the DOL endpoint, which refuses CI, so the
   dataset has to be rebuilt on a workstation, republished with `make dataset-publish`, and
-  deployed. Until then the deploy workflow refuses that tag, which is the correct behaviour
+  deployed. Until then the deploy workflow refuses that tag, which is the correct behavior
   and not a substitute for the refresh. The committed `web/public/ctdl/*.json` statements were
   produced from a locally rebuilt 2026-08-07 dataset that does carry the length fix, so
   `snapshot_date` alone does not identify which bytes a statement describes.

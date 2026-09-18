@@ -16,7 +16,7 @@
  * linter. A gate script is exactly the code that must not be wrong.
  *
  * `**\/*.ts` and `**\/*.tsx` are **not** linted, and that is a limitation rather than a
- * judgement. `eslint-config-next@16.3.1` loads `typescript-eslint@8.66.0`, which refuses to
+ * judgment. `eslint-config-next@16.3.1` loads `typescript-eslint@8.66.0`, which refuses to
  * start against this repository's TypeScript 7.0 -- "typescript-eslint does not support
  * TS 7.0", tracked at typescript-eslint#10940. There is no TypeScript parser here that runs,
  * so there are no rules to apply to those files. Downgrading TypeScript to buy a lint pass
@@ -42,7 +42,7 @@ const NODE_GLOBALS = {
   clearTimeout: "readonly",
   fetch: "readonly",
   performance: "readonly",
-  // Present only inside `page.evaluate` callbacks, which are serialised and run in Chromium.
+  // Present only inside `page.evaluate` callbacks, which are serialized and run in Chromium.
   // Declaring them file-wide is the cost of those two scripts holding Node code and browser
   // code in one module; the alternative is `no-undef` off, which is worse.
   window: "readonly",

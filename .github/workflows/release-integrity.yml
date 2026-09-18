@@ -37,8 +37,8 @@ permissions:
   contents: read # `gh api` for the release list and `gh release download` for the assets
 
 concurrency:
-  # Named for the workflow rather than the ref, and never cancelled in progress: two runs would
-  # download the same ~20 MB of release assets for no reason, and a cancelled run reports
+  # Named for the workflow rather than the ref, and never canceled in progress: two runs would
+  # download the same ~20 MB of release assets for no reason, and a canceled run reports
   # nothing rather than reporting that nothing is wrong.
   group: release-integrity
   cancel-in-progress: false

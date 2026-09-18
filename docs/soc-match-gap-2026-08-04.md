@@ -118,7 +118,7 @@ learns little from "Miscellaneous Construction and Related Workers" — 2,390 st
 openings against a `47-2061` Construction Laborers figure two orders of magnitude larger.
 The three programs are pre-apprenticeship curricula that plainly feed the construction
 trades. The honest position is that D1 tagged them with a residual code and neither BLS nor
-EDD publishes anything narrower; guessing `47-2061` would be a similarity judgement, which
+EDD publishes anything narrower; guessing `47-2061` would be a similarity judgment, which
 is exactly what this module refuses to make.
 
 ## Two caveats the integrator must handle
@@ -178,7 +178,7 @@ wage drawn from a population the trainee is by definition not in.
 The second temptation is the **nearest neighbor**: `47-2043` Floor Sanders and Finishers is
 refused while the other three codes in its broad group are published. A flooring
 apprenticeship is obviously flooring work — but `47-2041` Carpet Installers is a different
-job with a different wage, and picking it would be a title-similarity judgement dressed up as
+job with a different wage, and picking it would be a title-similarity judgment dressed up as
 a crosswalk.
 
 One guardrail earned its place from a live near-miss. O\*NET reports that wage data for

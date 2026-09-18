@@ -19,7 +19,7 @@ import {
   matchesFilters,
   runSearch,
   score,
-  summarise,
+  summarize,
   terms,
   unmeasuredLength,
   unplacedMatches,
@@ -149,7 +149,7 @@ export function SearchApp({
     [programs, filters, altTitles],
   );
 
-  const stats = useMemo(() => summarise(programs), [programs]);
+  const stats = useMemo(() => summarize(programs), [programs]);
   const areaOptions = useMemo(() => areas(programs), [programs]);
   const unreported = stats.total - stats.reported;
 
@@ -165,7 +165,7 @@ export function SearchApp({
     reported one of them as the other. Nobody filed a length for the first. The second is
     competency-based: it finishes when the student can do the work, which is a fact about the
     course that a reader may well be looking for, and describing it as unreported hid it
-    inside a bucket labelled "the provider did not say".
+    inside a bucket labeled "the provider did not say".
   */
   const hiddenNoLength = useMemo(
     () => unmeasuredLength(programs, filters, altTitles),
@@ -188,7 +188,7 @@ export function SearchApp({
     1,741 of 3,266 programs sat in cities no area title names and city was their only handle.
     The county rule cut that residual to 165 on the same snapshot — but it also made an area a
     much coarser thing. A program placed because its ZIP resolves to Los Angeles County is
-    somewhere in Los Angeles County, which is not a neighbourhood. So city now earns its place
+    somewhere in Los Angeles County, which is not a neighborhood. So city now earns its place
     by being finer than a region rather than by being all some programs have, and it is still
     the only handle for the 165.
 

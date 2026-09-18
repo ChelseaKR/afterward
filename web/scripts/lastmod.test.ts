@@ -20,13 +20,13 @@ import { afterAll, describe, expect, it } from "vitest";
  *
  * The refusals matter as much. Several of them are the same shape as the defect they guard:
  * a previous ledger that could not be read must be a failure and never an empty one, because
- * "no ledger" is a real state with real behaviour — it dates nothing — and a fetch that half
+ * "no ledger" is a real state with real behavior — it dates nothing — and a fetch that half
  * worked arriving as that state would silently re-date the whole site and say so nowhere.
  *
  * The fixtures are synthetic exports rather than a real `npm run build`, deliberately: a build
  * takes minutes, and what is under test here is the dating rule, not Next. The one thing that
  * does depend on the real build — that two builds of an unchanged tree produce identical pages
- * once the build id is normalised away — is a measurement, recorded in the script's own
+ * once the build id is normalized away — is a measurement, recorded in the script's own
  * docblock, and it is what makes digesting the whole document legitimate.
  */
 
@@ -308,7 +308,7 @@ const REFUSALS: ReadonlyArray<{
     says: "ledger version 99",
   },
   {
-    what: "a build id that appears in no page, so normalising it away changes nothing",
+    what: "a build id that appears in no page, so normalizing it away changes nothing",
     run: () => {
       // The pages embed `BUILD_ID`; `.next/BUILD_ID` says something else, which is the shape
       // a renamed field or a changed Next release would produce.

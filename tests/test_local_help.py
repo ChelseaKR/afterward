@@ -506,13 +506,13 @@ def _published_strings() -> list[str]:
 
 class TestWording:
     def test_nothing_published_promises_anyone_funding(self) -> None:
-        offences = [
+        offenses = [
             (text, phrase)
             for text in _published_strings()
             for phrase in PROMISES
             if phrase in text.casefold()
         ]
-        assert offences == []
+        assert offenses == []
 
     def test_the_disclaimer_says_who_actually_decides(self) -> None:
         lowered = WHO_DECIDES.casefold()
@@ -620,13 +620,13 @@ class TestClaimIdentity:
         assert "supportive_services" in ids
         # And the one that is time-critical rather than merely useful. Everything else on
         # this block can be read after enrolling and still be worth something; this one
-        # cannot, because the order the rules set out starts before the enrolment does.
+        # cannot, because the order the rules set out starts before the enrollment does.
         assert "ask_before_you_enroll" in ids
 
-    def test_the_sequence_step_puts_the_center_before_the_enrolment(self) -> None:
+    def test_the_sequence_step_puts_the_center_before_the_enrollment(self) -> None:
         """The claim is about order, and it is the order that makes it worth publishing.
 
-        A reader who has just decided they want a program is about to enrol in it. If the
+        A reader who has just decided they want a program is about to enroll in it. If the
         page tells them only that money exists, it has told them something they can act on
         too late. 20 CFR 680.220 puts the interview or assessment before the eligibility
         finding; 680.340 puts the referral and the account after it; 680.300 makes the

@@ -661,7 +661,7 @@ jobs:
           print(f"  ok  live dataset {live['snapshot_date']}, {live['total_programs']} programs")
           PY
 
-      - name: Summarise
+      - name: Summarize
         if: always()
         run: |
           {

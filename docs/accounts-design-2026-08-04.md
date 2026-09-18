@@ -64,7 +64,7 @@ confidence:
 - their likely income bracket, from the cost filter they set
 - where they live, from the area filter
 - **health information**, by inference — someone saving phlebotomy, medical assisting and
-  nursing assistant programs is telling you something; someone saving substance-use counselling
+  nursing assistant programs is telling you something; someone saving substance-use counseling
   programs is telling you more
 - immigration-adjacent signals, from ESL and citizenship-adjacent programs
 - financial distress, from filtering to free programs
@@ -88,7 +88,7 @@ If Phase B happens, the non-negotiables:
 - **Store ids, not inferences.** Save `["f6900f55…"]`, never "interested in healthcare".
 - **No third-party analytics.** The site has none today; an account must not become the excuse.
   (2026-09-17: the site now runs Google Analytics 4 for page views, by owner decision, with
-  GPC, Do Not Track and a footer opt-out honoured. An account must still not become a reason
+  GPC, Do Not Track and a footer opt-out honored. An account must still not become a reason
   to send Google anything more.)
 
 ## Concrete shape, if Phase B happens

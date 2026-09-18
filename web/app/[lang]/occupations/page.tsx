@@ -9,7 +9,7 @@ import {
   groupOccupations,
   programCount,
   programCountsBySoc,
-  summariseOccupations,
+  summarizeOccupations,
 } from "@/lib/browse";
 import {
   allOccupationCodes,
@@ -105,7 +105,7 @@ export default async function OccupationsIndexPage({
   }
 
   const bands = groupOccupations(rows);
-  const tally = summariseOccupations(rows);
+  const tally = summarizeOccupations(rows);
 
   return (
     <div className="shell browse">

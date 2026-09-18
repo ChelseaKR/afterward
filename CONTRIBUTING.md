@@ -7,7 +7,7 @@
 - **Spanish review is the most valuable thing an outside contributor can do here.** The
   translation has had no native reviewer, the site says so, and the strings are all in one
   file. You do not need TypeScript.
-- **Code**: issues labelled `good first issue` are scoped to one file and say what "done"
+- **Code**: issues labeled `good first issue` are scoped to one file and say what "done"
   looks like.
 
 ## Setup

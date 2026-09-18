@@ -101,7 +101,7 @@ is refused with a 422.
 | Education | a frequency distribution of respondent education levels |
 | Interests / Work Styles | RIASEC interest codes and personality descriptors |
 | Related Occupations | 20 occupations, tiered Primary-Short / Primary-Long / Supplemental |
-| Professional Associations | named membership organisations |
+| Professional Associations | named membership organizations |
 | Work Activities Outline (`custom/`) | the GWA → IWA → DWA → task tree, nested, with importance |
 
 ### Three service families that are not linked from an occupation record
@@ -151,16 +151,16 @@ and thousands of dollars on training?** Anything that only decorates the page wa
 
 **Spanish title and description** (`/mpp/careers/{code}/` → `title`, `what_they_do`). Section
 3. Not an enhancement; it repairs a defect the site already documents in `web/lib/vocabulary.ts`
-and apologises for in `web/lib/i18n.ts`. Nothing else in this project's reach can supply it.
+and apologizes for in `web/lib/i18n.ts`. Nothing else in this project's reach can supply it.
 
 **Spanish job titles** (`also_called`, same request). The only way a reader searching in
 Spanish finds anything at all.
 
 **Technology Skills.** Unique to O\*NET — CareerOneStop carries no technology field — and the
-most concrete thing here. A nursing programme that never mentions Epic, or an office
-programme that teaches no Excel, is visibly weaker preparation, and that is a comparison a
-reader can make without a counsellor. O\*NET's own Hot Technology and In Demand flags do the
-ranking, so this project asserts no judgement of its own about which tools matter.
+most concrete thing here. A nursing program that never mentions Epic, or an office
+program that teaches no Excel, is visibly weaker preparation, and that is a comparison a
+reader can make without a counselor. O\*NET's own Hot Technology and In Demand flags do the
+ranking, so this project asserts no judgment of its own about which tools matter.
 
 **Job Zone.** Also unique to O\*NET. A 1–5 preparation level with prose covering education,
 prior experience, *and* on-the-job training — materially more decision-relevant than EDD's
@@ -201,7 +201,7 @@ a scale shared by all 923 occupations, which is what makes them comparable and a
 them useless here: the top four for Registered Nurses are "Assisting and Caring for Others",
 "Documenting/Recording Information", "Getting Information" and "Updating and Using Relevant
 Knowledge". Three of those four describe almost any job, and a reader choosing between two
-programmes learns nothing. Detailed Work Activities *are* concrete ("Record patient medical
+programs learns nothing. Detailed Work Activities *are* concrete ("Record patient medical
 histories.") but are a near-restatement of the tasks already selected — the
 `custom/work_activities_outline` resource shows the mapping explicitly, each DWA hanging off
 the very task statements this client keeps. Carrying both would be one fact printed twice.
@@ -223,7 +223,7 @@ weaker one national.
 no tuition" is the right answer for many people reading this site. What the endpoint returns is
 three strings: `["Registered Nurse", "Registered Nurse (Nof)", "Registered Nurse Resident"]`.
 No sponsor, no location, no link, no indication any of it exists in California. On a site whose
-whole value is naming real programmes with real reported outcomes, "an apprenticeship title
+whole value is naming real programs with real reported outcomes, "an apprenticeship title
 exists somewhere in the federal registry" is a worse answer than silence. The right source is
 DOL's Apprenticeship Finder — a separate integration, and a good candidate for one.
 
@@ -232,7 +232,7 @@ DOL's Apprenticeship Finder — a separate integration, and a good candidate for
 **Bright Outlook.** Already on the page via CareerOneStop.
 
 **Mi Próximo Paso `job_outlook.salary`.** National BLS figures — a $97,550 national median for
-RNs against EDD's California median. Two numbers labelled the same thing that are not the same
+RNs against EDD's California median. Two numbers labeled the same thing that are not the same
 thing.
 
 **Mi Próximo Paso `on_the_job` — the Spanish task list.** Rejected on quality, and the finding
@@ -291,7 +291,7 @@ also_called   "Enfermero de Personal", "Enfermero Escolar", "Enfermero Responsab
 
 This is the cleanest possible result and it took a wrong turn to find. Comparing the Mi Próximo
 Paso career list (923) against the O\*NET OnLine *browse* list (1,016) suggests 93 occupations
-have English but no Spanish — 58 of them Californian. That is an artefact: those 93 codes have
+have English but no Spanish — 58 of them Californian. That is an artifact: those 93 codes have
 an OnLine page and no data of any kind. Compared against the tables that actually hold data,
 the Spanish coverage is exactly, entirely complete.
 
@@ -343,11 +343,11 @@ The task strings are the exception, and only the task strings — see the reject
 
 Being precise about the limit, because overclaiming here would be the worst possible outcome:
 
-- **Programme names and provider-filed descriptions stay English.** They come from the DOL ETP
+- **Program names and provider-filed descriptions stay English.** They come from the DOL ETP
   scorecard (D1), are free text filed by 584 California providers, and no translation exists
   anywhere. `web/lib/i18n.ts`'s `programTextEnglishOnly` must stay on the page — but *the
   clause about occupation titles inside it becomes false*. It currently tells a Spanish reader
-  that programme names, programme descriptions **and occupation titles** appear in English
+  that program names, program descriptions **and occupation titles** appear in English
   "porque es el único idioma en que los publican los registros federales y estatales". The
   federal record does publish occupation titles in Spanish. That sentence needs narrowing to
   the two things it is still true of, and `titlesEnglishOnly` needs the same treatment.
@@ -383,7 +383,7 @@ equivalence is recorded in the module docstring and in `parse_tasks`'s docstring
 reader does not "improve" it by sorting.
 
 Spanish has no bulk table and is the one thing fetched per occupation: **600 requests**,
-serialised, 0.3s apart, cached on disk. A first build costs about 661 requests total; every
+serialized, 0.3s apart, cached on disk. A first build costs about 661 requests total; every
 build after that costs none, since `data/raw/` is gitignored but persists locally between runs.
 
 Nothing here fetches in parallel. There are no rate-limit headers to spend against, the service
@@ -447,7 +447,7 @@ contain. Matching on whole tokens rather than substrings, so these are real hits
 | `IT` | Computer and Information Systems Managers; Computer Systems Analysts; +6 |
 
 Every one of those is currently unreachable by that name. Someone who knows precisely what job
-they want — which describes most people arriving at a training-programme search — cannot
+they want — which describes most people arriving at a training-program search — cannot
 currently find it, because they know it by its real name and the index only holds the
 statistical one.
 
@@ -490,7 +490,7 @@ concurrent work may still move. What the integrator needs to know:
 ## 7. The attribution the site must display
 
 The O\*NET Web Services Data License requires attribution and a link in any product using the
-Services. **This is a licence condition, not a courtesy, and it is already owed today** — the
+Services. **This is a license condition, not a courtesy, and it is already owed today** — the
 skill ratings, related occupations and descriptions the site publishes via CareerOneStop are
 O\*NET content served through a DOL front end.
 
@@ -553,7 +553,7 @@ Two further conditions worth recording:
   it, and inventing a rank would assert something O\*NET did not say.
 - No re-sorting of tasks to put Core first. It would look tidier and would be a claim.
 - No `.01`/`.02` variant handling. `onet_code()` maps to `.00` exactly as the rest of the
-  project does; collapsing specialisations onto their base occupation is a decision this module
+  project does; collapsing specializations onto their base occupation is a decision this module
   does not own, and neither is bridging EDD's broad groups — `soc_vintage.py` owns both.
 - No fallback from a missing Spanish record to the English string. That belongs to the display
   layer, where it can be made visible.

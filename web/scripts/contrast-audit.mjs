@@ -33,7 +33,7 @@ const THEME_CSS = readFileSync(
  * WCAG 2.2 level AAA, 1.4.6 Contrast (Enhanced): 7:1 for body text, 4.5:1 for large text.
  *
  * Raised from AA on 2026-08-05. Four pairings failed at the higher bar and are fixed rather
- * than excepted: the not-reported grey went from --gray-80 (6.63:1) to --gray-90 (9.51:1),
+ * than excepted: the not-reported gray went from --gray-80 (6.63:1) to --gray-90 (9.51:1),
  * and every control tinted with --link moved to --primary-100. Several of those were sitting
  * at 7.02:1 — clearing AAA by two hundredths — which is the same margin this project already
  * refused once on the browse filter's count line.

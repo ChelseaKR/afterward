@@ -2,12 +2,12 @@
  * The accessibility checks a DOM without layout cannot make.
  *
  * jsdom has no layout engine, so two rules can never run there: `color-contrast-enhanced`
- * (WCAG 2.2 AAA 1.4.6) needs resolved colours and font sizes, and `target-size` (WCAG 2.2 AA
+ * (WCAG 2.2 AAA 1.4.6) needs resolved colors and font sizes, and `target-size` (WCAG 2.2 AA
  * 2.5.8) needs the rendered box of every control. Enabling them in the jsdom pass makes them
  * report as incomplete, which is honest but is not a check. This runs them in Chromium
  * against the built pages, where both are answerable.
  *
- * Both colour schemes, because the palette is theme-aware and a ratio that clears AAA in
+ * Both color schemes, because the palette is theme-aware and a ratio that clears AAA in
  * light can fail in dark. Every disclosure is expanded first, for the same reason the jsdom
  * pass does it: a collapsed <details> is outside the accessibility tree, and a gate that
  * stops looking is worse than one that fails.

@@ -6,7 +6,7 @@ Please report security issues privately through GitHub's
 [private vulnerability reporting](https://github.com/ChelseaKR/afterward/security/advisories/new)
 rather than in a public issue.
 
-Expect an acknowledgement within a week. This is a personal project, not a staffed service,
+Expect an acknowledgment within a week. This is a personal project, not a staffed service,
 so please size your expectations accordingly.
 
 ## Scope

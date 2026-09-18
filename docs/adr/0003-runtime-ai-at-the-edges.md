@@ -77,13 +77,13 @@ exposes four capabilities, each bounded the same way:
    requires a claim that uses either to carry its period, and a claim that uses both to
    carry both.
 
-5. **Spanish at runtime, labelled.** Occupation titles and descriptions reach the dataset
+5. **Spanish at runtime, labeled.** Occupation titles and descriptions reach the dataset
    in English (CareerOneStop serves English whatever language is asked for), and O\*NET's Mi
    Próximo Paso covers 600 of the 670. For the 70 it does not, and for provider-filed program
-   descriptions, the service can translate on request. The translation is labelled
+   descriptions, the service can translate on request. The translation is labeled
    AI-translated and unreviewed everywhere it appears; a translation that changes, drops or
-   adds any number is withheld by the verifier; and the static catalogue is untouched. Issue
-   #32 — native Spanish review of the catalogue — stays open. AI translation is not native
+   adds any number is withheld by the verifier; and the static catalog is untouched. Issue
+   #32 — native Spanish review of the catalog — stays open. AI translation is not native
    review and this decision does not claim it is.
 
 6. **Transition pathways.** "From my current job, what related occupations are growing, and
@@ -138,7 +138,7 @@ Consequential choices:
 - The privacy section of `docs/RESPONSIBLE-TECH-AUDITS.md` gains a real data subject for the
   first time: the free text a person types into the opt-in panel. Its handling is stated
   there.
-- AI output is labelled AI-generated, unofficial, and not a recommendation from the State of
+- AI output is labeled AI-generated, unofficial, and not a recommendation from the State of
   California, every time it is shown, in both languages. The non-affiliation notice stays in
   the banner landmark above the masthead and is not moved, demoted or softened by this
   feature.
@@ -166,9 +166,9 @@ Consequential choices:
 - **Embeddings for retrieval.** Not needed at 670 occupations and 3,266 programs, and it
   would add a second model to explain. Lexical resolution over titles and alternate titles is
   inspectable and has no provider dependency.
-- **Machine-translate the static catalogue at build time.** Rejected: it would replace a
-  labelled gap with an unlabelled guess on every page, and it would close issue #32 by
-  fiat. Runtime translation on request, labelled, leaves the catalogue honest.
+- **Machine-translate the static catalog at build time.** Rejected: it would replace a
+  labeled gap with an unlabeled guess on every page, and it would close issue #32 by
+  fiat. Runtime translation on request, labeled, leaves the catalog honest.
 
 ## Revisit if
 

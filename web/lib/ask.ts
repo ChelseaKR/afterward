@@ -104,7 +104,7 @@ export const MAX_HISTORY_TURNS = 6;
 /**
  * The service origin, or null when this build has none.
  *
- * Read from `process.env` at build time — Next inlines `NEXT_PUBLIC_*` — and normalised to
+ * Read from `process.env` at build time — Next inlines `NEXT_PUBLIC_*` — and normalized to
  * no trailing slash. A non-https origin is refused outside local development, because the
  * question a person types is the one piece of personal text this site ever handles.
  */

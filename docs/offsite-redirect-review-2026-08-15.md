@@ -54,7 +54,7 @@ outside the old domain's control, and there are four of them
 | `review` | A person opened it and wrote down what they found, with evidence and a date | — |
 
 `review` is the only rule that can conclude *not* the provider: "this is somebody else's
-website now" is a judgement about content, and no signal available to a fetch makes it. It is
+website now" is a judgment about content, and no signal available to a fetch makes it. It is
 also the only rule that can rescue a rebrand the other three do not reach.
 
 Anything none of them reaches is **unresolved**, and unresolved is published as unresolved:
@@ -99,7 +99,7 @@ None of these was fetched to reach this document. They were opened once, by hand
 hijacked domain is hostile territory and there is nothing further to learn from it.
 
 The third is the one worth dwelling on. `stopglaucomajhu.org` is a real charity running a real
-screening programme. It is not a scam, it is not malware, and it is not a rebrand of a Los
+screening program. It is not a scam, it is not malware, and it is not a rebrand of a Los
 Angeles college — which is exactly why no rule short of a person looking could have told it
 from `moler.org` → `moler.edu`.
 
@@ -131,8 +131,8 @@ Eleven pairs corroborated automatically (`sdsu.edu` internally; `aaa-institute.c
 `cryrop.edu` by name in the accredited zone) and ten by hand, each against a source that is not
 the destination's own claim about itself: EDUCAUSE `.edu` registry records for
 `angelesuniversity.edu` (whose administrative contact is at `angelescollege.edu`) and
-`palladium.edu`; a college's own accreditation evidence file for the eLumen catalogue; the
-colleges' own committee pages for the CurriQunet catalogues; the district's adult-education
+`palladium.edu`; a college's own accreditation evidence file for the eLumen catalog; the
+colleges' own committee pages for the CurriQunet catalogs; the district's adult-education
 page for `aemusd.com`; the county office of education for `rcoe.us`; a Better Business Bureau
 record showing the same address under a new business name for `1on1truckacademy.com`; 211LA
 for `avadulted.org`; a California business filing's principal address for `untouchableaa.com`.
@@ -184,7 +184,7 @@ back the verdicts the new detector was written to replace, and did: ten days lat
 published dataset contains no `soft_not_found` and no `domain_for_sale` decision at all.
 
 Nothing was wrong with the detector, the tests, the report format or the build. The cache had
-no notion of *which* classifier wrote an entry, so a change in judgement was invisible to it.
+no notion of *which* classifier wrote an entry, so a change in judgment was invisible to it.
 
 `CLASSIFIER_VERSION` fixes that: an entry is served only to the classifier that wrote it, an
 entry written before versioning existed counts as older than everything, and the build prints

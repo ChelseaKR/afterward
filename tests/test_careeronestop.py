@@ -132,14 +132,14 @@ class TestParse:
         assert related["29-1171"] == "Nurse Practitioners"
 
     def test_never_relates_an_occupation_to_itself(self) -> None:
-        # 29-1141.04 is a specialisation of 29-1141 and collapses onto it.
+        # 29-1141.04 is a specialization of 29-1141 and collapses onto it.
         assert all(code != "29-1141" for code, _ in self._parsed().related)
 
     def test_returns_none_for_an_empty_payload(self) -> None:
         assert parse_occupation("29-1141", {}) is None
         assert parse_occupation("29-1141", {"OccupationDetail": []}) is None
 
-    def test_serialises_without_inventing_values(self) -> None:
+    def test_serializes_without_inventing_values(self) -> None:
         payload = self._parsed().as_dict()
         unrated = [s for s in payload["skills"] if s["name"] == "Unrated Skill"]
         assert unrated[0]["importance"] is None
@@ -215,7 +215,7 @@ class TestTasks:
 
     def test_the_copy_kept_is_the_highest_rated_one(self) -> None:
         # Today every duplicate agrees with its twin on TaskId and rating -- all 3,389 of
-        # them. This pins the behaviour for the day one does not, so the surviving copy is
+        # them. This pins the behavior for the day one does not, so the surviving copy is
         # the one the ranking would have chosen.
         payload = {
             "OccupationDetail": [
@@ -328,14 +328,14 @@ class TestEducationDistribution:
         assert parsed is not None
         assert parsed.education is None
 
-    def test_serialises_nulls_and_zeroes_faithfully(self) -> None:
+    def test_serializes_nulls_and_zeroes_faithfully(self) -> None:
         payload = parse_occupation("29-1141", PAYLOAD)
         assert payload is not None
         levels = payload.as_dict()["education"]["distribution"]
         assert levels[1] == {"level": "High school diploma or equivalent", "percent": 0.0}
         assert levels[-1]["percent"] is None
 
-    def test_serialises_to_null_when_absent(self) -> None:
+    def test_serializes_to_null_when_absent(self) -> None:
         parsed = parse_occupation("29-1141", {"OccupationDetail": [{"OnetCode": "29-1141.00"}]})
         assert parsed is not None
         assert parsed.as_dict()["education"] is None
@@ -357,7 +357,7 @@ class TestBackwardCompatibility:
         assert record.alternate_titles == ()
         assert record.education is None
 
-    def test_the_original_serialised_keys_are_all_still_there(self) -> None:
+    def test_the_original_serialized_keys_are_all_still_there(self) -> None:
         parsed = parse_occupation("29-1141", PAYLOAD)
         assert parsed is not None
         assert {

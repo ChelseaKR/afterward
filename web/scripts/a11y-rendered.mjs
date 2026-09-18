@@ -21,7 +21,7 @@
  * `<details>` so nothing a disclosure was holding is silently absent from the paper, and
  * keeps the non-affiliation notice on the page -- and no gate had ever rendered it. jsdom
  * resolves no media query and every other pass here runs in screen media, so the sheet a
- * reader takes to a job-centre appointment (#111) was shipping unread. This emulates print
+ * reader takes to a job-center appointment (#111) was shipping unread. This emulates print
  * media on a program page whose source filed no number for at least one outcome, proves the
  * stylesheet actually reached the page before trusting the audit, and checks that "Not
  * reported" is still words rather than a blank -- on paper there is no title attribute to
@@ -142,7 +142,7 @@ async function auditPage(page, label) {
  *
  * The page is chosen by its data rather than hardcoded: the first program, by uuid, that has
  * an outcome its source never filed. On paper an absent measure has to be the words "Not
- * reported" / "No reportado" -- there is no title attribute to hover and no colour to read --
+ * reported" / "No reportado" -- there is no title attribute to hover and no color to read --
  * so a print pass over a program whose every measure is present would prove nothing about the
  * one rule this site is built around. If the fixture has no such program, that is a failure
  * here rather than a pass over a page where the failure is impossible.

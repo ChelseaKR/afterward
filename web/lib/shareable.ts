@@ -2,7 +2,7 @@
  * Search state in the URL, so a search can be sent to someone.
  *
  * Deciding on training is not something people do alone — they do it with a case manager, a
- * partner, or whoever is helping them at a job centre. A shareable URL serves that better
+ * partner, or whoever is helping them at a job center. A shareable URL serves that better
  * than a saved search behind an account would, because the person receiving it does not have
  * to sign up to open it. It also makes the back button work.
  *
@@ -16,7 +16,7 @@
  * 1. **A default is never written.** The URL carries only what the reader changed, so a bare
  *    `/en/` stays bare and a link stays short enough to paste into a text message.
  *
- * 2. **Anything unrecognised is dropped, never guessed.** A stale or hand-edited link falls
+ * 2. **Anything unrecognized is dropped, never guessed.** A stale or hand-edited link falls
  *    back to the default for that one field rather than failing or, worse, silently selecting
  *    something adjacent. Showing the wrong region's programs because a link was old is
  *    exactly the class of quiet wrongness this project exists to avoid.
@@ -44,7 +44,7 @@ const KEY = {
   onlyReported: "reported",
 } as const;
 
-/** The sentinel for "programs California places in no labour-market area". */
+/** The sentinel for "programs California places in no labor-market area". */
 const UNPLACED_TOKEN = "none";
 
 const OUTLOOKS: readonly Outlook[] = ["any", "growing", "shrinking"];

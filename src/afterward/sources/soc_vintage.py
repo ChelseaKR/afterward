@@ -12,7 +12,7 @@ outlook for those workers.
 
 Every row in ``AGGREGATIONS`` satisfies one rule: by BLS's own published definition, the
 target's population *contains* the source occupation. Nothing here is a similarity
-judgement, and there is no fuzzy or title-based fallback -- a training program carrying the
+judgment, and there is no fuzzy or title-based fallback -- a training program carrying the
 wrong occupation would show a reader the wrong wage and the wrong outlook for a decision
 that costs them a year, which is strictly worse than showing nothing.
 
@@ -145,7 +145,7 @@ def _canonical(code: str) -> str | None:
     Accepts the O*NET-SOC detail suffix (``31-1121.00``) because the O*NET sources used to
     justify this table are written that way. It does *not* re-implement the ETP feed's
     8-digit zero-padding, which ``dol_etp._soc_codes`` has already undone by the time a code
-    reaches here; anything else unrecognised returns None rather than raising, so a single
+    reaches here; anything else unrecognized returns None rather than raising, so a single
     malformed feed value cannot take down a build.
     """
     match = _SOC.match(code.strip())
@@ -188,7 +188,7 @@ def resolve_published_socs(codes: Iterable[str], published: Container[str]) -> t
 
     Order is preserved because the ETP feed lists a program's occupations in its own
     priority order, and two codes on one program can resolve to the same aggregate -- a
-    home health aide programme tagged both 31-1121 and 31-1122 must not show the same
+    home health aide program tagged both 31-1121 and 31-1122 must not show the same
     occupation twice.
     """
     resolved: list[str] = []

@@ -6,7 +6,7 @@ import {
   OTHER_LETTER,
   cityPreview,
   groupProvidersByLetter,
-  summariseProviders,
+  summarizeProviders,
   toProviderRow,
 } from "@/lib/browse";
 import { getSearchIndex } from "@/lib/data";
@@ -49,10 +49,10 @@ function Unreported({ lang }: { lang: Lang }) {
  * Browse index for every training provider in the dataset.
  *
  * Alphabetical, unlike the occupation index, because the task is different: people arrive
- * here knowing the name of the school they were about to enrol in. What the ordering cannot
+ * here knowing the name of the school they were about to enroll in. What the ordering cannot
  * carry, the columns do — how many programs a provider runs, how many of them published
  * what happened to their students, and where it operates. A provider showing "0 of 7" has
- * not been penalised by a missing-data rule; it filed nothing for any of its seven programs,
+ * not been penalized by a missing-data rule; it filed nothing for any of its seven programs,
  * and that is the most useful thing this page can tell someone.
  */
 export default async function ProvidersIndexPage({
@@ -66,7 +66,7 @@ export default async function ProvidersIndexPage({
   const t = dict(lang);
   const rows = groupByProvider(getSearchIndex().programs).map(toProviderRow);
   const groups = groupProvidersByLetter(rows);
-  const tally = summariseProviders(rows);
+  const tally = summarizeProviders(rows);
 
   const sectionLabel = (letter: string): string =>
     letter === OTHER_LETTER ? t.otherLetter : letter;

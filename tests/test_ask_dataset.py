@@ -58,7 +58,7 @@ class TestLoading:
         assert d.peer_medians() == {}
 
 
-class TestNormalisation:
+class TestNormalization:
     def test_accents_and_case_and_punctuation_fold(self) -> None:
         assert normalize("Técnico, Médico!") == "tecnico medico"
 

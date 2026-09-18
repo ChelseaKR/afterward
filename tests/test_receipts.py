@@ -135,8 +135,8 @@ class TestTheReceiptDescribesTheRecordBesideIt:
     def test_the_digest_is_of_the_record_file_a_reader_can_hash(
         self, built: Path, uuids: list[str]
     ) -> None:
-        """Not of a re-serialisation. A reader runs `shasum -a 256 programs/<uuid>.json` and
-        gets this string, with no canonicalisation rule to reimplement."""
+        """Not of a re-serialization. A reader runs `shasum -a 256 programs/<uuid>.json` and
+        gets this string, with no canonicalization rule to reimplement."""
         for uuid in uuids:
             record_bytes = (built / "programs" / f"{uuid}.json").read_bytes()
             expected = f"sha256:{hashlib.sha256(record_bytes).hexdigest()}"
@@ -149,7 +149,7 @@ class TestTheReceiptDescribesTheRecordBesideIt:
 
         `Measure.tsx` renders "Not reported" for exactly `value === null`, and the receipt
         says `reported` for exactly a non-null value -- except on the two length columns,
-        where a competency-based programme's absent length is a design decision rather than a
+        where a competency-based program's absent length is a design decision rather than a
         gap and both the CSV and the page say so with their own word. Holding the receipt to
         the record is what holds it to the page, because the record is what the page reads.
         """

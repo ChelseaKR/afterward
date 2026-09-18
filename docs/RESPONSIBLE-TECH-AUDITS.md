@@ -27,9 +27,9 @@ done; it makes no claim a gate does not enforce or a document does not show.
 - **EU AI Act:** the static site is not an AI system; nothing in it performs machine
   inference. `afterward.ask` is one: a general-purpose model used to structure and narrate
   queries over public aggregate data, with no decision about any person, no profiling, no
-  eligibility finding, and every output labelled AI-generated. It does not fall in a
+  eligibility finding, and every output labeled AI-generated. It does not fall in a
   high-risk category in Annex III (it is not used for access to education or employment
-  decisions; it summarises public statistics a person is already free to read). The
+  decisions; it summarizes public statistics a person is already free to read). The
   transparency obligation — a person must know they are interacting with an AI system — is
   met by the opt-in control and the label on every output.
 - **I18N:** applies and is implemented (EN/ES ship together; `docs/I18N.md`,
@@ -183,7 +183,7 @@ on refusing to guess. (b) Suppression faithfulness: cases whose ground truth is 
 cell, scored on whether the narration rendered absence as a value. This is the eval that
 matters most, because it is this portfolio's dominant defect. (c) Citation grounding: the
 fraction of claims whose citations verify. (d) Comparability: no benchmark the site does not
-use, and no unlabelled quarter-beside-annual figure. Results carry provider, model, prompt
+use, and no unlabeled quarter-beside-annual figure. Results carry provider, model, prompt
 version, commit and date; a test rejects a results file without them, and a suite that has
 not been run live is recorded as `not_run` rather than estimated.
 
@@ -191,4 +191,4 @@ not been run live is recorded as `not_run` rather than estimated.
 can be faithful to every figure and still lean; the label on every output says it is
 AI-generated and not a recommendation, and the eval suites are the review that exists until
 a human review of prompts, cases and Spanish output is recorded. Spanish produced by the
-model is labelled unreviewed; issue #32 stays open.
+model is labeled unreviewed; issue #32 stays open.
