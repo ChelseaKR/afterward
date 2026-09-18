@@ -15,7 +15,7 @@ descriptor back against the files on disk and is what the export refuses on.
 The whole design is one rule. **Every measure carries a state word beside it, and the state word
 is never blank.** A value cell is empty only where the state cell says why it is empty. An empty
 cell on its own means nothing, and a reader who does not know that is one `fillna(0)` away from
-publishing that a training programme placed nobody in work.
+publishing that a training program placed nobody in work.
 
 The state vocabulary is three words, and the missing fourth is the interesting one.
 
@@ -29,8 +29,8 @@ The state vocabulary is three words, and the missing fourth is the interesting o
 ``competency_based``
     Only on ``length_weeks`` and ``length_hours``, and only from ``length.competency_based``.
     The ETP data dictionary attaches ``-1`` to those two elements and to no others with a
-    different meaning: the programme advances on demonstrated competency, so it has no fixed
-    length. That is a positive fact about the programme, not missing data, and reporting it as
+    different meaning: the program advances on demonstrated competency, so it has no fixed
+    length. That is a positive fact about the program, not missing data, and reporting it as
     missing would report a deliberate design decision as a gap.
 
 **There is deliberately no ``suppressed``**, and issue #110 asked for one. The reason is that this
@@ -123,29 +123,29 @@ def _measure(name: str, kind: FieldKind, description: str, *path: str) -> Column
 
 
 # The table, in column order. Identity first, then the provider's own description of the
-# programme, then the three families a reader compares on: cost, length, outcomes. Everything
+# program, then the three families a reader compares on: cost, length, outcomes. Everything
 # derived rather than filed -- the occupation join, the link verdict -- comes last, so that a
 # reader scrolling right meets this project's own work only after the source's.
 COLUMNS: Final[tuple[Column, ...]] = (
     _identity("uuid", "string", "Stable record id, as filed by the ETP scorecard.", "uuid"),
     _identity("provider_name", "string", "Training provider, as filed.", "provider_name"),
-    _identity("program_name", "string", "Programme title, as filed.", "program_name"),
+    _identity("program_name", "string", "Program title, as filed.", "program_name"),
     _identity("entity_type", "string", "Provider's own entity type, as filed.", "entity_type"),
-    _identity("cip_code", "string", "CIP code the provider filed for this programme.", "cip_code"),
+    _identity("cip_code", "string", "CIP code the provider filed for this program.", "cip_code"),
     _identity(
         "program_format",
         "string",
-        "The provider's own sentence about delivery mode, quoted rather than categorised.",
+        "The provider's own sentence about delivery mode, quoted rather than categorized.",
         "program_format",
     ),
-    _identity("program_url", "string", "Programme page as filed by the provider.", "program_url"),
-    _identity("city", "string", "Programme city.", "location", "city"),
-    _identity("state", "string", "Programme state.", "location", "state"),
-    _identity("zip", "string", "Programme postal code.", "location", "zip"),
+    _identity("program_url", "string", "Program page as filed by the provider.", "program_url"),
+    _identity("city", "string", "Program city.", "location", "city"),
+    _identity("state", "string", "Program state.", "location", "state"),
+    _identity("zip", "string", "Program postal code.", "location", "zip"),
     _identity(
         "area_name",
         "string",
-        "EDD projection area this programme was placed in, or empty if it was placed in none.",
+        "EDD projection area this program was placed in, or empty if it was placed in none.",
         "region",
         "area_name",
     ),
@@ -189,7 +189,7 @@ COLUMNS: Final[tuple[Column, ...]] = (
         "length_weeks",
         "number",
         (
-            "Programme length in weeks. State competency_based means the programme advances on "
+            "Program length in weeks. State competency_based means the program advances on "
             "demonstrated competency and has no fixed length; it is not missing data."
         ),
         "length",
@@ -198,7 +198,7 @@ COLUMNS: Final[tuple[Column, ...]] = (
     _measure(
         "length_hours",
         "number",
-        "Programme length in instructional hours. See length_weeks on competency_based.",
+        "Program length in instructional hours. See length_weeks on competency_based.",
         "length",
         "hours",
     ),
@@ -206,7 +206,7 @@ COLUMNS: Final[tuple[Column, ...]] = (
         "outcomes_reported",
         "boolean",
         (
-            "Whether the source filed any outcome data for this programme at all. Where false, "
+            "Whether the source filed any outcome data for this program at all. Where false, "
             "every outcome measure below states not_reported."
         ),
         "outcomes",
@@ -269,7 +269,7 @@ COLUMNS: Final[tuple[Column, ...]] = (
         "occupation_match_kind",
         "string",
         (
-            "How this project joined the programme to an occupation, for the first occupation "
+            "How this project joined the program to an occupation, for the first occupation "
             "listed. Empty where no occupation was joined. This project's work, not the source's."
         ),
         "occupations",
@@ -343,7 +343,7 @@ def _render(value: object) -> str:
     """One cell, with no coercion that could invent a number.
 
     ``None`` becomes the empty string and nothing else does. Booleans are written as ``true`` and
-    ``false`` rather than Python's capitalised forms, so the file reads the same as the JSON it
+    ``false`` rather than Python's capitalized forms, so the file reads the same as the JSON it
     came from.
     """
     if value is None:
@@ -392,7 +392,7 @@ def _row(record: Mapping[str, Any]) -> dict[str, str]:
             state = state_of(record, column)
             row[column.name + STATE_SUFFIX] = state
             if state != REPORTED:
-                # A competency-based programme may still carry a length the source filed by
+                # A competency-based program may still carry a length the source filed by
                 # accident; the state is the claim, so the value column is cleared to agree
                 # with it rather than leaving two cells that say different things.
                 row[column.name] = ""
@@ -442,7 +442,7 @@ def to_table_schema(snapshot_date: str, *, path: str = TABLE_FILENAME) -> dict[s
         "name": "programs",
         "title": f"California ETPL programs, snapshot {snapshot_date}",
         "description": (
-            "One row per state-listed training programme. Every measure carries a state word "
+            "One row per state-listed training program. Every measure carries a state word "
             "beside it and the state word is never empty; a value cell is empty only where the "
             "state cell says why. The vocabulary is reported, not_reported and competency_based. "
             "There is no 'suppressed': the ETP scorecard serves a suppressed cell and an "
@@ -464,21 +464,21 @@ JSON_RESOURCES: Final[tuple[tuple[str, str], ...]] = (
     (
         "programs.json",
         (
-            "Every programme as the site serves it, with the nested cost, length, outcome and "
+            "Every program as the site serves it, with the nested cost, length, outcome and "
             "occupation-join objects the flat table flattens away."
         ),
     ),
     (
         "occupations.json",
         (
-            "Every occupation the programmes above feed, with its wages, its ten-year "
+            "Every occupation the programs above feed, with its wages, its ten-year "
             "projection and the SOC vintage each figure was published under."
         ),
     ),
     (
         "coverage.json",
         (
-            "This snapshot's account of itself: how many programmes reported each measure, how "
+            "This snapshot's account of itself: how many programs reported each measure, how "
             "many were placed in a region and by which rule, and what was left unplaced. Read "
             "this before quoting any figure from the other two."
         ),
@@ -506,9 +506,9 @@ def to_data_package(
     return {
         "$schema": "https://datapackage.org/profiles/2.0/datapackage.json",
         "name": f"afterward-california-training-programs-{snapshot_date}",
-        "title": f"Afterward: California training programmes, snapshot {snapshot_date}",
+        "title": f"Afterward: California training programs, snapshot {snapshot_date}",
         "description": (
-            "Every California training programme reported under WIOA, its outcomes as the "
+            "Every California training program reported under WIOA, its outcomes as the "
             "state filed them, and the occupations it leads to. Absence is never a number "
             "here: an outcome the source did not file is absent in the value column and "
             "explained in the state column beside it, and coverage.json states how much of "
@@ -530,7 +530,7 @@ def to_data_package(
             {
                 "title": (
                     "U.S. Department of Labor, Training Provider Results (ETP scorecard) — "
-                    "the programmes, their costs, lengths and outcome measures"
+                    "the programs, their costs, lengths and outcome measures"
                 ),
                 "path": "https://www.trainingproviderresults.gov/",
             },
@@ -760,7 +760,7 @@ def export_csv(dataset_dir: Path, output_dir: Path) -> ExportReport:
             table_path,
             name="programs",
             description=(
-                "One row per programme. Every measure carries a state word beside it and the "
+                "One row per program. Every measure carries a state word beside it and the "
                 "state word is never blank: a value cell is empty only where the state cell "
                 "says why."
             ),

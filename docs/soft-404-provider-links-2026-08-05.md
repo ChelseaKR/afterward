@@ -83,7 +83,7 @@ The patterns fired on 20 of them. All 20 were reviewed by hand and all 20 are tr
 Zero false positives.**
 
 Four choices worth stating, all in the same direction — a wrong `dead` hides a real school
-from someone trying to enrol, and nothing downstream can tell it from a true one:
+from someone trying to enroll, and nothing downstream can tell it from a true one:
 
 1. **Title only, not `<h1>`.** All 20 detections fire on the title alone; the `h1` added
    nothing on this corpus and is where page furniture lives.
@@ -101,7 +101,7 @@ The two findings want different answers, so they get them.
 
 **Soft 404 → treated exactly as the 404 it is.** All four hosts answer normally at their root
 (checked: Elk Grove Adult and Community Education, Butte College, Springboard, Maiquela's
-Cosmetology Academy), so all 11 pages gain a working link to the provider's home page, labelled
+Cosmetology Academy), so all 11 pages gain a working link to the provider's home page, labeled
 as such, with the existing dated sentence. The reader's situation is identical to a hard 404 —
 the filed page is not there and the school is — so the wording is identical too.
 
@@ -116,7 +116,7 @@ sales listing. The URL is kept as plain text and carries a new notice:
 "We could not reach this page" would have been wrong twice over here. It is false — the address
 answered perfectly well, and an advertisement is what answered — and it invites a reader to try
 again, which is the one thing that cannot work. A lapsed domain is also **not** a closed
-school: the LAUSD adult centres behind this dataset's largest dead domain are open and
+school: the LAUSD adult centers behind this dataset's largest dead domain are open and
 teaching at a different address, and nothing published says otherwise.
 
 ## HEAD is gone
@@ -158,7 +158,7 @@ untouched are tested beside them (`TestTitlesThatMeanNothing`).
   gambling site (4 pages), `eastvalleycollege.com` → an Indonesian lottery site (1),
   `hollywoodculturalcollege.com` → a Baltimore glaucoma-screening charity (1). These are real,
   working, well-formed pages; nothing mechanical separates them from the ~50 legitimate
-  rebrands and catalogue vendors in the same `redirected_offsite` class
+  rebrands and catalog vendors in the same `redirected_offsite` class
   (`moler.org` → `moler.edu`, `ces.sdsu.edu` → `globalcampus.sdsu.edu`,
   `westhillscollege.com` → `westhillslemoore.elumenapp.com`). They remain a review queue for a
   human, which is what the previous document concluded and this one does not improve on.

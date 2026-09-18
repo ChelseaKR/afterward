@@ -77,7 +77,7 @@ async function render(element: React.ReactElement) {
 
 function button(label: string): HTMLButtonElement {
   const found = Array.from(container.querySelectorAll("button")).find((b) => b.textContent === label);
-  if (!found) throw new Error(`no button labelled ${label}`);
+  if (!found) throw new Error(`no button labeled ${label}`);
   return found;
 }
 

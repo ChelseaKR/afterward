@@ -22,7 +22,7 @@ seven turns a refusal into a placement: ZCTA 89439 covers Sierra County, Califor
 Washoe County, Nevada, so a program filed there cannot be placed in the North Valley region
 -- but with the Washoe row removed it would look like a clean single-county ZIP. That is the
 absence-rendered-as-a-value failure this project exists to argue against, reached by way of a
-file-size optimisation. The subset rule is therefore stated on the extract itself: every row
+file-size optimization. The subset rule is therefore stated on the extract itself: every row
 of every ZCTA that touches California, not every California row.
 """
 
@@ -70,7 +70,7 @@ _COUNTY_NOUN = re.compile(r"\s+(?:Count(?:y|ies)|Parish|Borough)\Z", re.IGNORECA
 _WHITESPACE = re.compile(r"\s+")
 
 
-def normalise_zip(value: str | None) -> str | None:
+def normalize_zip(value: str | None) -> str | None:
     """The five-digit ZIP in ``value``, or None when there is not exactly one.
 
     DOL files ``field_zip`` as five digits, and has been seen to file ZIP+4. Anything else --
@@ -85,10 +85,10 @@ def normalise_zip(value: str | None) -> str | None:
     return match.group(1) if match else None
 
 
-def normalise_county(name: str | None) -> str | None:
+def normalize_county(name: str | None) -> str | None:
     """Casefold a county name and drop the ``County`` noun, so two spellings compare exactly.
 
-    Exactly, and only exactly, for the reason :func:`afterward.sources.edd_lmi.normalise_place`
+    Exactly, and only exactly, for the reason :func:`afterward.sources.edd_lmi.normalize_place`
     gives about place names: California has a Lake County and a Los Angeles County and a
     Los Banos that is not a county at all, and a near-match between two of them is far more
     likely to be two different places than one typo.
@@ -139,10 +139,10 @@ def california_subset(rows: Iterable[CrosswalkRow]) -> list[CrosswalkRow]:
     docstring. Keeping only ``is_california`` rows would silently complete a border ZCTA's
     county set, and a ZIP that must be refused would place cleanly instead.
     """
-    materialised = list(rows)
-    touching = {row.zcta for row in materialised if row.is_california}
+    materialized = list(rows)
+    touching = {row.zcta for row in materialized if row.is_california}
     return sorted(
-        {row for row in materialised if row.zcta in touching},
+        {row for row in materialized if row.zcta in touching},
         key=lambda row: (row.zcta, row.county_geoid),
     )
 
@@ -185,7 +185,7 @@ class ZipCountyCrosswalk:
         for row in rows:
             by_zip.setdefault(row.zcta, set()).add(row.county_geoid)
             if row.is_california:
-                key = normalise_county(row.county_name)
+                key = normalize_county(row.county_name)
                 if key is not None:
                     names[key] = row.county_geoid
         return cls(
@@ -202,14 +202,14 @@ class ZipCountyCrosswalk:
         crosswalk cannot answer for, and the caller has to keep the two apart: a ZIP that
         reaches no county and a ZIP nobody published a county for are different absences.
         """
-        zip5 = normalise_zip(zip_code)
+        zip5 = normalize_zip(zip_code)
         if zip5 is None:
             return None
         return self.counties_by_zip.get(zip5)
 
     def california_county(self, name: str | None) -> str | None:
         """The GEOID of the California county with this name, or None if there is none."""
-        key = normalise_county(name)
+        key = normalize_county(name)
         if key is None:
             return None
         return self.california_county_geoids.get(key)

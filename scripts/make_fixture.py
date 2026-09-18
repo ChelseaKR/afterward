@@ -23,10 +23,15 @@ Regenerate with `make fixture` after a real `make data`.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from afterward.providers import count_providers, provider_slug  # noqa: E402
+
 SOURCE = REPO_ROOT / "web" / "public" / "data"
 DEST = REPO_ROOT / "fixtures" / "data"
 
@@ -120,12 +125,51 @@ def pick(programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
         limit=1,
     )
 
+    # Two spellings of one provider, so the fixture can tell the two rules apart.
+    #
+    # Three of California's providers file under both a cased and a shouting form of their
+    # name, or alternate `&` with `and`; the published provider count folds them and the raw
+    # count does not. A fixture holding no such pair answers both rules with the same number,
+    # which makes every gate over it green whichever rule is in force -- the state #155 was
+    # filed about could have been reintroduced under a passing CI run. This asks for one pair
+    # by name so that it cannot.
+    take_colliding_spellings(programs, chosen)
+
     for program in programs:
         if len(chosen) >= TARGET_PROGRAMS:
             break
         chosen.setdefault(program["uuid"], program)
 
     return list(chosen.values())
+
+
+def take_colliding_spellings(
+    programs: list[dict[str, Any]],
+    chosen: dict[str, dict[str, Any]],
+) -> None:
+    """Add one program from each of two filings that are one provider under the slug rule.
+
+    Cross-program by nature, so it cannot be expressed as a `take` predicate: whether a name
+    collides is a fact about the other 3,265 records, not about the record in hand.
+    """
+    by_slug: dict[str, list[dict[str, Any]]] = {}
+    for program in programs:
+        slug = provider_slug(program.get("provider_name"))
+        if slug is None:
+            continue
+        by_slug.setdefault(slug, []).append(program)
+
+    for slug, filings in sorted(by_slug.items()):
+        spellings = {p["provider_name"] for p in filings}
+        if len(spellings) < 2:
+            continue
+        for spelling in sorted(spellings):
+            first = next(p for p in filings if p["provider_name"] == spelling)
+            chosen.setdefault(first["uuid"], first)
+        print(f"  colliding spellings: {slug} <- {' / '.join(sorted(spellings))}")
+        return
+
+    print("  warning: no two filings share a provider slug — the provider-count gate is blind")
 
 
 def _median(values: list[float]) -> float | None:
@@ -185,7 +229,10 @@ def fixture_coverage(
         ),
         "programs_with_soc": sum(1 for p in programs if p["soc_codes"]),
         "programs_matched_to_occupation": matched,
-        "distinct_providers": len({p["provider_name"] for p in programs if p["provider_name"]}),
+        # The same rule the pipeline and the site count by, not a fourth spelling of it.
+        # This line held its own copy of the raw-name rule and so answered a question no
+        # published page asks -- see #155.
+        "distinct_providers": count_providers(p["provider_name"] for p in programs),
         "distinct_occupations_matched": len(occupations),
         "occupation_rows_loaded": len(occupations),
         "programs_mapped_to_area": mapped,

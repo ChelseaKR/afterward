@@ -39,8 +39,10 @@ suppression faithfulness, citation grounding, comparability — is committed und
 with provenance-stamped results, and the ledger below carries its gates.
 
 **Observability: Tier B (static frontend), narrowed honestly.** There is no server behind
-the static site, no RUM, and no analytics, by design ("no account, no tracking" is a product
-commitment, so user-behavior telemetry is out of scope permanently, not deferred). The
+the static site and no RUM. Page views are counted by Google Analytics 4, per the owner's
+2026-09-17 decision, which replaced the earlier "no account, no tracking" commitment with
+disclosed, opt-out-able analytics (GPC, Do Not Track and a footer opt-out honored; ad features
+off; see `web/lib/analytics.ts`). Anything beyond page views remains out of scope. The
 optional `afterward.ask` service, when deployed, will carry request counts and cost
 counters and nothing about who asked or what they typed (ADR 0003). What exists instead:
 

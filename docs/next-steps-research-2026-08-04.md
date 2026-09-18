@@ -65,7 +65,7 @@ they reach the page attached to the sentence they support rather than sitting in
 
 An ITA is not a grant a person applies for and receives. It is an agreement between a local
 workforce board and a provider, made on that person's behalf, and it may be paid in
-instalments rather than up front (same section). That distinction matters for the wording:
+installments rather than up front (same section). That distinction matters for the wording:
 somebody does not "get an ITA", they are *referred* with one.
 
 ### 1.2 An ITA can only pay a provider on the state list — which is where our data comes from
@@ -422,7 +422,7 @@ almost anything else on the page — but in a random ten-center sample, nine wer
 extra requests to publish a field that is usually missing, where a blank renders as
 "languages: none", is the unknown-as-absent error this codebase exists to prevent, bought at
 the cost of being a worse guest on a public endpoint. If that field is ever populated
-consistently, this decision should be revisited; it is a data-quality judgement, not a
+consistently, this decision should be revisited; it is a data-quality judgment, not a
 principle.
 
 ### 2.3 Coverage against the 227 cities
@@ -484,7 +484,7 @@ a syllabus wastes the appointment.
    progress toward one (20 CFR 680.420) — and a school's certificate of completion and a state
    license are very different things to be holding.
 4. *If I stop partway, what do I owe?* An ITA is a payment agreement and may be paid in
-   instalments (20 CFR 680.300), so the answer involves the provider and the center together,
+   installments (20 CFR 680.300), so the answer involves the provider and the center together,
    and is a question for before enrolling.
 5. *When does the next cohort start and how many hours a week?* Needs-related payments require
    being unemployed **and** enrolled (20 CFR 680.940), so the timetable and the money question
@@ -589,7 +589,7 @@ Four specific things the copy must never do:
 
 - **An eligibility quiz or checker.** Every input to the real determination — self-sufficiency,
   need, ability to succeed, local demand, other available grants, this year's remaining funds —
-  is a judgement made by a person with information this site does not have. A checker would be
+  is a judgment made by a person with information this site does not have. A checker would be
   a wrong answer delivered confidently, and it would be believed.
 - **Linking the dead hosts.** `etpl.edd.ca.gov` and `americasjobcenter.ca.gov` do not resolve.
   Link EDD's ETPL page, EDD's Office Locator, and CalJOBS.

@@ -2,7 +2,7 @@
 
 The property defended hardest here is the one whose failure is invisible: a live provider
 must never be classified dead. A false "dead" hides a real school from someone trying to
-enrol, and nothing downstream can tell it apart from a true one. So most of what follows is
+enroll, and nothing downstream can tell it apart from a true one. So most of what follows is
 about the *conservatism* of the classifier -- 403, 405, timeouts, 5xx and anything else that
 merely proves a host dislikes robots stays ``indeterminate`` -- and about the invariant that
 an unchecked URL is not a dead URL.
@@ -60,7 +60,7 @@ from afterward.sources.link_check import (
     https_variant,
     is_dead,
     site_root,
-    summarise,
+    summarize,
     upgrade_for,
     verdict_for,
 )
@@ -556,7 +556,7 @@ WORKING_TITLES = [
     "Butte College",
     "Elk Grove Adult and Community Education - Home",
     "School of Career Education | Riverside County Office of Education",
-    "Catalog",  # the elumenapp catalogue shell, ~50 pages of real course listings
+    "Catalog",  # the elumenapp catalog shell, ~50 pages of real course listings
     "Angeles University | Nursing & Business School in Los Angeles",
     "Truck Driving School in West Sacramento | 1 on 1 Truck Academy",
 ]
@@ -569,7 +569,7 @@ class TestWhatA200SaysItIs:
     not pages at all -- 10 were the provider's own "page not found" screen served with HTTP
     200, and 10 were listings offering the address for sale. Between them they sat under 23
     program pages, each of which published "Provider's website" and sent a reader who was
-    ready to enrol into a dead end that looked like a working link.
+    ready to enroll into a dead end that looked like a working link.
     """
 
     @pytest.mark.parametrize("title", SOFT_404_TITLES)
@@ -602,7 +602,7 @@ class TestWhatA200SaysItIs:
 class TestTitlesThatMeanNothing:
     """The other 747, and the ways a checker could wrongly convict one of them.
 
-    A wrong `dead` hides a real school from someone trying to enrol, and nothing downstream
+    A wrong `dead` hides a real school from someone trying to enroll, and nothing downstream
     can tell it apart from a true one. Every case here is a shape that appears in the real
     corpus and must survive untouched.
     """
@@ -1157,7 +1157,7 @@ class TestUncheckedIsNotDead:
         assert upgrade_for(self._checks(), "https://never-looked.edu/") is None
 
 
-class TestSummarise:
+class TestSummarize:
     def _checks(self) -> dict[str, LinkCheck]:
         def make(url: str, reason: Reason, upgrade: str | None = None) -> LinkCheck:
             return LinkCheck(
@@ -1181,28 +1181,28 @@ class TestSummarise:
 
     def test_counts_urls_and_the_pages_that_depend_on_them(self) -> None:
         pages = {"http://gone.edu": 126, "https://missing.edu/p": 22}
-        summary = summarise(self._checks(), pages_per_url=pages)
+        summary = summarize(self._checks(), pages_per_url=pages)
         assert summary.urls_checked == 4
         assert summary.by_verdict["dead"] == 2
         assert summary.pages_by_verdict["dead"] == 148
         assert summary.pages_affected == 150
 
     def test_a_url_with_no_page_count_still_counts_once(self) -> None:
-        summary = summarise(self._checks())
+        summary = summarize(self._checks())
         assert summary.pages_affected == 4
 
     def test_counts_upgradeable_urls(self) -> None:
-        summary = summarise(self._checks(), pages_per_url={"http://shy.edu": 9})
+        summary = summarize(self._checks(), pages_per_url={"http://shy.edu": 9})
         assert summary.upgradeable_urls == 1
         assert summary.upgradeable_pages == 9
 
     def test_reasons_are_kept_separate_within_a_verdict(self) -> None:
-        summary = summarise(self._checks())
+        summary = summarize(self._checks())
         assert summary.by_reason["dns_failure"] == 1
         assert summary.by_reason["not_found"] == 1
 
-    def test_an_empty_run_summarises_to_nothing_rather_than_failing(self) -> None:
-        summary = summarise({})
+    def test_an_empty_run_summarizes_to_nothing_rather_than_failing(self) -> None:
+        summary = summarize({})
         assert summary.urls_checked == 0
         assert summary.by_verdict == {}
 
@@ -1327,7 +1327,7 @@ class TestDecideAlive:
         assert decision is not None
         assert decision.notice is None
 
-    def test_a_page_that_lands_on_the_site_root_is_relabelled_not_suppressed(self) -> None:
+    def test_a_page_that_lands_on_the_site_root_is_relabeled_not_suppressed(self) -> None:
         decision = decide(results(checked(PAGE, "redirected_to_site_root")), PAGE)
         assert decision is not None
         assert decision.linked is True
@@ -1340,7 +1340,7 @@ class TestDecideOffsiteRedirect:
     """A page answered from another domain, and who is at the other end decides everything.
 
     Until 2026-08-15 this class was published as an ordinary link on the reasoning that a
-    catalogue vendor and a domain squatter are indistinguishable mechanically. They are --
+    catalog vendor and a domain squatter are indistinguishable mechanically. They are --
     and the consequence was six California program pages offering a reader a link to
     ``giligiacollege.com``, ``eastvalleycollege.com`` and ``hollywoodculturalcollege.com``,
     which serve an Indonesian gambling site, an Indonesian lottery site and an unrelated
@@ -1462,7 +1462,7 @@ class TestDecideIndeterminate:
 
     def test_a_page_we_could_not_judge_is_never_annotated(self) -> None:
         """Printing "we could not reach this" next to a working institution's WIOA figures
-        on the strength of a bot filter is a false claim about a named organisation."""
+        on the strength of a bot filter is a false claim about a named organization."""
         decision = decide(results(checked(PAGE, "forbidden")), PAGE)
         assert decision is not None
         assert decision.notice is None
@@ -1509,7 +1509,7 @@ class TestDecideDead:
 
     def test_a_dead_name_is_never_sent_to_a_front_page(self) -> None:
         """Even with a live root on file: the host in the record does not exist, and
-        inferring a provider's successor is a judgement about identity, not a measurement."""
+        inferring a provider's successor is a judgment about identity, not a measurement."""
         checks = results(checked(PAGE, "dns_failure"), checked(ROOT, "ok"))
         decision = decide(checks, PAGE)
         assert decision is not None
@@ -1662,7 +1662,7 @@ class TestASubstitutedFrontPageIsReviewedToo:
 
     def test_a_host_the_ledger_says_nothing_about_still_gets_its_front_page(self) -> None:
         """The correction has to stop where the evidence does. Nearly every dead page in the
-        corpus is a school whose site is fine and whose catalogue moved, and suppressing those
+        corpus is a school whose site is fine and whose catalog moved, and suppressing those
         would cost a reader far more than the one entry this fixes."""
         checks = results(checked(PAGE, "not_found"), checked(ROOT, "ok"))
         decision = decide(checks, PAGE, reviewer=LEDGER)
@@ -1711,7 +1711,7 @@ class TestFrontPageFor:
         assert link_check.publishable_front_page(checks, FOR_SALE_PAGE, LEDGER) is None
 
 
-class TestDecisionSerialisation:
+class TestDecisionSerialization:
     def test_every_field_the_interface_needs_is_published(self) -> None:
         decision = decide(
             results(checked(PAGE, "not_found"), checked(ROOT, "ok")),
@@ -1773,7 +1773,7 @@ class TestDecisionSerialisation:
             "substitution": None,
             "redirect": None,
             # Null here and not the current version: no classifier ran, and naming one would
-            # claim a judgement was made about every address in the feed.
+            # claim a judgment was made about every address in the feed.
             "classifier_version": None,
         }
 

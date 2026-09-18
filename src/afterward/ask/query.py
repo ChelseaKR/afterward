@@ -345,7 +345,7 @@ def _occupations_by_criteria(
     Ranked by projected openings (regional where the region has a row), because after the
     wage floor has done the filtering, openings is the figure that says whether a field has
     room; and capped so the narration is about a handful of real records rather than a
-    catalogue. Not a quality ranking.
+    catalog. Not a quality ranking.
     """
     scored: list[tuple[float, str]] = []
     for soc, occupation in dataset.occupations.items():

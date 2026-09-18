@@ -2,7 +2,7 @@
   "version": 1,
   "about": "Hand reviews of provider addresses that redirect to another domain. Read by afterward.sources.link_review, which links an off-site redirect only where something corroborates that the destination is still the provider the federal record names. An entry applies to exactly the filed_host -> destination pair it records: if the redirect moves, the entry stops matching and the link falls back to unresolved rather than carrying a stale blessing onto a page nobody looked at. Never write an entry to make a link work. Write one only for something you established, put what you established in evidence, and date it.",
   "statuses": {
-    "same_provider": "The destination is the organisation the record names, moved. Linked as filed.",
+    "same_provider": "The destination is the organization the record names, moved. Linked as filed.",
     "unrelated": "Somebody else's live site is at the address now. Not linked; the page says the address leads somewhere unrelated.",
     "for_sale": "The address is being advertised for sale. Not linked; the page says so and tells the reader to look the school up by name."
   },
@@ -76,7 +76,7 @@
       "destination": "westhillslemoore.elumenapp.com",
       "status": "same_provider",
       "provider_name": "Lemoore College",
-      "evidence": "The college's own accreditation evidence file is a printout of its catalog footed https://westhillslemoore.elumenapp.com/catalog/22-23/home, so eLumen is its catalogue platform (lemoorecollege.edu/about/accreditation/iser-2024/standard1c/ic2_02_whcl_catalog_web.pdf). West Hills College Lemoore was renamed Lemoore College in April 2024, which is why the filed domain no longer matches the destination.",
+      "evidence": "The college's own accreditation evidence file is a printout of its catalog footed https://westhillslemoore.elumenapp.com/catalog/22-23/home, so eLumen is its catalog platform (lemoorecollege.edu/about/accreditation/iser-2024/standard1c/ic2_02_whcl_catalog_web.pdf). West Hills College Lemoore was renamed Lemoore College in April 2024, which is why the filed domain no longer matches the destination.",
       "reviewed_on": "2026-08-15"
     },
     {
@@ -100,7 +100,7 @@
       "destination": "rcoe.us",
       "status": "same_provider",
       "provider_name": "RCOE School of Career Education",
-      "evidence": "rcoe.us is the Riverside County Office of Education, which runs the School of Career Education the record names; the redirect lands on rcoe.us/programs/school-of-career-education/, that programme's own page.",
+      "evidence": "rcoe.us is the Riverside County Office of Education, which runs the School of Career Education the record names; the redirect lands on rcoe.us/programs/school-of-career-education/, that program's own page.",
       "reviewed_on": "2026-08-15"
     },
     {

@@ -307,14 +307,67 @@ const en = {
   regionNoRow: (area: string) =>
     `California publishes no separate figure for this job in ${area}. The statewide ` +
     `figures above are the only ones there are.`,
-  /** The city could not be placed in a published area at all. */
-  regionUnplaced: "No regional figures for this program's city",
-  regionUnplacedBody: (city: string | null) =>
-    `${city ?? "This program's city"} is not one of the metropolitan or rural areas ` +
-    `California names when it publishes wages and openings. A neighbouring area's ` +
-    `figures would look exactly like a correct answer, so none are shown and the ` +
-    `statewide figures stand alone. About half of California's programs are in this ` +
-    `position.`,
+  /** Neither placement rule could put this program in a published area. */
+  regionUnplaced: "No regional figures for this program",
+  /**
+   * Why this program has no region, in the words of the rule that declined.
+   *
+   * A single sentence used to stand here for every unplaced program, and it said the
+   * program's city is not one California names. That was the whole truth while placement went
+   * by principal city alone. It stopped being true for every one of them when the county rule
+   * landed (#126, #129): a program reaching this panel today is one whose *ZIP* could not be
+   * resolved to a single area, and its city has nothing to do with it.
+   *
+   * `region_unplaced_reason` on the record says which of five things happened. Rendering one
+   * stated cause for all of them would be this site's own headline failure — an absence
+   * published under a specific, defensible-sounding reason that nobody measured — so each
+   * reason gets its own sentence and an unrecognized one gets a sentence that names no cause
+   * at all.
+   */
+  regionUnplacedBody: (city: string | null, reason: string | null | undefined) => {
+    const where = city ?? "This program's city";
+    switch (reason) {
+      case "straddles_areas":
+        return (
+          `This program's ZIP code reaches into more than one of the labor-market areas ` +
+          `California publishes, and nothing in the state's own area titles says which one ` +
+          `it belongs to. Either answer would look exactly like a correct answer here, so ` +
+          `neither is given and the statewide figures stand alone.`
+        );
+      case "zip_not_in_crosswalk":
+        return (
+          `This program's ZIP code is a mailing ZIP with no matching census area — a PO Box ` +
+          `range, or a ZIP issued to a single recipient — so there is no county to place it ` +
+          `by, and ${where} is not named in any area title either. The statewide figures ` +
+          `stand alone.`
+        );
+      case "county_outside_areas":
+        return (
+          `This program's ZIP code falls only in counties that none of California's ` +
+          `published labor-market areas covers, so there is no area whose wages and ` +
+          `openings would be this program's. The statewide figures stand alone.`
+        );
+      case "no_zip":
+        return (
+          `This program's record carries no ZIP code, and ${where} is not named in any of ` +
+          `California's published area titles, so there is nothing left to place it by. The ` +
+          `statewide figures stand alone.`
+        );
+      case "crosswalk_not_read":
+        return (
+          `This dataset was built without the ZIP-to-county file, so the second of the two ` +
+          `placement rules was never tried for this program. That is a gap in how this ` +
+          `dataset was built, not a finding about where the program is.`
+        );
+      default:
+        return (
+          `Neither of the two rules that place a program in a region reached this one, and ` +
+          `this record does not say which of them declined. A neighboring area's figures ` +
+          `would look exactly like a correct answer, so none are shown and the statewide ` +
+          `figures stand alone.`
+        );
+    }
+  },
 
   compareTitle: "Side by side",
   /**
@@ -402,29 +455,54 @@ const en = {
     "Compared with the median California program that reported this same measure. Programs reporting nothing are not in the comparison, so this is a comparison among those willing to publish.",
 
   areaNote: (unplaced: number, total: number) =>
-    `California's labour-market regions are each named after two or three cities, and a ` +
-    `program counts as being in one only when its city is one of those. That leaves ` +
-    `${fmt(unplaced)} of these ${fmt(total)} programs in no region at all — some in the ` +
-    `same county as a region listed here, some right next door to one. Choosing a region ` +
-    `hides those ${fmt(unplaced)}; it does not move them somewhere else.`,
+    `A program is in one of California's labor-market regions when the state's own title ` +
+    `for that region names its city, or names the county its ZIP code is in. Neither rule ` +
+    `guesses. That leaves ${fmt(unplaced)} of these ${fmt(total)} programs in no region at ` +
+    `all — a ZIP code reaching into two regions at once is left in neither, because either ` +
+    `answer would look exactly as correct as the other. Choosing a region hides those ` +
+    `${fmt(unplaced)}; it does not move them somewhere else.`,
   unplacedOption: (n: number) => `Not placed in a region (${fmt(n)})`,
   anyCityInArea: "Any city in this region",
   anyCityUnplaced: "Any city with no region",
   areaHidesUnplaced: (n: number) =>
-    `${fmt(n)} more programs match this search but are in cities California places in no ` +
-    `region. They are not shown here, and they are not somewhere else.`,
+    `${fmt(n)} more programs match this search but California places them in no region. ` +
+    `They are not shown here, and they are not somewhere else.`,
   unplacedHeading: "Programs California places in no region",
   unplacedBody:
-    "Their cities are not named in any published labour-market area, so no region's pay " +
-    "figures are claimed for them. That is a gap in the state's geography rather than a " +
-    "judgement about the programs, and it covers cities inside the regions listed above as " +
-    "well as cities far from any of them.",
+    "Two rules place a program, and both of them restate California's own published area " +
+    "titles: the title names the program's city, or it names the county its ZIP code is in. " +
+    "These are the programs neither rule reaches. A ZIP code straddling two regions is left " +
+    "in neither, because either answer would look exactly as correct as the other; a mailing " +
+    "ZIP with no census area behind it has nothing to place it by at all. No neighboring " +
+    "region's pay figures are claimed for any of them.",
   statUnplaced: (unplaced: number, total: number) =>
-    `${fmt(unplaced)} of the ${fmt(total)} are in cities California's own published ` +
-    `regions do not name, so no region's pay or openings figures are claimed for them.`,
+    `${fmt(unplaced)} of the ${fmt(total)} are in no region: California's own published ` +
+    `area titles name neither their city nor a single county their ZIP code is in, so no ` +
+    `region's pay or openings figures are claimed for them.`,
 
   onetCredit:
     "This site incorporates information from O*NET Web Services by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). O*NET\u00ae is a trademark of USDOL/ETA.",
+  /*
+   * The link back to the source, in the footer of every page.
+   *
+   * This is not a courtesy to developers. This site is built with California's official
+   * design system and publishes figures about California training providers while being no
+   * part of California's government, and `notAffiliated` says so on every page. A reader who
+   * doubts that sentence, or doubts a number printed beside a school's name, has no way to
+   * check either unless the page tells them where the code and the pipeline that produced it
+   * live. The source is the evidence for the disclaimer.
+   *
+   * It also satisfies DISC-02 of the portfolio's Discovery & Adoption standard, which
+   * requires the homepage named in the repository's About to link back to that repository --
+   * measured on the live site and failing, because no page here linked to it at all.
+   *
+   * `sourceCodeLabel` is the visible link text and is deliberately distinct from every other
+   * link in the chrome: axe's `identical-links-same-purpose` rule (AAA 2.4.9) is enabled in
+   * this repository's audit, and two links reading the same words and going to different
+   * places is exactly what it fails on.
+   */
+  sourceCode: "This site is open source.",
+  sourceCodeLabel: "Read the code and the data pipeline on GitHub",
   aboutData: "Where this comes from",
   snapshot: (d: string) => `Data snapshot: ${d}`,
   viewProgram: "Program details",
@@ -434,7 +512,7 @@ const en = {
   linkUnreachable: (date: string) => `We could not reach this page when we checked on ${date}.`,
   linkSubstituted: (date: string) =>
     `We could not reach the page in the federal record when we checked on ${date}, so this links to the provider's home page instead.`,
-  // A lapsed domain is not a closed school — the adult centres behind the largest dead domain
+  // A lapsed domain is not a closed school — the adult centers behind the largest dead domain
   // in this dataset are open and teaching at a different address. So this says what the
   // address did, tells the reader the one thing that actually helps, and accuses nobody.
   linkForSale: (date: string) =>
@@ -501,9 +579,9 @@ const en = {
 
   browseProvidersTitle: "Every training provider",
   browseProvidersIntro:
-    "Every school, college, and training organisation with at least one California program in this dataset, listed alphabetically with how much of its own record it publishes.",
+    "Every school, college, and training organization with at least one California program in this dataset, listed alphabetically with how much of its own record it publishes.",
   browseProvidersDerived:
-    "The federal providers index carries no California rows, so this roster is rebuilt from the programs themselves. Spellings that differ only in capitalisation or punctuation are merged into one entry.",
+    "The federal providers index carries no California rows, so this roster is rebuilt from the programs themselves. Spellings that differ only in capitalization or punctuation are merged into one entry.",
   jumpToLetter: "Jump to providers by first letter",
   otherLetter: "0–9 and other",
   citiesColumn: "Cities",
@@ -677,6 +755,13 @@ const en = {
   aboutProgramsCounted: "Programs described here",
   aboutProvidersNamed: "Providers named here",
   aboutProgramsReporting: "Programs that report any outcome",
+  /*
+    One sentence, next to the snapshot date, because the number above it is three lower than
+    the count of names the state filed and a reader who noticed deserves to know why rather
+    than to wonder. 584 filings, 581 providers: three of them file under two spellings each.
+  */
+  aboutProvidersCounted:
+    "Providers are counted by name, and a provider that files under two spellings of its own name is counted once.",
 
   /* ---- About page jump nav ----
    *
@@ -706,19 +791,19 @@ const en = {
     "California's Employment Development Department: its long-term occupational employment projections for 2024 to 2034, and its wage statistics where the projections carry no wage. These are the state's own ten-year estimates for an occupation, statewide and for the areas it names.",
   aboutSourceFederalLabel: "Job descriptions and skills",
   aboutSourceFederalBody:
-    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name. Nothing in the catalogue is machine-translated; where a Spanish page offers an AI translation on request, it is labelled as such, unreviewed, and the English stays the record.",
+    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name. Nothing in the catalog is machine-translated; where a Spanish page offers an AI translation on request, it is labeled as such, unreviewed, and the English stays the record.",
   aboutSourceWagesLabel: "What an occupation pays across its range",
   aboutSourceWagesBody:
     "The Bureau of Labor Statistics' Occupational Employment and Wage Statistics for California, published by EDD. It gives the 10th, 25th, 50th, 75th and 90th percentiles, which is how an occupation page can show the spread rather than the median alone. Each percentile can be withheld separately, and a withheld one is left blank rather than estimated from the ones on either side of it.",
   aboutSourcesDates:
-    "Each source, its licence, and the date it was read are recorded in the project's public provenance file, and the whole dataset can be rebuilt from those sources by anyone.",
+    "Each source, its license, and the date it was read are recorded in the project's public provenance file, and the whole dataset can be rebuilt from those sources by anyone.",
   aboutProvenanceLink: "Read the provenance file",
 
   aboutSelfReportedHeading: "The outcomes are self-reported, and this site does not check them",
   aboutSelfReportedBody:
     "Completion, employment and earnings are reported by each training provider to California, and by California to the federal government. This project reproduces what was filed. It does not audit it, cannot confirm it, and has no way to tell a carefully compiled figure from a careless one. A number here is evidence of what a provider reported, not proof of what happened.",
   aboutSelfReportedSecond:
-    "This matters most in the direction people do not expect. The measures are not adjusted for who a program enrols. A program that takes people furthest from work will tend to report lower employment and lower earnings than one that enrols people already close to a job, and nothing in this data separates the two.",
+    "This matters most in the direction people do not expect. The measures are not adjusted for who a program enrolls. A program that takes people furthest from work will tend to report lower employment and lower earnings than one that enrolls people already close to a job, and nothing in this data separates the two.",
 
   aboutMissingHeading: "What a blank means",
   aboutMissingBody:
@@ -734,7 +819,7 @@ const en = {
   aboutComparisonsBody:
     "A rate on its own is unreadable: nobody knows whether 45% employed is good. So where a program reports a measure, it is shown against the median California program that reported the same measure. Programs that reported nothing are not in that median, which makes it a comparison among those willing to publish rather than a comparison against the state as a whole.",
   aboutComparisonsSecond:
-    "This site once labelled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best. Completion is marked only when the programs run for the same sort of time, because the confounding that withdrew the label arrives there two programs at a time: the median share who finished falls from 97% at four weeks or less to 78% beyond a year, so a mark across lengths marks the shorter course.",
+    "This site once labeled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best. Completion is marked only when the programs run for the same sort of time, because the confounding that withdrew the label arrives there two programs at a time: the median share who finished falls from 97% at four weeks or less to 78% beyond a year, so a mark across lengths marks the shorter course.",
   aboutComparisonsThird:
     "No comparison is ever built out of a blank. A program that reported nothing is never called below average, because there is nothing to compare and saying so would be an accusation rather than a fact.",
 
@@ -748,13 +833,13 @@ const en = {
   aboutLimitsBody:
     "These are the things this site gets wrong or cannot yet do. They are listed here rather than discovered later.",
   aboutLimitTranslation:
-    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing in the catalogue is machine-translated. Where a Spanish page offers an AI translation on request, it is labelled as AI-translated and unreviewed, a check refuses any translation that changes a number, and the English stays the record.",
+    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing in the catalog is machine-translated. Where a Spanish page offers an AI translation on request, it is labeled as AI-translated and unreviewed, a check refuses any translation that changes a number, and the English stays the record.",
   aboutLimitEtpl:
     "The programs here are the ones California filed federally. Whether the state's own eligible training provider list carries programs the federal file omits is unresolved, because California publishes no bulk export of it. A program missing from this site is not necessarily a program that does not exist.",
   aboutLimitUnmatched: (unmatched: string) =>
     `${unmatched} programs show no occupation figures at all. California publishes no projection for the occupation they are tagged with, and no nearby occupation is substituted, because a similar-sounding job with a different wage would look exactly like a correct answer.`,
   aboutLimitArea: (unplaced: string) =>
-    `${unplaced} programs show no regional pay figure. Their city is not one of the metropolitan or rural areas California names when it publishes wages, and a neighbouring area's numbers are not borrowed to fill the gap.`,
+    `${unplaced} programs show no regional pay figure. California's own area titles name neither their city nor a single county their ZIP code is in — a ZIP code reaching two areas at once is left in neither, because either answer would look exactly as correct as the other — and a neighboring area's numbers are not borrowed to fill the gap.`,
   aboutLimitUrl: (noUrl: string) =>
     `${noUrl} programs have no working website link. Most never filed one, and a handful filed something that was not a web address at all, which is dropped rather than turned into a link.`,
   aboutLimitProjections:
@@ -764,21 +849,46 @@ const en = {
 
   aboutCorrectionsHeading: "If a figure here misrepresents you",
   aboutCorrectionsBody:
-    "This site names real organisations and publishes numbers about them, so there has to be a way to say it got something wrong. Please open an issue on the project's public repository, naming the program and the figure you are disputing.",
+    "This site names real organizations and publishes numbers about them, so there has to be a way to say it got something wrong. Please open an issue on the project's public repository, naming the program and the figure you are disputing.",
   aboutCorrectionsSecond:
-    "Two outcomes are possible and they are worth telling apart. Where the error is this project's — a bad join, a mislabelled measure, a program attached to the wrong occupation — it will be fixed, and the correction is not conditional on who asks. Where the underlying public record is wrong, the correction has to go through the body that published it, since this site reproduces that record and cannot quietly diverge from it; the issue thread is a reasonable place to note that a correction is in progress, and that note will be honoured here.",
+    "Two outcomes are possible and they are worth telling apart. Where the error is this project's — a bad join, a mislabeled measure, a program attached to the wrong occupation — it will be fixed, and the correction is not conditional on who asks. Where the underlying public record is wrong, the correction has to go through the body that published it, since this site reproduces that record and cannot quietly diverge from it; the issue thread is a reasonable place to note that a correction is in progress, and that note will be honored here.",
   aboutCorrectionsLink: "Open an issue about a figure on this site",
 
   aboutAdviceHeading: "This is not advice",
   aboutAdviceBody:
-    "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counsellor before you decide.",
+    "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counselor before you decide.",
+
+  // ---- Privacy and analytics (About page section, and the footer on every page) ----
+  //
+  // Google Analytics 4, per the owner's 2026-09-17 decision. `lib/analytics.ts` is what
+  // loads it; this copy is what a reader is told, and the two must describe the same thing.
+  aboutPrivacyHeading:
+    "Privacy and analytics",
+  aboutPrivacyBody:
+    "This site has no accounts, and a shortlist you save stays on your device. It does use Google Analytics 4, a service of Google LLC, to count visits, and Google processes that data on this project's behalf. Google Analytics receives each page's address and title, the site you came from, and your browser's language, screen size, browser and operating system, and it uses your IP address to estimate your approximate location, such as your city. The address sent to Google keeps only the page path and campaign tags such as utm_source: your search terms, your filters and any shared shortlist are removed first. With its standard settings, Google Analytics also records scrolling to the end of a page, clicks on links to other sites, and file downloads.",
+  aboutPrivacyCookies:
+    "Google Analytics sets two cookies: _ga, and one whose name begins with _ga_. They hold a random identifier so a return visit can be counted, and they last up to two years. In the European Economic Area, the United Kingdom and Switzerland, the site tells Google not to store these cookies, and Google Analytics receives only cookieless measurements without a stored identifier. Advertising features are off: Google signals and ad personalization are disabled, and advertising storage is denied everywhere. Google Analytics keeps event-level data for 14 months.",
+  aboutPrivacyOptOut:
+    "Google Analytics does not load if your browser sends Global Privacy Control or Do Not Track. The “Opt out of analytics” button at the bottom of every page turns it off too, from the next page on. That choice is saved in this browser's local storage and deletes the Google Analytics cookies already set. “Opt back in” undoes it, and clearing this site's data clears the choice.",
+  analyticsFooter:
+    "This site uses Google Analytics, with its advertising features off.",
+  analyticsFooterLink:
+    "Privacy and analytics",
+  analyticsOptOut:
+    "Opt out of analytics",
+  analyticsOptIn:
+    "Opt back in",
+  analyticsOffStatus:
+    "Analytics is off in this browser.",
+  analyticsOnStatus:
+    "Analytics is back on.",
 
   // ---- What the work actually is (program page) ----
   //
-  // A program page used to open on cost, length and enrolment counts: three numbers about a
+  // A program page used to open on cost, length and enrollment counts: three numbers about a
   // purchase, before a word about what the purchase is for. Someone arriving from a search
   // engine is asking one question first — what is this job, and is it for me — and the page
-  // had no answer to it beyond a paragraph of federal course-catalogue prose at the bottom.
+  // had no answer to it beyond a paragraph of federal course-catalog prose at the bottom.
   //
   // These strings carry that answer. They are written for someone deciding whether to spend a
   // year and several thousand dollars, and they assume no college: short sentences, ordinary
@@ -873,7 +983,7 @@ const en = {
   fundingPriorityHeading: "Say if you receive public assistance, are low income, or need basic skills help",
   fundingPriority: "For the adult funding stream, federal law requires priority to be given to recipients of public assistance, other low-income individuals, and individuals who are basic skills deficient. California instructs job center staff to work an explicit order: veterans and eligible spouses who are also in one of those groups, then the groups themselves, then other veterans and eligible spouses, then any populations the Governor or the local board has added, then everyone else. Priority does not exclude anyone else, and it does not apply to the dislocated worker stream. It only operates if the center is told, and California fixes a person's priority status at the moment eligibility is determined — so it is the first appointment that counts.",
   fundingOtherFundingHeading: "Bring what you already have — this money fills a gap",
-  fundingOtherFunding: "WIOA training funding is limited to people who cannot get grant assistance from other sources, or who need help beyond what those sources cover. Centers must consider Pell Grants, state training funds and assistance for needy families first. Someone can enrol while a Pell application is still pending, if the center arranges it with the provider in advance.",
+  fundingOtherFunding: "WIOA training funding is limited to people who cannot get grant assistance from other sources, or who need help beyond what those sources cover. Centers must consider Pell Grants, state training funds and assistance for needy families first. Someone can enroll while a Pell application is still pending, if the center arranges it with the provider in advance.",
   fundingSupportHeading: "Ask what else can be covered while you train",
   fundingSupport: "Supportive services — help with transport, child care and dependent care, and others — may be provided to people taking part in career or training services who cannot obtain them elsewhere. Adults who are unemployed, do not qualify for unemployment compensation, and are enrolled in training may be eligible for needs-related payments as well.",
   fundingLocalHeading: "The answer depends on the local area, and on the year",
@@ -886,7 +996,7 @@ const en = {
   fundingAskCredential: "What exactly do I hold at the end, who issues it, and does an employer or a licensing board recognize it?",
   fundingWhyCredential: "A program on the list has to lead to a credential, employment, or measurable progress toward one — but 'certificate of completion' from a school and a license a state board recognizes are very different things to be holding.",
   fundingAskWithdrawal: "If I stop partway through, what do I owe, and what happens to funding already paid?",
-  fundingWhyWithdrawal: "An Individual Training Account is a payment agreement with the provider and may be paid in instalments, so who is owed what on a withdrawal is a question for the provider and the center together, before enrolling rather than after.",
+  fundingWhyWithdrawal: "An Individual Training Account is a payment agreement with the provider and may be paid in installments, so who is owed what on a withdrawal is a question for the provider and the center together, before enrolling rather than after.",
   fundingAskSchedule: "When does the next cohort start, and how many hours a week is it?",
   fundingWhySchedule: "The schedule decides whether someone can keep working while training, and needs-related payments are only for people who are unemployed and already enrolled — so the timetable and the money question are the same question.",
   fundingAskFundingStream: "Which funding stream would I be served under — adult, dislocated worker, or youth?",
@@ -967,7 +1077,7 @@ const en = {
   filterNoMatches: "Nothing here matches that. Try fewer letters, or a word from the middle of the name.",
   alternativesHeading: "Related work California expects more of",
   alternativesNote:
-    "The U.S. Department of Labor lists these as related to the job above, and California projects growth in them rather than decline. Related is not the same as interchangeable: the training, the licences and the pay can all differ, and this program does not train for these. It is a place to start asking, not a recommendation.",
+    "The U.S. Department of Labor lists these as related to the job above, and California projects growth in them rather than decline. Related is not the same as interchangeable: the training, the licenses and the pay can all differ, and this program does not train for these. It is a place to start asking, not a recommendation.",
   alternativesPrograms: (n: number): string =>
     n === 1 ? "1 program here" : `${n.toLocaleString("en-US")} programs here`,
   alternativesNoPrograms: "No programs here train for it",
@@ -1195,7 +1305,7 @@ const en = {
 
   ctdlPropertiesHeading: "Which properties are filled in",
   ctdlPropertiesIntro:
-    "Every property below is emitted only where the source asserted something. A blank is a blank: no placeholder, no zero, and nothing inferred from a neighbouring field. The order is the export's own, not best-first.",
+    "Every property below is emitted only where the source asserted something. A blank is a blank: no placeholder, no zero, and nothing inferred from a neighboring field. The order is the export's own, not best-first.",
   ctdlPropertyColumn: "Property",
   ctdlPropertyCountColumn: "Programs carrying it",
   ctdlPropertyShareColumn: "Share",
@@ -1237,7 +1347,7 @@ const en = {
     "CTDL has a property for where a learning opportunity is available. The program's location, and the region this project derives from it, are not carried. For a separate reason, no address is put on the organization either: the location on a record is the program's, not necessarily the provider's.",
   ctdlGapProviderCategory: "What kind of provider it is",
   ctdlGapProviderCategoryWhy:
-    "The source's provider category does not map onto CTDL's agent-sector vocabulary without judgement calls, and that vocabulary is served as a web page rather than as data. The organization carries the name the source filed and nothing else.",
+    "The source's provider category does not map onto CTDL's agent-sector vocabulary without judgment calls, and that vocabulary is served as a web page rather than as data. The organization carries the name the source filed and nothing else.",
   ctdlGapWioaFundedCost: "What it costs a student funded under WIOA",
   ctdlGapWioaFundedCostWhy:
     "That is a different cost to a different payer, and CTDL can carry it as a second cost profile distinguished by a concept from a vocabulary served as a web page rather than as data. Only the out-of-pocket total is carried.",
@@ -1558,13 +1668,52 @@ const es: Dictionary = {
   regionNoRow: (area: string) =>
     `California no publica una cifra aparte para esta ocupación en ${area}. Las cifras ` +
     `estatales de arriba son las únicas que existen.`,
-  regionUnplaced: "Sin cifras regionales para la ciudad de este programa",
-  regionUnplacedBody: (city: string | null) =>
-    `${city ?? "La ciudad de este programa"} no es una de las áreas metropolitanas o ` +
-    `rurales que California nombra al publicar salarios y vacantes. Las cifras de un ` +
-    `área vecina se verían igual que una respuesta correcta, así que no se muestra ` +
-    `ninguna y las cifras estatales quedan solas. Cerca de la mitad de los programas de ` +
-    `California están en esta situación.`,
+  regionUnplaced: "Sin cifras regionales para este programa",
+  regionUnplacedBody: (city: string | null, reason: string | null | undefined) => {
+    const where = city ?? "La ciudad de este programa";
+    switch (reason) {
+      case "straddles_areas":
+        return (
+          `El código postal de este programa abarca más de una de las regiones laborales ` +
+          `que California publica, y nada en los títulos que el estado mismo les da indica ` +
+          `a cuál pertenece. Cualquiera de las dos respuestas se vería aquí igual que una ` +
+          `respuesta correcta, así que no se da ninguna y las cifras estatales quedan solas.`
+        );
+      case "zip_not_in_crosswalk":
+        return (
+          `El código postal de este programa es un código de correo sin área censal ` +
+          `equivalente — un rango de apartados postales, o un código asignado a un solo ` +
+          `destinatario — así que no hay condado con el cual ubicarlo, y ${where} tampoco ` +
+          `aparece en el título de ninguna región. Las cifras estatales quedan solas.`
+        );
+      case "county_outside_areas":
+        return (
+          `El código postal de este programa cae únicamente en condados que ninguna de las ` +
+          `regiones laborales publicadas de California cubre, así que no hay región cuyos ` +
+          `salarios y vacantes sean los de este programa. Las cifras estatales quedan solas.`
+        );
+      case "no_zip":
+        return (
+          `El registro de este programa no trae código postal, y ${where} no aparece en el ` +
+          `título de ninguna de las regiones publicadas de California, así que no queda ` +
+          `nada con lo cual ubicarlo. Las cifras estatales quedan solas.`
+        );
+      case "crosswalk_not_read":
+        return (
+          `Estos datos se armaron sin el archivo que enlaza códigos postales con condados, ` +
+          `así que la segunda de las dos reglas de ubicación nunca se intentó para este ` +
+          `programa. Eso es una carencia de cómo se armaron estos datos, no un hallazgo ` +
+          `sobre dónde está el programa.`
+        );
+      default:
+        return (
+          `Ninguna de las dos reglas que ubican un programa en una región alcanzó a este, ` +
+          `y este registro no dice cuál de las dos declinó. Las cifras de una región vecina ` +
+          `se verían igual que una respuesta correcta, así que no se muestra ninguna y las ` +
+          `cifras estatales quedan solas.`
+        );
+    }
+  },
 
   compareTitle: "Lado a lado",
   compareTrayLabel: "Programas seleccionados para comparar",
@@ -1618,31 +1767,38 @@ const es: Dictionary = {
     "Comparado con el programa típico de California que reportó esta misma medida. Los programas que no reportan nada no entran en la comparación.",
 
   areaNote: (unplaced: number, total: number) =>
-    `Las regiones laborales de California llevan el nombre de dos o tres ciudades cada ` +
-    `una, y un programa cuenta como parte de una región solo si su ciudad es una de esas. ` +
-    `Por eso ${fmt(unplaced)} de estos ${fmt(total)} programas no quedan en ninguna ` +
-    `región: algunos están en el mismo condado que una región de esta lista, y algunos ` +
-    `justo al lado de una. Elegir una región oculta esos ${fmt(unplaced)}; no los coloca ` +
-    `en otro lugar.`,
+    `Un programa queda en una de las regiones laborales de California cuando el título que ` +
+    `el estado mismo le da a esa región nombra su ciudad, o nombra el condado donde está ` +
+    `su código postal. Ninguna de las dos reglas adivina. Por eso ${fmt(unplaced)} de ` +
+    `estos ${fmt(total)} programas no quedan en ninguna región: un código postal que ` +
+    `abarca dos regiones a la vez no queda en ninguna, porque cualquiera de las dos ` +
+    `respuestas se vería igual de correcta que la otra. Elegir una región oculta esos ` +
+    `${fmt(unplaced)}; no los coloca en otro lugar.`,
   unplacedOption: (n: number) => `Sin región asignada (${fmt(n)})`,
   anyCityInArea: "Cualquier ciudad de esta región",
   anyCityUnplaced: "Cualquier ciudad sin región",
   areaHidesUnplaced: (n: number) =>
-    `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero están en ciudades que ` +
-    `California no ubica en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
+    `Otros ${fmt(n)} programas coinciden con esta búsqueda, pero California no los ubica ` +
+    `en ninguna región. No aparecen aquí y tampoco están en otra parte.`,
   unplacedHeading: "Programas que California no ubica en ninguna región",
   unplacedBody:
-    "Sus ciudades no aparecen en ninguna área laboral publicada, así que no se les atribuye " +
-    "el pago de ninguna región. Es un vacío en la geografía del estado, no un juicio sobre " +
-    "los programas, y abarca tanto ciudades dentro de las regiones de arriba como ciudades " +
-    "lejos de todas ellas.",
+    "Dos reglas ubican un programa, y las dos repiten los títulos que California misma le " +
+    "da a sus regiones publicadas: el título nombra la ciudad del programa, o nombra el " +
+    "condado donde está su código postal. Estos son los programas que ninguna de las dos " +
+    "alcanza. Un código postal que abarca dos regiones no queda en ninguna, porque " +
+    "cualquiera de las dos respuestas se vería igual de correcta que la otra; y un código " +
+    "de correo sin área censal detrás no tiene nada con qué ubicarse. A ninguno de ellos se " +
+    "le atribuye el pago de una región vecina.",
   statUnplaced: (unplaced: number, total: number) =>
-    `${fmt(unplaced)} de los ${fmt(total)} están en ciudades que las regiones publicadas ` +
-    `de California no nombran, así que no se les atribuye el pago ni las vacantes de ` +
+    `${fmt(unplaced)} de los ${fmt(total)} no quedan en ninguna región: los títulos que ` +
+    `California misma les da a sus regiones no nombran ni su ciudad ni un solo condado ` +
+    `donde esté su código postal, así que no se les atribuye el pago ni las vacantes de ` +
     `ninguna región.`,
 
   onetCredit:
     "Este sitio incorpora información de O*NET Web Services del Departamento de Trabajo de Estados Unidos, Administración de Empleo y Capacitación (USDOL/ETA). O*NET\u00ae es una marca registrada de USDOL/ETA.",
+  sourceCode: "Este sitio es de código abierto.",
+  sourceCodeLabel: "Consulta el código y el proceso de datos en GitHub",
   aboutData: "De dónde vienen estos datos",
   snapshot: (d: string) => `Datos actualizados: ${d}`,
   viewProgram: "Detalles del programa",
@@ -1828,6 +1984,8 @@ const es: Dictionary = {
   aboutProgramsCounted: "Programas descritos aquí",
   aboutProvidersNamed: "Instituciones nombradas aquí",
   aboutProgramsReporting: "Programas que reportan algún resultado",
+  aboutProvidersCounted:
+    "Las instituciones se cuentan por su nombre, y una institución que presenta su información bajo dos grafías del mismo nombre se cuenta una sola vez.",
 
   aboutOnThisPageNav: "Ir a una sección de esta página",
   aboutShortSelfReported: "Las instituciones reportan sus propios resultados y nadie los audita",
@@ -1895,7 +2053,7 @@ const es: Dictionary = {
   aboutLimitUnmatched: (unmatched: string) =>
     `${unmatched} programas no muestran ninguna cifra ocupacional. California no publica proyección para la ocupación con la que están etiquetados, y no se sustituye por una ocupación parecida, porque un oficio de nombre similar con otro salario se vería exactamente igual que una respuesta correcta.`,
   aboutLimitArea: (unplaced: string) =>
-    `${unplaced} programas no muestran una cifra de pago regional. Su ciudad no es una de las áreas metropolitanas o rurales que California nombra al publicar salarios, y no se toman prestadas las cifras de un área vecina para llenar el hueco.`,
+    `${unplaced} programas no muestran una cifra de pago regional. Los títulos que California misma les da a sus regiones no nombran ni su ciudad ni un solo condado donde esté su código postal — un código postal que abarca dos regiones a la vez no queda en ninguna, porque cualquiera de las dos respuestas se vería igual de correcta que la otra — y no se toman prestadas las cifras de una región vecina para llenar el hueco.`,
   aboutLimitUrl: (noUrl: string) =>
     `${noUrl} programas no tienen un enlace de sitio web utilizable. La mayoría nunca presentó uno, y unos pocos presentaron algo que no era una dirección web, que se descarta en vez de convertirse en un enlace.`,
   aboutLimitProjections:
@@ -1913,6 +2071,28 @@ const es: Dictionary = {
   aboutAdviceHeading: "Esto no es asesoría",
   aboutAdviceBody:
     "Nada de lo que hay aquí es asesoría financiera, legal, educativa ni profesional. Inscribirse en un programa de capacitación es un compromiso económico y personal serio. Use esto como una fuente entre varias, y hable con la institución, con su America's Job Center local o con una persona orientadora antes de decidir.",
+
+  // ---- Privacidad y analíticas (sección de Acerca de y pie de página) ----
+  aboutPrivacyHeading:
+    "Privacidad y analíticas",
+  aboutPrivacyBody:
+    "Este sitio no tiene cuentas, y la lista que usted guarda se queda en su dispositivo. Sí usa Google Analytics 4, un servicio de Google LLC, para contar las visitas, y Google trata esos datos en nombre de este proyecto, como encargado del tratamiento. Google Analytics recibe la dirección y el título de cada página, el sitio del que usted viene y el idioma, el tamaño de pantalla, el navegador y el sistema operativo que usa, y emplea su dirección IP para estimar su ubicación aproximada, como la ciudad. La dirección que se envía a Google conserva solo la ruta de la página y las etiquetas de campaña, como utm_source: sus términos de búsqueda, sus filtros y cualquier lista compartida se eliminan antes. Con su configuración estándar, Google Analytics también registra cuándo se llega al final de una página, los clics en enlaces a otros sitios y las descargas de archivos.",
+  aboutPrivacyCookies:
+    "Google Analytics instala dos cookies: _ga y otra cuyo nombre empieza por _ga_. Guardan un identificador aleatorio para poder contar las visitas repetidas y duran hasta dos años. En el Espacio Económico Europeo, el Reino Unido y Suiza, el sitio le indica a Google que no guarde estas cookies, y Google Analytics recibe solo mediciones sin cookies y sin un identificador guardado. Las funciones publicitarias están desactivadas: Google Signals y la personalización de anuncios están apagadas, y el almacenamiento publicitario está denegado en todas partes. Google Analytics conserva los datos de cada evento durante 14 meses.",
+  aboutPrivacyOptOut:
+    "Google Analytics no se carga si su navegador envía Global Privacy Control o Do Not Track. El botón “Desactivar las analíticas”, al pie de cada página, también lo desactiva a partir de la página siguiente. Esa elección se guarda en el almacenamiento local de este navegador y borra las cookies de Google Analytics que ya estuvieran instaladas. “Volver a activarlas” la deshace, y si borra los datos de este sitio, también se borra la elección.",
+  analyticsFooter:
+    "Este sitio usa Google Analytics, con sus funciones publicitarias desactivadas.",
+  analyticsFooterLink:
+    "Privacidad y analíticas",
+  analyticsOptOut:
+    "Desactivar las analíticas",
+  analyticsOptIn:
+    "Volver a activarlas",
+  analyticsOffStatus:
+    "Las analíticas están desactivadas en este navegador.",
+  analyticsOnStatus:
+    "Las analíticas están activadas de nuevo.",
 
   // ---- En qué consiste el trabajo (página del programa) ----
   workHeading: "En qué consiste este trabajo",

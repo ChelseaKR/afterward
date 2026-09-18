@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from afterward.sources.edd_lmi import (
     area_definitions,
-    normalise_place,
+    normalize_place,
     parse_area,
     parse_projections,
     principal_city_areas,
@@ -152,7 +152,7 @@ class TestPrincipalCityIndex:
 
     def test_matching_is_case_and_whitespace_insensitive(self) -> None:
         index = principal_city_areas(_published())
-        assert normalise_place("  SAN   JOSE ") in index
+        assert normalize_place("  SAN   JOSE ") in index
 
     def test_a_city_no_title_names_is_absent(self) -> None:
         """Pleasant Hill is in Contra Costa County and therefore inside the Oakland MD.
@@ -210,10 +210,10 @@ Consortium,"North Coast Region (Del Norte, Humboldt, Lake, and Mendocino Countie
         assert consortium.counties == ("Del Norte", "Humboldt", "Lake", "Mendocino")
 
 
-class TestNormalisePlace:
+class TestNormalizePlace:
     def test_empty_and_missing_names_are_none_not_empty_string(self) -> None:
-        assert normalise_place(None) is None
-        assert normalise_place("   ") is None
+        assert normalize_place(None) is None
+        assert normalize_place("   ") is None
 
     def test_collapses_internal_whitespace(self) -> None:
-        assert normalise_place("San\tLuis  Obispo") == "san luis obispo"
+        assert normalize_place("San\tLuis  Obispo") == "san luis obispo"

@@ -24,7 +24,7 @@ import { dict, feedTextLang, type Lang } from "@/lib/i18n";
  *    nothing. The page is the static site it always was.
  * 2. With a service configured it still makes no request -- none -- until the person has
  *    pressed the button and submitted a question. Opening the panel is not a request.
- * 3. Everything it shows is labelled AI-generated, unofficial, and not a recommendation
+ * 3. Everything it shows is labeled AI-generated, unofficial, and not a recommendation
  *    from the State of California, above the answer and not below it, and the count of
  *    statements the verifier removed is shown beside what survived.
  *

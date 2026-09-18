@@ -91,14 +91,14 @@ Three further design choices exist for the same reason:
 These are mostly small colleges and adult schools on shared hosting, not CDNs.
 
 - The project's own `USER_AGENT` from `dol_etp`, unchanged. No browser impersonation. A host
-  that wants to refuse this client is entitled to recognise it and do so — which is exactly
+  that wants to refuse this client is entitled to recognize it and do so — which is exactly
   why a refusal is classified `indeterminate` rather than `dead`.
 - HEAD before GET; GET streamed and closed unread, so nobody serves a body nobody looks at.
 - Concurrency is **across** providers and never within one: URLs are grouped by site and each
   site is handed to a single worker as a unit, one request at a time, 1s apart.
 - Retries only for what is plausibly transient (timeouts, connection and DNS failures,
   protocol errors, 408/425/429/5xx). 403, 404, 405 and 410 are decisions and are never
-  repeated. `Retry-After` is honoured, and a host asking for longer than this client will
+  repeated. `Retry-After` is honored, and a host asking for longer than this client will
   hold is answered by going away, not by waiting.
 - On-disk cache keyed by URL, so a rebuild does not re-ask 1,000 providers whether they still
   exist. TTLs are asymmetric — `alive` 30 days, `dead` 7 days, `indeterminate` 1 day —
@@ -142,7 +142,7 @@ a real defect worth reporting, and it is still not the claim "this page is gone"
 
 | Pages | Reason | URL | Provider(s) |
 |---|---|---|---|
-| **126** | `dns_failure` | `http://www.laadulted.com` | Abram Friedman Occupational Center, East LA Occupational Center, East LA Skills Center and other LAUSD adult centres |
+| **126** | `dns_failure` | `http://www.laadulted.com` | Abram Friedman Occupational Center, East LA Occupational Center, East LA Skills Center and other LAUSD adult centers |
 | 22 | 404 | `https://www.paloverde.edu/future-students/default.aspx` | Palo Verde College |
 | 13 | 404 | `http://www.paloverde.edu/future-students/programs-certs/default.aspx` | Palo Verde College |
 | 8 | 404 | `http://WWW.LAVERNE.EDU/EXTENDEDLEARNING` | University of La Verne |
@@ -180,7 +180,7 @@ rather than assumed:
   `hugedomains.com/domain_profile.cfm?d=…`; `www.intechcollege.com` and
   `www.catruckschool.com` to `expireddomains.com`; `www.giligiacollege.com` to
   `seinquote.com`; `www.eastvalleycollege.com` to an unrelated blog.
-- The other 54 offsite redirects are legitimate: catalogue vendors
+- The other 54 offsite redirects are legitimate: catalog vendors
   (`westhillscollege.com` → `westhillslemoore.elumenapp.com`, `curricunet.com` →
   `cuesta.curriqunet.com`), rebrands (`ces.sdsu.edu` → `globalcampus.sdsu.edu`,
   `moler.org` → `moler.edu`), and district consolidations (`wearedace.org` →
@@ -199,7 +199,7 @@ away: `https://www.uclaextension.ed` (missing the `u`), `https://www.uxcaextensi
 `https://wwww.untouchableapprentice.com` (four `w`s). Four pages. In the UCLA cases the
 intended target is unambiguous — `https://www.uclaextension.edu/` is alive on 26 other pages
 in this same corpus. These want correcting, not suppressing, and correcting them is a
-judgement about intent rather than a measurement, so this module does not attempt it.
+judgment about intent rather than a measurement, so this module does not attempt it.
 
 ---
 
@@ -231,7 +231,7 @@ URL that lands somewhere else is a different destination, not a safer one.
 
 ## False-positive risk assessment
 
-A wrong `dead` verdict hides a real school from someone trying to enrol, and nothing
+A wrong `dead` verdict hides a real school from someone trying to enroll, and nothing
 downstream can distinguish it from a true one. So the dead set was attacked with five
 independent controls rather than trusted.
 
@@ -375,10 +375,10 @@ bad options.
 | Class | URLs / pages | Recommendation |
 |---|---|---|
 | `dns_failure` | 23 / 163 | **Suppress the hyperlink.** There is no destination. Keep the URL visible as plain, non-clickable text with the observation and its date, because it is the federal record's own value and a reader may want to try the Internet Archive. |
-| `not_found`, `gone` | 111 / 171 | **Do not link the dead path.** For the 102 of 111 whose front page answers, link *that* instead, labelled as the provider's website rather than as the program page. Strictly better than either suppressing or annotating. |
+| `not_found`, `gone` | 111 / 171 | **Do not link the dead path.** For the 102 of 111 whose front page answers, link *that* instead, labeled as the provider's website rather than as the program page. Strictly better than either suppressing or annotating. |
 | `indeterminate` | 113 / 163 | **Change nothing.** Render exactly as today. |
 | `redirected_to_site_root` | 4 / 5 | **Relabel, do not suppress.** "Provider's home page", not a link that implies it reaches the program. |
-| `redirected_offsite` | 66 / 113 | **Review queue for a human.** No automatic rule separates a catalogue vendor from a domain squatter. |
+| `redirected_offsite` | 66 / 113 | **Review queue for a human.** No automatic rule separates a catalog vendor from a domain squatter. |
 | `http` with a verified `https` equivalent | 178 / 475 | **Swap it.** No annotation, no reader-visible change beyond the scheme. |
 
 ### Why suppression, and not annotation alone, for the conclusive classes
@@ -433,7 +433,7 @@ the rendering layer is forced to have a branch for it and cannot default a gap i
 
 The top four URLs account for 169 of the 334 affected pages. A hand-written override table
 with four entries would fix half the problem in an afternoon — but identifying a provider's
-successor domain is a judgement about *identity*, not a measurement, and this module
+successor domain is a judgment about *identity*, not a measurement, and this module
 deliberately does not attempt it. It reports what it saw and leaves that call to a person.
 
 ---
@@ -456,7 +456,7 @@ is_dead(checks, program.program_url)
 - `check_urls` returns a mapping containing only URLs that were actually read.
 - `verdict_for`, `is_dead` and `upgrade_for` all return `None` for an unchecked URL, and
   `None` for a program that has no URL at all.
-- `summarise(checks, pages_per_url=...)` reproduces every count in this document.
+- `summarize(checks, pages_per_url=...)` reproduces every count in this document.
 - `check_url` raises `ValueError` on anything that is not an absolute http(s) URL — a
   malformed string is a caller bug, not a dead link, and must not be recorded as one.
 - The cache is safe to delete; it only costs a re-check.

@@ -1,7 +1,7 @@
 """What changed between two datasets, and the three events this must never merge.
 
-A programme that left the list, a programme that is still listed and stopped reporting a
-measure, and a programme that was never listed are three different facts. The tests that matter
+A program that left the list, a program that is still listed and stopped reporting a
+measure, and a program that was never listed are three different facts. The tests that matter
 most here are the ones asserting they stay apart: `TestARemovedProgramIsNotNineAbsences` is the
 whole reason the module exists.
 
@@ -108,7 +108,7 @@ class TestARemovedProgramIsNotNineAbsences:
     def test_an_added_program_produces_one_event_and_no_measure_events(
         self, tmp_path: Path
     ) -> None:
-        """A programme never on the list did not start reporting; it started being listed."""
+        """A program never on the list did not start reporting; it started being listed."""
         result = _compare(tmp_path, [], [_program("a")])
 
         assert [c.kind for c in result.changes] == ["program_added", "provider_new"]
@@ -447,7 +447,7 @@ class TestTheSummaryIsWrittenFromTheStatement:
 
         assert "2026-08-01" in summary
         assert "2026-09-01" in summary
-        assert "1 programmes on 2026-08-01, 2 on 2026-09-01" in summary
+        assert "1 programs on 2026-08-01, 2 on 2026-09-01" in summary
 
     def test_the_summary_says_a_removal_is_not_a_reporting_change(self, tmp_path: Path) -> None:
         result = _compare(tmp_path, [_program("a")], [])
@@ -456,7 +456,7 @@ class TestTheSummaryIsWrittenFromTheStatement:
 
 
 class TestTheSummaryCannotDisagreeWithTheStatement:
-    """A summary recomputing its own numbers could disagree with the statement it summarises.
+    """A summary recomputing its own numbers could disagree with the statement it summarizes.
 
     Sabotage the counts the summary is written from, prove the sabotage is in the object, and
     assert the summary moved with it. If the summary recounted the changes independently it would

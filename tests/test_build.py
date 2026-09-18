@@ -142,7 +142,7 @@ class TestProgramPayload:
         )
         assert program_payload(program, _occupations())["occupations"] == []
 
-    def test_suppressed_outcomes_serialise_as_null_not_zero(self) -> None:
+    def test_suppressed_outcomes_serialize_as_null_not_zero(self) -> None:
         program = parse_program({"_source": {"field_uuid": "u3", "field_c_median_earnings": -1}})
         outcomes = program_payload(program, _occupations())["outcomes"]
         assert outcomes["median_earnings"] is None
@@ -188,7 +188,7 @@ State,California,2024-2034,4,47-4090,Miscellaneous Construction and Related Work
         match = self._payload("21-1011")["occupations"][0]["match"]
         assert match["kind"] == "bls_hybrid_occupation"
 
-    def test_an_exact_match_is_labelled_exact_and_keeps_its_education(self) -> None:
+    def test_an_exact_match_is_labeled_exact_and_keeps_its_education(self) -> None:
         occupation = self._payload("15-1252")["occupations"][0]
         assert occupation["match"]["kind"] == MATCH_EXACT
         assert occupation["match"]["entry_level_education_withheld"] is False
@@ -213,7 +213,7 @@ State,California,2024-2034,4,47-4090,Miscellaneous Construction and Related Work
     def test_education_is_withheld_even_where_the_aggregate_happens_to_agree(self) -> None:
         # 31-1120's "High school diploma or equivalent" is very likely right for a home
         # health aide certificate. Keeping it anyway would mean deciding case by case which
-        # aggregate's credential fits, which is the similarity judgement the mapping module
+        # aggregate's credential fits, which is the similarity judgment the mapping module
         # refuses to make, in a place nobody could audit it.
         occupation = self._payload("31-1121")["occupations"][0]
         assert occupation["entry_level_education"] is None
@@ -242,7 +242,7 @@ State,California,2024-2034,4,47-4090,Miscellaneous Construction and Related Work
 
     def test_an_already_matched_program_keeps_its_exact_row_and_gains_the_aggregate(self) -> None:
         # The 74-program case: the exact match was never at risk, and the added row is
-        # labelled so the page can tell the reader which is which.
+        # labeled so the page can tell the reader which is which.
         payload = self._payload("15-1252", "29-2012")
         assert [o["soc_code"] for o in payload["occupations"]] == ["15-1252", "29-2010"]
         assert [o["match"]["kind"] for o in payload["occupations"]] == [
@@ -525,7 +525,7 @@ class TestRelatedSource:
             onet_code="29-1141.00",
             description=None,
             skills=(),
-            # A specialisation collapses onto the occupation it specialises.
+            # A specialization collapses onto the occupation it specializes.
             related=(("29-1141", "Registered Nurses"), ("29-2061", "Licensed Practical Nurses")),
             bright_outlook=None,
         )
@@ -690,7 +690,7 @@ class TestFetchEnrichment:
 
 
 class TestRegionalProjectionOnPrograms:
-    """A program should be shown its own area's numbers, or none, never a neighbour's."""
+    """A program should be shown its own area's numbers, or none, never a neighbor's."""
 
     CSV = """Area Type,Area Name,Period,SOC Level,Standard Occupational Classification (SOC),Occupational Title,Base Year Employment Estimate,Projected Year Employment Estimate,Numeric Change,Percentage Change,Exits,Transfers,Total Job Openings,Median Hourly Wage,Median Annual Wage,Entry Level Education,Work Experience,Job Training
 State,California,2024-2034,4,15-1252,Software Developers,1000,1200,200,20.0,50,80,330,68.50,142480,Bachelor's degree,None,None
@@ -1514,7 +1514,7 @@ class TestCompetencyBasedReachesTheSite:
         assert expected
 
 
-class TestCohortLabellingOnProgramRecords:
+class TestCohortLabelingOnProgramRecords:
     """The figures survive; the claim that they measure this program does not."""
 
     def _programs(self, *sources: dict) -> list:
@@ -1836,7 +1836,7 @@ class TestAnAddressThatNowAnswersFromSomewhereElse:
         assert payload["provider_link"]["url"] == self.HIJACKED
 
     def test_a_confirmed_rebrand_keeps_its_link(self) -> None:
-        """The other half, and the one that makes this a judgement rather than a purge:
+        """The other half, and the one that makes this a judgment rather than a purge:
         Moler Barber College moved from moler.org to moler.edu and readers should still
         reach it."""
         link = self._reviewed(
@@ -1908,7 +1908,7 @@ class TestAFrontPageOfferedInPlaceOfAPageThatIsGone:
         assert link["checked_on"] == "2026-08-04"
 
     def test_an_ordinary_school_still_gets_its_front_page(self) -> None:
-        """The half that keeps this a judgement rather than a purge: nothing is recorded
+        """The half that keeps this a judgment rather than a purge: nothing is recorded
         against b.edu, so a reader whose course page is gone is still shown the front door."""
         link = _payload(
             MISSING,
@@ -2251,8 +2251,8 @@ class TestOfflineBuildLinks:
 # The one feature on this site whose failure mode is somebody losing a morning's pay. A
 # person reads that a program was on California's Eligible Training Provider List, walks
 # into an office expecting the training to be paid for, and is told no. These tests are
-# about the two things that keep the distance between those sentences visible: a centre this
-# build never looked for must never render as a centre that is not there, and the sentence
+# about the two things that keep the distance between those sentences visible: a center this
+# build never looked for must never render as a center that is not there, and the sentence
 # saying who actually decides must not be separable from the steps it qualifies.
 # --------------------------------------------------------------------------------------
 
@@ -2396,7 +2396,7 @@ class TestLocalHelpCoverage:
         assert coverage.programs_not_searched == 1
 
     def test_a_build_that_did_not_look_reports_null_rather_than_zero_centers(self) -> None:
-        """`0` would say the directory answered and California has no job centres in it."""
+        """`0` would say the directory answered and California has no job centers in it."""
         coverage = local_help_coverage(self._payloads(None), None)
         assert coverage.centers_loaded is None
         assert coverage.programs_searched == 0
@@ -2423,7 +2423,7 @@ class TestLocalHelpCoverage:
 
         `funding_guidance()` is the only way to obtain the steps and the disclaimer is a field
         of what it returns, so a pipeline cannot emit one without the other. This asserts the
-        property survives serialisation, which is where it would otherwise be lost.
+        property survives serialization, which is where it would otherwise be lost.
         """
         payloads = self._payloads(CENTERS)
         document = local_help_document(local_help_coverage(payloads, CENTERS), CENTERS, payloads)

@@ -383,7 +383,7 @@ Ranked by how badly they would read in someone else's write-up.
 - **`length.hours` is hours per week, not total hours.** Minimum 1, median 19, **maximum
   50**, with 98.7% at or below 40 — a total-contact-hours field would not cap at 50. Implied
   total contact hours (`weeks × hours`) has a median of 360. Only `weeks` is rendered, so no
-  reader is misled today; the field ships unlabelled in `programs.json`. **PIPELINE**
+  reader is misled today; the field ships unlabeled in `programs.json`. **PIPELINE**
   naming risk.
 
 ### 9. The "shrinking jobs" headline depends on which SOC came first

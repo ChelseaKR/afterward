@@ -1,6 +1,6 @@
 """Tests for the DOL ETP client.
 
-The suppression-sentinel behaviour is the highest-stakes logic in this codebase: showing a
+The suppression-sentinel behavior is the highest-stakes logic in this codebase: showing a
 suppressed cell as 0% would misrepresent a real training provider's performance.
 """
 
@@ -21,7 +21,7 @@ from afterward.sources.dol_etp import (
     clean_rate,
     clean_url,
     cohort_integrity,
-    normalise_provider,
+    normalize_provider,
     parse_program,
     parse_state_benchmark,
     reconcile_rate,
@@ -62,7 +62,7 @@ class TestCleanLength:
         assert length.hours is None
 
     @pytest.mark.parametrize("value", [-1, -1.0, "-1"])
-    def test_the_sentinel_is_recognised_however_the_feed_types_it(self, value: object) -> None:
+    def test_the_sentinel_is_recognized_however_the_feed_types_it(self, value: object) -> None:
         assert clean_length(value, value).competency_based is True
 
     def test_an_ordinary_length_is_not_competency_based(self) -> None:
@@ -139,7 +139,7 @@ class TestCleanLength:
         assert clean_measure(-1) is None
 
 
-class TestSocNormalisation:
+class TestSocNormalization:
     def _program(self, **soc: str) -> Program:
         return parse_program({"_id": "x", "_source": {"field_uuid": "u", **soc}})
 
@@ -722,15 +722,15 @@ class TestCohortIntegrityContract:
         assert CohortFiling.of(program).total_served is None
 
 
-class TestNormaliseProvider:
+class TestNormalizeProvider:
     def test_case_and_whitespace_are_folded(self) -> None:
-        assert normalise_provider("  Procareer   Academy ") == normalise_provider(
+        assert normalize_provider("  Procareer   Academy ") == normalize_provider(
             "PROCAREER ACADEMY"
         )
 
     def test_a_missing_name_stays_missing(self) -> None:
-        assert normalise_provider(None) is None
-        assert normalise_provider("   ") is None
+        assert normalize_provider(None) is None
+        assert normalize_provider("   ") is None
 
     def test_different_names_are_not_guessed_to_be_one_provider(self) -> None:
-        assert normalise_provider("Merced College") != normalise_provider("Merced Adult School")
+        assert normalize_provider("Merced College") != normalize_provider("Merced Adult School")

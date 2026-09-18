@@ -116,7 +116,7 @@ describe("decoding a link that is stale, hand-edited, or hostile", () => {
     expect(parse("weeks=18").maxWeeks).toBe(18);
   });
 
-  it("rejects an unknown outlook rather than guessing a neighbour", () => {
+  it("rejects an unknown outlook rather than guessing a neighbor", () => {
     expect(parse("outlook=declining").outlook).toBe("any");
   });
 
