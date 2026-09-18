@@ -344,6 +344,12 @@ jobs:
         working-directory: web
         env:
           NEXT_PUBLIC_SITE_URL: ${{ env.SITE_URL }}
+          # Google Analytics 4 (owner decision, 2026-09-17). Measurement IDs are public, so
+          # this is a literal, and this is the only place it is set: CI, local and preview
+          # builds carry no ID and load no GA. web/lib/analytics.ts also refuses any host but
+          # afterward.chelseakr.com, and GPC, Do Not Track and the footer opt-out. Set it to
+          # '' to turn GA off on the next deploy.
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: G-GXZNBWJB8D
         run: npm run build
 
       - name: Date the sitemap from the pages that actually changed

@@ -11,7 +11,8 @@ programs actually lead.**
 3,266 California training programs, 3,250 of them joined to the state's own ten-year
 projection for the occupation they lead to. California publishes no projection for the
 occupation the other 16 are tagged with, and the site says that rather than showing a gap
-that reads like a zero. No account, no tracking, English and Spanish.
+that reads like a zero. No account, English and Spanish. Page views are counted with Google
+Analytics 4, which honours Global Privacy Control, Do Not Track and an opt-out in the footer.
 
 **Status:** Beta. Version `0.1.0`, first signed tag not yet cut. The public site, the bilingual
 interface, and the data pipeline are live and covered by an automated test suite. Datasets are
@@ -28,7 +29,7 @@ published by the federal government in a form no Californian is expected to find
 Meanwhile the state publishes excellent occupation data: what jobs are growing, in which
 regions, and what they pay. Nobody puts the two next to each other.
 
-Afterward does exactly that, from public data, with no account and no tracking.
+Afterward does exactly that, from public data, with no account.
 
 ## What it does today
 
@@ -146,7 +147,15 @@ been made. See PROVENANCE.md, "Notes on D1B".
 
 ## Design commitments
 
-- **No account, no tracking.** Everything is public, static, and readable without logging in.
+- **No account.** Everything is public, static, and readable without logging in.
+- **Analytics that say what they are.** Google Analytics 4 counts page views (owner decision,
+  2026-09-17; `web/lib/analytics.ts`). It loads only in the production build on
+  `afterward.chelseakr.com`, never when the browser sends Global Privacy Control or Do Not
+  Track or the reader has used the footer's "Opt out of analytics" button, and with Google
+  signals and ad personalization off. Consent Mode denies ad storage everywhere and analytics
+  storage in the EEA, the UK and Switzerland. The address it receives is the path plus
+  `utm_*` tags only: search terms, filters and shared shortlists are stripped. The About
+  page's "Privacy and analytics" section is the disclosure, in both languages.
 - **English and Spanish from the first release**, not as a later phase. A missing translation
   is a compile error, and a test fails if a Spanish string is left identical to the English.
 - **Accessible**, mobile-first. The people most likely to need this are least likely to be on
@@ -517,7 +526,7 @@ silently.
 | Quality & Metrics | Applies (metrics ledger: [docs/ROADMAP.md](docs/ROADMAP.md)) |
 | Release & Versioning | N/A (not consumed downstream: ADR [docs/adr/0001-release-and-versioning-na.md](docs/adr/0001-release-and-versioning-na.md); dataset snapshots are date-tagged releases consumed only by the deploy workflow) |
 | AI Development Measurement | Applies (this repo was built AI-assisted, disclosed under [Development disclosure](#development-disclosure); the runtime AI the product itself ships is a separate matter, under [AI in the product](#ai-in-the-product)). The committed, dated artifact is the metrics ledger in [docs/ROADMAP.md](docs/ROADMAP.md); no AI-usage or delivery metric gates a merge here, by design, since activity counters are diagnostic rather than outcomes |
-| Incident Response | Applies (private vulnerability reporting and a stated acknowledgement expectation in [SECURITY.md](SECURITY.md), plus the in-scope and out-of-scope list). Scope is a static site with no accounts and no cookies, plus the optional `afterward.ask` service, which accepts free text and is in scope once deployed; no incident has been recorded, so there is no `docs/incidents/` yet |
+| Incident Response | Applies (private vulnerability reporting and a stated acknowledgement expectation in [SECURITY.md](SECURITY.md), plus the in-scope and out-of-scope list). Scope is a static site with no accounts whose only cookies are Google Analytics' own, plus the optional `afterward.ask` service, which accepts free text and is in scope once deployed; no incident has been recorded, so there is no `docs/incidents/` yet |
 | Data Governance | Applies (per-source terms and the clean-room rule in [PROVENANCE.md](PROVENANCE.md), enforced by `make provenance-check`; privacy review in [docs/RESPONSIBLE-TECH-AUDITS.md](docs/RESPONSIBLE-TECH-AUDITS.md) section C). The dataset holds no personal data, and upstream small-cohort suppression is preserved rather than reversed |
 
 ## License

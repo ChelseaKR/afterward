@@ -8,6 +8,22 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Google Analytics 4, disclosed and switchable off (owner decision, 2026-09-17).**
+  `web/lib/analytics.ts` loads gtag.js for `G-GXZNBWJB8D` only when the production deploy
+  build set `NEXT_PUBLIC_GA_MEASUREMENT_ID` (a literal in `deploy.yml`, nowhere else), the page
+  is on `afterward.chelseakr.com`, the browser sends neither Global Privacy Control nor Do Not
+  Track, and the reader has not opted out. Consent Mode v2 denies ad storage, ad user data and
+  ad personalization everywhere, and analytics storage in the EEA, the UK and Switzerland;
+  Google signals and ad personalization are off. One page view per client-side path change,
+  with the address reduced to its path and `utm_*` tags, so search terms, filters and shared
+  shortlists never reach Google. Every footer gains a line saying so, a link to the About
+  page's new "Privacy and analytics" section (English and Spanish), and an "Opt out of
+  analytics" / "Opt back in" button remembered in `localStorage`
+  (`afterward.chelseakr.com:analytics-opt-out`) that also deletes the GA cookies. The
+  CloudFront CSP in `infra/aws-static-site.yml` allows the three GA origins; it takes effect
+  when the stack is updated. The "no account, no tracking" line in the README, SECURITY.md,
+  the privacy audit, the roadmap and the repository description was rewritten to match.
+
 - **Every program record now carries a receipt, and `afterward verify-record` replays one
   (#113).** `scripts/verify_live_site.py` already asks whether the bytes the site serves are
   the bytes of the release it names; that check is the operator's — it needs `gh`, downloads

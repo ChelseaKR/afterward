@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
 import { REPO_URL, homeDescription, homeTitle, shareMetadata } from "@/lib/site";
@@ -323,8 +325,7 @@ export default async function LangLayout({
 
               A plain `<a>`, not a `<Link>`: it leaves the site. `rel="noopener noreferrer"`
               matches the O*NET credit above and is the house rule for every outbound link
-              here -- `noreferrer` because this site sends no referrer anywhere, which is the
-              same reason it carries no analytics.
+              here -- `noreferrer` because this site sends no referrer to the places it links.
             */}
             <p>
               {t.sourceCode}{" "}
@@ -333,9 +334,31 @@ export default async function LangLayout({
               </a>
             </p>
 
+            {/*
+              Google Analytics 4 (owner decision, 2026-09-17), said where every reader will
+              meet it, with the way to turn it off beside it. The link goes to the full
+              disclosure on the About page; the button renders after hydration, because only
+              the browser knows whether this reader already opted out.
+            */}
+            <p className="footer-analytics">
+              {t.analyticsFooter}{" "}
+              <Link href={`/${lang}/about/#privacy`} prefetch={false}>
+                {t.analyticsFooterLink}
+              </Link>
+              <AnalyticsOptOut
+                labels={{
+                  optOut: t.analyticsOptOut,
+                  optIn: t.analyticsOptIn,
+                  offStatus: t.analyticsOffStatus,
+                  onStatus: t.analyticsOnStatus,
+                }}
+              />
+            </p>
+
             <p>{t.notAffiliated}</p>
           </div>
         </footer>
+        <GoogleAnalytics />
       </body>
     </html>
   );
