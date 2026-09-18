@@ -25,6 +25,7 @@ from afterward.build import (
     UNPLACED_COUNTY_OUTSIDE_AREAS,
     UNPLACED_CROSSWALK_NOT_READ,
     UNPLACED_NO_ZIP,
+    UNPLACED_SOURCE_PUBLISHES_NO_AREAS,
     UNPLACED_STRADDLES_AREAS,
     UNPLACED_ZIP_NOT_IN_CROSSWALK,
     CountyIndex,
@@ -415,6 +416,7 @@ class TestAreaPlacementCoverage:
             UNPLACED_ZIP_NOT_IN_CROSSWALK,
             UNPLACED_COUNTY_OUTSIDE_AREAS,
             UNPLACED_STRADDLES_AREAS,
+            UNPLACED_SOURCE_PUBLISHES_NO_AREAS,
         }
 
     def test_an_unplaced_record_carrying_no_reason_is_counted_as_such(self) -> None:
