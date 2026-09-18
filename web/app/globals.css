@@ -774,6 +774,38 @@ td.num {
   margin-top: 0.25rem;
 }
 
+/*
+ * The machine-translation notice (lib/machineTranslation.ts). The non-affiliation notice's
+ * colors, so the pairing is one the contrast audit already holds at AA, with a rule between
+ * the two so they read as two statements rather than one. The link inherits the text color
+ * and keeps its underline: the default link blue on this ground would fail contrast.
+ */
+.mt-notice {
+  background: var(--gray-120);
+  color: var(--gray-20);
+  font-size: 0.8125rem;
+  padding-block: 0.5rem;
+  border-top: 1px solid var(--gray-20);
+}
+
+.mt-notice p {
+  margin: 0;
+}
+
+.mt-notice p + p {
+  margin-top: 0.25rem;
+}
+
+.mt-notice a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.mt-notice a:focus-visible {
+  outline: 2px solid var(--gray-10);
+  outline-offset: 2px;
+}
+
 .lang-choice {
   list-style: none;
   margin: 2rem 0 0;
