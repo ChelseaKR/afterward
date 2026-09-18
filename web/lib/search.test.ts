@@ -17,7 +17,7 @@ import {
   matchesFilters,
   runSearch,
   score,
-  summarise,
+  summarize,
   terms,
   unmeasuredLength,
   unplacedMatches,
@@ -364,9 +364,9 @@ describe("runSearch sorting", () => {
   });
 });
 
-describe("summarise", () => {
+describe("summarize", () => {
   it("counts reported and shrinking programs for the context strip", () => {
-    const stats = summarise([
+    const stats = summarize([
       entry({ r: true, g: -5 }),
       entry({ r: false, g: 10 }),
       entry({ r: true, g: null }),
@@ -375,7 +375,7 @@ describe("summarise", () => {
   });
 
   it("counts unplaced programs, so the headline can say the geography is partial", () => {
-    const stats = summarise([entry({ a: "Fresno MSA" }), entry({ a: null }), entry({ a: null })]);
+    const stats = summarize([entry({ a: "Fresno MSA" }), entry({ a: null }), entry({ a: null })]);
     expect(stats.unplaced).toBe(2);
   });
 });
@@ -561,7 +561,7 @@ describe("area option values", () => {
     expect(areaFromOptionValue(areaOptionValue(decoy))).toEqual(decoy);
   });
 
-  it("falls back to any for an unrecognised value, hiding nothing", () => {
+  it("falls back to any for an unrecognized value, hiding nothing", () => {
     expect(areaFromOptionValue("")).toEqual(ANY_AREA);
     expect(areaFromOptionValue("garbage")).toEqual(ANY_AREA);
   });

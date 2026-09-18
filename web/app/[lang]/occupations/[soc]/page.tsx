@@ -15,7 +15,7 @@ import {
 import { isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
-import { shareMetadata } from "@/lib/site";
+import { pageMetadata } from "@/lib/site";
 import type { OccupationSkill, RelatedSource } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 
@@ -122,7 +122,7 @@ export function generateStaticParams() {
  * they lose the word "pay" from their title too: a result promising a figure the page does not
  * contain is a wrong answer delivered before the page is even opened.
  *
- * The same two strings are the share card, via `shareMetadata`. Adding `generateMetadata`
+ * The same two strings are the share card, via `pageMetadata`. Adding `generateMetadata`
  * here fixed the search result and left the card alone, because Next builds `og:title` from
  * `openGraph.title` and never from `title` -- so all 1,340 of these went on unfurling under
  * the layout's one site-wide sentence, which is the same 1,340-pages-that-look-alike problem
@@ -147,8 +147,9 @@ export async function generateMetadata({
   const spanishName = lang === "es" ? (occupation.spanish?.title ?? null) : null;
   const name = spanishName ?? occupation.title ?? `SOC ${occupation.soc_code ?? soc}`;
 
-  return shareMetadata(
+  return pageMetadata(
     lang,
+    `occupations/${soc}/`,
     anyWage ? t.metaOccupationTitle(name) : t.metaOccupationTitleNoPay(name),
     wage === null ? t.metaOccupationNoWage : t.metaOccupationWage(wage),
   );
@@ -260,7 +261,7 @@ export default async function OccupationPage({
           </p>
           {/*
             * Only where the Department publishes no Spanish for this occupation (70 of 670):
-            * Spanish on request, labelled, with the English left as the record. Renders
+            * Spanish on request, labeled, with the English left as the record. Renders
             * nothing unless this build has a service (ADR 0003).
             */}
           {spanishDescription === null && (
@@ -421,7 +422,7 @@ export default async function OccupationPage({
 
         Each percentile is printed only where one was published. They are independently
         suppressible at source, so a row can carry four of five, and a missing one is left
-        out rather than interpolated from its neighbours.
+        out rather than interpolated from its neighbors.
       */}
       {occupation.wage_spread != null && (
         <>

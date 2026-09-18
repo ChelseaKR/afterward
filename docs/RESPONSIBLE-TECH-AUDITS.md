@@ -9,7 +9,8 @@ done; it makes no claim a gate does not enforce or a document does not show.
 - **A Ethics:** applies (findings below).
 - **B Bias:** applies (the site orders and filters information about real providers;
   findings below).
-- **C Privacy:** applies, and is unusually short: the product collects nothing.
+- **C Privacy:** applies, and is short: the product itself collects nothing, and the one
+  third-party collector, Google Analytics 4, is inventoried below.
 - **D Transparency:** applies (findings below).
 - **E Accessibility:** applies (gates live in CI; the honest coverage record is
   `docs/wcag-2.2-aaa-conformance.md`).
@@ -26,9 +27,9 @@ done; it makes no claim a gate does not enforce or a document does not show.
 - **EU AI Act:** the static site is not an AI system; nothing in it performs machine
   inference. `afterward.ask` is one: a general-purpose model used to structure and narrate
   queries over public aggregate data, with no decision about any person, no profiling, no
-  eligibility finding, and every output labelled AI-generated. It does not fall in a
+  eligibility finding, and every output labeled AI-generated. It does not fall in a
   high-risk category in Annex III (it is not used for access to education or employment
-  decisions; it summarises public statistics a person is already free to read). The
+  decisions; it summarizes public statistics a person is already free to read). The
   transparency obligation — a person must know they are interacting with an AI system — is
   met by the opt-in control and the label on every output.
 - **I18N:** applies and is implemented (EN/ES ship together; `docs/I18N.md`,
@@ -82,11 +83,25 @@ state and by the state to the federal government. This project reproduces them a
 
 ## C. Privacy (DPIA-style)
 
-**Data inventory of the running static site:** empty. No accounts, no cookies set by the
-application, no analytics, no server logs of this project's own (the site is static files on
-S3 behind CloudFront), and no personally identifiable information in the dataset. Search
-runs entirely client-side against a downloaded index, and the shortlist stores nothing but
-program ids in the visitor's own `localStorage`; neither sends anything anywhere.
+**Data inventory of the running static site:** one third-party flow, and nothing of this
+project's own. No accounts, no cookies set by the application's own code, no server logs of
+this project's own (the site is static files on S3 behind CloudFront), and no personally
+identifiable information in the dataset. Search runs entirely client-side against a
+downloaded index, and the shortlist stores nothing but program ids in the visitor's own
+`localStorage`; neither sends anything anywhere.
+
+**Google Analytics 4 (owner decision, 2026-09-17; `web/lib/analytics.ts`).** Page views only:
+the page address reduced to its path and `utm_*` tags (search terms, filters and shared
+shortlists are stripped before sending), the page title, the referring site's origin, and what
+gtag.js itself collects (language, screen, browser and operating system, and an approximate
+location Google derives from the IP address), plus enhanced measurement's scrolls, outbound
+clicks and downloads. Processor: Google LLC. Cookies: `_ga` and `_ga_<id>`, up to two years,
+and none in the EEA, the UK or Switzerland, where Consent Mode denies analytics storage by
+default. Retention: the property's 14 months. Off entirely under Global Privacy Control, Do
+Not Track, or the footer's "Opt out of analytics" button (a per-browser `localStorage` flag
+that also deletes the GA cookies); Google signals and ad personalization are off, and ad
+storage is denied everywhere. The About page's "Privacy and analytics" section says the same,
+in both languages.
 
 **Data inventory of `afterward.ask`, when deployed (ADR 0003):** one item. The free text a
 person types after opting in — which may describe their age, job, city and situation — is
@@ -103,9 +118,10 @@ typed that identifies a person.
 government data; small cohorts are suppressed at source, that suppression is preserved, and
 no attempt is made to re-identify anyone (SECURITY.md commits to this).
 
-**Consequence:** for the static site there is no lawful-basis analysis, retention schedule,
-or deletion procedure to write, because there is no personal data to hold. That absence is
-the design. For `afterward.ask` the retention schedule is "none, by construction" on this
+**Consequence:** for the static site this project holds no personal data, so there is no
+retention schedule or deletion procedure of its own to write. Google Analytics' data sits
+with Google under the property's 14-month retention, and the reader's controls over it are
+the browser signals and the footer opt-out above. For `afterward.ask` the retention schedule is "none, by construction" on this
 project's side and "the provider's" on the other, and the deletion procedure is therefore the
 provider's; both are to be recorded in the deployment decision.
 
@@ -167,7 +183,7 @@ on refusing to guess. (b) Suppression faithfulness: cases whose ground truth is 
 cell, scored on whether the narration rendered absence as a value. This is the eval that
 matters most, because it is this portfolio's dominant defect. (c) Citation grounding: the
 fraction of claims whose citations verify. (d) Comparability: no benchmark the site does not
-use, and no unlabelled quarter-beside-annual figure. Results carry provider, model, prompt
+use, and no unlabeled quarter-beside-annual figure. Results carry provider, model, prompt
 version, commit and date; a test rejects a results file without them, and a suite that has
 not been run live is recorded as `not_run` rather than estimated.
 
@@ -175,4 +191,4 @@ not been run live is recorded as `not_run` rather than estimated.
 can be faithful to every figure and still lean; the label on every output says it is
 AI-generated and not a recommendation, and the eval suites are the review that exists until
 a human review of prompts, cases and Spanish output is recorded. Spanish produced by the
-model is labelled unreviewed; issue #32 stays open.
+model is labeled unreviewed; issue #32 stays open.

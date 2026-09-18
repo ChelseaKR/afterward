@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
-import { ROOT_DESCRIPTION, ROOT_TITLE, SITE_URL, rootCard } from "@/lib/site";
+import {
+  REPO_URL,
+  ROOT_DESCRIPTION,
+  ROOT_TITLE,
+  SITE_URL,
+  pageAlternates,
+  rootCard,
+} from "@/lib/site";
 
 export const dynamic = "force-static";
 
@@ -31,10 +38,25 @@ const CARD_ALT =
  * `summary_large_image` rather than `summary`, and unlike the language pages this one has
  * always had the room for it: the card is the bilingual one, because this URL belongs to no
  * language.
+ *
+ * ---- The canonical, which was written into the JSX below and was relative ----
+ *
+ * `<link rel="canonical" href="/en/">` in the `<head>` element this page renders: valid
+ * HTML, and the one form of the tag that is worth less than none. A canonical is a claim
+ * about an address, so a resolver that is handed it out of context -- a syndicated copy, a
+ * scraper, an unfurler working from a cached body -- resolves it against whatever it thinks
+ * the base is. It is declared through `alternates` now, which is what makes Next emit it
+ * absolute against `SITE_URL` and what puts it under the same gate as every other page's.
+ *
+ * The value is unchanged and is deliberately not `/`: this page is a `<meta http-equiv=
+ * "refresh">` shim with no content of its own, and the page a search result should land on
+ * is `/en/`. `pageAlternates` supplies the hreflang set with it, so the one URL most likely
+ * to be linked also announces that the site is published in two languages.
  */
 export const metadata: Metadata = {
   title: ROOT_TITLE,
   description: ROOT_DESCRIPTION,
+  alternates: pageAlternates(DEFAULT_LANG, ""),
   openGraph: {
     type: "website",
     siteName: "Afterward",
@@ -72,7 +94,6 @@ export default function Index() {
     <html lang={DEFAULT_LANG}>
       <head>
         <meta httpEquiv="refresh" content={`0; url=/${DEFAULT_LANG}/`} />
-        <link rel="canonical" href={`/${DEFAULT_LANG}/`} />
       </head>
       <body>
         <header className="disclaimer">
@@ -112,6 +133,26 @@ export default function Index() {
               );
             })}
           </ul>
+
+          {/*
+            The link back to the source, here as well as in every language page's footer.
+            This URL is the one a conformance check fetches -- it is what the repository's
+            GitHub About names as the homepage -- and it serves this document rather than
+            following the refresh, so a backlink that existed only under `/[lang]/` would be
+            a backlink the check could not see. It is also the right thing on its own terms:
+            this page tells a stranger that an unofficial site holds California's training
+            data, and the sentence beside it is where they can go to check that.
+          */}
+          <p>
+            {LANGUAGES.map((lang) => (
+              <span key={lang} lang={lang}>
+                {dict(lang).sourceCode}{" "}
+              </span>
+            ))}
+            <a href={REPO_URL} rel="noopener noreferrer">
+              {REPO_URL.replace("https://", "")}
+            </a>
+          </p>
         </main>
       </body>
     </html>

@@ -22,7 +22,7 @@ Three rules govern everything in this module, and they are the reason it is a se
 source rather than an enrichment of :mod:`afterward.sources.dol_etp`:
 
 1. **A borrowed figure is never merged into a D1 figure.** It travels with this file's own
-   vintage, in its own block, labelled with where it came from. A denominator from one
+   vintage, in its own block, labeled with where it came from. A denominator from one
    vintage beside a rate from another is two facts, and the record says so or shows nothing.
 2. **A denominator that cannot reconstruct its own program's published rate is not that
    program's denominator.** Where ``d123_total_employed_q2 / de129`` does not reproduce
@@ -50,7 +50,7 @@ from pathlib import Path
 from typing import IO, Any
 from xml.etree import ElementTree  # nosec B405 - _open_member is the defusing; see PROLOGUE_BYTES
 
-from afterward.sources.dol_etp import clean_cip_code, clean_text, normalise_provider
+from afterward.sources.dol_etp import clean_cip_code, clean_text, normalize_provider
 
 BULK_URL = "https://www.trainingproviderresults.gov/data/DownloadPrograms.xlsx"
 """Where the file comes from. Nothing in this module fetches it.
@@ -122,7 +122,7 @@ _EXCEL_EPOCH = _datetime.date(1899, 12, 30)
 
 _CELL_REFERENCE = re.compile(r"^([A-Z]+)")
 
-_FLOAT_ARTEFACT_CIP = re.compile(r"^(\d{1,2})\.(\d{5,})$")
+_FLOAT_ARTIFACT_CIP = re.compile(r"^(\d{1,2})\.(\d{5,})$")
 """A CIP code that has been through a binary float and come back wider than CIP goes.
 
 Measured on the real export: it files ``11.020099999999999`` for 11.0201 and
@@ -142,7 +142,7 @@ def repair_float_cip(value: str | None) -> str | None:
     text = clean_text(value)
     if text is None:
         return None
-    if _FLOAT_ARTEFACT_CIP.match(text) is None:
+    if _FLOAT_ARTIFACT_CIP.match(text) is None:
         return text
     try:
         return f"{round(float(text), 4):.4f}"
@@ -290,7 +290,7 @@ def _sheet_rows(archive: zipfile.ZipFile, strings: Sequence[str]) -> Iterator[di
     """Every row of the first worksheet, as {column index: text}.
 
     Streamed and cleared row by row. The real file is 36 MB compressed and 77,085 rows; a
-    reader that materialised it would make the build's memory profile depend on how many
+    reader that materialized it would make the build's memory profile depend on how many
     states DOL happens to publish.
     """
     with _open_member(archive, _first_sheet_path(archive)) as handle:
@@ -367,7 +367,7 @@ def join_key(
 ) -> tuple[str, str, str, str] | None:
     """The four-key join the provenance assessment used, or ``None`` if a part is missing.
 
-    Provider names go through :func:`afterward.sources.dol_etp.normalise_provider`, which
+    Provider names go through :func:`afterward.sources.dol_etp.normalize_provider`, which
     folds case and internal whitespace and nothing else -- the same key the duplicate-cohort
     check uses, so two modules cannot disagree about whether two filings are one provider.
     CIP goes through :func:`afterward.sources.dol_etp.clean_cip_code`, which restores the
@@ -378,8 +378,8 @@ def join_key(
     two programs a provider genuinely files separately, and a denominator attached to the
     wrong program is worse than no denominator.
     """
-    provider = normalise_provider(provider_name)
-    program = normalise_provider(program_name)
+    provider = normalize_provider(provider_name)
+    program = normalize_provider(program_name)
     cip = clean_cip_code(cip_code)
     postal = clean_text(zip_code)
     if postal is not None:
@@ -456,7 +456,7 @@ class BulkExport:
     The file carries no program year, reporting period or cycle -- see PROVENANCE.md "Notes
     on D1: the feed carries no program year" -- so this is not the period the outcomes
     describe. It is the newest date on which any program in this state was added to the
-    state's ETP list, which is the only date the file has. Every borrowed figure is labelled
+    state's ETP list, which is the only date the file has. Every borrowed figure is labeled
     with it so a reader can see that the denominator and the rate beside it are not from the
     same read.
     """
@@ -600,7 +600,7 @@ def denominator_block(
     The reconstruction is against that and nothing else. The bulk file reproduces its *own*
     ``c_q2_employment_percent`` from ``d123 / de129`` on every California row that carries all
     three -- 1,782 of 1,782 on 2026-09-07 -- but that is a fact about the bulk file's internal
-    consistency, not a licence to put its denominator under a different file's rate. Measured
+    consistency, not a license to put its denominator under a different file's rate. Measured
     over the 3,266-program dataset: 839 programs have a bulk row whose arithmetic reproduces
     the bulk file's own older rate and not the rate this site publishes. Showing a denominator
     for those would put a 2024 cohort under a 2026 number.

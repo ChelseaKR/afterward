@@ -427,7 +427,7 @@ describe("providerSilence", () => {
   });
 
   it("merges a provider filing under two spellings of one name", () => {
-    // Shouting is not a second organisation, and a provider must not be able to look like
+    // Shouting is not a second organization, and a provider must not be able to look like
     // two filers by holding down shift.
     const silence = providerSilence([
       program({ uuid: "a", provider_name: "PROCAREER  ACADEMY" }),
@@ -522,7 +522,7 @@ describe("what a page says over an absent measure is what the record supports", 
     expect(unreportedNotice(withNoRecord)).toBe("silentWithNoRecord");
   });
 
-  it("counts a cohort filed as exits or completions, not only as enrolments", () => {
+  it("counts a cohort filed as exits or completions, not only as enrollments", () => {
     expect(unreportedNotice(outcomes({ total_exited: 4 }))).toBe("silentWithACohort");
     expect(unreportedNotice(outcomes({ total_completed: 4 }))).toBe("silentWithACohort");
   });

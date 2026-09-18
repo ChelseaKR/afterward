@@ -1,12 +1,12 @@
-"""Spanish at runtime, labelled, and never allowed to touch a number.
+"""Spanish at runtime, labeled, and never allowed to touch a number.
 
-Two gaps in the static catalogue are English-only by source: the 70 of 670 occupations that
+Two gaps in the static catalog are English-only by source: the 70 of 670 occupations that
 Mi Próximo Paso does not cover, and every program description, which is the provider's own
 filed text. On request the service asks the model for a Spanish rendering of one record's
-title and description. The result is labelled AI-translated and unreviewed everywhere it
+title and description. The result is labeled AI-translated and unreviewed everywhere it
 appears, and a verifier refuses any translation that changes, drops or adds a number --
 "160 horas" must still say 160 -- or that is empty or wildly different in length. The
-static catalogue is untouched; issue #32 (native Spanish review) stays open.
+static catalog is untouched; issue #32 (native Spanish review) stays open.
 """
 
 from __future__ import annotations
@@ -104,7 +104,7 @@ class Translator:
         self._cache: OrderedDict[tuple[str, str], Translated] = OrderedDict()
 
     def source(self, kind: Kind, record_id: str) -> tuple[str | None, str | None] | None:
-        """The English the catalogue carries. ``None`` when there is no such record."""
+        """The English the catalog carries. ``None`` when there is no such record."""
         if kind == "occupation":
             occupation = self.dataset.occupation(record_id)
             if occupation is None:

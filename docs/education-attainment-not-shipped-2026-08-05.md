@@ -32,10 +32,10 @@
 >
 > So "What was changed in the code" is accurate about what was changed and wrong about what
 > that left: it changed the docstrings and left the render in place. Carrying out the decision
-> is a behaviour change and was not part of this documentation pass.
+> is a behavior change and was not part of this documentation pass.
 
 2026-08-05. `docs/enrichment-expansion-2026-08-04.md` left one thing undecided and named it
-"one judgement call that the pipeline has been waiting on". This is the call, made against.
+"one judgment call that the pipeline has been waiting on". This is the call, made against.
 
 **The question.** BLS's education-attainment distribution — the share of people working in an
 occupation who hold each of seven education levels — is parsed by `careeronestop.py`, attached
@@ -223,12 +223,12 @@ change's ownership.
 
 The Census occupation code the figure was measured for. One field, which the API does not send,
 which would turn "268 occupations are wrong and you cannot tell which" into "these 268 are
-labelled, and the other 402 are theirs". That alone would make a restricted version publishable.
+labeled, and the other 402 are theirs". That alone would make a restricted version publishable.
 
 Better, and not much harder: American Community Survey PUMS directly. It would fix all three
 faults at once — the true measured population is in the file rather than inferred, it can be
 restricted to workers who entered recently rather than everyone currently employed, which is the
-ambiguity no amount of labelling fixes, and it can be restricted to California, which is the
+ambiguity no amount of labeling fixes, and it can be restricted to California, which is the
 scope every other figure on these pages already uses.
 
 Until then, the honest treatment of the 60 occupations whose stated category most workers do not

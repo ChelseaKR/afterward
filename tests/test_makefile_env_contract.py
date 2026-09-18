@@ -40,7 +40,7 @@ def test_the_data_recipe_loads_env_local() -> None:
     assert ".env.local" in recipe, (
         "`make data` no longer reads .env.local. The Makefile comment and .env.example both "
         "tell a developer to put CareerOneStop credentials there; if the recipe stops loading "
-        "it, a rebuild silently drops every occupation description and job centre."
+        "it, a rebuild silently drops every occupation description and job center."
     )
     assert "set -a" in recipe and ". ./.env.local" in recipe, (
         "`.env.local` is mentioned in the data recipe but not sourced into the build's "

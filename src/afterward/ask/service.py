@@ -1,7 +1,7 @@
 """HTTP in front of :class:`afterward.ask.api.Assistant`.
 
 Five routes. ``POST /ask`` is the conversation; ``POST /translate`` is Spanish for one record,
-labelled and number-checked. ``GET /query`` is the deterministic half of ``/ask`` on its own --
+labeled and number-checked. ``GET /query`` is the deterministic half of ``/ask`` on its own --
 named criteria in, records out, no model consulted, so it answers with no provider configured.
 ``GET /health`` says whether a model is configured, which dataset is loaded, and what the
 limits are, and carries no counters a visitor could use to learn about other visitors.

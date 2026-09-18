@@ -3,7 +3,7 @@
 The claim this module makes on a reader's behalf is narrow and easy to overstate:
 ``d123_total_employed_q2 / de129`` reproduces the bulk file's own published rate on every
 California row that carries all three -- 1,782 of 1,782 measured on 2026-09-07. That is a
-fact about the bulk file's internal consistency. It is **not** a licence to put that
+fact about the bulk file's internal consistency. It is **not** a license to put that
 denominator under the rate this site publishes, which comes from a different file on a
 different vintage; measured against the 3,266-program dataset, 839 programs have a bulk row
 whose arithmetic reproduces the bulk file's own older rate and not the site's.

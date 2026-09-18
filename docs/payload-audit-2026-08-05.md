@@ -72,7 +72,7 @@ reader is looking at a list of.
 brotli.
 
 It is loaded **eagerly and inline**, not fetched. `app/[lang]/page.tsx` passes
-`getSearchIndex().programs` as a prop to a client component, so React serialises the whole
+`getSearchIndex().programs` as a prop to a client component, so React serializes the whole
 thing into `/en/index.html` for hydration. Splitting `/en/index.html`:
 
 | Part of `/en/index.html` | Raw | Brotli |
@@ -150,7 +150,7 @@ the whole 18-key vocabulary costs far less than moving it would risk.
 intending to search, so this trades a cost everyone pays for a delay at the exact moment they
 act — and the same 111 KiB would then be fetched with a five-minute cache lifetime rather
 than read out of a document. Not obviously wrong, but it is a product decision rather than an
-optimisation, and it needs the no-JavaScript fallback thought through with it.
+optimization, and it needs the no-JavaScript fallback thought through with it.
 
 **Shortening the keys.** They are already one and two characters.
 

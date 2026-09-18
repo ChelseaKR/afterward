@@ -4,14 +4,14 @@ import { type Copy, type Lang, dict } from "@/lib/i18n";
 import type { FundingCitation, FundingQuestion, FundingStep } from "@/lib/types";
 
 /**
- * The localised text for each claim the pipeline publishes, keyed by the claim's stable id.
+ * The localized text for each claim the pipeline publishes, keyed by the claim's stable id.
  *
  * Keyed by id rather than by position, because a step inserted upstream would otherwise
  * silently re-point every translation after it, and keyed on ids rather than on the English so
  * that a comma moving does not orphan a Spanish sentence.
  *
  * A claim with no entry here falls back to the pipeline's English. That is deliberately the
- * weakest of the three possible behaviours to leave in place — dropping the claim would silently
+ * weakest of the three possible behaviors to leave in place — dropping the claim would silently
  * withhold something about money from exactly one language, and crashing would take down the
  * export — and it is unreachable in a passing build: a Python test fails when the module
  * publishes a string this file cannot render.
@@ -81,7 +81,7 @@ export const LEAD_STEP = "ita";
 export const CENTERS_STEP = "where_to_ask";
 
 /**
- * The step that says the conversation comes before the enrolment.
+ * The step that says the conversation comes before the enrollment.
  *
  * Named here rather than matched inline because a program page renders it out of order — above
  * the offices, not under the link to the guide — and a page picking a claim out of a sequence

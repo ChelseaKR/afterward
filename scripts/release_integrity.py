@@ -33,7 +33,7 @@ asks it:
   pass it.
 * **Assets that are absent or duplicated.** `deploy.yml` refuses anything but exactly one
   tarball, but only for the tag being deployed.
-* **A draft or a prerelease.** `gh release download` will fetch a draft for an authorised
+* **A draft or a prerelease.** `gh release download` will fetch a draft for an authorized
   caller, so a half-finished release sitting in the list is a thing a dispatch can reach.
 
 REFUSALS: NOTHING HERE MAY REPORT A COMFORTABLE NUMBER IT DID NOT MEASURE

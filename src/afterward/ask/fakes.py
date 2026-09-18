@@ -4,7 +4,7 @@ Nothing here is intelligent and nothing here is meant to be. :func:`echo_narrato
 evidence pack text back as claims -- one per record, citing it, declaring the first figure it
 finds and naming every NOT REPORTED field as not reported -- so the whole pipeline can be
 exercised, and the verifier shown to accept a faithful narration, without a model. A run
-that uses it is labelled ``provider: fake`` and is never a measurement of anything.
+that uses it is labeled ``provider: fake`` and is never a measurement of anything.
 """
 
 from __future__ import annotations

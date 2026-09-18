@@ -154,7 +154,7 @@ export interface CompletionMark {
  * the two.
  *
  * How often, measured: grade every program against a smoothed expectation for its own length
- * (the median of its 200 nearest neighbours by weeks) and rank every pair. Where both programs
+ * (the median of its 200 nearest neighbors by weeks) and rank every pair. Where both programs
  * share a band the mark lands on the weaker-for-its-length one 2.63% of the time, which is the
  * residual these deliberately wide bands leave. Where they do not share a band, 10.22%. Length
  * adds 7.59 points of error, and adds it in a direction: across bands, the marked program is
@@ -199,7 +199,7 @@ export function completionMark(entries: SearchEntry[]): CompletionMark {
  * One occupation's own published figures, kept together.
  *
  * The reason this type exists is the reason the comparison used to be wrong. The search
- * index summarises a program's occupations into three scalars — `wage` is the *highest* of
+ * index summarizes a program's occupations into three scalars — `wage` is the *highest* of
  * them, `g` the *lowest* projected change, `op` the *largest* opening count — and each is
  * chosen independently. For the 1,045 programs where the highest-paying job is not the
  * weakest-growing one, laying those scalars out as three rows of one column invents a job

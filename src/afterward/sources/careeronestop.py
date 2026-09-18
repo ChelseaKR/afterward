@@ -69,7 +69,7 @@ REQUEST_PARAMS: Final[MappingProxyType[str, str]] = MappingProxyType(
         # Deliberately not fetched. See docs/enrichment-expansion-2026-08-04.md for the
         # argument on each; the short version is that wages and projections would restate a
         # national figure next to the California one this project already publishes from
-        # EDD, and knowledge/ability/interest add a second and third unlabelled 1-5 rating
+        # EDD, and knowledge/ability/interest add a second and third unlabeled 1-5 rating
         # scale to a page that already carries one.
         "wages": "false",
         "projectedEmployment": "false",
@@ -116,7 +116,7 @@ def onet_code(soc_code: str) -> str:
 
     EDD publishes ``29-1141``; CareerOneStop wants ``29-1141.00`` and returns 404 for the
     bare SOC. ``.00`` is the base occupation -- O*NET's ``.01``/``.02`` variants are
-    specialisations this project does not distinguish.
+    specializations this project does not distinguish.
     """
     return soc_code if "." in soc_code else f"{soc_code}.00"
 

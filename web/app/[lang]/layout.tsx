@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
-import { shareMetadata } from "@/lib/site";
+import { REPO_URL, homeDescription, homeTitle, shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
   return LANGUAGES.map((lang) => ({ lang }));
@@ -29,7 +31,10 @@ export function generateStaticParams() {
  * every program, provider and occupation page is a duplicate of the home page. For a site
  * whose whole purpose is being findable when someone searches a provider's name, that is the
  * most expensive line of code it could contain. A per-URL canonical belongs in each page's
- * own metadata or nowhere; absent, engines self-canonicalise, which is correct here.
+ * own metadata or nowhere, and it is now in each page's own metadata: `pageMetadata` in
+ * `lib/site.ts` cannot be called without being told which path it is describing, and every
+ * `page.tsx` under this layout calls it. This file calls `shareMetadata`, which is the same
+ * object without those two claims, because it is the one file here that has no single URL.
  *
  * `openGraph.images` IS declared here, and the distinction is the point of the paragraph
  * above rather than an exception to it. What made a canonical URL unsafe to inherit is that
@@ -59,11 +64,7 @@ export async function generateMetadata({
   // large variant renders as an empty banner above the text when no image is supplied; with
   // a card to show, the reason for the small variant is gone and the large one is what the
   // 1200x630 card is cut for.
-  return shareMetadata(
-    lang,
-    `${t.siteName} — ${t.tagline}`,
-    `${t.notAffiliated} ${t.siteSummary}`,
-  );
+  return shareMetadata(lang, homeTitle(lang), homeDescription(lang));
 }
 
 /**
@@ -236,7 +237,7 @@ export default async function LangLayout({
             {/*
               The two browse indexes were reachable only by typing the URL. They are the
               site's other two ways in — by the job you want or by the school you were
-              about to enrol in — so they belong in the chrome rather than in a link at the
+              about to enroll in — so they belong in the chrome rather than in a link at the
               bottom of one page. Their own row under the wordmark: dropping them into the
               masthead row would either crowd the tagline or push the language toggle off a
               narrow screen, and the language toggle is not something to make harder to find.
@@ -315,9 +316,49 @@ export default async function LangLayout({
               </a>
             </p>
 
+            {/*
+              The link back to the source, on every page rather than only on `/about/`.
+              `notAffiliated` sits directly above it on purpose: the sentence claims this is
+              an independent project built from public data, and the line under it is the
+              only way a reader can check that claim rather than take it. See `sourceCode` in
+              `lib/i18n.ts`.
+
+              A plain `<a>`, not a `<Link>`: it leaves the site. `rel="noopener noreferrer"`
+              matches the O*NET credit above and is the house rule for every outbound link
+              here -- `noreferrer` because this site sends no referrer to the places it links.
+            */}
+            <p>
+              {t.sourceCode}{" "}
+              <a href={REPO_URL} rel="noopener noreferrer">
+                {t.sourceCodeLabel}
+              </a>
+            </p>
+
+            {/*
+              Google Analytics 4 (owner decision, 2026-09-17), said where every reader will
+              meet it, with the way to turn it off beside it. The link goes to the full
+              disclosure on the About page; the button renders after hydration, because only
+              the browser knows whether this reader already opted out.
+            */}
+            <p className="footer-analytics">
+              {t.analyticsFooter}{" "}
+              <Link href={`/${lang}/about/#privacy`} prefetch={false}>
+                {t.analyticsFooterLink}
+              </Link>
+              <AnalyticsOptOut
+                labels={{
+                  optOut: t.analyticsOptOut,
+                  optIn: t.analyticsOptIn,
+                  offStatus: t.analyticsOffStatus,
+                  onStatus: t.analyticsOnStatus,
+                }}
+              />
+            </p>
+
             <p>{t.notAffiliated}</p>
           </div>
         </footer>
+        <GoogleAnalytics />
       </body>
     </html>
   );

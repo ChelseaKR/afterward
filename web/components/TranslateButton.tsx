@@ -6,12 +6,12 @@ import { askServiceUrl, postTranslate, type TranslateOutcome } from "@/lib/ask";
 import { dict, type Lang } from "@/lib/i18n";
 
 /**
- * "Translate with AI": Spanish on request for text the catalogue carries only in English.
+ * "Translate with AI": Spanish on request for text the catalog carries only in English.
  *
  * Rendered only on Spanish pages, only when a service is configured for this build, and only
  * beside text the Department publishes no Spanish for -- the 70 occupations Mi Próximo Paso
  * does not cover, and every provider-filed program description. Like the ask panel it makes
- * no request until pressed, and what it shows is labelled AI-translated and unreviewed with
+ * no request until pressed, and what it shows is labeled AI-translated and unreviewed with
  * the English left in place as the record. A translation the service withheld (it changed a
  * number) is reported as withheld, not replaced by anything.
  */

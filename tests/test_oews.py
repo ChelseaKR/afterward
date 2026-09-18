@@ -3,7 +3,7 @@
 The rows below are copied verbatim from the published 2009-2026 extract (checked
 2026-08-04), header included, so the parser is exercised against EDD's real spellings rather
 than a tidied paraphrase. Every irregularity in them is EDD's: the unhyphenated SOC code,
-the two capitalisations of the wage-type label, the three spellings of the statewide area
+the two capitalizations of the wage-type label, the three spellings of the statewide area
 type, the older vintages' zero-as-suppression and the newer ones' blank.
 
 Most of these tests assert that a wage does *not* appear. That is the point: the invariant
@@ -19,7 +19,7 @@ from afterward.sources.oews import (
     WageDistribution,
     area_name_joins_to_projections,
     latest_year,
-    normalise_soc,
+    normalize_soc,
     parse_wage_statistics,
     select,
     statewide_index,
@@ -110,22 +110,22 @@ class TestSocCodes:
         assert parse_one(ROW_STATE_ANNUAL).soc_code == "15-1252"
 
     def test_an_already_hyphenated_code_is_accepted(self) -> None:
-        assert normalise_soc("29-1141") == "29-1141"
+        assert normalize_soc("29-1141") == "29-1141"
 
     def test_the_bare_zero_roll_up_row_carries_no_soc_code(self) -> None:
         # "Total, All Occupations" is not an occupation and has no code to invent.
         assert parse_one(ROW_TOTAL_ALL).soc_code is None
 
     def test_a_code_of_the_wrong_length_is_refused(self) -> None:
-        assert normalise_soc("15125") is None
-        assert normalise_soc("1512522") is None
+        assert normalize_soc("15125") is None
+        assert normalize_soc("1512522") is None
 
     def test_a_non_numeric_code_is_refused(self) -> None:
-        assert normalise_soc("15-12XX") is None
-        assert normalise_soc("") is None
-        assert normalise_soc(None) is None
+        assert normalize_soc("15-12XX") is None
+        assert normalize_soc("") is None
+        assert normalize_soc(None) is None
 
-    def test_a_detailed_occupation_is_recognised(self) -> None:
+    def test_a_detailed_occupation_is_recognized(self) -> None:
         assert parse_one(ROW_STATE_ANNUAL).is_detailed_occupation
 
     def test_roll_up_levels_are_not_detailed_occupations(self) -> None:
@@ -138,7 +138,7 @@ class TestSocCodes:
 class TestFileSpellings:
     """OEWS writes the same thing several ways across eighteen vintages."""
 
-    def test_both_capitalisations_of_the_annual_label_read_as_annual(self) -> None:
+    def test_both_capitalizations_of_the_annual_label_read_as_annual(self) -> None:
         assert parse_one(ROW_STATE_ANNUAL).basis == ANNUAL
         assert parse_one(ROW_2015_ZERO).basis == ANNUAL
 
@@ -257,7 +257,7 @@ class TestIndexes:
         index = statewide_index(parse_wage_statistics(self.PANEL))
         assert set(index) == {"15-1252"}
 
-    def test_statewide_index_honours_an_older_vintage(self) -> None:
+    def test_statewide_index_honors_an_older_vintage(self) -> None:
         index = statewide_index(parse_wage_statistics(self.PANEL), year=2017)
         assert index["29-1141"].p50 == 98400.00
 
