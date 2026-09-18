@@ -133,7 +133,7 @@ export function groupByProvider(programs: SearchEntry[]): Provider[] {
  *
  * `declared` is `coverage.json`'s own figure, and a disagreement throws rather than picking a
  * winner. The rule is spelled twice out of necessity — `src/afterward/providers.py` counts for
- * the published artefact, this file mints the URLs, and neither can call the other across the
+ * the published artifact, this file mints the URLs, and neither can call the other across the
  * language boundary — so the build is where they are made to agree.
  * `fixtures/provider-identity.json` is the case table both test suites read; this is the check
  * that the two agree about a whole snapshot rather than about seventeen names.

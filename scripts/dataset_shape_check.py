@@ -169,7 +169,7 @@ def provider_count_disagrees(dataset_dir: Path, programs: Sequence[dict[str, Any
 
     `dataset-2026-09-12` published **584** providers in `coverage.json` and the site built
     **581** provider pages from the same 3,266 records, because three of California's
-    providers file under two spellings each and the count applied no normalisation (#155).
+    providers file under two spellings each and the count applied no normalization (#155).
     The site now derives that figure from the roster it mints the pages from and refuses to
     render a page whose `coverage.json` disagrees -- which is the right refusal in the wrong
     place if it first happens mid-prerender on the deploy path, six minutes into a build,

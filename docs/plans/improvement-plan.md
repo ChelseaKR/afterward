@@ -135,7 +135,7 @@ by an explicit `make dataset-manifest`, which is an operator action after a real
 
 ## Blocked, and why
 
-- **Issue #32, native Spanish review.** Needs a native speaker's judgement. One section has a
+- **Issue #32, native Spanish review.** Needs a native speaker's judgment. One section has a
   credited external review (`docs/spanish-funding-review-2026-08-06.md`); the rest does not,
   and `docs/I18N.md` says so. Nothing here can close it without claiming a competence this
   work does not have.

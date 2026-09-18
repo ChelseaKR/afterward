@@ -5,8 +5,8 @@ Four properties matter most.
 The build must survive having no API key, since CI has none. Nothing here may turn an absent
 value into a number. The Spanish record must never be half-claimed -- a page that says it is
 in Spanish and is not is worse than an honest English one. And the attribution string the
-licence requires must survive round-tripping to the site's JSON, because dropping it is a
-licence breach and not merely a missing field.
+license requires must survive round-tripping to the site's JSON, because dropping it is a
+license breach and not merely a missing field.
 """
 
 from __future__ import annotations
@@ -185,7 +185,7 @@ class TestParseTasks:
         assert all(t.title.strip() for t in parse_tasks(TASK_ROWS))
         assert len(parse_tasks(TASK_ROWS)) == 3
 
-    def test_honours_the_limit(self) -> None:
+    def test_honors_the_limit(self) -> None:
         assert len(parse_tasks(TASK_ROWS, limit=2)) == 2
 
 
@@ -214,7 +214,7 @@ class TestParseTechnologies:
         assert parsed[0].hot is False
         assert parsed[0].in_demand is False
 
-    def test_honours_the_limit(self) -> None:
+    def test_honors_the_limit(self) -> None:
         assert len(parse_technologies(TECHNOLOGY_ROWS, limit=2)) == 2
 
 
@@ -230,7 +230,7 @@ class TestParseReportedTitles:
             "Charge Nurse",
         )
 
-    def test_honours_the_limit(self) -> None:
+    def test_honors_the_limit(self) -> None:
         assert len(parse_reported_titles(TITLE_ROWS, limit=1)) == 1
 
 
@@ -454,7 +454,7 @@ class TestSpanishFetch:
         assert str(seen[0].url) == f"{BASE_URL}/mpp/careers/29-1141.00/"
 
 
-class TestSerialisation:
+class TestSerialization:
     def _profile(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
         monkeypatch.setenv(API_KEY_ENV, "abc123")
         _warm_cache(tmp_path)
@@ -463,7 +463,7 @@ class TestSerialisation:
     def test_carries_the_required_attribution(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        # A licence condition, not a nicety: the credit travels with the data so it cannot
+        # A license condition, not a nicety: the credit travels with the data so it cannot
         # be lost between the pipeline and the page.
         payload = self._profile(tmp_path, monkeypatch)
         assert payload["attribution"] == ATTRIBUTION
@@ -487,7 +487,7 @@ class TestSerialisation:
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         # A null here is what lets the site fall back to English *deliberately*, with the
-        # reader able to tell. An English string in a field labelled Spanish cannot be.
+        # reader able to tell. An English string in a field labeled Spanish cannot be.
         monkeypatch.setenv(API_KEY_ENV, "abc123")
         _warm_cache(tmp_path)
         (tmp_path / "mpp-29-1141.00.json").unlink()

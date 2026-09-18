@@ -166,7 +166,7 @@ function AggregateNote({ occupation, lang }: { occupation: ProgramOccupation; la
  *
  * Deliberately not a `<Measure value={null}>`. That renders the page's standard not-reported
  * treatment, whose explanation says the provider did not report this — which here is a false
- * statement about a named organisation, repeated on 135 pages. The provider reported its
+ * statement about a named organization, repeated on 135 pages. The provider reported its
  * program faithfully; California published a credential for a group of occupations; this
  * project declined to put the second next to the first. The sentence saying so is visible
  * rather than a `title` attribute, since a tooltip is exactly where the wrong explanation was
@@ -190,9 +190,9 @@ type Copy = ReturnType<typeof dict>;
 /* ============================================================================================
  * What the work is
  *
- * This page used to open on cost, length and an enrolment count: three numbers about a
+ * This page used to open on cost, length and an enrollment count: three numbers about a
  * purchase, before a word about what the purchase is for. The only thing on it describing the
- * actual work was the federal course-catalogue paragraph at the very bottom. Someone landing
+ * actual work was the federal course-catalog paragraph at the very bottom. Someone landing
  * here from a search engine is asking "what is this, and is it for me" — and the page answered
  * a question they had not got to yet.
  *
@@ -236,7 +236,7 @@ function trimmedOrNull(value: string | null): string | null {
  * Taking the first four alphabetically would be an arbitrary sample presented as the common
  * names; the shortest are, in practice, the ones people actually say — "Charge Nurse",
  * "School Nurse", "Staff Nurse" rather than "Certified Operating Room Nurse (CNOR)". Four,
- * because this is a line that helps a reader recognise the job, and ten near-synonyms under a
+ * because this is a line that helps a reader recognize the job, and ten near-synonyms under a
  * heading is a keyword dump.
  *
  * A title identical to the occupation's own is dropped: "also called Roofer" under the heading
@@ -309,7 +309,7 @@ function workProfile(soc: string | null): WorkProfile | null {
   // `Array.isArray` rather than a type assertion: these three fields were appended to the
   // pipeline's occupation record, and a dataset built before they existed would arrive with
   // them missing rather than empty. A page reading `undefined.length` is a broken page; a page
-  // reading an empty list is a page with one fewer section, which is the intended behaviour.
+  // reading an empty list is a page with one fewer section, which is the intended behavior.
   const profile: WorkProfile | null =
     occupation === null
       ? null
@@ -330,7 +330,7 @@ function workProfile(soc: string | null): WorkProfile | null {
 /**
  * How many tasks lead, and when the rest go behind a disclosure.
  *
- * Four is enough for a reader to recognise the work or rule it out, and eight sentences at the
+ * Four is enough for a reader to recognize the work or rule it out, and eight sentences at the
  * top of a page is a wall rather than an explanation. The rest are one click away rather than
  * cut: the source published them and the page has no business deciding the reader has seen
  * enough. Below six, everything shows — a disclosure hiding a single sentence is worse than
@@ -342,7 +342,7 @@ const TASKS_WITHOUT_DISCLOSURE = 5;
 /**
  * Renders children bare when `open`, and behind a disclosure otherwise.
  *
- * The jobs section ran 4,481 pixels — 54 per cent of the page — because a program training
+ * The jobs section ran 4,481 pixels — 54 percent of the page — because a program training
  * for three occupations printed three near-identical blocks of pay, hiring and education
  * tables. The first is the one most readers want; the others are worth having and are not
  * worth four screens of scrolling past. Native <details>, so it works without JavaScript in
@@ -468,7 +468,7 @@ function WorkForOccupation({
  * "Moderate-term on-the-job training" is what California publishes; "1 to 12 months" is the
  * same answer said in a way a reader can act on. The two vocabularies agree one for one across
  * all 670 occupations — 280/165/148/44/21/12 on both sides — so this is a choice of phrasing
- * and not a second, differing source. An unrecognised value shows exactly as published rather
+ * and not a second, differing source. An unrecognized value shows exactly as published rather
  * than disappearing, so a gap here is visible and fixable.
  */
 function experienceLabel(value: string | null, t: Copy): string | null {
@@ -595,7 +595,7 @@ function EntryRequirements({ education, lang, first }: { education: OccupationEd
  *
  * Three things this block must never become.
  *
- * It must never read as a promise. Eligibility is determined by a one-stop centre after an
+ * It must never read as a promise. Eligibility is determined by a one-stop center after an
  * interview and assessment (20 CFR 680.220), priority is fixed at that first appointment, WIOA
  * money is the last money in (680.230), and a local area that has spent its year's training
  * funds is not obliged to refer anybody (680.340(c)). The words that stay on the right side of
@@ -618,11 +618,11 @@ function EntryRequirements({ education, lang, first }: { education: OccupationEd
  * The published phone field, with the numbers inside it dialable and the rest left as words.
  *
  * This used to strip every non-digit from the whole field and call the result a phone number.
- * For 163 of the 183 centres that is right, because the field holds one ten-digit number. For
+ * For 163 of the 183 centers that is right, because the field holds one ten-digit number. For
  * the other 20 it is not: "619-319-9675 and 619-266-4253" became a `tel:` link for a twenty-digit
  * number, "916-746-7722 Ext. 102" one for a thirteen-digit number, and so on down to a field
  * carrying a switchboard and an EDD line. 778 of the 3,234 program pages that name an office
- * carried at least one of them, in both languages, and every one of those links dialled nothing.
+ * carried at least one of them, in both languages, and every one of those links dialed nothing.
  *
  * `phoneParts` finds the numbers rather than assuming the field is one; see `lib/centers.ts` for
  * what it declines to parse and why.
@@ -653,8 +653,8 @@ function CenterPhone({ center, t }: { center: AmericanJobCenter; t: Copy }) {
 /**
  * One office, phone first.
  *
- * Phone before address because it is the only channel populated for all 183 California centres,
- * and because the state's own advice is to ring before travelling — its staff are not physically
+ * Phone before address because it is the only channel populated for all 183 California centers,
+ * and because the state's own advice is to ring before traveling — its staff are not physically
  * present at every location. Everything else is rendered only where the directory published it:
  * a blank here is an unfilled field, and a rendered blank beside a label reads as a claim that
  * the office does not have one.
@@ -722,7 +722,7 @@ function CenterCard({
 }
 
 /*
- * The centre directory, indexed once per export worker rather than once per page.
+ * The center directory, indexed once per export worker rather than once per page.
  *
  * `getCoverage()` returns the same frozen object to all 6,532 program pages, so the index is
  * keyed on that array's identity: a dev server that rebuilds `public/data` underneath itself
@@ -742,7 +742,7 @@ function centersById(centers: AmericanJobCenter[]): Map<string, AmericanJobCente
  * How far out to look on the pages where the pipeline found nothing, and how many to show.
  *
  * 50 miles because that is the measured band in which every one of the 227 cities this dataset
- * publishes a program in has a centre. Beyond it there is nothing left to find, and an office
+ * publishes a program in has a center. Beyond it there is nothing left to find, and an office
  * 120 miles away offered as "the nearest one" would be worse than the finder.
  *
  * Two rather than three: at this distance a second option is worth having and a third is a
@@ -758,13 +758,13 @@ const BEYOND_RADIUS_SHOWN = 2;
  *
  * Three states, and they are not two. A null list means nothing was established — no directory
  * was read, or this program's record carries no coordinates to search from. An empty list means
- * the search ran and there is no centre within the published radius, which is true of 32 of
+ * the search ran and there is no center within the published radius, which is true of 32 of
  * California's 3,266 programs. A populated list is the nearest three.
  *
- * Those 32 pages used to end at "no centre within 25 miles" and a link to a statewide finder,
+ * Those 32 pages used to end at "no center within 25 miles" and a link to a statewide finder,
  * which is a search box rather than an office — offered to the readers with the furthest to go
  * and, for someone on a phone with no car, the least able to use one. Nothing further was
- * fetched to fix it: `coverage.json` already publishes all 183 centres with their coordinates
+ * fetched to fix it: `coverage.json` already publishes all 183 centers with their coordinates
  * and this program's record already carries its own, so the nearest office beyond the radius is
  * arithmetic over data the page has in hand. It is shown with its distance and with the plain
  * statement that it is further out than this site calls nearby, because the point is to let a
@@ -885,7 +885,7 @@ function FundingBlock({
    * Falls back to the dictionary rather than to silence, the same way the heading above falls
    * back when `lead` is missing. `guidance` is baked into `coverage.json` by a pipeline run,
    * so a dataset built before this claim existed does not carry it — and this is the one
-   * sentence in the block whose value is entirely in arriving before the reader enrols. A page
+   * sentence in the block whose value is entirely in arriving before the reader enrolls. A page
    * that waits for a data refresh to say it has said it too late.
    *
    * Not a second copy of the copy: `fundingBefore` is asserted byte for byte against
@@ -921,7 +921,7 @@ function FundingBlock({
 
         Everything else here can be read after enrolling and still be worth something. This
         cannot: 20 CFR 680.220 puts the interview or assessment before the eligibility finding
-        and 680.340 puts the referral and the account after it, so the order runs centre first
+        and 680.340 puts the referral and the account after it, so the order runs center first
         and school second — and the reader this block is written for is someone who has just
         decided they want a program and is about to go and sign up for it. It is the second
         thing in the block for that reason, above the offices rather than behind the link to
@@ -940,7 +940,7 @@ function FundingBlock({
       {/*
         The offices come before the explanation of them.
 
-        This block was 1,071 words and 3,796 pixels — 46 per cent of the words on a program
+        This block was 1,071 words and 3,796 pixels — 46 percent of the words on a program
         page and a third of its height — and every word of it except the sentence above and
         the offices below is identical on all 6,532 program pages. Someone who has decided to
         ask for help needs an address and a phone number; the rules that make the help exist
@@ -950,7 +950,7 @@ function FundingBlock({
         <section className="funding-step">
           {/*
             The heading names the offices; the paragraph explaining what a comprehensive
-            one-stop centre is, and the regulation it rests on, are the last generic passage
+            one-stop center is, and the regulation it rests on, are the last generic passage
             that was still being printed on all 6,532 program pages. Both are on the guide
             this block links to, so what stays here is the offices themselves.
           */}
@@ -1213,7 +1213,7 @@ export default async function ProgramPage({
             data rather than the page.
 
             The competency-based phrase deliberately does not carry the `unreported` class:
-            that italic grey and its "not reported" tooltip are how this site says a record is
+            that italic gray and its "not reported" tooltip are how this site says a record is
             silent, and this record is not.
           */}
           <dd>
@@ -1254,7 +1254,7 @@ export default async function ProgramPage({
         * It printed "$7,500 / 12 weeks" 267 pixels below the summary strip that had just
         * printed "$7,500 / 12 weeks", under its own heading, as though the second pair were
         * additional information. What the panel held that the strip does not is the
-        * enrolment count and the partial-cost caveat, and both are kept below.
+        * enrollment count and the partial-cost caveat, and both are kept below.
         */}
       {cost.total_out_of_pocket !== null && !cost.total_is_complete && (
         <p className="compare-note">{t.costPartial}</p>
@@ -1312,7 +1312,7 @@ export default async function ProgramPage({
          * useful signal, so it gets a full explanation rather than a blank panel.
          *
          * Two explanations, because there are two absences and only one of them is "nothing".
-         * The enrolment count above is printed whenever the record carries one, and 42 of
+         * The enrollment count above is printed whenever the record carries one, and 42 of
          * California's 1,209 silent programs carry one -- so this panel was telling a reader
          * that no outcomes were reported directly beneath a number that was. Which sentence
          * applies is `unreportedNotice`'s answer, computed from the record rather than
@@ -1653,7 +1653,7 @@ export default async function ProgramPage({
         - When there is nothing to link to, show the URL as text rather than dropping it,
           so a reader can still try it or look it up in an archive.
         - Switch on the notice exhaustively, and render nothing for one this build does not
-          recognise. A dataset written by a newer builder must degrade to silence rather
+          recognize. A dataset written by a newer builder must degrade to silence rather
           than to a sentence chosen by a fallback that never saw the evidence.
       */}
       {link && (
@@ -1700,7 +1700,7 @@ export default async function ProgramPage({
       {/*
         * Every figure above is somebody else's, filed by this provider or published by the
         * state, and this page is where a reader has just formed an opinion about a named
-        * organisation from them. The route to the methodology belongs here rather than only
+        * organization from them. The route to the methodology belongs here rather than only
         * in the site chrome. It is a link on the page and not in the footer because the
         * footer lives in the shared layout, which this change does not own.
         */}

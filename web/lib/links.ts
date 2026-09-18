@@ -27,7 +27,7 @@ import type { ProviderLink } from "./types";
  *   requests. A 403 is a statement about the requester, and telling a reader that a working
  *   UC Davis certificate page is unreachable would be a false claim about a real
  *   institution. Those render exactly as an unchecked link does;
- * - the notice is one this build does not recognise, which is what a dataset from a newer
+ * - the notice is one this build does not recognize, which is what a dataset from a newer
  *   builder looks like. Silence is the only safe default: a fallback sentence would be
  *   chosen by code that never saw the evidence for it.
  */

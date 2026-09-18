@@ -148,7 +148,7 @@ def reconcile_rate(
     one reports 86 people working against 15,335 exits, a real 0.56% that rounds to zero.
 
     Rendered literally that becomes "Working 6 months later: 0%" and "Worse than typical" on a
-    page naming a public community college. The rate is a rounding artefact, and the honest
+    page naming a public community college. The rate is a rounding artifact, and the honest
     move is to say it was not usefully reported rather than to publish a zero the record
     itself refutes. A genuine zero -- rate 0.00 with nobody employed -- is preserved, because
     that is a real and important finding.
@@ -219,7 +219,7 @@ def _is_competency_sentinel(value: Any) -> bool:
 
 
 def clean_length(hours: Any, weeks: Any) -> ProgramLength:
-    """Read the two program-length fields together, honouring their own sentinel.
+    """Read the two program-length fields together, honoring their own sentinel.
 
     ``clean_measure`` was applied to these two fields until 2026-08-07, which mapped ``-1`` to
     null exactly as it does for an outcome measure. That is wrong here and only here: the ETP
@@ -305,7 +305,7 @@ def clean_description(value: Any) -> str | None:
 
     The description only. :func:`clean_text` is shared with provider names, program names,
     cities and ZIPs, and none of those carries the artifact -- 0 of 3,266 on each, measured --
-    so teaching the general cleaner to delete leading digits would be a licence to eat a real
+    so teaching the general cleaner to delete leading digits would be a license to eat a real
     value somewhere it means something.
     """
     text = clean_text(value)
@@ -428,7 +428,7 @@ class Program:
 
 
 def _soc_codes(source: dict[str, Any]) -> tuple[str, ...]:
-    """Extract and normalise the up-to-three SOC codes attached to a program.
+    """Extract and normalize the up-to-three SOC codes attached to a program.
 
     The feed writes them zero-padded to 8 digits (``15-125200``); the standard 6-digit SOC
     used by EDD is the first six (``15-1252``).
@@ -440,9 +440,9 @@ def _soc_codes(source: dict[str, Any]) -> tuple[str, ...]:
             continue
         digits = raw.replace("-", "")
         if len(digits) >= 6 and digits[:6].isdigit():
-            normalised = f"{digits[:2]}-{digits[2:6]}"
-            if normalised not in codes:
-                codes.append(normalised)
+            normalized = f"{digits[:2]}-{digits[2:6]}"
+            if normalized not in codes:
+                codes.append(normalized)
     return tuple(codes)
 
 
@@ -499,7 +499,7 @@ def parse_program(hit: dict[str, Any]) -> Program:
 # above and still be attached to the wrong people, and that is the version of this data
 # that libels a named provider, because the site then stamps a verdict on it.
 #
-# Three failures are detectable from the feed itself, and none of them is a judgement about
+# Three failures are detectable from the feed itself, and none of them is a judgment about
 # whether a provider trains anyone well:
 #
 # 1. The same cohort is filed against several of one provider's programs.
@@ -512,14 +512,14 @@ def parse_program(hit: dict[str, Any]) -> Program:
 # --------------------------------------------------------------------------------------
 
 
-def normalise_provider(name: str | None) -> str | None:
+def normalize_provider(name: str | None) -> str | None:
     """Key a provider by, so the same filer under two spellings is one filer.
 
     Case and internal whitespace only. Two of California's providers file under both a
     cased and a shouting form of the same name ("Procareer Academy" / "PROCAREER ACADEMY"),
     and a duplicate-detection pass keyed on the literal string would let a provider evade it
-    by shouting. Nothing else is normalised: guessing that two differently-*spelled* names
-    are one organisation is a similarity judgement, and this module does not make those.
+    by shouting. Nothing else is normalized: guessing that two differently-*spelled* names
+    are one organization is a similarity judgment, and this module does not make those.
     """
     if name is None:
         return None
@@ -700,7 +700,7 @@ def cohort_integrity(programs: Sequence[CohortFiling]) -> list[CohortIntegrity]:
     filings: Counter[tuple[str, CohortKey]] = Counter()
     oversized_per_provider: Counter[str] = Counter()
     for program in programs:
-        provider = normalise_provider(program.provider_name)
+        provider = normalize_provider(program.provider_name)
         if provider is None:
             continue
         cohort = _cohort_key(program)
@@ -711,7 +711,7 @@ def cohort_integrity(programs: Sequence[CohortFiling]) -> list[CohortIntegrity]:
 
     verdicts: list[CohortIntegrity] = []
     for program in programs:
-        provider = normalise_provider(program.provider_name)
+        provider = normalize_provider(program.provider_name)
         cohort = _cohort_key(program)
         filed = filings[(provider, cohort)] if provider is not None and cohort is not None else 1
         verdicts.append(
@@ -888,7 +888,7 @@ def _raise_if_permanent(response: httpx.Response, url: str) -> None:
 
 
 def _retry_wait(response: httpx.Response, attempt: int, url: str) -> float:
-    """How long to wait before the next attempt, honouring Retry-After when present."""
+    """How long to wait before the next attempt, honoring Retry-After when present."""
     requested = _retry_after_seconds(response)
     if requested is None:
         return _backoff_seconds(attempt)

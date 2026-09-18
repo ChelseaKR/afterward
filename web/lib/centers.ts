@@ -31,7 +31,7 @@ export function milesBetween(lat1: number, lon1: number, lat2: number, lon2: num
   return 2 * EARTH_RADIUS_MILES * Math.asin(Math.sqrt(haversine));
 }
 
-/** The minimum a centre record needs before it can be ranked by distance. */
+/** The minimum a center record needs before it can be ranked by distance. */
 interface Placeable {
   lat: number | null;
   lon: number | null;
@@ -39,15 +39,15 @@ interface Placeable {
 }
 
 /**
- * The closest centres to a point, nearest first, with the distance to each.
+ * The closest centers to a point, nearest first, with the distance to each.
  *
- * Same two rules as `local_help.nearest_centers`, for the same reasons. A centre with no
+ * Same two rules as `local_help.nearest_centers`, for the same reasons. A center with no
  * published coordinates is dropped rather than sorted last: this function's entire output is a
  * distance claim, and a missing coordinate read as 0 would make an unplaceable office the
  * nearest thing to everywhere. And `withinMiles` is a filter, not a fallback — an empty result
  * is the honest answer when there is nothing inside it.
  *
- * All 183 California centres carry coordinates today. The rule does not depend on that holding.
+ * All 183 California centers carry coordinates today. The rule does not depend on that holding.
  */
 export function nearestCenters<T extends Placeable>(
   centers: readonly T[],
@@ -80,10 +80,10 @@ export interface PhonePart {
 /**
  * A phone number as the federal directory publishes it, which is not always one number.
  *
- * 20 of the 183 California centres publish something other than a single ten-digit number in
+ * 20 of the 183 California centers publish something other than a single ten-digit number in
  * this field: two numbers ("619-319-9675 and 619-266-4253"), a number and an extension
  * ("916-746-7722 Ext. 102"), a vanity number with its digits in brackets, a switchboard and an
- * EDD line labelled separately. Stripping every non-digit and calling the result a phone number
+ * EDD line labeled separately. Stripping every non-digit and calling the result a phone number
  * turned all 20 into a `tel:` link for a twenty-digit number that dials nothing — on 778 of the
  * 3,234 program pages that name an office, in both languages.
  *

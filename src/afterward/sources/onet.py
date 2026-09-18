@@ -3,7 +3,7 @@
 Source D5 in PROVENANCE.md. This is the direct O*NET API, as distinct from the O*NET content
 that already reaches this project second-hand through CareerOneStop (D6).
 
-**Attribution is a licence condition, not a courtesy.** The O*NET Web Services Data License
+**Attribution is a license condition, not a courtesy.** The O*NET Web Services Data License
 requires any product using the Services to credit and link to O*NET. The exact string the
 site must display is :data:`ATTRIBUTION`, and it must not be removed while any field derived
 from this module is on screen. See "Notes on D5" in PROVENANCE.md.
@@ -34,7 +34,7 @@ occupation titles and descriptions for every one of the 923 occupations O*NET ho
 project can show in English and not in Spanish. That is the one thing here that fixes a real
 defect rather than adding a feature: the site's Spanish pages currently render occupation
 titles and descriptions in English. Spanish has no bulk table, so it is the one thing fetched
-per occupation -- throttled, serialised, and cached.
+per occupation -- throttled, serialized, and cached.
 """
 
 from __future__ import annotations
@@ -73,7 +73,7 @@ ATTRIBUTION = (
 """The credit the O*NET Web Services Data License requires a product using it to display.
 
 Must appear with a link to https://services.onetcenter.org/ wherever O*NET-derived fields are
-shown. This is a licence obligation and is owed on the *published* site, not just in this
+shown. This is a license obligation and is owed on the *published* site, not just in this
 repository -- and it is owed for the CareerOneStop-sourced O*NET fields too, which is why the
 notice predates this module.
 """
@@ -124,7 +124,7 @@ def onet_code(soc_code: str) -> str:
     """Map a 6-digit SOC to the base O*NET-SOC code.
 
     EDD publishes ``29-1141``; O*NET's taxonomy is ``29-1141.00``, with ``.01``/``.02``
-    variants for specialisations this project does not distinguish. Deliberately a local
+    variants for specializations this project does not distinguish. Deliberately a local
     definition rather than a shared one: this is O*NET's own taxonomy rule, and it is only a
     coincidence that CareerOneStop -- an O*NET front end -- needs the same mapping.
     """
@@ -190,7 +190,7 @@ class JobZone:
 
     More useful than a single "typically needs an associate's degree" line because it says
     what *else* is needed -- years of experience, on-the-job training, licensure -- which is
-    exactly what decides whether a one-year programme is enough.
+    exactly what decides whether a one-year program is enough.
     """
 
     code: int

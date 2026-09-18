@@ -160,7 +160,7 @@ class TestRefusingRatherThanReportingNothing:
             _compare("2026-08-17", [_release("2026-08-17", tag_name="v0.1.0")])
 
     def test_a_list_holding_only_drafts_is_a_refusal(self) -> None:
-        """A draft is reachable by an authorised `gh release download` and is not published.
+        """A draft is reachable by an authorized `gh release download` and is not published.
 
         Counting one as published would let an unfinished release make the site look
         behind; excluding it and then reporting "current" over an otherwise-empty list

@@ -41,15 +41,15 @@
  *
  * Measured on this repository on 2026-09-13: two independent `npm run build` runs over an
  * unchanged tree produced 284 pages of which **284 differed**, and the whole of the
- * difference was one 21-character random build id inside the inline RSC payload. Normalise
+ * difference was one 21-character random build id inside the inline RSC payload. Normalize
  * that single literal away and **0 of 284 differ**. So the export is reproducible, the digest
- * can be taken over the entire document, and there is no judgement call about which parts of
+ * can be taken over the entire document, and there is no judgment call about which parts of
  * a page count as "content": all of it does, including the chunk URLs, because a bundle change
  * is a change to what the reader is served.
  *
  * The build id is read from `.next/BUILD_ID` rather than pattern-matched, so the substitution
  * is a known literal rather than a guess. If it turns out to appear in no page at all, this
- * refuses: a normaliser that matches nothing would silently mark every page as changed on
+ * refuses: a normalizer that matches nothing would silently mark every page as changed on
  * every deploy, which is the original defect with extra steps.
  *
  * ---- Usage ----
@@ -126,14 +126,14 @@ export function sitemapUrls(xml) {
 }
 
 /**
- * The digest of one page, with the build id normalised out.
+ * The digest of one page, with the build id normalized out.
  *
  * `buildId` is required rather than defaulted: a digest taken without it is a different
  * digest, and two callers disagreeing about that would make every page read as changed.
  */
 export function digestOf(html, buildId) {
-  const normalised = html.split(buildId).join("<build-id>");
-  return createHash("sha256").update(normalised).digest("hex").slice(0, DIGEST_CHARS);
+  const normalized = html.split(buildId).join("<build-id>");
+  return createHash("sha256").update(normalized).digest("hex").slice(0, DIGEST_CHARS);
 }
 
 /** Today in UTC, as a plain date. The sitemaps protocol accepts a bare `YYYY-MM-DD`. */
@@ -165,7 +165,7 @@ function readLedger(path) {
 /**
  * Put a `<lastmod>` immediately after each `<loc>`, and nowhere else.
  *
- * Textual rather than a re-serialisation, so every other byte of the document Next wrote is
+ * Textual rather than a re-serialization, so every other byte of the document Next wrote is
  * untouched -- the deploy greps this file for an exact `<loc>` line, and the sitemap gate
  * parses it.
  */
@@ -269,7 +269,7 @@ function main() {
   if (sawBuildId === 0) {
     console.error(
       `lastmod: the build id ${buildId} appears in none of the ${entries.length} pages, so ` +
-        "normalising it away changes nothing and every page would read as modified on every " +
+        "normalizing it away changes nothing and every page would read as modified on every " +
         "deploy. Refusing rather than publishing that.",
     );
     process.exit(1);

@@ -160,7 +160,7 @@ Resources:
         Name: !Sub "${AWS::StackName}-security-headers"
         SecurityHeadersConfig:
           # CloudFront rejects Content-Security-Policy as a custom header ? it owns the
-          # recognised security headers and wants them declared here instead.
+          # recognized security headers and wants them declared here instead.
           #
           # Everything is first-party and static: no third-party scripts, no remote fonts,
           # no analytics, no form posts. 'unsafe-inline' covers the framework's hydration
@@ -323,4 +323,3 @@ Outputs:
     Value: !Sub "https://${DomainName}"
   SiteBucketName:
     Value: !Ref SiteBucket
-

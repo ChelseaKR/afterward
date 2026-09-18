@@ -66,7 +66,7 @@ describe("ranking offices", () => {
 
 /**
  * Every case below is a real phone field from the federal directory. 20 of the 183 California
- * centres publish something other than one ten-digit number, and the previous rendering stripped
+ * centers publish something other than one ten-digit number, and the previous rendering stripped
  * non-digits from the whole field — so "619-319-9675 and 619-266-4253" became a `tel:` link for
  * a twenty-digit number, on every page that named that office.
  */
@@ -86,8 +86,8 @@ describe("published phone fields", () => {
   });
 
   /*
-   * The extension is left as text on purpose. `tel:` extension syntax is honoured
-   * inconsistently across phones, and dialling the switchboard and reading the extension off
+   * The extension is left as text on purpose. `tel:` extension syntax is honored
+   * inconsistently across phones, and dialing the switchboard and reading the extension off
    * the page always works.
    */
   it("dials the switchboard and leaves the extension readable", () => {

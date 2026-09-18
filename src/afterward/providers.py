@@ -6,7 +6,7 @@ pass keyed **583** -- all three counted from the same 3,266 records, and a reade
 followed the About page's number to the index found three fewer providers than they had
 been promised, with nothing on either page explaining the gap.
 
-The three rules were the raw filed string, :func:`afterward.sources.dol_etp.normalise_provider`
+The three rules were the raw filed string, :func:`afterward.sources.dol_etp.normalize_provider`
 (case and internal whitespace), and the web's URL slug. This module is the third one, moved
 to where a published count can reach it, because the site already *behaves* as though the
 slug is the answer: it mints one provider page per slug, and ``web/lib/etplCoverage.ts``
@@ -21,13 +21,13 @@ spellings each -- a cased and a shouting form, and one that alternates ``&`` wit
     PROCAREER ACADEMY                       /  Procareer Academy
     Virtual Design & Construction Institute /  Virtual Design and Construction Institute
 
-``normalise_provider``'s docstring already argued the case for the first two: a check keyed
+``normalize_provider``'s docstring already argued the case for the first two: a check keyed
 on the literal string "would let a provider evade it by shouting". The same is true of a
 published count, and the ampersand pair shows the argument does not stop at case.
 
 WHAT THIS IS NOT
 
-Not :func:`afterward.sources.dol_etp.normalise_provider`, which stays where it is. That one
+Not :func:`afterward.sources.dol_etp.normalize_provider`, which stays where it is. That one
 is a *join key over filed text* -- ``dol_bulk`` runs program names through it too -- and it
 folds only what cannot change a word. Widening it to this rule would loosen the four-key
 bulk join and move figures published under D9, which is a different decision from this one.

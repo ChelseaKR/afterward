@@ -41,7 +41,7 @@ does not render without them.
 """
 
 
-def _normalise(text: str) -> str:
+def _normalize(text: str) -> str:
     """Compare meaning-preserving text, not TypeScript formatting.
 
     Three things differ between a Python string and the same string in a `.ts` file and none
@@ -107,8 +107,8 @@ class TestEnglishIsTheCheckedWording:
 
     @pytest.mark.parametrize("origin", sorted(_published_strings()))
     def test_every_published_sentence_is_the_modules_own(self, origin: str) -> None:
-        english = _normalise(_block(_source(), spanish=False))
-        expected = _normalise(_published_strings()[origin])
+        english = _normalize(_block(_source(), spanish=False))
+        expected = _normalize(_published_strings()[origin])
         assert expected in english, (
             f"{origin} is not in web/lib/i18n.ts as this module writes it. The English on the "
             "site must be the English the wording check scans: edit "
@@ -124,7 +124,7 @@ class TestEnglishIsTheCheckedWording:
         """
         from tests.test_local_help import PROMISES
 
-        english = _normalise(_block(_source(), spanish=False)).casefold()
+        english = _normalize(_block(_source(), spanish=False)).casefold()
         assert [phrase for phrase in PROMISES if phrase in english] == []
 
 
@@ -159,10 +159,10 @@ about what the rules allow.
 
 class TestSpanishCarriesTheSameHedges:
     def test_the_spanish_block_promises_nothing(self) -> None:
-        spanish = _normalise(_block(_source(), spanish=True)).casefold()
-        offences = [phrase for phrase in PROMISES_ES if phrase in spanish]
-        assert offences == [], (
-            f"Spanish funding copy contains {offences}. Paraphrase rather than negate: a "
+        spanish = _normalize(_block(_source(), spanish=True)).casefold()
+        offenses = [phrase for phrase in PROMISES_ES if phrase in spanish]
+        assert offenses == [], (
+            f"Spanish funding copy contains {offenses}. Paraphrase rather than negate: a "
             "reader skimming official-looking prose takes the word and drops the 'no'."
         )
 
@@ -173,11 +173,11 @@ class TestSpanishCarriesTheSameHedges:
         list when the state last reported. "Está en la lista" is a claim about today that
         nothing here can support, and one letter separates them.
         """
-        spanish = _normalise(_block(_source(), spanish=True))
+        spanish = _normalize(_block(_source(), spanish=True))
         assert "estaba en la Lista de Instituciones de Capacitación Elegibles" in spanish
 
     def test_the_spanish_says_who_decides_and_that_this_site_does_not(self) -> None:
-        spanish = _normalise(_block(_source(), spanish=True)).casefold()
+        spanish = _normalize(_block(_source(), spanish=True)).casefold()
         assert "junta local de desarrollo laboral" in spanish
         assert "no lo decide este sitio" in spanish
         assert "nada de lo que dice esta página es una promesa de financiamiento" in spanish
@@ -188,6 +188,6 @@ class TestSpanishCarriesTheSameHedges:
         Repeated here for this block alone, because it is the block where an untranslated
         string does the most harm and the one most likely to be added to in a hurry.
         """
-        spanish = _normalise(_block(_source(), spanish=True))
+        spanish = _normalize(_block(_source(), spanish=True))
         for origin, english in _published_strings().items():
-            assert _normalise(english) not in spanish, f"{origin} is still in English in `es`"
+            assert _normalize(english) not in spanish, f"{origin} is still in English in `es`"

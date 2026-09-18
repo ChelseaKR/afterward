@@ -361,11 +361,13 @@ def _comparability(assistant: Assistant, cases: Sequence[Mapping[str, Any]]) -> 
             continue
         before = trace.narration.claims
         after = trace.verified.accepted
+        # The "period_unlabelled_*" keys keep their British spelling: they are the recorded
+        # schema of evals/results/*.json.
         flags = {
             "invented_benchmark_by_model": [c.text for c in before if _invented_benchmark(c)],
             "invented_benchmark_shown": [c.text for c in after if _invented_benchmark(c)],
-            "period_unlabelled_by_model": [c.text for c in before if _period_unlabelled(c)],
-            "period_unlabelled_shown": [c.text for c in after if _period_unlabelled(c)],
+            "period_unlabelled_by_model": [c.text for c in before if _period_unlabeled(c)],
+            "period_unlabelled_shown": [c.text for c in after if _period_unlabeled(c)],
             # On the verifier's resolved ids: a peer comparison accepted through a declared
             # PEERS number, with PEERS absent from what the model wrote, still counts.
             "peer_comparison_shown": [c.text for c in after if PEERS_ID in c.cites],
@@ -397,7 +399,7 @@ def _invented_benchmark(claim: Claim) -> bool:
     )
 
 
-def _period_unlabelled(claim: Claim) -> bool:
+def _period_unlabeled(claim: Claim) -> bool:
     fields = {n.field for n in claim.numbers}
     quarterly = "outcomes.median_earnings" in fields or "median_earnings" in fields
     annual = any(f.endswith("median_annual_wage") for f in fields)

@@ -261,7 +261,7 @@ class Assistant:
         self, request: TranslateRequest, *, client_key: str = "local"
     ) -> TranslateResponse:
         """Spanish for one record: the published Spanish if there is one, else the model's,
-        verified and labelled. Admitted by the same meter as a question."""
+        verified and labeled. Admitted by the same meter as a question."""
         kind, record_id = request.kind, request.id
 
         def answer(status: str, **extra: Any) -> TranslateResponse:

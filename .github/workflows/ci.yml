@@ -22,7 +22,7 @@ concurrency:
   # A concurrency group holds one running run and one pending run. When a third
   # run joins the group, GitHub cancels the pending one before it has dispatched
   # a single job, so that commit ends `cancelled` with zero jobs and no verdict.
-  # With `cancel-in-progress: true` the running run is cancelled instead, part-way
+  # With `cancel-in-progress: true` the running run is canceled instead, part-way
   # through — also no verdict. Either way a group keyed only on `github.ref` makes
   # every push to `main` contend with the merge before it.
   #

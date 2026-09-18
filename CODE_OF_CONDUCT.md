@@ -30,14 +30,14 @@ scope for this repository and will be removed.
 - Harassment, sustained hostility, or personal attacks.
 - Demeaning language about the people this site serves.
 - Publishing anyone's private information.
-- Sexualised language or imagery.
+- Sexualized language or imagery.
 
 ## Reporting
 
 Email **ckellyreif@gmail.com**. Reports go to the maintainer only, and are not discussed in
 public issues.
 
-You will get an acknowledgement within a week. Say what happened, where, and what you would
+You will get an acknowledgment within a week. Say what happened, where, and what you would
 like done — including nothing, if you are recording it rather than asking for action.
 
 The maintainer will handle it: editing or deleting comments, closing threads, or blocking

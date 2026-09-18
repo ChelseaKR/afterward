@@ -14,7 +14,7 @@ numbers, and the typed facts in the pack. The rules, in the order they are appli
   nobody.
 - A sentence that names a direction for a projected percent change names the published one:
   a decline is not narrated as growth, and growth is not narrated as a decline.
-- A quarterly earnings figure is labelled as a quarter; an annual wage is labelled as a year.
+- A quarterly earnings figure is labeled as a quarter; an annual wage is labeled as a year.
 - A comparison cites PEERS, declares the peer figure, says what the peer figure is, and is
   not made against a value the program did not report or a cohort that is not its own.
 - No benchmark the site does not use.
@@ -400,6 +400,7 @@ def _check_sentence(sentence: str, suppressed: list[str], reasons: list[str]) ->
         if renders_zero(sentence):
             reasons.append(f"suppressed_as_value:{field_name}")
         elif not says_not_reported:
+            # Reason codes keep their British spelling: evals/results/*.json records them.
             reasons.append(f"suppressed_unlabelled:{field_name}")
 
 
@@ -454,6 +455,7 @@ def _check_periods(
     claim: Claim, verified: Iterable[tuple[DeclaredNumber, Fact]], reasons: list[str]
 ) -> None:
     periods = {fact.period for _, fact in verified if fact.period}
+    # "period_unlabelled" keeps its British spelling: evals/results/*.json records it.
     if QUARTER in periods and not QUARTER_LABEL.search(claim.text):
         reasons.append("period_unlabelled:quarter")
     if ANNUAL in periods and not ANNUAL_LABEL.search(claim.text):

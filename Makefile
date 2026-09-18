@@ -62,7 +62,7 @@ zip-county-refresh:
 # They add two things and are optional for both: the
 # occupation descriptions, and the America's Job Centers each program page names as the place
 # to ask about having the training paid for. Without them the build is complete and simply
-# claims nothing about where the nearest office is -- which is what CI does. The centre
+# claims nothing about where the nearest office is -- which is what CI does. The center
 # directory is one request for the whole state and is cached under data/raw/cos-cache.
 # Backs up first, and the backup refuses to run over a dataset that does not look real.
 data: backup-data
@@ -327,8 +327,8 @@ csv-export:
 # What changed between a previous dataset and the working one, into dist/ (gitignored).
 #
 # Every refresh replaces $(DATASET_DIR) wholesale and the only review it gets is the shape floors
-# in dataset_check.py: a count that did not collapse. That cannot see a programme that stopped
-# reporting a measure, which is a different event from a programme that left the list, which is a
+# in dataset_check.py: a count that did not collapse. That cannot see a program that stopped
+# reporting a measure, which is a different event from a program that left the list, which is a
 # different event again from one that was never on it.
 #
 # PREVIOUS_DATASET_DIR is the unpacked earlier dataset -- extract a `dataset-<date>` release

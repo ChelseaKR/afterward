@@ -234,7 +234,7 @@ class TestSuppression:
             for x in reasons(claim("This program has no results to show for employment.", "P:a"))
         )
 
-    def test_sentence_level_so_one_labelled_sentence_does_not_excuse_another(self) -> None:
+    def test_sentence_level_so_one_labeled_sentence_does_not_excuse_another(self) -> None:
         c = claim("Earnings were not reported. Nobody was employed.", "P:a")
         assert "suppressed_as_value:outcomes.employment_rate_q2" in reasons(c)
 

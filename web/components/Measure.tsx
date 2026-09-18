@@ -29,7 +29,7 @@ export interface RegionalFigure {
 function Regional({ figure, lang }: { figure: RegionalFigure; lang: Lang }) {
   const t = dict(lang);
   return (
-    // The headline's not-reported treatment italicises its whole `dd`; the regional line is
+    // The headline's not-reported treatment italicizes its whole `dd`; the regional line is
     // a separate claim and is set upright either way.
     <small title={figure.title} style={{ fontStyle: "normal" }}>
       {figure.area}:{" "}
@@ -48,7 +48,7 @@ function Regional({ figure, lang }: { figure: RegionalFigure; lang: Lang }) {
  * A single measure, with the not-reported case handled once so no page can get it wrong.
  *
  * `value` is the already-formatted string, or null when the underlying measure was withheld
- * or never reported. Null renders as an explicit, italicised "Not reported" with a title
+ * or never reported. Null renders as an explicit, italicized "Not reported" with a title
  * explaining why — never as 0, $0, 0%, or a bare dash.
  */
 export function Measure({

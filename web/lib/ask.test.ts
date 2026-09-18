@@ -46,7 +46,7 @@ describe("askServiceUrl", () => {
     expect(askServiceUrl("   ")).toBeNull();
   });
 
-  it("normalises an https origin and allows local development over http", () => {
+  it("normalizes an https origin and allows local development over http", () => {
     expect(askServiceUrl("https://ask.example.test/")).toBe("https://ask.example.test");
     expect(askServiceUrl("http://localhost:8765")).toBe("http://localhost:8765");
     expect(askServiceUrl("http://127.0.0.1:8765/")).toBe("http://127.0.0.1:8765");

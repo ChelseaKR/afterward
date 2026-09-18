@@ -261,7 +261,7 @@ export default async function OccupationPage({
           </p>
           {/*
             * Only where the Department publishes no Spanish for this occupation (70 of 670):
-            * Spanish on request, labelled, with the English left as the record. Renders
+            * Spanish on request, labeled, with the English left as the record. Renders
             * nothing unless this build has a service (ADR 0003).
             */}
           {spanishDescription === null && (
@@ -422,7 +422,7 @@ export default async function OccupationPage({
 
         Each percentile is printed only where one was published. They are independently
         suppressible at source, so a row can carry four of five, and a missing one is left
-        out rather than interpolated from its neighbours.
+        out rather than interpolated from its neighbors.
       */}
       {occupation.wage_spread != null && (
         <>

@@ -291,7 +291,7 @@ const en = {
   regionUnplaced: "No regional figures for this program's city",
   regionUnplacedBody: (city: string | null) =>
     `${city ?? "This program's city"} is not one of the metropolitan or rural areas ` +
-    `California names when it publishes wages and openings. A neighbouring area's ` +
+    `California names when it publishes wages and openings. A neighboring area's ` +
     `figures would look exactly like a correct answer, so none are shown and the ` +
     `statewide figures stand alone. About half of California's programs are in this ` +
     `position.`,
@@ -382,7 +382,7 @@ const en = {
     "Compared with the median California program that reported this same measure. Programs reporting nothing are not in the comparison, so this is a comparison among those willing to publish.",
 
   areaNote: (unplaced: number, total: number) =>
-    `California's labour-market regions are each named after two or three cities, and a ` +
+    `California's labor-market regions are each named after two or three cities, and a ` +
     `program counts as being in one only when its city is one of those. That leaves ` +
     `${fmt(unplaced)} of these ${fmt(total)} programs in no region at all — some in the ` +
     `same county as a region listed here, some right next door to one. Choosing a region ` +
@@ -395,9 +395,9 @@ const en = {
     `region. They are not shown here, and they are not somewhere else.`,
   unplacedHeading: "Programs California places in no region",
   unplacedBody:
-    "Their cities are not named in any published labour-market area, so no region's pay " +
+    "Their cities are not named in any published labor-market area, so no region's pay " +
     "figures are claimed for them. That is a gap in the state's geography rather than a " +
-    "judgement about the programs, and it covers cities inside the regions listed above as " +
+    "judgment about the programs, and it covers cities inside the regions listed above as " +
     "well as cities far from any of them.",
   statUnplaced: (unplaced: number, total: number) =>
     `${fmt(unplaced)} of the ${fmt(total)} are in cities California's own published ` +
@@ -435,7 +435,7 @@ const en = {
   linkUnreachable: (date: string) => `We could not reach this page when we checked on ${date}.`,
   linkSubstituted: (date: string) =>
     `We could not reach the page in the federal record when we checked on ${date}, so this links to the provider's home page instead.`,
-  // A lapsed domain is not a closed school — the adult centres behind the largest dead domain
+  // A lapsed domain is not a closed school — the adult centers behind the largest dead domain
   // in this dataset are open and teaching at a different address. So this says what the
   // address did, tells the reader the one thing that actually helps, and accuses nobody.
   linkForSale: (date: string) =>
@@ -502,9 +502,9 @@ const en = {
 
   browseProvidersTitle: "Every training provider",
   browseProvidersIntro:
-    "Every school, college, and training organisation with at least one California program in this dataset, listed alphabetically with how much of its own record it publishes.",
+    "Every school, college, and training organization with at least one California program in this dataset, listed alphabetically with how much of its own record it publishes.",
   browseProvidersDerived:
-    "The federal providers index carries no California rows, so this roster is rebuilt from the programs themselves. Spellings that differ only in capitalisation or punctuation are merged into one entry.",
+    "The federal providers index carries no California rows, so this roster is rebuilt from the programs themselves. Spellings that differ only in capitalization or punctuation are merged into one entry.",
   jumpToLetter: "Jump to providers by first letter",
   otherLetter: "0–9 and other",
   citiesColumn: "Cities",
@@ -714,19 +714,19 @@ const en = {
     "California's Employment Development Department: its long-term occupational employment projections for 2024 to 2034, and its wage statistics where the projections carry no wage. These are the state's own ten-year estimates for an occupation, statewide and for the areas it names.",
   aboutSourceFederalLabel: "Job descriptions and skills",
   aboutSourceFederalBody:
-    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name. Nothing in the catalogue is machine-translated; where a Spanish page offers an AI translation on request, it is labelled as such, unreviewed, and the English stays the record.",
+    "CareerOneStop, the U.S. Department of Labor service that publishes O*NET's occupation content, in English. Where the Department also publishes the occupation in Spanish through its Mi Próximo Paso service — 600 of California's 670 — the Spanish page uses the Department's own Spanish name and description. The other 70 keep the English name. Nothing in the catalog is machine-translated; where a Spanish page offers an AI translation on request, it is labeled as such, unreviewed, and the English stays the record.",
   aboutSourceWagesLabel: "What an occupation pays across its range",
   aboutSourceWagesBody:
     "The Bureau of Labor Statistics' Occupational Employment and Wage Statistics for California, published by EDD. It gives the 10th, 25th, 50th, 75th and 90th percentiles, which is how an occupation page can show the spread rather than the median alone. Each percentile can be withheld separately, and a withheld one is left blank rather than estimated from the ones on either side of it.",
   aboutSourcesDates:
-    "Each source, its licence, and the date it was read are recorded in the project's public provenance file, and the whole dataset can be rebuilt from those sources by anyone.",
+    "Each source, its license, and the date it was read are recorded in the project's public provenance file, and the whole dataset can be rebuilt from those sources by anyone.",
   aboutProvenanceLink: "Read the provenance file",
 
   aboutSelfReportedHeading: "The outcomes are self-reported, and this site does not check them",
   aboutSelfReportedBody:
     "Completion, employment and earnings are reported by each training provider to California, and by California to the federal government. This project reproduces what was filed. It does not audit it, cannot confirm it, and has no way to tell a carefully compiled figure from a careless one. A number here is evidence of what a provider reported, not proof of what happened.",
   aboutSelfReportedSecond:
-    "This matters most in the direction people do not expect. The measures are not adjusted for who a program enrols. A program that takes people furthest from work will tend to report lower employment and lower earnings than one that enrols people already close to a job, and nothing in this data separates the two.",
+    "This matters most in the direction people do not expect. The measures are not adjusted for who a program enrolls. A program that takes people furthest from work will tend to report lower employment and lower earnings than one that enrolls people already close to a job, and nothing in this data separates the two.",
 
   aboutMissingHeading: "What a blank means",
   aboutMissingBody:
@@ -742,7 +742,7 @@ const en = {
   aboutComparisonsBody:
     "A rate on its own is unreadable: nobody knows whether 45% employed is good. So where a program reports a measure, it is shown against the median California program that reported the same measure. Programs that reported nothing are not in that median, which makes it a comparison among those willing to publish rather than a comparison against the state as a whole.",
   aboutComparisonsSecond:
-    "This site once labelled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best. Completion is marked only when the programs run for the same sort of time, because the confounding that withdrew the label arrives there two programs at a time: the median share who finished falls from 97% at four weeks or less to 78% beyond a year, so a mark across lengths marks the shorter course.",
+    "This site once labeled programs “better” or “worse” than typical against that median. It no longer does. The median pooled every reporting program regardless of length, and a four-week certificate and a two-year pathway are not comparable on completion — measured against programs of their own length, that label was simply inverted for about one program in ten. The figures and the median are still shown; the conclusion is yours to draw, because the comparison could not carry it. Where two programs are placed side by side, the marked cell is the strongest reported figure in that row; a row where fewer than two programs reported anything is left unmarked, because being the only one to file a number is not the same as being the best. Completion is marked only when the programs run for the same sort of time, because the confounding that withdrew the label arrives there two programs at a time: the median share who finished falls from 97% at four weeks or less to 78% beyond a year, so a mark across lengths marks the shorter course.",
   aboutComparisonsThird:
     "No comparison is ever built out of a blank. A program that reported nothing is never called below average, because there is nothing to compare and saying so would be an accusation rather than a fact.",
 
@@ -756,13 +756,13 @@ const en = {
   aboutLimitsBody:
     "These are the things this site gets wrong or cannot yet do. They are listed here rather than discovered later.",
   aboutLimitTranslation:
-    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing in the catalogue is machine-translated. Where a Spanish page offers an AI translation on request, it is labelled as AI-translated and unreviewed, a check refuses any translation that changes a number, and the English stays the record.",
+    "Program names, descriptions and provider names appear in English on Spanish pages, because the federal and state feeds publish that text only in English. Occupation titles are different: the Department publishes a Spanish name for 600 of California's 670 occupations, and the Spanish page uses it; the other 70 keep the English title. Nothing in the catalog is machine-translated. Where a Spanish page offers an AI translation on request, it is labeled as AI-translated and unreviewed, a check refuses any translation that changes a number, and the English stays the record.",
   aboutLimitEtpl:
     "The programs here are the ones California filed federally. Whether the state's own eligible training provider list carries programs the federal file omits is unresolved, because California publishes no bulk export of it. A program missing from this site is not necessarily a program that does not exist.",
   aboutLimitUnmatched: (unmatched: string) =>
     `${unmatched} programs show no occupation figures at all. California publishes no projection for the occupation they are tagged with, and no nearby occupation is substituted, because a similar-sounding job with a different wage would look exactly like a correct answer.`,
   aboutLimitArea: (unplaced: string) =>
-    `${unplaced} programs show no regional pay figure. Their city is not one of the metropolitan or rural areas California names when it publishes wages, and a neighbouring area's numbers are not borrowed to fill the gap.`,
+    `${unplaced} programs show no regional pay figure. Their city is not one of the metropolitan or rural areas California names when it publishes wages, and a neighboring area's numbers are not borrowed to fill the gap.`,
   aboutLimitUrl: (noUrl: string) =>
     `${noUrl} programs have no working website link. Most never filed one, and a handful filed something that was not a web address at all, which is dropped rather than turned into a link.`,
   aboutLimitProjections:
@@ -772,14 +772,14 @@ const en = {
 
   aboutCorrectionsHeading: "If a figure here misrepresents you",
   aboutCorrectionsBody:
-    "This site names real organisations and publishes numbers about them, so there has to be a way to say it got something wrong. Please open an issue on the project's public repository, naming the program and the figure you are disputing.",
+    "This site names real organizations and publishes numbers about them, so there has to be a way to say it got something wrong. Please open an issue on the project's public repository, naming the program and the figure you are disputing.",
   aboutCorrectionsSecond:
-    "Two outcomes are possible and they are worth telling apart. Where the error is this project's — a bad join, a mislabelled measure, a program attached to the wrong occupation — it will be fixed, and the correction is not conditional on who asks. Where the underlying public record is wrong, the correction has to go through the body that published it, since this site reproduces that record and cannot quietly diverge from it; the issue thread is a reasonable place to note that a correction is in progress, and that note will be honoured here.",
+    "Two outcomes are possible and they are worth telling apart. Where the error is this project's — a bad join, a mislabeled measure, a program attached to the wrong occupation — it will be fixed, and the correction is not conditional on who asks. Where the underlying public record is wrong, the correction has to go through the body that published it, since this site reproduces that record and cannot quietly diverge from it; the issue thread is a reasonable place to note that a correction is in progress, and that note will be honored here.",
   aboutCorrectionsLink: "Open an issue about a figure on this site",
 
   aboutAdviceHeading: "This is not advice",
   aboutAdviceBody:
-    "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counsellor before you decide.",
+    "Nothing here is financial, legal, educational, or career advice. Enrolling in a training program is a serious financial and personal commitment. Use this as one input among several, and talk to the provider, to your local America's Job Center, or to a career counselor before you decide.",
 
   // ---- Privacy and analytics (About page section, and the footer on every page) ----
   //
@@ -808,10 +808,10 @@ const en = {
 
   // ---- What the work actually is (program page) ----
   //
-  // A program page used to open on cost, length and enrolment counts: three numbers about a
+  // A program page used to open on cost, length and enrollment counts: three numbers about a
   // purchase, before a word about what the purchase is for. Someone arriving from a search
   // engine is asking one question first — what is this job, and is it for me — and the page
-  // had no answer to it beyond a paragraph of federal course-catalogue prose at the bottom.
+  // had no answer to it beyond a paragraph of federal course-catalog prose at the bottom.
   //
   // These strings carry that answer. They are written for someone deciding whether to spend a
   // year and several thousand dollars, and they assume no college: short sentences, ordinary
@@ -906,7 +906,7 @@ const en = {
   fundingPriorityHeading: "Say if you receive public assistance, are low income, or need basic skills help",
   fundingPriority: "For the adult funding stream, federal law requires priority to be given to recipients of public assistance, other low-income individuals, and individuals who are basic skills deficient. California instructs job center staff to work an explicit order: veterans and eligible spouses who are also in one of those groups, then the groups themselves, then other veterans and eligible spouses, then any populations the Governor or the local board has added, then everyone else. Priority does not exclude anyone else, and it does not apply to the dislocated worker stream. It only operates if the center is told, and California fixes a person's priority status at the moment eligibility is determined — so it is the first appointment that counts.",
   fundingOtherFundingHeading: "Bring what you already have — this money fills a gap",
-  fundingOtherFunding: "WIOA training funding is limited to people who cannot get grant assistance from other sources, or who need help beyond what those sources cover. Centers must consider Pell Grants, state training funds and assistance for needy families first. Someone can enrol while a Pell application is still pending, if the center arranges it with the provider in advance.",
+  fundingOtherFunding: "WIOA training funding is limited to people who cannot get grant assistance from other sources, or who need help beyond what those sources cover. Centers must consider Pell Grants, state training funds and assistance for needy families first. Someone can enroll while a Pell application is still pending, if the center arranges it with the provider in advance.",
   fundingSupportHeading: "Ask what else can be covered while you train",
   fundingSupport: "Supportive services — help with transport, child care and dependent care, and others — may be provided to people taking part in career or training services who cannot obtain them elsewhere. Adults who are unemployed, do not qualify for unemployment compensation, and are enrolled in training may be eligible for needs-related payments as well.",
   fundingLocalHeading: "The answer depends on the local area, and on the year",
@@ -919,7 +919,7 @@ const en = {
   fundingAskCredential: "What exactly do I hold at the end, who issues it, and does an employer or a licensing board recognize it?",
   fundingWhyCredential: "A program on the list has to lead to a credential, employment, or measurable progress toward one — but 'certificate of completion' from a school and a license a state board recognizes are very different things to be holding.",
   fundingAskWithdrawal: "If I stop partway through, what do I owe, and what happens to funding already paid?",
-  fundingWhyWithdrawal: "An Individual Training Account is a payment agreement with the provider and may be paid in instalments, so who is owed what on a withdrawal is a question for the provider and the center together, before enrolling rather than after.",
+  fundingWhyWithdrawal: "An Individual Training Account is a payment agreement with the provider and may be paid in installments, so who is owed what on a withdrawal is a question for the provider and the center together, before enrolling rather than after.",
   fundingAskSchedule: "When does the next cohort start, and how many hours a week is it?",
   fundingWhySchedule: "The schedule decides whether someone can keep working while training, and needs-related payments are only for people who are unemployed and already enrolled — so the timetable and the money question are the same question.",
   fundingAskFundingStream: "Which funding stream would I be served under — adult, dislocated worker, or youth?",
@@ -1000,7 +1000,7 @@ const en = {
   filterNoMatches: "Nothing here matches that. Try fewer letters, or a word from the middle of the name.",
   alternativesHeading: "Related work California expects more of",
   alternativesNote:
-    "The U.S. Department of Labor lists these as related to the job above, and California projects growth in them rather than decline. Related is not the same as interchangeable: the training, the licences and the pay can all differ, and this program does not train for these. It is a place to start asking, not a recommendation.",
+    "The U.S. Department of Labor lists these as related to the job above, and California projects growth in them rather than decline. Related is not the same as interchangeable: the training, the licenses and the pay can all differ, and this program does not train for these. It is a place to start asking, not a recommendation.",
   alternativesPrograms: (n: number): string =>
     n === 1 ? "1 program here" : `${n.toLocaleString("en-US")} programs here`,
   alternativesNoPrograms: "No programs here train for it",
@@ -1228,7 +1228,7 @@ const en = {
 
   ctdlPropertiesHeading: "Which properties are filled in",
   ctdlPropertiesIntro:
-    "Every property below is emitted only where the source asserted something. A blank is a blank: no placeholder, no zero, and nothing inferred from a neighbouring field. The order is the export's own, not best-first.",
+    "Every property below is emitted only where the source asserted something. A blank is a blank: no placeholder, no zero, and nothing inferred from a neighboring field. The order is the export's own, not best-first.",
   ctdlPropertyColumn: "Property",
   ctdlPropertyCountColumn: "Programs carrying it",
   ctdlPropertyShareColumn: "Share",
@@ -1270,7 +1270,7 @@ const en = {
     "CTDL has a property for where a learning opportunity is available. The program's location, and the region this project derives from it, are not carried. For a separate reason, no address is put on the organization either: the location on a record is the program's, not necessarily the provider's.",
   ctdlGapProviderCategory: "What kind of provider it is",
   ctdlGapProviderCategoryWhy:
-    "The source's provider category does not map onto CTDL's agent-sector vocabulary without judgement calls, and that vocabulary is served as a web page rather than as data. The organization carries the name the source filed and nothing else.",
+    "The source's provider category does not map onto CTDL's agent-sector vocabulary without judgment calls, and that vocabulary is served as a web page rather than as data. The organization carries the name the source filed and nothing else.",
   ctdlGapWioaFundedCost: "What it costs a student funded under WIOA",
   ctdlGapWioaFundedCostWhy:
     "That is a different cost to a different payer, and CTDL can carry it as a second cost profile distinguished by a concept from a vocabulary served as a web page rather than as data. Only the out-of-pocket total is carried.",

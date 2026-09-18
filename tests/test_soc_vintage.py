@@ -1,7 +1,7 @@
 """Tests for the SOC aggregation table.
 
 The stakes here are asymmetric. A missing mapping costs a program its occupation panel; a
-wrong mapping puts another occupation's wage and outlook next to a training programme
+wrong mapping puts another occupation's wage and outlook next to a training program
 someone is deciding whether to spend a year on. The tests are weighted accordingly: the
 table's structural invariants are asserted exhaustively, and every "must return None" case
 is asserted explicitly rather than left to fall through.
@@ -63,7 +63,7 @@ REFUSED = [
 
 class TestTableInvariants:
     def test_every_broad_group_target_is_the_source_s_own_parent(self) -> None:
-        """The SOC hierarchy derives the parent arithmetically -- no judgement involved.
+        """The SOC hierarchy derives the parent arithmetically -- no judgment involved.
 
         A detailed code ``XX-XXXY`` sits in broad group ``XX-XXX0``. Any broad-group row
         that fails this is not a roll-up, it is a guess.
@@ -105,7 +105,7 @@ class TestTableInvariants:
 
         Major groups end ``-0000`` and minor groups ``-X000``. O*NET would happily send
         45-3031 to the 45-0000 major group; a major group's median wage is not a wage for
-        any job and must never reach a programme page.
+        any job and must never reach a program page.
         """
         for aggregation in AGGREGATIONS.values():
             assert not aggregation.target.endswith("000")

@@ -237,7 +237,7 @@ export default async function LangLayout({
             {/*
               The two browse indexes were reachable only by typing the URL. They are the
               site's other two ways in — by the job you want or by the school you were
-              about to enrol in — so they belong in the chrome rather than in a link at the
+              about to enroll in — so they belong in the chrome rather than in a link at the
               bottom of one page. Their own row under the wordmark: dropping them into the
               masthead row would either crowd the tagline or push the language toggle off a
               narrow screen, and the language toggle is not something to make harder to find.
