@@ -38,7 +38,7 @@ All notable changes to this project are documented here. The format follows
   `scripts/dataset_shape_check.py`. Measured on Nevada, 2026-09-11: 1,069 ETP programs, 657
   published projection rows, 648 occupations indexed, **1,042 of 1,069 programs (97.5%)
   joined to at least one occupation**. `--state` is checked against the 55 states the ETP
-  feed actually reports for, in one aggregation, so an unrecognised code is a named refusal
+  feed actually reports for, in one aggregation, so an unrecognized code is a named refusal
   rather than a successful fetch of nothing. **The declaration is the substance of this
   change.** Projections Central publishes no wage of any kind, no regional breakdown, and no
   education or training columns — seven of the eleven occupation measures — so without a
@@ -70,7 +70,13 @@ All notable changes to this project are documented here. The format follows
   California build is unchanged except for the declaration**: over a real 3,266-program
   build, **7,205 of 7,206 emitted files are byte-identical**, and `coverage.json` gains
   exactly two things, both additive — the `projection_source` block and a
-  `source_publishes_no_areas: 0` entry in `area_placement.unplaced_by_reason`.
+  `source_publishes_no_areas: 0` entry in `area_placement.unplaced_by_reason`. The owner
+  accepted the new key on 2026-09-18 on the condition that it is additive, and
+  `tests/test_coverage_is_additive.py` holds that: every field the pre-change code published
+  for the committed California fixture, in `coverage.json` and in `area_placement`, comes back
+  with the same value, and nothing disappears. The site's copy test for unplaced reasons now
+  covers the reasons a dataset with published areas can carry, so the new reason needs its
+  English and Spanish sentence only when the site takes a second state (#32).
 
 - **Every program record now carries a receipt, and `afterward verify-record` replays one
   (#113).** `scripts/verify_live_site.py` already asks whether the bytes the site serves are
