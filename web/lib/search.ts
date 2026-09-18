@@ -11,6 +11,31 @@ import type { SearchEntry } from "./types";
 export type AltTitleIndex = Record<string, string[]>;
 
 /**
+ * SOC code -> the Department's own Spanish job titles. See `SearchIndex.esTitles`.
+ *
+ * Structurally identical to `AltTitleIndex` and deliberately a separate name, because the two
+ * are scored against differently-prepared query text and swapping them would be invisible to
+ * the compiler if they shared one. They are never passed positionally for the same reason —
+ * see `SearchTables`.
+ */
+export type EsTitleIndex = Record<string, string[]>;
+
+/**
+ * The lookup tables a search may consult, named rather than positional.
+ *
+ * `alt` and `es` are the same TypeScript type, so two trailing optional parameters could be
+ * transposed with nothing to catch it. One object with two names cannot be.
+ *
+ * `es` is supplied only on the Spanish site. That is what makes "English scoring is unchanged"
+ * a guarantee rather than a hope: with no `es` table the Spanish arm of `score` is unreachable,
+ * so the English page runs exactly the code it ran before this table existed.
+ */
+export interface SearchTables {
+  alt?: AltTitleIndex;
+  es?: EsTitleIndex;
+}
+
+/**
  * The alternate-title terms reachable from an entry's occupations, joined for substring
  * matching. Looked up fresh per call rather than cached on the entry: the table itself is
  * loaded once per session, and a program feeds at most three occupations, so this is a few
@@ -24,6 +49,60 @@ function altTitleText(entry: SearchEntry, altTitles: AltTitleIndex | undefined):
     if (titles) terms.push(...titles);
   }
   return terms.join(" ").toLowerCase();
+}
+
+/**
+ * Drop combining marks, so `enfermeria` and `enfermería` are the same search term.
+ *
+ * The reason this exists is a keyboard, not a language. A phone set to English types
+ * `enfermeria`, and the Department writes `Enfermería`; without folding, the reader most
+ * likely to need the Spanish index is the one it fails. `ñ` decomposes to `n`, which is what
+ * that same keyboard produces for it, and that is wanted rather than tolerated.
+ *
+ * Deliberately not a transliteration: nothing here maps a letter that is not an accented form
+ * of another letter. `afterward.build.fold_accents` is the same function on the pipeline side,
+ * and `tests/test_spanish_search_index.py` pins the cases both must agree on.
+ */
+export function foldAccents(text: string): string {
+  return text.normalize("NFD").replace(/\p{M}/gu, "");
+}
+
+/**
+ * The Spanish title terms reachable from an entry's occupations, folded and lower-cased once
+ * per call for substring matching. Empty string when no Spanish table was supplied, which is
+ * how the English site keeps the Spanish arm of `score` unreachable.
+ */
+function spanishTitleText(entry: SearchEntry, esTitles: EsTitleIndex | undefined): string {
+  if (!esTitles) return "";
+  const terms: string[] = [];
+  for (const soc of entry.s) {
+    const titles = esTitles[soc];
+    if (titles) terms.push(...titles);
+  }
+  return terms.length === 0 ? "" : foldAccents(terms.join(" ")).toLowerCase();
+}
+
+/**
+ * Occupations these programs feed that the Department publishes no Spanish name for.
+ *
+ * Returns null when the index carries no Spanish table at all — an index built before the
+ * field existed. Null is not zero: "this build did not look" and "every occupation has a
+ * Spanish name" are different facts, and the interface says something different for each.
+ *
+ * A SOC is present in `esTitles` exactly when a Spanish record exists for it (see
+ * `spanish_title_index` in build.py, which cannot emit an empty list), so a missing key means
+ * one thing here and needs no second table to interpret.
+ */
+export function spanishTitleGap(
+  programs: SearchEntry[],
+  esTitles: EsTitleIndex | undefined,
+): { missing: number; total: number } | null {
+  if (!esTitles) return null;
+  const used = new Set<string>();
+  for (const program of programs) for (const soc of program.s) used.add(soc);
+  let missing = 0;
+  for (const soc of used) if (!(soc in esTitles)) missing += 1;
+  return { missing, total: used.size };
 }
 
 
@@ -220,24 +299,40 @@ export function terms(query: string): string[] {
  * Rank an entry against the search terms. Returns -1 when any term matches nothing, so
  * multi-word queries narrow rather than widen.
  *
- * `altTitles`, when given, extends the occupation match to colloquial names nobody's official
+ * `tables.alt`, when given, extends the occupation match to colloquial names nobody's official
  * title uses — "RN" finds Registered Nurses programs, "CDL" finds ones training for a
  * commercial driver's license — at the same weight as the occupation's own title, since both
  * are the same fact (what job this program leads to) said two different ways. Optional so
  * tests and any caller without the table still get name/provider/city matching.
+ *
+ * `tables.es` does the same for the Department's own Spanish titles, at the same weight and
+ * for the same reason: "enfermera" and "Registered Nurses" are one fact in two languages.
+ * Nothing here is translated by this project — the terms are O*NET's Mi Próximo Paso text,
+ * carried through the pipeline untouched.
+ *
+ * The Spanish arm sits below the English occupation arm and above provider, so a term that
+ * matches an occupation in either language outranks one that only matches an institution's
+ * name. It is scored against accent-folded text, because a phone keyboard set to English is
+ * how much of this audience types Spanish.
+ *
+ * **With no `es` table the Spanish arm cannot fire**: `spanishTitleText` returns `""`, and no
+ * search term is empty, so `"".includes(term)` is false for every term. The English site
+ * therefore scores exactly as it did before this table existed, which is asserted rather than
+ * assumed in `search.test.ts`.
  */
 export function score(
   entry: SearchEntry,
   searchTerms: string[],
-  altTitles?: AltTitleIndex,
+  tables?: SearchTables,
 ): number {
   if (searchTerms.length === 0) return 0;
 
   const name = (entry.n ?? "").toLowerCase();
   const provider = (entry.p ?? "").toLowerCase();
   const officialTitles = entry.o.join(" ").toLowerCase();
-  const alt = altTitleText(entry, altTitles);
+  const alt = altTitleText(entry, tables?.alt);
   const occupations = alt ? `${officialTitles} ${alt}` : officialTitles;
+  const spanish = spanishTitleText(entry, tables?.es);
   const city = (entry.c ?? "").toLowerCase();
 
   let total = 0;
@@ -245,6 +340,7 @@ export function score(
     if (name.startsWith(term)) total += 6;
     else if (name.includes(term)) total += 4;
     else if (occupations.includes(term)) total += 3;
+    else if (spanish !== "" && spanish.includes(foldAccents(term))) total += 3;
     else if (provider.includes(term)) total += 2;
     else if (city.includes(term)) total += 2;
     else return -1;
@@ -297,7 +393,7 @@ export function matchesFilters(entry: SearchEntry, filters: Filters): boolean {
 export function unplacedMatches(
   programs: SearchEntry[],
   filters: Filters,
-  altTitles?: AltTitleIndex,
+  tables?: SearchTables,
 ): number {
   const searchTerms = terms(filters.query);
   const ignoringGeography: Filters = { ...filters, area: ANY_AREA, city: null };
@@ -305,7 +401,7 @@ export function unplacedMatches(
   let found = 0;
   for (const entry of programs) {
     if (areaOf(entry) !== null) continue;
-    if (score(entry, searchTerms, altTitles) < 0) continue;
+    if (score(entry, searchTerms, tables) < 0) continue;
     if (!matchesFilters(entry, ignoringGeography)) continue;
     found += 1;
   }
@@ -325,7 +421,7 @@ function excludedByLength(
   programs: SearchEntry[],
   filters: Filters,
   qualifies: (entry: SearchEntry) => boolean,
-  altTitles?: AltTitleIndex,
+  tables?: SearchTables,
 ): number {
   if (filters.maxWeeks === null) return 0;
 
@@ -335,7 +431,7 @@ function excludedByLength(
   let found = 0;
   for (const entry of programs) {
     if (!qualifies(entry)) continue;
-    if (score(entry, searchTerms, altTitles) < 0) continue;
+    if (score(entry, searchTerms, tables) < 0) continue;
     if (!matchesFilters(entry, ignoringLength)) continue;
     found += 1;
   }
@@ -358,13 +454,13 @@ function excludedByLength(
 export function unmeasuredLength(
   programs: SearchEntry[],
   filters: Filters,
-  altTitles?: AltTitleIndex,
+  tables?: SearchTables,
 ): number {
   return excludedByLength(
     programs,
     filters,
     (entry) => !isCompetencyBased(entry) && entry.w === null,
-    altTitles,
+    tables,
   );
 }
 
@@ -383,9 +479,9 @@ export function unmeasuredLength(
 export function competencyBasedLength(
   programs: SearchEntry[],
   filters: Filters,
-  altTitles?: AltTitleIndex,
+  tables?: SearchTables,
 ): number {
-  return excludedByLength(programs, filters, isCompetencyBased, altTitles);
+  return excludedByLength(programs, filters, isCompetencyBased, tables);
 }
 
 /** Headline counts for the context strip above the results. */
@@ -436,13 +532,13 @@ interface Ranked {
 export function runSearch(
   programs: SearchEntry[],
   filters: Filters,
-  altTitles?: AltTitleIndex,
+  tables?: SearchTables,
 ): SearchEntry[] {
   const searchTerms = terms(filters.query);
 
   const ranked: Ranked[] = [];
   for (const entry of programs) {
-    const rank = score(entry, searchTerms, altTitles);
+    const rank = score(entry, searchTerms, tables);
     if (rank < 0) continue;
     if (!matchesFilters(entry, filters)) continue;
     ranked.push({ entry, rank });
