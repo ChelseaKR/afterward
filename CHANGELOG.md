@@ -8,6 +8,13 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Every page that shows Spanish says it is machine-translated (owner decision,
+  2026-09-18).** The Spanish was drafted by machine and no native speaker has reviewed it
+  (#32). Spanish pages, the root language chooser and the 404 page now carry a notice at the
+  top of the page body, in Spanish and English -- *"Traducción automática, sin revisión
+  humana."* -- with a link to the same page in English. `npm run mt-notice` fails the build on
+  any exported page that shows Spanish without it. See `docs/I18N.md`.
+
 - **Google Analytics 4, disclosed and switchable off (owner decision, 2026-09-17).**
   `web/lib/analytics.ts` loads gtag.js for `G-GXZNBWJB8D` only when the production deploy
   build set `NEXT_PUBLIC_GA_MEASUREMENT_ID` (a literal in `deploy.yml`, nowhere else), the page

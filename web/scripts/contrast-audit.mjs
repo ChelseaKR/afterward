@@ -131,6 +131,8 @@ const PAIRS = [
   ["body text", "--gray-120", "--gray-10", AA_NORMAL],
   ["masthead", "--gray-10", "--primary-100", AA_NORMAL],
   ["non-affiliation notice", "--gray-20", "--gray-120", AA_NORMAL],
+  ["machine-translation notice", "--gray-20", "--gray-120", AA_NORMAL],
+  ["machine-translation notice link", "--gray-20", "--gray-120", AA_NORMAL],
   ["link on page", "--primary-100", "--gray-10", AA_NORMAL],
   ["link on card", "--primary-100", "--gray-10", AA_NORMAL],
   ["card provider line", "--gray-90", "--gray-10", AA_NORMAL],

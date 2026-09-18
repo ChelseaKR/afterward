@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 
 import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { MachineTranslationNotice } from "@/components/MachineTranslationNotice";
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
+import { isMachineTranslated } from "@/lib/machineTranslation";
 import { REPO_URL, homeDescription, homeTitle, shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -99,10 +101,18 @@ export async function generateMetadata({
  * name — and the qualifier rendered beside the language name says so, in that language:
  * "Español (inicio)". The script hides the qualifier at the same moment it makes the link
  * true, so the link never claims to preserve your place and then fails to.
+ *
+ * ---- The machine-translation notice's English link ----
+ *
+ * On a Spanish page the notice links to "the English version", and the English version of
+ * `/es/<rest>` is `/en/<rest>` by the same derivation. The notice renders above the masthead,
+ * so it exists when this runs; without JavaScript its href stays at `/en/`, which is still
+ * the English version of the site, and its text promises no more than that.
  */
 const SYNC_MASTHEAD_TO_LOCATION = `(function () {
   var toggle = document.getElementById("lang-switch");
   var qualifier = document.getElementById("lang-switch-home");
+  var english = document.getElementById("mt-notice-english");
   var from = toggle ? "/" + toggle.getAttribute("data-lang-from") + "/" : "";
   var to = toggle ? "/" + toggle.getAttribute("data-lang-to") : "";
 
@@ -120,6 +130,7 @@ const SYNC_MASTHEAD_TO_LOCATION = `(function () {
     var rest = here.slice(from.length - 1);
     toggle.setAttribute("href", to + rest + location.search + location.hash);
     if (qualifier) qualifier.setAttribute("hidden", "");
+    if (english) english.setAttribute("href", "/en" + rest + location.search + location.hash);
   }
 
   function sync() {
@@ -169,6 +180,14 @@ export default async function LangLayout({
           <div className="disclaimer">
             <div className="shell">{t.notAffiliated}</div>
           </div>
+
+          {/*
+            Machine-translated, unreviewed Spanish (owner decision, 2026-09-18), said on every
+            Spanish page in both languages, directly under the non-affiliation notice and for
+            the same reason it sits there. `scripts/mt-notice-audit.mjs` fails the build on
+            any exported Spanish page without it. See `lib/machineTranslation.ts`.
+          */}
+          {isMachineTranslated(lang) && <MachineTranslationNotice />}
 
           <div className="masthead">
             <div className="shell masthead-row">

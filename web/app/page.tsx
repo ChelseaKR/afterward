@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { MachineTranslationNotice } from "@/components/MachineTranslationNotice";
 import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
 import {
   REPO_URL,
@@ -96,14 +97,18 @@ export default function Index() {
         <meta httpEquiv="refresh" content={`0; url=/${DEFAULT_LANG}/`} />
       </head>
       <body>
-        <header className="disclaimer">
-          <div className="shell">
-            {LANGUAGES.map((lang) => (
-              <p key={lang} lang={lang}>
-                {dict(lang).notAffiliated}
-              </p>
-            ))}
+        <header>
+          <div className="disclaimer">
+            <div className="shell">
+              {LANGUAGES.map((lang) => (
+                <p key={lang} lang={lang}>
+                  {dict(lang).notAffiliated}
+                </p>
+              ))}
+            </div>
           </div>
+          {/* This page shows Spanish, so it carries the notice. See lib/machineTranslation.ts. */}
+          <MachineTranslationNotice />
         </header>
 
         <main className="shell detail">
