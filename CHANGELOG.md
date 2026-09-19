@@ -656,7 +656,7 @@ All notable changes to this project are documented here. The format follows
   programs that have a bulk row. 279 more publish no rate and have no bulk row, and are counted
   under "no bulk row". The table is unchanged and still sums to 3,266; the sentence under it is
   corrected and a paragraph now says how to read the order. Documentation only: no figure on
-  the site used 2,039. Whether `grade()` in `dol_bulk.py` should test "rate not published"
+  the site used 2,039. Whether `denominator_block()` in `dol_bulk.py` should test "rate not published"
   first, which its own comment argues for, is left for a change that re-measures against a
   fresh bulk export.
 
