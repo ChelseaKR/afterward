@@ -419,8 +419,18 @@ whether `de129` is the denominator of the rate **this site publishes**. Joined a
 **All 839** of the non-reconstructing programs reproduce the bulk file's *own* older rate
 exactly. The disagreement is not noise in the arithmetic; it is the two files being two
 different reads of the same programs, which is what the assessment above concluded on other
-grounds. So the denominator is publishable for **365 of 3,266 programs**, or 365 of the 2,039
+grounds. So the denominator is publishable for **365 of 3,266 programs**, or 365 of the 1,760
 that publish a rate — a far smaller number than "1,801 of 1,801" invites, and the honest one.
+
+**Reading the table: the states are assigned in order, and the order matters.** "No bulk row"
+is tested before "rate not published", so a program with neither a published rate nor a bulk
+row is counted under "no bulk row". The 1,227 in "rate not published" is therefore only the
+rate-less programs that *do* have a bulk row, and 3,266 − 1,227 = 2,039 is not the number of
+programs that publish a rate. That number is 1,760 (D1 carries `employment_rate_q2` for 1,760
+of 3,266). By subtraction: 1,353 of the 1,760 have a bulk row (365 + 839 + 149) and 407 do not,
+which leaves 279 of the 686 "no bulk row" programs publishing no rate either, and 1,506
+programs with no published rate in all (1,227 + 279). An earlier version of this paragraph
+said "365 of the 2,039 that publish a rate"; that was this subtraction done wrong.
 
 **The join.** Provider, program name, CIP and ZIP, as the assessment used, reproduced by the
 pipeline rather than quoted: 2,578 shared keys, 686 current programs absent from the bulk

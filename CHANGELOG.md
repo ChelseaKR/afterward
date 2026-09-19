@@ -650,6 +650,16 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- **PROVENANCE.md said "365 of the 2,039 that publish a rate"; the number that publish a rate
+  is 1,760.** 2,039 was 3,266 minus the table's "rate not published" row (1,227), but the states
+  are assigned in order and "no bulk row" is tested first, so that row holds only the rate-less
+  programs that have a bulk row. 279 more publish no rate and have no bulk row, and are counted
+  under "no bulk row". The table is unchanged and still sums to 3,266; the sentence under it is
+  corrected and a paragraph now says how to read the order. Documentation only: no figure on
+  the site used 2,039. Whether `denominator_block()` in `dol_bulk.py` should test "rate not published"
+  first, which its own comment argues for, is left for a change that re-measures against a
+  fresh bulk export.
+
 - **The CTDL page called `ctdl-validate` "an independent validator"; it has the same author as
   this site.** The heading is now "What a separate validator found", the opening paragraph says
   "separate" as well, and the validation intro adds the sentence that was missing: the tool
