@@ -1,4 +1,4 @@
-"""A runtime translation is labelled, is never asked for where Spanish is published, and is
+"""A runtime translation is labeled, is never asked for where Spanish is published, and is
 withheld whole if it touches a number.
 
 "160 hours" must still say 160 in Spanish. A translation that adds a figure, drops one, or
@@ -88,7 +88,7 @@ class TestTranslator:
         assert translator.already_in_spanish("program", next(iter(dataset.programs))) is None
         assert provider.calls == []
 
-    def test_translation_is_labelled_verified_and_cached(self, dataset: Dataset) -> None:
+    def test_translation_is_labeled_verified_and_cached(self, dataset: Dataset) -> None:
         provider = FakeProvider(_faithful)
         translator = Translator(dataset, provider)
         soc = _occupation_without_spanish(dataset)

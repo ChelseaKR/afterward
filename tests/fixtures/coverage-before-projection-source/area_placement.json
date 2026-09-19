@@ -1,0 +1,17 @@
+{
+  "placed": 47,
+  "placed_by_rule": {
+    "principal_city": 47,
+    "county": 0
+  },
+  "unplaced": 13,
+  "unplaced_by_reason": {
+    "crosswalk_not_read": 13,
+    "no_zip": 0,
+    "zip_not_in_crosswalk": 0,
+    "county_outside_areas": 0,
+    "straddles_areas": 0
+  },
+  "unplaced_reason_absent": 0,
+  "counties_unresolved": []
+}

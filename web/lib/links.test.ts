@@ -45,7 +45,7 @@ describe("when nothing has been established", () => {
     }
   });
 
-  it("says nothing for a notice this build does not recognise", () => {
+  it("says nothing for a notice this build does not recognize", () => {
     // What a dataset written by a newer builder looks like. Guessing at a sentence for
     // evidence this code has never seen is worse than staying quiet.
     const future = link({ notice: "something_added_later" as never, verdict: "dead" });
@@ -105,7 +105,7 @@ describe("when the address turned out to be for sale", () => {
   });
 
   it("does not say the school has closed", () => {
-    // A lapsed domain is not a closed school. The adult centres behind the largest dead
+    // A lapsed domain is not a closed school. The adult centers behind the largest dead
     // domain in this dataset are open and teaching at a different address.
     for (const forbidden of ["closed", "out of business", "no longer operates", "shut"]) {
       expect(linkNotice(en, sold)?.toLowerCase()).not.toContain(forbidden);

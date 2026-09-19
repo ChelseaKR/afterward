@@ -104,7 +104,7 @@ function intact(): Export {
     }
   }
 
-  // The language chooser at `/`, which canonicalises to `/en/` and is in no sitemap, and the
+  // The language chooser at `/`, which canonicalizes to `/en/` and is in no sitemap, and the
   // 404, which is `noindex` and owes nobody a canonical.
   pages.push({ file: "index.html", canonical: `${ORIGIN}/en/`, alternates: {} });
   pages.push({ file: "404.html", canonical: null, alternates: {}, noindex: true });
@@ -134,7 +134,7 @@ function pageHtml(page: Page): string {
     page.noindex === true ? '<meta name="robots" content="noindex"/>' : "",
     page.canonical === null ? "" : `<link rel="canonical" href="${page.canonical}"/>`,
     ...Object.entries(page.alternates).map(
-      // `hrefLang`, with the capital L React serialises, so the fixture is the shape the real
+      // `hrefLang`, with the capital L React serializes, so the fixture is the shape the real
       // export has rather than the shape a matcher would find most convenient.
       ([lang, href]) => `<link rel="alternate" hrefLang="${lang}" href="${href}"/>`,
     ),

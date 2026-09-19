@@ -4,10 +4,10 @@
 answer arrives from a *different* domain it records ``redirected_offsite`` and stops, because
 the two things that produce that record are indistinguishable from the redirect alone:
 
-* a **rebrand or migration** -- ``moler.org`` to ``moler.edu``, a college's catalogue moving
+* a **rebrand or migration** -- ``moler.org`` to ``moler.edu``, a college's catalog moving
   onto a vendor's platform, an adult school folded into its district's site; and
 * a **hijack** -- the school's domain lapsed, somebody else registered it, and it now points
-  at whatever they are monetising. Three are in this dataset:
+  at whatever they are monetizing. Three are in this dataset:
   ``giligiacollege.com`` and ``eastvalleycollege.com`` serve Indonesian gambling and lottery
   sites, ``hollywoodculturalcollege.com`` serves an unrelated Baltimore charity.
 
@@ -41,7 +41,7 @@ The separator is *corroboration from a source the holder of the old domain does 
 ``REVIEW``
     A person opened it and wrote down what they found, in ``provider-link-review.json``,
     with the evidence and the date. This is the only rule that can conclude ``unrelated``,
-    because "this is somebody else's website now" is a judgement about content and no
+    because "this is somebody else's website now" is a judgment about content and no
     mechanical signal available here makes it.
 
 Anything none of those reaches is **unresolved**, and unresolved is published as unresolved:
@@ -134,7 +134,7 @@ registrable domain means no registry or feed evidence, which fails towards unres
 
 _NOT_ALPHANUMERIC: Final = re.compile(r"[^a-z0-9]+")
 
-_ORGANISATION_NOISE: Final[frozenset[str]] = frozenset(
+_ORGANIZATION_NOISE: Final[frozenset[str]] = frozenset(
     {"inc", "incorporated", "llc", "lp", "ltd", "corp", "corporation", "co", "the"}
 )
 """Words a filing carries that a domain never does. Stripped before comparing a provider's
@@ -228,23 +228,23 @@ def _zone(domain: str | None) -> str:
     return domain.rsplit(".", 1)[-1] if domain else ""
 
 
-def normalise_name(text: str | None) -> str:
+def normalize_name(text: str | None) -> str:
     """A name reduced to what a domain label could carry: lowercase letters and digits.
 
     ``Airstreams Renewables, Inc.`` becomes ``airstreamsrenewables``; ``AAA Institute``
-    becomes ``aaainstitute``. Organisation noise is dropped whole rather than as a substring,
+    becomes ``aaainstitute``. Organization noise is dropped whole rather than as a substring,
     so ``Colton`` keeps its ``co``.
     """
     if not text:
         return ""
     words = [word for word in _NOT_ALPHANUMERIC.split(text.lower()) if word]
-    kept = [word for word in words if word not in _ORGANISATION_NOISE]
+    kept = [word for word in words if word not in _ORGANIZATION_NOISE]
     return "".join(kept or words)
 
 
 def _label(domain: str | None) -> str:
-    """The registrable label of a domain, normalised. ``moler.edu`` gives ``moler``."""
-    return normalise_name(domain.rsplit(".", 1)[0]) if domain else ""
+    """The registrable label of a domain, normalized. ``moler.edu`` gives ``moler``."""
+    return normalize_name(domain.rsplit(".", 1)[0]) if domain else ""
 
 
 def name_continues(destination: str, *, filed: str | None, provider_name: str | None) -> bool:
@@ -264,7 +264,7 @@ def name_continues(destination: str, *, filed: str | None, provider_name: str | 
         return False
     if label == _label(filed):
         return True
-    name = normalise_name(provider_name)
+    name = normalize_name(provider_name)
     return bool(name) and name.startswith(label)
 
 
@@ -309,13 +309,13 @@ def filed_hosts(payloads: Iterable[Mapping[str, Any]]) -> dict[str, frozenset[st
 
     Hosts rather than registrable domains, deliberately. ``butte.curriqunet.com`` is filed by
     Butte College, and that is evidence about *that* host and not about every college's
-    catalogue on the same vendor -- indexing by ``curriqunet.com`` would let one provider's
+    catalog on the same vendor -- indexing by ``curriqunet.com`` would let one provider's
     filing vouch for a redirect to another subdomain nobody filed.
     """
     found: dict[str, set[str]] = {}
     for payload in payloads:
         host = host_of(payload.get("program_url"))
-        name = normalise_name(payload.get("provider_name"))
+        name = normalize_name(payload.get("provider_name"))
         if host and name:
             found.setdefault(host, set()).add(name)
     return {host: frozenset(names) for host, names in found.items()}
@@ -327,7 +327,7 @@ class OffsiteReviewer:
 
     Built once per build. ``resolve`` is pure: same inputs, same answer, no network -- the
     destination is never fetched here, and for the hijacked domains that is not an
-    optimisation but the point.
+    optimization but the point.
     """
 
     entries: tuple[ReviewEntry, ...] = ()
@@ -371,7 +371,7 @@ class OffsiteReviewer:
                 f"stays inside {domain}, a registration restricted to the institution",
             )
 
-        if normalise_name(provider_name) in self.hosts.get(destination, frozenset()):
+        if normalize_name(provider_name) in self.hosts.get(destination, frozenset()):
             return RedirectVerdict(
                 "same_provider",
                 RULE_FEED,

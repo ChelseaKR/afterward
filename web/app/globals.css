@@ -4,7 +4,7 @@
  *
  * The one place this file gets opinionated is the treatment of missing data. Most data
  * products render an unreported measure as blank, a dash, or worst of all a zero. Here it
- * gets its own visible, labelled state, because "this provider reported nothing" is one of
+ * gets its own visible, labeled state, because "this provider reported nothing" is one of
  * the most useful things a prospective student can learn.
  */
 
@@ -12,8 +12,8 @@
 /*
  * A theme is not optional. The base stylesheet defines --primary-* only as an alias to
  * --primary-static-*, which nothing sets until a theme is loaded, so without this every
- * --primary token silently resolved to nothing: the masthead had no background colour and
- * links had no colour. Valley for the Central Valley, whose workers are among the least
+ * --primary token silently resolved to nothing: the masthead had no background color and
+ * links had no color. Valley for the Central Valley, whose workers are among the least
  * well served by California's existing workforce tooling.
  */
 @import "@cagovweb/design-system/dist/California-Design-System.theme.valley.css";
@@ -395,7 +395,7 @@ body {
   min-width: 8rem;
 }
 
-/* The strongest reported figure in a row. Weight and a rule rather than colour alone. */
+/* The strongest reported figure in a row. Weight and a rule rather than color alone. */
 .compare-table td.is-best {
   font-weight: 700;
   box-shadow: inset 3px 0 0 var(--primary-60);
@@ -471,7 +471,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* The signature treatment: absence is rendered, labelled, and never mistaken for zero. */
+/* The signature treatment: absence is rendered, labeled, and never mistaken for zero. */
 .unreported {
   font-weight: 400;
   font-style: italic;
@@ -613,6 +613,30 @@ td.num {
   color: var(--primary-100);
 }
 
+/*
+ * The analytics opt-out is a button (it changes a setting) dressed as the footer links
+ * around it. Every state restates its colors, for the reason `.compare-open` records: the
+ * design system's own button hover and focus styles would otherwise swap in a background
+ * under text they do not recolor.
+ */
+.footer .analytics-opt-out,
+.footer .analytics-opt-out:hover,
+.footer .analytics-opt-out:focus-visible {
+  background: none;
+  border: 0;
+  color: var(--primary-100);
+  cursor: pointer;
+  font: inherit;
+  min-height: 24px;
+  padding: 0;
+  text-align: start;
+  text-decoration: underline;
+}
+.footer .analytics-opt-out:focus-visible {
+  outline: 2px solid var(--primary-60);
+  outline-offset: 2px;
+}
+
 /* ---------- Browse indexes ---------- */
 
 /*
@@ -680,7 +704,7 @@ td.num {
 
 /*
  * The browse indexes get their own row under the wordmark, inside the masthead and on the
- * masthead's own background, so they inherit its one foreground colour rather than
+ * masthead's own background, so they inherit its one foreground color rather than
  * introducing a second. Everything here is layout and weight for that reason.
  */
 .site-nav {
@@ -719,7 +743,7 @@ td.num {
 }
 
 /*
- * The current section. Weight and a rule in the text's own colour — the same reasoning as
+ * The current section. Weight and a rule in the text's own color — the same reasoning as
  * the comparison table's best-in-row cell, and it keeps the masthead to the single
  * foreground/background pairing the contrast audit already covers.
  */
@@ -731,7 +755,7 @@ td.num {
 /*
  * A focus ring the masthead can actually show. The design system styles focus for buttons
  * and its own nav component but leaves a plain link to the browser default, which assumes a
- * light page — on this background Safari's is close to invisible. Drawn in the colour the
+ * light page — on this background Safari's is close to invisible. Drawn in the color the
  * masthead already uses for its text, so it adds no pairing the contrast audit does not
  * already cover, and applied to every masthead link so the wordmark and language toggle do
  * not behave differently from the two links added beside them.
@@ -748,6 +772,38 @@ td.num {
 
 .disclaimer p + p {
   margin-top: 0.25rem;
+}
+
+/*
+ * The machine-translation notice (lib/machineTranslation.ts). The non-affiliation notice's
+ * colors, so the pairing is one the contrast audit already holds at AA, with a rule between
+ * the two so they read as two statements rather than one. The link inherits the text color
+ * and keeps its underline: the default link blue on this ground would fail contrast.
+ */
+.mt-notice {
+  background: var(--gray-120);
+  color: var(--gray-20);
+  font-size: 0.8125rem;
+  padding-block: 0.5rem;
+  border-top: 1px solid var(--gray-20);
+}
+
+.mt-notice p {
+  margin: 0;
+}
+
+.mt-notice p + p {
+  margin-top: 0.25rem;
+}
+
+.mt-notice a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.mt-notice a:focus-visible {
+  outline: 2px solid var(--gray-10);
+  outline-offset: 2px;
 }
 
 .lang-choice {
@@ -772,7 +828,7 @@ td.num {
 
 /*
  * Said above the numbers, in the same quiet treatment the search page uses for its stat strip:
- * a light panel with a rule down the left in the primary colour. Deliberately *not* the orange
+ * a light panel with a rule down the left in the primary color. Deliberately *not* the orange
  * `.callout`, which this same page uses for an occupation the state expects to shrink. Nothing
  * here is a warning about the job — the figures are real, published, and exactly right about a
  * larger population — and borrowing the alarm treatment would tell the reader the wrong thing
@@ -794,7 +850,7 @@ td.num {
 /*
  * A figure this project removed, as distinct from one nobody ever reported.
  *
- * It keeps `.unreported`'s italics and colour because it is still an absence and should not
+ * It keeps `.unreported`'s italics and color because it is still an absence and should not
  * read as a value — --gray-80 on --gray-10, the audited "not-reported text" pairing — but it
  * gets its own class rather than reusing `.unreported`, whose meaning throughout this site is
  * "the provider did not file this". The sentence underneath is a different claim from the
@@ -858,7 +914,7 @@ td.num {
 /*
  * The program page's first section is now prose about the job rather than a grid of figures
  * about the purchase, so it needs a reading measure. Everything here is spacing and weight:
- * the only colours used are --gray-90 and --primary-100 on the page's own --gray-10, both of
+ * the only colors used are --gray-90 and --primary-100 on the page's own --gray-10, both of
  * which the contrast audit already covers ("fact label" and "link on page"). No pairing is
  * introduced that the audit does not already know about.
  */
@@ -970,10 +1026,10 @@ td.num {
  *
  * The last block on a program page, and the only one whose subject is what to do rather than
  * what the numbers say. It is set apart with a rule and a wider top margin rather than a
- * coloured panel: an eligibility notice tinted like a promotion is read as one, and nothing
+ * colored panel: an eligibility notice tinted like a promotion is read as one, and nothing
  * here is an offer.
  *
- * Every colour used below is a pairing the contrast audit already covers — body text
+ * Every color used below is a pairing the contrast audit already covers — body text
  * (--gray-120 on --gray-10), labels (--gray-90 on --gray-10), links (--primary-100 on
  * --gray-10), and the stat-strip pairing (--gray-120 on --gray-20) for the two blocks that
  * take a tint. No new pairing is introduced, so the audit's list stays the whole list.
@@ -1002,7 +1058,7 @@ td.num {
 }
 
 /*
- * The order: talk to a centre before enrolling. Spacing only, and no colour of its own — the
+ * The order: talk to a center before enrolling. Spacing only, and no color of its own — the
  * contrast audit's list of pairings on this block is meant to stay the whole list. What sets
  * it apart is that it is a heading a reader can jump to and that it is not behind a disclosure.
  */
@@ -1071,7 +1127,7 @@ td.num {
 
 /*
  * Phone first, and bigger than the rest of the card. It is the only channel published for
- * every one of California's centres, the state's own advice is to ring before travelling, and
+ * every one of California's centers, the state's own advice is to ring before traveling, and
  * on the device most of these readers are holding it is one tap.
  */
 .center-phone {
@@ -1319,7 +1375,7 @@ td.num {
   A collapsed occupation is a name and a control, and they are one thing.
 
   With the open block's spacing, the heading and its toggle sat far enough apart to read as
-  two unrelated items with a gap between them, which made a tidier page look less organised
+  two unrelated items with a gap between them, which made a tidier page look less organized
   than the sprawling one it replaced.
 */
 .occ-block {
@@ -1368,7 +1424,7 @@ td.num {
   Colored with --link, not --primary-70.
 
   --primary-70 is the teal the design system uses for rules and accents; against the page
-  background it measures 3.63:1, which is a border colour wearing a text colour's clothes.
+  background it measures 3.63:1, which is a border color wearing a text color's clothes.
   --white does not exist in this theme at all, so `background: var(--white)` resolved to
   nothing and these buttons were transparent. Both faults measured on the rendered page —
   the analytical audit checks twenty fixed pairings and these were not among them.
@@ -1490,7 +1546,7 @@ td.num {
 
   Not a subtitle and not decoration: it is the name on the certificate, on the job advert and
   in every California record, so a reader working in Spanish still needs to be able to
-  recognise and search for it elsewhere.
+  recognize and search for it elsewhere.
 */
 .title-original {
   color: var(--gray-90);
@@ -1665,7 +1721,7 @@ td.num {
     word-break: break-all;
   }
 
-  /* Nothing is a link colour on paper, and the measure can use the full width. */
+  /* Nothing is a link color on paper, and the measure can use the full width. */
   a {
     color: inherit;
     text-decoration: underline;
@@ -1706,7 +1762,7 @@ td.num {
   They previously set near-black on a saturated fill — 5.47:1 for the shrinking badge and
   6.37:1 for the small-sample one, both at 12px, which WCAG does not count as large text.
   Neither cleared 1.4.6's 7:1, and both carry warnings this site treats as load-bearing: a
-  caveat that is hard to read is a caveat that does not work. Colours are fixed rather than
+  caveat that is hard to read is a caveat that does not work. Colors are fixed rather than
   themed because the values are the same in both schemes and the ratio is above 13:1 either
   way.
 */
@@ -1755,7 +1811,7 @@ td.num {
   shape, size and hit area untouched.
 
   The regulation citations sit inside a panel, so their links are --link on --gray-20 rather
-  than on the page: 5.72:1, not the 7.02:1 the same colour manages on white. These are the
+  than on the page: 5.72:1, not the 7.02:1 the same color manages on white. These are the
   links that let a reader check a claim about somebody else's money against the actual rule,
   which makes them a poor place to be the hardest text on the page to read.
 */

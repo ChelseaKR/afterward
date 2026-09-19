@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { MachineTranslationNotice } from "@/components/MachineTranslationNotice";
 import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
 import {
   REPO_URL,
@@ -53,7 +54,7 @@ const CARD_ALT =
  * is `/en/`.
  *
  * And deliberately no `hreflang` set here, unlike every page under `/[lang]/`. A page that
- * canonicalises somewhere else is not a member of an alternate set: naming it in one would
+ * canonicalizes somewhere else is not a member of an alternate set: naming it in one would
  * put a URL in the set that the set's own members disown, and search engines resolve that
  * contradiction by discarding the annotation. The chooser's job is to forward a reader, and
  * the two pages it forwards to name each other.
@@ -101,14 +102,18 @@ export default function Index() {
         <meta httpEquiv="refresh" content={`0; url=/${DEFAULT_LANG}/`} />
       </head>
       <body>
-        <header className="disclaimer">
-          <div className="shell">
-            {LANGUAGES.map((lang) => (
-              <p key={lang} lang={lang}>
-                {dict(lang).notAffiliated}
-              </p>
-            ))}
+        <header>
+          <div className="disclaimer">
+            <div className="shell">
+              {LANGUAGES.map((lang) => (
+                <p key={lang} lang={lang}>
+                  {dict(lang).notAffiliated}
+                </p>
+              ))}
+            </div>
           </div>
+          {/* This page shows Spanish, so it carries the notice. See lib/machineTranslation.ts. */}
+          <MachineTranslationNotice />
         </header>
 
         <main className="shell detail">

@@ -16,7 +16,7 @@ check anything.
 
 ### Inputs consulted
 
-- CalJOBS (caljobs.ca.gov) and the EDD Eligible Training Provider List page — to characterise
+- CalJOBS (caljobs.ca.gov) and the EDD Eligible Training Provider List page — to characterize
   the incumbent experience.
 - U.S. DOL TrainingProviderResults.gov — to establish which WIOA outcome measures are public.
 - data.ca.gov CKAN API, EDD organization — to inventory California's published labor market data.
@@ -104,7 +104,7 @@ inside the banner.
 ### D8 — Absence gets a designed state
 
 The design system fixes the palette and type, so the design work went into the information
-design instead. A withheld measure renders as an explicit, italicised "Not reported" with a
+design instead. A withheld measure renders as an explicit, italicized "Not reported" with a
 tooltip explaining that it may have been suppressed to protect a small cohort's privacy —
 never as 0, `$0`, `0%`, or a dash. A program that reported nothing gets a full explanatory
 panel rather than a blank card, because that absence is one of the more useful things a
@@ -182,7 +182,7 @@ same defects, and the most important one made the project's headline claim wrong
 three occupations, and 1,588 of California's 3,266 feed more than one — but every surface
 read only `occupations[0]`. The shrinking occupation is frequently not the one listed first.
 The same bug named the wrong job on hundreds of detail pages: an automotive program showed an
-electrical installer's wage because that SOC happened to sort first. Programs now summarise
+electrical installer's wage because that SOC happened to sort first. Programs now summarize
 across every occupation they feed, taking the weakest outlook, and detail pages list all of
 them.
 
@@ -232,7 +232,7 @@ checking that the two numbers mean the same thing is worse than showing no bench
 
 ### D13 — Say what period a number covers
 
-`median_earnings` is a single quarter of WIOA earnings. It sat unlabelled a short distance
+`median_earnings` is a single quarter of WIOA earnings. It sat unlabeled a short distance
 from the occupation's annual wage, so the natural reading was that graduates earn about a
 sixth of the going rate. It now states its period in both languages.
 
@@ -351,7 +351,7 @@ verifier checks every one against the published JSON and withholds what does not
 counting what it withheld. A suppressed measure is handed to the model as "not reported" and
 a claim that renders it as anything else is withheld. The only comparison the model may make
 is against `peer_medians`, with its count; `state_benchmark` is not offered. Spanish from the
-model is labelled AI-translated and unreviewed and may not alter a number. Pathways come from
+model is labeled AI-translated and unreviewed and may not alter a number. Pathways come from
 the dataset's own related-occupation lists. When the data cannot answer, the deterministic
 layer says so and the model has nothing to narrate.
 

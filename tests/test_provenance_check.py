@@ -1,6 +1,6 @@
 """Tests for the clean-room guard.
 
-The guard is a compliance control, so its false-negative behaviour matters: a pattern that
+The guard is a compliance control, so its false-negative behavior matters: a pattern that
 silently stops matching would let the constraint lapse without anyone noticing.
 """
 
@@ -51,6 +51,6 @@ class TestScan:
         assert provenance_check.scan() == []
 
     def test_vendor_directories_are_excluded(self) -> None:
-        """Third-party code contains unrelated matches (e.g. SPDX licence names)."""
+        """Third-party code contains unrelated matches (e.g. SPDX license names)."""
         assert ".venv" in provenance_check.EXCLUDED_DIRS
         assert "node_modules" in provenance_check.EXCLUDED_DIRS

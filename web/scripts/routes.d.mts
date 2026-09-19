@@ -4,7 +4,7 @@
  * `.ts` file cannot import them and `tsc --noEmit` refuses it, which is the "the check does
  * not run" shape these scripts exist to prevent.
  *
- * Only what a TypeScript caller uses is declared. `routes.mjs` is the authority on behaviour.
+ * Only what a TypeScript caller uses is declared. `routes.mjs` is the authority on behavior.
  */
 
 /** Absolute path of the app router tree these functions read by default. */

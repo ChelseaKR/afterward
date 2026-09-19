@@ -8,7 +8,7 @@ that reaches more than one area, or reaches ground no area claims, because a pro
 Los Angeles side of a Los Angeles/Orange ZIP renders identically to one on the Orange side.
 
 The vendored extract is checked against its own retrieval record and against the specific
-rows that make the refusals possible. Those rows are the ones a size optimisation would
+rows that make the refusals possible. Those rows are the ones a size optimization would
 delete first.
 """
 
@@ -25,6 +25,7 @@ from afterward.build import (
     UNPLACED_COUNTY_OUTSIDE_AREAS,
     UNPLACED_CROSSWALK_NOT_READ,
     UNPLACED_NO_ZIP,
+    UNPLACED_SOURCE_PUBLISHES_NO_AREAS,
     UNPLACED_STRADDLES_AREAS,
     UNPLACED_ZIP_NOT_IN_CROSSWALK,
     CountyIndex,
@@ -69,7 +70,7 @@ def counties(crosswalk: zip_county.ZipCountyCrosswalk) -> CountyIndex:
     return county_index(AREAS, crosswalk)
 
 
-class TestNormaliseZip:
+class TestNormalizeZip:
     """A ZIP that cannot be read is an unusable record, never a truncated one."""
 
     @pytest.mark.parametrize(
@@ -82,28 +83,28 @@ class TestNormaliseZip:
         ],
     )
     def test_reads_the_shapes_dol_files(self, filed: str, expected: str) -> None:
-        assert zip_county.normalise_zip(filed) == expected
+        assert zip_county.normalize_zip(filed) == expected
 
     @pytest.mark.parametrize("filed", [None, "", "   ", "9135", "9135X", "91355-12", "CA 91355"])
     def test_refuses_everything_else(self, filed: str | None) -> None:
         """A four-digit value is not a ZIP missing its leading zero; it is a value nobody
         here can tell apart from a typo, and inventing the zero would place a program."""
-        assert zip_county.normalise_zip(filed) is None
+        assert zip_county.normalize_zip(filed) is None
 
 
-class TestNormaliseCounty:
+class TestNormalizeCounty:
     def test_the_two_publishers_spell_the_same_county_differently(self) -> None:
         # Census writes NAMELSAD; EDD's gloss has already had the noun stripped.
-        assert zip_county.normalise_county("Los Angeles County") == "los angeles"
-        assert zip_county.normalise_county("Los Angeles") == "los angeles"
+        assert zip_county.normalize_county("Los Angeles County") == "los angeles"
+        assert zip_county.normalize_county("Los Angeles") == "los angeles"
 
     def test_the_noun_only_goes_at_the_end(self) -> None:
-        assert zip_county.normalise_county("Orange County") == "orange"
-        assert zip_county.normalise_county("County Line") == "county line"
+        assert zip_county.normalize_county("Orange County") == "orange"
+        assert zip_county.normalize_county("County Line") == "county line"
 
-    def test_nothing_normalises_to_an_empty_name(self) -> None:
-        assert zip_county.normalise_county("   ") is None
-        assert zip_county.normalise_county(None) is None
+    def test_nothing_normalizes_to_an_empty_name(self) -> None:
+        assert zip_county.normalize_county("   ") is None
+        assert zip_county.normalize_county(None) is None
 
 
 RELATIONSHIP_HEADER = (
@@ -140,7 +141,7 @@ class TestParseRelationshipFile:
 
 class TestCaliforniaSubset:
     def test_it_keeps_the_out_of_state_half_of_a_border_zcta(self) -> None:
-        """The load-bearing case, and the one a size optimisation deletes first.
+        """The load-bearing case, and the one a size optimization deletes first.
 
         Keeping only California's own rows would leave 89439 looking like a clean
         single-county ZIP in Sierra County, and the placement rule would place it. It is
@@ -415,6 +416,7 @@ class TestAreaPlacementCoverage:
             UNPLACED_ZIP_NOT_IN_CROSSWALK,
             UNPLACED_COUNTY_OUTSIDE_AREAS,
             UNPLACED_STRADDLES_AREAS,
+            UNPLACED_SOURCE_PUBLISHES_NO_AREAS,
         }
 
     def test_an_unplaced_record_carrying_no_reason_is_counted_as_such(self) -> None:

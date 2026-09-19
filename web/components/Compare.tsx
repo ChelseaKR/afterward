@@ -19,7 +19,7 @@ import {
 
 export { MAX_COMPARE };
 
-// `t.leadsTo` is not used by this component; the row it labelled has been replaced by one
+// `t.leadsTo` is not used by this component; the row it labeled has been replaced by one
 // that carries each job's own figures (still used by the provider page and search results).
 
 /**
@@ -202,7 +202,7 @@ const JOB_FIGURE: CSSProperties = {
   whiteSpace: "normal",
 };
 
-/** One labelled figure belonging to one named job. Null renders as an absence, never a zero. */
+/** One labeled figure belonging to one named job. Null renders as an absence, never a zero. */
 function JobFigure({ label, value, lang }: { label: string; value: string | null; lang: Lang }) {
   const t = dict(lang);
   return (

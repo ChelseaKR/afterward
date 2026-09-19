@@ -248,7 +248,7 @@ def _vocabulary(occupations: Mapping[str, Mapping[str, Any]]) -> Iterable[_Vocab
 
 
 def _entry(soc: str, text: str, weight: float) -> _VocabularyEntry:
-    # Alternate titles often carry a parenthesised abbreviation: "Registered Nurse (RN)".
+    # Alternate titles often carry a parenthesized abbreviation: "Registered Nurse (RN)".
     # Index the abbreviation too, so "RN" resolves, but keep the full text as what matched.
     return _VocabularyEntry(soc, text, normalize(text), stems(text) | _abbreviations(text), weight)
 

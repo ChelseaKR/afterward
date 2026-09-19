@@ -34,9 +34,9 @@ a particular person in a particular place.
 
 ## Not advice
 
-Nothing here is financial, legal, educational, or career advice. Deciding to enrol in a
+Nothing here is financial, legal, educational, or career advice. Deciding to enroll in a
 training program is a significant financial and personal commitment. Use this as one input,
-and talk to the provider, to your local America's Job Center, or to a career counsellor
+and talk to the provider, to your local America's Job Center, or to a career counselor
 before deciding.
 
 ## Corrections

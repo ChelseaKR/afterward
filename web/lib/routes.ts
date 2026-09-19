@@ -36,7 +36,7 @@ export interface SitePath {
 /**
  * Every page, in both languages.
  *
- * Search is how someone finds out that the program they were about to enrol in reports
+ * Search is how someone finds out that the program they were about to enroll in reports
  * nothing, or trains for work the state expects less of. Being findable is part of the
  * point, not an afterthought.
  *

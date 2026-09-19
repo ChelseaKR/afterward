@@ -13,7 +13,7 @@ Three things about this file decide how it has to be read, all measured on 2026-
 against the full published extract (580,790 rows, 2009-2026):
 
 **It is a panel, not a snapshot.** Every annual vintage from 2009 to 2026 is stacked in one
-file, all labelled ``1st Qtr``, and EDD's own dataset notes say the estimates "should not be
+file, all labeled ``1st Qtr``, and EDD's own dataset notes say the estimates "should not be
 used as a time series" because area definitions and methods change underneath them. Anything
 that reads this file must pick one ``Year`` and stay in it; see :func:`latest_year`.
 
@@ -22,7 +22,7 @@ that reads this file must pick one ``Year`` and stay in it; see :func:`latest_ye
 **Its spellings drift.** Area names, area-type labels and wage-type labels are all written
 differently in different vintages ("Bakersfield MSA" then "Bakersfield-Delano MSA",
 ``California-Statewide`` and ``California - Statewide``, ``Hourly wage`` and ``Hourly
-Wage``). Everything below normalises rather than matching a literal, and the SOC code is
+Wage``). Everything below normalizes rather than matching a literal, and the SOC code is
 stored unhyphenated (``151252``), so it is reformatted on the way in to the ``15-1252`` used
 everywhere else in this project.
 
@@ -124,7 +124,7 @@ def _to_wage(value: Any) -> float | None:
     with ``0`` and vintages 2018-2026 suppress with a blank -- the convention changes
     between 2017 and 2018 and never mixes. In the zero-writing vintages the sentinel is
     provable rather than inferred, because a suppressed percentile is written as 0 while its
-    neighbours are not, producing orderings that no distribution can have: statewide Chief
+    neighbors are not, producing orderings that no distribution can have: statewide Chief
     Executives in 2015 are published with a 10th percentile of $99,663, a 25th of $158,291,
     and a median, 75th and 90th of exactly 0. Read literally that says half of all chief
     executives earn nothing.
@@ -170,7 +170,7 @@ def _to_year(value: Any) -> int | None:
     return int(parsed) if parsed is not None else None
 
 
-def normalise_soc(value: Any) -> str | None:
+def normalize_soc(value: Any) -> str | None:
     """Reformat OEWS's unhyphenated SOC code as the ``XX-XXXX`` used elsewhere here.
 
     Anything that is not six digits returns ``None``. That drops the roll-up rows the older
@@ -187,7 +187,7 @@ def normalise_soc(value: Any) -> str | None:
 
 
 def _to_basis(value: Any) -> WageBasis | None:
-    """Read the wage basis, tolerating the file's inconsistent capitalisation."""
+    """Read the wage basis, tolerating the file's inconsistent capitalization."""
     text = (_to_text(value) or "").casefold()
     if text.startswith("annual"):
         return ANNUAL
@@ -299,7 +299,7 @@ def parse_wage_statistics(text: str) -> Iterator[WageDistribution]:
             area_name=_to_text(row.get(_AREA_NAME)),
             year=_to_year(row.get(_YEAR)),
             industry=_to_text(row.get(_INDUSTRY)),
-            soc_code=normalise_soc(row.get(_SOC)),
+            soc_code=normalize_soc(row.get(_SOC)),
             title=_to_text(row.get(_TITLE)),
             basis=_to_basis(row.get(_WAGE_TYPE)),
             employment=_to_headcount(row.get(_EMPLOYMENT)),
@@ -332,14 +332,14 @@ def select(
     """Narrow a parsed panel to one vintage and one wage basis.
 
     ``year=None`` means the latest vintage present, which requires reading ``rows`` twice
-    and so materialises them. ``basis=None`` keeps both the annual and hourly rows, which
+    and so materializes them. ``basis=None`` keeps both the annual and hourly rows, which
     doubles every key and is only useful for inspection.
     """
-    materialised = list(rows)
-    wanted = latest_year(materialised) if year is None else year
+    materialized = list(rows)
+    wanted = latest_year(materialized) if year is None else year
     return [
         row
-        for row in materialised
+        for row in materialized
         if (wanted is None or row.year == wanted) and (basis is None or row.basis == basis)
     ]
 
@@ -389,7 +389,7 @@ def area_name_joins_to_projections(area_name: str | None) -> str | None:
     and all 32 areas match, statewide included.
 
     This function exists so that fact is asserted in one place and tested, rather than being
-    a coincidence a caller relies on silently. It deliberately does no normalisation: if a
+    a coincidence a caller relies on silently. It deliberately does no normalization: if a
     future vintage renames an area, the join must fail loudly here rather than be repaired
     by a prefix or edit-distance match that could attribute one region's wages to another.
     Older vintages in the same file *are* named differently ("Bakersfield MSA",

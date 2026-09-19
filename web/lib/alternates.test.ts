@@ -324,7 +324,7 @@ describe("pageAlternates", () => {
   it("points x-default at the default language, the same URL as `en`", () => {
     // `x-default` names where a reader whose language matches no version should be sent. The
     // site root would be the better answer -- it is a language chooser -- except that
-    // `app/page.tsx` canonicalises `/` to `/en/`, so naming it here would put a URL in the
+    // `app/page.tsx` canonicalizes `/` to `/en/`, so naming it here would put a URL in the
     // set that the set's own members disown.
     const languages = pageAlternates("es", "programs/1234/")?.languages ?? {};
     expect(languages["x-default"]).toBe(languages[DEFAULT_LANG]);

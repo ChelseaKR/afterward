@@ -12,8 +12,10 @@
     "lint": "eslint .",
     "test": "vitest run",
     "a11y": "node scripts/a11y-audit.mjs out",
+    "lastmod": "node scripts/lastmod.mjs out",
     "seo": "node scripts/seo-audit.mjs out",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run contrast && npm run build && npm run seo && npm run a11y && npm run a11y:rendered",
+    "mt-notice": "node scripts/mt-notice-audit.mjs out",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run contrast && npm run build && npm run lastmod && npm run seo && npm run mt-notice && npm run a11y && npm run a11y:rendered",
     "contrast": "node scripts/contrast-audit.mjs",
     "size-report": "node scripts/size-report.mjs out",
     "a11y:browser": "node scripts/a11y-browser.mjs",
@@ -22,20 +24,20 @@
   },
   "dependencies": {
     "@cagovweb/design-system": "^0.2.0",
-    "next": "^16.3.3",
+    "next": "^16.3.5",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.5.1",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.5",
+    "@types/react-dom": "^19.3.0",
     "@vitest/coverage-v8": "^5.0.0",
     "axe-core": "^4.13.0",
     "eslint": "^10.10.0",
-    "eslint-config-next": "^16.3.4",
+    "eslint-config-next": "^16.3.5",
     "jsdom": "^30.0.1",
-    "playwright": "^1.62.1",
+    "playwright": "^1.63.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.0"
   }

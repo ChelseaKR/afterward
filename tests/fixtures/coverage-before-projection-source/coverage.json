@@ -1,0 +1,517 @@
+{
+ "snapshot_date": "2026-08-07",
+ "is_fixture": true,
+ "total_programs": 60,
+ "programs_with_any_outcome": 46,
+ "programs_with_median_earnings": 38,
+ "programs_with_employment_rate": 41,
+ "programs_with_completion_rate": 46,
+ "programs_with_cost": 60,
+ "programs_with_soc": 60,
+ "programs_matched_to_occupation": 56,
+ "distinct_providers": 17,
+ "distinct_occupations_matched": 56,
+ "occupation_rows_loaded": 56,
+ "programs_mapped_to_area": 47,
+ "programs_without_area": 13,
+ "outcome_coverage_pct": 76.7,
+ "occupation_match_pct": 93.3,
+ "area_match_pct": 78.3,
+ "state_benchmark": {
+  "state": "CA",
+  "completion_rate": 0.71,
+  "employment_rate_q2": 0.27,
+  "median_earnings": 16978.95,
+  "credential_rate": 0.37,
+  "total_exited": 664260.0,
+  "total_completed": 469808.0
+ },
+ "peer_medians": {
+  "completion_rate": {
+   "median": 0.72,
+   "reporting": 46,
+   "excluded_not_attributable": 0
+  },
+  "employment_rate_q2": {
+   "median": 0.68,
+   "reporting": 41,
+   "excluded_not_attributable": 0
+  },
+  "median_earnings": {
+   "median": 10699.5,
+   "reporting": 38,
+   "excluded_not_attributable": 0
+  }
+ },
+ "employment_denominator": {
+  "bulk_export_read": false,
+  "source": "D1B",
+  "source_url": "https://www.trainingproviderresults.gov/data/DownloadPrograms.xlsx",
+  "vintage": null,
+  "programs_total": 60,
+  "programs_with_denominator": null,
+  "programs_rate_not_published": null,
+  "programs_bulk_figures_suppressed": null,
+  "programs_bulk_row_does_not_reconstruct": null,
+  "programs_reconstructing_only_their_own_older_rate": null,
+  "programs_with_no_bulk_row": null,
+  "reconstruction_tolerance": 0.01,
+  "citation": "ETA-9171 DE129 via DOL's bulk ETP export (DownloadPrograms.xlsx), read beside the search API and never merged into a D1 figure. PROVENANCE.md, Notes on D1B."
+ },
+ "cohort_integrity": {
+  "programs_with_cohort_counts": 46,
+  "shared_cohorts": 0,
+  "shared_cohort_groups": 0,
+  "largest_shared_cohort": 0,
+  "exited_exceeds_served": 24,
+  "completed_exceeds_served": 9,
+  "internally_contradictory": 24,
+  "oversized_for_one_program": 0,
+  "oversized_providers": 0,
+  "not_attributable": 0
+ },
+ "employment_measures": {
+  "authoritative": "employment_rate_q2",
+  "derivable_from_published_counts": false,
+  "programs_publishing_rate": 41,
+  "programs_publishing_count": 41,
+  "programs_publishing_both": 41,
+  "count_over_exited_within_a_rounding_step": 3,
+  "count_over_exited_differs_by_over_10_points": 33,
+  "count_exceeds_exited": 2,
+  "completion_rate_checked": 46,
+  "completion_rate_reconciles": 46,
+  "citation": "ETA-9171 data element definitions (PY21+, OMB 1205-0526): DE123 is the numerator, DE129 the denominator, and DE121 (total_exited) is neither. See PROVENANCE.md, 'Notes on D1'."
+ },
+ "provider_links": {
+  "programs_with_link": 50,
+  "distinct_urls": 26,
+  "checked_urls": 0,
+  "unchecked_urls": 26,
+  "programs_checked": 0,
+  "programs_unchecked": 50,
+  "programs_alive": 0,
+  "programs_dead": 0,
+  "programs_indeterminate": 0,
+  "programs_offsite_redirect": 0,
+  "programs_offsite_confirmed": 0,
+  "programs_linked": 50,
+  "programs_not_linked": 0,
+  "programs_upgraded_to_https": 0,
+  "programs_sent_to_front_page": 0,
+  "programs_labelled_home_page": 0,
+  "earliest_check": null,
+  "latest_check": null
+ },
+ "local_help": {
+  "centers_loaded": null,
+  "radius_miles": 25.0,
+  "programs_searched": 0,
+  "programs_not_searched": 60,
+  "programs_with_a_center": 0,
+  "programs_with_none_within_radius": 0,
+  "programs_with_a_comprehensive_center": 0,
+  "programs_with_a_center_within_10_miles": 0,
+  "nearest_median_miles": null,
+  "nearest_farthest_miles": null,
+  "guidance": {
+   "who_decides": "Whether a person can have a program paid for is decided by their local workforce development board and the America's Job Center staff who interview them \u2014 not by this site, and not by the training provider. California has 45 local workforce development areas and each sets its own policies, so the answer can differ between two people in neighboring counties. Nothing here is a promise of funding or a determination of eligibility.",
+   "steps": [
+    {
+     "id": "ita",
+     "heading": "Someone else may be able to pay for this",
+     "detail": "Federal training money under the Workforce Innovation and Opportunity Act is paid through an Individual Training Account: an agreement between a local workforce board and a training provider, set up on behalf of one person. That money can only go to a provider on the state's Eligible Training Provider List, which is the list every program on this site comes from.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "20 CFR 680.300 \u2014 How are training services provided?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.300"
+      },
+      {
+       "label": "20 CFR 680.410 \u2014 What is an eligible training provider?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.410"
+      },
+      {
+       "label": "California EDD \u2014 Eligible Training Provider List",
+       "url": "https://edd.ca.gov/en/jobs_and_training/Eligible_Training_Provider_List/"
+      }
+     ]
+    },
+    {
+     "id": "ask_before_you_enroll",
+     "heading": "Ask before you enroll, not after",
+     "detail": "The order the rules set out starts at the center rather than at the school. Before a center can find somebody eligible for training services it has to gather enough to decide, at a minimum through an interview, evaluation or assessment and career planning. Referring a person to the provider they have chosen and setting up the account both come after that, and both are the center's to do \u2014 the account is a payment agreement with the training provider, and it is the provider that is paid through it. So the call belongs before enrolling and before paying. Anyone who has already done either should still ask, and ask what it means for them.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "20 CFR 680.220 \u2014 Are there particular career services an individual must receive before training?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.220"
+      },
+      {
+       "label": "20 CFR 680.340 \u2014 What are the requirements for consumer choice?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.340"
+      },
+      {
+       "label": "20 CFR 680.300 \u2014 How are training services provided?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.300"
+      }
+     ]
+    },
+    {
+     "id": "where_to_ask",
+     "heading": "The place to ask is an America's Job Center of California",
+     "detail": "A comprehensive center is where all the required partner programs can be reached; an affiliate site offers some of them. California's Employment Development Department directs people to CareerOneStop's finder to locate one. Contacting a center before traveling is worth it \u2014 the state notes that its own staff are not physically present at every location.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "20 CFR 678.305 \u2014 What is a comprehensive one-stop center?",
+       "url": "https://www.ecfr.gov/current/title-20/section-678.305"
+      },
+      {
+       "label": "20 CFR 678.310 \u2014 What is an affiliated site?",
+       "url": "https://www.ecfr.gov/current/title-20/section-678.310"
+      },
+      {
+       "label": "California EDD \u2014 Office Locator",
+       "url": "https://edd.ca.gov/en/Office_Locator/"
+      }
+     ]
+    },
+    {
+     "id": "who_can_be_served",
+     "heading": "Who can be served at all",
+     "detail": "California states the general criteria as three things: age, Selective Service registration where it applies, and authorization to work in the United States. Work authorization is checked when someone moves into a service that needs it, not at the door \u2014 career assessments, an employment plan, case management, basic skills and English instruction, help finishing work-authorization paperwork, and referrals for transport, childcare, food and housing are all listed as services a local area may deliver without verifying it first.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "California EDD \u2014 WIOA Title I Eligibility Technical Assistance Guide (WSD24-04)",
+       "url": "https://edd.ca.gov/siteassets/files/jobs_and_training/pubs/wsd24-04att1.docx"
+      }
+     ]
+    },
+    {
+     "id": "expect_an_interview",
+     "heading": "Expect an interview, not a form",
+     "detail": "Before anyone can be found eligible for training services they must receive an interview, evaluation or assessment and career planning, or something else that gives the center enough information to decide. There is no federally required waiting period, but there is no way to skip the conversation either \u2014 which is why this site cannot tell anyone whether they qualify.",
+     "on_program_page": false,
+     "citations": [
+      {
+       "label": "20 CFR 680.220 \u2014 Are there particular career services an individual must receive before training?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.220"
+      },
+      {
+       "label": "20 CFR 680.210 \u2014 Who may receive training services?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.210"
+      }
+     ]
+    },
+    {
+     "id": "what_the_center_decides",
+     "heading": "What the center is deciding",
+     "detail": "Training services may be made available to adults and dislocated workers whom the center determines are unlikely or unable to obtain employment leading to self-sufficiency through career services alone, need training to get there, and have the skills and qualifications to succeed in it. The program also has to be linked to employment opportunities in the local area, or somewhere the person is willing to commute or move to.",
+     "on_program_page": false,
+     "citations": [
+      {
+       "label": "20 CFR 680.210 \u2014 Who may receive training services?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.210"
+      }
+     ]
+    },
+    {
+     "id": "say_your_priority_status",
+     "heading": "Say if you receive public assistance, are low income, or need basic skills help",
+     "detail": "For the adult funding stream, federal law requires priority to be given to recipients of public assistance, other low-income individuals, and individuals who are basic skills deficient. California instructs job center staff to work an explicit order: veterans and eligible spouses who are also in one of those groups, then the groups themselves, then other veterans and eligible spouses, then any populations the Governor or the local board has added, then everyone else. Priority does not exclude anyone else, and it does not apply to the dislocated worker stream. It only operates if the center is told, and California fixes a person's priority status at the moment eligibility is determined \u2014 so it is the first appointment that counts.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "20 CFR 680.600 \u2014 Priority for low-income adults and public assistance",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.600"
+      },
+      {
+       "label": "20 CFR 680.610 \u2014 Does the adult priority also apply to dislocated worker funds?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.610"
+      },
+      {
+       "label": "20 CFR 1010.200 \u2014 Priority of service for veterans and eligible spouses",
+       "url": "https://www.ecfr.gov/current/title-20/section-1010.200"
+      },
+      {
+       "label": "California EDD \u2014 Adult Program Priority of Service (WSD24-06)",
+       "url": "https://edd.ca.gov/siteassets/files/jobs_and_training/pubs/wsd24-06.pdf"
+      }
+     ]
+    },
+    {
+     "id": "other_funding_first",
+     "heading": "Bring what you already have \u2014 this money fills a gap",
+     "detail": "WIOA training funding is limited to people who cannot get grant assistance from other sources, or who need help beyond what those sources cover. Centers must consider Pell Grants, state training funds and assistance for needy families first. Someone can enroll while a Pell application is still pending, if the center arranges it with the provider in advance.",
+     "on_program_page": false,
+     "citations": [
+      {
+       "label": "20 CFR 680.230 \u2014 Coordination of WIOA training funds and other grants",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.230"
+      }
+     ]
+    },
+    {
+     "id": "supportive_services",
+     "heading": "Ask what else can be covered while you train",
+     "detail": "Supportive services \u2014 help with transport, child care and dependent care, and others \u2014 may be provided to people taking part in career or training services who cannot obtain them elsewhere. Adults who are unemployed, do not qualify for unemployment compensation, and are enrolled in training may be eligible for needs-related payments as well.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "20 CFR 680.900 \u2014 What are supportive services for adults?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.900"
+      },
+      {
+       "label": "20 CFR 680.910 \u2014 When may supportive services be provided?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.910"
+      },
+      {
+       "label": "20 CFR 680.940 \u2014 Eligibility for needs-related payments",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.940"
+      }
+     ]
+    },
+    {
+     "id": "local_and_annual",
+     "heading": "The answer depends on the local area, and on the year",
+     "detail": "Once someone has been found eligible and has chosen a provider, the center must refer them and set up an account \u2014 unless the program has exhausted its training funds for the program year. How much an account is worth, which occupations a board will fund, what counts as employment that supports a person, and how priority is applied are all set locally, across California's 45 local workforce development areas. Meeting every rule here still does not secure a place. California's own guidance to job center staff says so plainly: WIOA is not an entitlement program, funding for it is not unlimited, and local boards offer services to eligible applicants when funding is available.",
+     "on_program_page": true,
+     "citations": [
+      {
+       "label": "20 CFR 680.340 \u2014 What are the requirements for consumer choice?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.340"
+      },
+      {
+       "label": "20 CFR 680.310 \u2014 Can the duration and amount of ITAs be limited?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.310"
+      },
+      {
+       "label": "California EDD \u2014 WIOA Title I Eligibility Technical Assistance Guide (WSD24-04)",
+       "url": "https://edd.ca.gov/siteassets/files/jobs_and_training/pubs/wsd24-04att1.docx"
+      },
+      {
+       "label": "California EDD \u2014 Eligible Training Provider List",
+       "url": "https://edd.ca.gov/en/jobs_and_training/Eligible_Training_Provider_List/"
+      }
+     ]
+    }
+   ],
+   "questions": [
+    {
+     "id": "etpl_now",
+     "ask": "Is this program on California's Eligible Training Provider List right now?",
+     "because": "An Individual Training Account can only pay a provider on that list, and listings are granted per program rather than per school \u2014 a listed provider can have unlisted programs. Eligibility is also time-limited and renewed.",
+     "audience": "provider",
+     "citations": [
+      {
+       "label": "20 CFR 680.410 \u2014 What is an eligible training provider?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.410"
+      },
+      {
+       "label": "California EDD \u2014 Eligible Training Provider List",
+       "url": "https://edd.ca.gov/en/jobs_and_training/Eligible_Training_Provider_List/"
+      }
+     ]
+    },
+    {
+     "id": "full_price",
+     "ask": "What does the price include, and what will I still have to buy \u2014 books, tools, uniforms, exam fees, license fees?",
+     "because": "Providers report tuition and supplies to the state as separate figures and either can be missing, so the cost shown here may be a floor rather than a total. Exam and licensing fees are often outside both.",
+     "audience": "provider",
+     "citations": [
+      {
+       "label": "20 CFR 680.490 \u2014 Performance and cost information providers submit",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.490"
+      }
+     ]
+    },
+    {
+     "id": "credential",
+     "ask": "What exactly do I hold at the end, who issues it, and does an employer or a licensing board recognize it?",
+     "because": "A program on the list has to lead to a credential, employment, or measurable progress toward one \u2014 but 'certificate of completion' from a school and a license a state board recognizes are very different things to be holding.",
+     "audience": "provider",
+     "citations": [
+      {
+       "label": "20 CFR 680.420 \u2014 What is a \u201cprogram of training services\u201d?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.420"
+      }
+     ]
+    },
+    {
+     "id": "withdrawal",
+     "ask": "If I stop partway through, what do I owe, and what happens to funding already paid?",
+     "because": "An Individual Training Account is a payment agreement with the provider and may be paid in installments, so who is owed what on a withdrawal is a question for the provider and the center together, before enrolling rather than after.",
+     "audience": "provider",
+     "citations": [
+      {
+       "label": "20 CFR 680.300 \u2014 How are training services provided?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.300"
+      }
+     ]
+    },
+    {
+     "id": "schedule",
+     "ask": "When does the next cohort start, and how many hours a week is it?",
+     "because": "The schedule decides whether someone can keep working while training, and needs-related payments are only for people who are unemployed and already enrolled \u2014 so the timetable and the money question are the same question.",
+     "audience": "provider",
+     "citations": [
+      {
+       "label": "20 CFR 680.940 \u2014 Eligibility for needs-related payments",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.940"
+      }
+     ]
+    },
+    {
+     "id": "funding_stream",
+     "ask": "Which funding stream would I be served under \u2014 adult, dislocated worker, or youth?",
+     "because": "They are different pots with different rules. The statutory priority for public assistance recipients, low-income individuals and people who are basic skills deficient applies to adult funds only. Out-of-school youth aged 16 to 24 can be served by Individual Training Accounts from youth funds.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.600 \u2014 Priority for low-income adults and public assistance",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.600"
+      },
+      {
+       "label": "20 CFR 680.610 \u2014 Does the adult priority also apply to dislocated worker funds?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.610"
+      },
+      {
+       "label": "20 CFR 681.550 \u2014 Are Individual Training Accounts permitted for youth?",
+       "url": "https://www.ecfr.gov/current/title-20/section-681.550"
+      }
+     ]
+    },
+    {
+     "id": "local_demand",
+     "ask": "Is this occupation one this local area funds training for?",
+     "because": "The program has to be linked to employment opportunities in the local area or one the person will commute to, and boards give priority to credentials aligned with in-demand sectors. A program can be on the state list and still not be one a particular board will pay for.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.210 \u2014 Who may receive training services?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.210"
+      },
+      {
+       "label": "20 CFR 680.340 \u2014 What are the requirements for consumer choice?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.340"
+      }
+     ]
+    },
+    {
+     "id": "ita_cap",
+     "ask": "What is the most this area will put into an Individual Training Account, and would that cover this program?",
+     "because": "Caps and duration limits are local policy, not federal, so the same program can be fully funded in one county and partly funded in the next. A cap is also not necessarily the end of it: the rules allow someone to choose training that costs more than the maximum when other funds are available to make up the difference. Ask what the gap would be and what could close it.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.310 \u2014 Can the duration and amount of ITAs be limited?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.310"
+      },
+      {
+       "label": "20 CFR 680.230 \u2014 Coordination of WIOA training funds and other grants",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.230"
+      }
+     ]
+    },
+    {
+     "id": "self_sufficiency",
+     "ask": "How does this area define employment that supports a person?",
+     "because": "The determination turns on whether someone can reach self-sufficiency without training, and California requires each local board to set that threshold itself \u2014 at least the lower living standard income level for the area, and often higher. It is a local number, and it is the number the decision rests on.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.210 \u2014 Who may receive training services?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.210"
+      },
+      {
+       "label": "California EDD \u2014 WIOA Title I Eligibility Technical Assistance Guide (WSD24-04)",
+       "url": "https://edd.ca.gov/siteassets/files/jobs_and_training/pubs/wsd24-04att1.docx"
+      }
+     ]
+    },
+    {
+     "id": "out_of_area",
+     "ask": "Can I use this for a program in another county, or another state?",
+     "because": "Training outside the local area is allowed where the program is on the state list, and outside California where state and local policies permit \u2014 both subject to local procedure. Worth asking anywhere the nearest program is a long drive, which in this state is a lot of places.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.520 \u2014 May individuals choose providers outside the local area?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.520"
+      }
+     ]
+    },
+    {
+     "id": "funds_left",
+     "ask": "Are there training funds left for this program year?",
+     "because": "The obligation to refer an eligible person and set up an account holds unless the program has exhausted its training funds for the year. That is the one answer a website can never know, and it decides everything.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.340 \u2014 What are the requirements for consumer choice?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.340"
+      }
+     ]
+    },
+    {
+     "id": "other_grants_first",
+     "ask": "What should I apply for first \u2014 a Pell Grant, or anything else?",
+     "because": "WIOA funds are for people who cannot get grant assistance elsewhere or who need more than it covers, and centers must consider other sources first. Enrolling with a Pell application pending is allowed if arranged in advance.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.230 \u2014 Coordination of WIOA training funds and other grants",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.230"
+      }
+     ]
+    },
+    {
+     "id": "support_costs",
+     "ask": "Can you help with transport, child care, or living costs while I train?",
+     "because": "Supportive services and needs-related payments are separate from tuition, and are only available to people already taking part in career or training services who cannot get that help anywhere else. They are worth asking about in the same conversation, not a later one.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.900 \u2014 What are supportive services for adults?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.900"
+      },
+      {
+       "label": "20 CFR 680.940 \u2014 Eligibility for needs-related payments",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.940"
+      }
+     ]
+    },
+    {
+     "id": "what_to_bring",
+     "ask": "What should I bring, and how long does a determination take?",
+     "because": "The determination rests on an interview, evaluation or assessment and career planning, and the center has to be able to document it. There is no federal minimum waiting period, so the answer is local and worth knowing before taking a day off work.",
+     "audience": "job_center",
+     "citations": [
+      {
+       "label": "20 CFR 680.220 \u2014 Are there particular career services an individual must receive before training?",
+       "url": "https://www.ecfr.gov/current/title-20/section-680.220"
+      }
+     ]
+    }
+   ],
+   "finders": [
+    {
+     "label": "CareerOneStop \u2014 American Job Center Finder (U.S. DOL)",
+     "url": "https://www.careeronestop.org/LocalHelp/AmericanJobCenters/find-american-job-centers.aspx"
+    },
+    {
+     "label": "California EDD \u2014 Office Locator",
+     "url": "https://edd.ca.gov/en/Office_Locator/"
+    },
+    {
+     "label": "California EDD \u2014 Eligible Training Provider List",
+     "url": "https://edd.ca.gov/en/jobs_and_training/Eligible_Training_Provider_List/"
+    }
+   ]
+  },
+  "centers": null,
+  "cities": null
+ }
+}

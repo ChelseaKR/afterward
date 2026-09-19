@@ -193,7 +193,7 @@ export function urlFor(lang: Lang, rest: string): string {
  * It names where a reader whose language matches no version should be sent. Without one, a
  * search engine serving somebody who reads neither English nor Spanish picks for itself. The
  * site root would be the better answer — it *is* a language chooser — except that
- * `app/page.tsx` canonicalises `/` to `/en/`, so `/` is not an indexable URL of its own and
+ * `app/page.tsx` canonicalizes `/` to `/en/`, so `/` is not an indexable URL of its own and
  * naming it here would put a URL in the set that the set's own members disown. English it is,
  * uniformly, on every page: one rule, no per-route exception, and true.
  */

@@ -1001,7 +1001,7 @@ STEPS: Final[tuple[Step, ...]] = (
             "WIOA training funding is limited to people who cannot get grant assistance "
             "from other sources, or who need help beyond what those sources cover. Centers "
             "must consider Pell Grants, state training funds and assistance for needy "
-            "families first. Someone can enrol while a Pell application is still pending, "
+            "families first. Someone can enroll while a Pell application is still pending, "
             "if the center arranges it with the provider in advance."
         ),
         citations=(CFR_OTHER_GRANT_SOURCES,),
@@ -1081,7 +1081,7 @@ QUESTIONS: Final[tuple[Question, ...]] = (
         ask="If I stop partway through, what do I owe, and what happens to funding already paid?",
         because=(
             "An Individual Training Account is a payment agreement with the provider and "
-            "may be paid in instalments, so who is owed what on a withdrawal is a question "
+            "may be paid in installments, so who is owed what on a withdrawal is a question "
             "for the provider and the center together, before enrolling rather than after."
         ),
         audience="provider",

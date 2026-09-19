@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { MachineTranslationNotice } from "@/components/MachineTranslationNotice";
 import { DEFAULT_LANG, LANGUAGES, LANG_NAME, dict } from "@/lib/i18n";
 
 /**
@@ -56,6 +57,9 @@ export default function NotFound() {
               ))}
             </div>
           </div>
+
+          {/* This page shows Spanish, so it carries the notice. See lib/machineTranslation.ts. */}
+          <MachineTranslationNotice />
 
           {/*
             The masthead, minus the tagline and the section nav. Both are language-specific,

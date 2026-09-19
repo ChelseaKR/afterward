@@ -58,7 +58,7 @@ publishes at credreg.net, fetched 2026-08-06 from
     The source validates rates as 0-1 fractions (``clean_rate``); ``qdata:percentage`` is
     "expressed as a percentage", so the projection multiplies by 100 (see
     :func:`_as_percentage`) -- a unit conversion, applied identically by the export and
-    the round-trip guard, never a value judgement.
+    the round-trip guard, never a value judgment.
   - ``qdata:DataSetTimeFrame`` is deliberately NOT emitted: the source carries no explicit
     reporting-period start or end dates, and inventing them would violate the no-inference
     rule. The measure descriptions carry the temporal semantics the source does state
@@ -273,7 +273,7 @@ def organization_ctid(provider_name: str) -> str:
 
     The name is the only provider identity the dataset carries, so it is the only honest
     key: two spellings of one school stay two organizations rather than being merged on a
-    similarity judgement this codebase refuses to make.
+    similarity judgment this codebase refuses to make.
     """
     return entity_ctid("credential-organization", provider_name)
 
@@ -313,7 +313,7 @@ def project_organization(provider_name: str) -> dict[str, Any]:
     Name only. The dataset asserts nothing else about the organization itself: the location
     on each program record is the program's, an address put here would be a guess, and
     ``entity_type`` values like "Higher Ed: Associate's Degree" do not map onto CTDL's
-    agentSector concept scheme without judgement calls (and credreg.net serves that scheme
+    agentSector concept scheme without judgment calls (and credreg.net serves that scheme
     as an HTML page, not fetchable data to check against).
     """
     ctid = organization_ctid(provider_name)
@@ -813,7 +813,7 @@ UNPROJECTED_SOURCE_FIELDS: Final = (
         ctdl_term="ceterms:agentSectorType",
         reason=(
             "The source's provider category -- 'Higher Ed: Associate's Degree' and the like "
-            "-- does not map onto CTDL's agent-sector concept scheme without judgement "
+            "-- does not map onto CTDL's agent-sector concept scheme without judgment "
             "calls, and credreg.net serves that scheme as an HTML page rather than as "
             "fetchable data. The organization carries the name the source filed and nothing "
             "else."

@@ -1,14 +1,23 @@
-"""Join California training programs to occupation outlook data and emit the site dataset.
+"""Join a state's training programs to occupation outlook data and emit the site dataset.
 
 The join is the product: a program's reported WIOA outcomes on one side, and the state's
 own projection of what the occupation it feeds actually pays and how many openings it has
 on the other. Nothing in California publishes those two facts next to each other today.
+
+The program side has always been state-parameterised -- ``build --state XX`` asks DOL for
+that state's ETP scorecard. The occupation side is too, behind
+:mod:`afterward.sources.projection_source`: California reads EDD, which publishes the most,
+and every other state reads Projections Central, which publishes the same four growth
+measures for all of them and no wage at all. ``coverage.json`` says which source a dataset
+was built from and which measures that source does not publish, so a null in a second
+state's record is a fact about the publisher rather than an unexplained blank.
 """
 
 from __future__ import annotations
 
 import json
 import time
+import unicodedata
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
@@ -17,6 +26,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from afterward import receipts
+from afterward.providers import count_providers
 from afterward.sources import (
     careeronestop,
     dol_bulk,
@@ -26,6 +36,7 @@ from afterward.sources import (
     link_review,
     local_help,
     onet,
+    projection_source,
     soc_vintage,
     zip_county,
 )
@@ -278,6 +289,7 @@ class ProviderLinkCoverage:
     programs_not_linked: int
     programs_upgraded_to_https: int
     programs_sent_to_front_page: int
+    # British spelling kept on purpose: a published coverage.json field name.
     programs_labelled_home_page: int
     earliest_check: str | None
     latest_check: str | None
@@ -288,10 +300,10 @@ class LocalHelpCoverage:
     """How many program pages can name a real office where the funding question is decided.
 
     ``centers_loaded`` carries the one distinction everything else here depends on. ``None``
-    means this build did not read the federal centre directory at all -- no credentials, or
+    means this build did not read the federal center directory at all -- no credentials, or
     the endpoint could not be reached -- and every count below it is then a count of a search
     that never happened. ``0`` would be a different claim entirely: that the directory
-    answered and California has no job centres in it. The same distinction is written on each
+    answered and California has no job centers in it. The same distinction is written on each
     program record, where a null list means "not looked for" and an empty list means "looked
     for, and none within the radius".
 
@@ -308,7 +320,7 @@ class LocalHelpCoverage:
     programs_searched: int
     # Programs that could not be searched even though the directory was read, because the
     # federal record gives them no coordinates. Its own number, never folded into
-    # "no centre nearby" -- one is a fact about California, the other about a filing.
+    # "no center nearby" -- one is a fact about California, the other about a filing.
     programs_not_searched: int
     programs_with_a_center: int
     programs_with_none_within_radius: int
@@ -505,6 +517,74 @@ def check_coverage_shape(document: Mapping[str, Any]) -> None:
             "coverage.json is missing what the site reads from it: "
             + "; ".join(problems)
             + ". Pages would render with those comparisons silently absent rather than fail."
+        )
+
+
+PROJECTION_SOURCE_KEY: Final = "projection_source"
+
+
+def check_state_is_reported(state: str, *, reported: Mapping[str, int] | None = None) -> str:
+    """Return the state code, or refuse it naming the states the ETP feed actually carries.
+
+    Asked of the feed rather than of a list kept here, because a state that files no
+    programs is not a typo and the two have to be told apart *before* a build runs. Without
+    this, ``--state XZ`` is a successful fetch of nothing: the Elasticsearch filter matches
+    no documents, the build emits a dataset with zero programs, and the only thing that
+    stops it reaching anybody is the empty-dataset refusal in
+    ``scripts/dataset_shape_check.py``, which says the dataset is old rather than that the
+    state was wrong.
+    """
+    code = (state or "").strip().upper()
+    counted = dol_etp.fetch_states() if reported is None else dict(reported)
+    if code not in counted:
+        raise ValueError(
+            f"the ETP scorecard reports no programs for {state!r}. It carries "
+            f"{len(counted)} reporters today: " + ", ".join(sorted(counted)) + "."
+        )
+    return code
+
+
+def check_projection_source(
+    document: Mapping[str, Any], occupations: Mapping[str, Mapping[str, Any]]
+) -> None:
+    """Refuse a dataset whose occupations contradict its own declaration of their source.
+
+    The declaration is the only thing in a second state's dataset that distinguishes
+    "Projections Central publishes no wage for anybody" from "this occupation's wage was
+    withheld". A declaration nothing checks is a sentence, so this checks it, and it checks
+    it against the records that were actually emitted rather than against the source object
+    that was meant to write them.
+
+    Loud rather than repaired, like every other check on this path: a measure quietly
+    dropped here to make the declaration true would delete a published figure to satisfy a
+    sentence about it.
+    """
+    declaration = document.get(PROJECTION_SOURCE_KEY)
+    if not isinstance(declaration, Mapping):
+        raise ValueError(
+            f"coverage.json carries no {PROJECTION_SOURCE_KEY} block, so nothing says which "
+            "publisher the occupation figures came from or which measures that publisher "
+            "does not carry. Every null in the dataset then reads as a withheld value."
+        )
+    published = declaration.get("publishes")
+    if not isinstance(published, Mapping):
+        raise ValueError(
+            f"coverage.json {PROJECTION_SOURCE_KEY}.publishes is "
+            f"{type(published).__name__}, not the measure-by-measure table this reads."
+        )
+    try:
+        measures = projection_source.PublishedMeasures(**dict(published))
+    except TypeError as exc:
+        raise ValueError(
+            f"coverage.json {PROJECTION_SOURCE_KEY}.publishes does not name the same "
+            f"measures this code knows about -- {exc}. A table that has drifted from the "
+            "record shape cannot say anything about the records."
+        ) from exc
+    problems = projection_source.unpublished_measures_carrying_values(occupations, measures)
+    if problems:
+        raise ValueError(
+            "the emitted occupations contradict the projection source declared beside "
+            "them: " + "; ".join(problems)
         )
 
 
@@ -991,7 +1071,21 @@ ONET_CACHE_DIR = COS_CACHE_DIR
 WAGE_SPREAD_PATH = Path("data/interim/oews-statewide.json")
 
 
-def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]:
+WAGE_SPREAD_STATE: Final = DEFAULT_STATE
+"""The one state the OEWS extract at :data:`WAGE_SPREAD_PATH` can be about.
+
+Source D3 is *California* EDD's OEWS panel, and the file it leaves behind carries no state
+column -- it is keyed by SOC code and by the area names California's projections publish.
+Read into a build for another state it would attach California percentiles to that state's
+occupations under the heading "what this pays", which is a correct measurement of the wrong
+population: the failure this project names most often, arriving through a file that is
+simply in the working directory from the last time somebody built California.
+"""
+
+
+def load_wage_spread(
+    path: Path = WAGE_SPREAD_PATH, *, state: str = DEFAULT_STATE
+) -> dict[str, dict[str, Any]]:
     """Read the OEWS statewide percentiles a previous fetch left, or an empty mapping.
 
     A separate step for the same reason `check-links` is one: the published extract is the
@@ -999,7 +1093,12 @@ def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]
     resource. No build should pay that to learn a set of numbers that changes annually, and a
     build with no file is complete -- the pages then say what they said before, which is the
     median alone.
+
+    Empty for any state but :data:`WAGE_SPREAD_STATE`, whatever is on disk. See that
+    constant for why the file cannot answer for a second state.
     """
+    if state.strip().upper() != WAGE_SPREAD_STATE:
+        return {}
     if not path.exists():
         return {}
     try:
@@ -1010,14 +1109,20 @@ def load_wage_spread(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]
     return occupations if isinstance(occupations, dict) else {}
 
 
-def load_wage_regions(path: Path = WAGE_SPREAD_PATH) -> dict[str, dict[str, Any]]:
+def load_wage_regions(
+    path: Path = WAGE_SPREAD_PATH, *, state: str = DEFAULT_STATE
+) -> dict[str, dict[str, Any]]:
     """The same extract's per-area percentiles, keyed by SOC then by published area name.
 
     Areas are kept under the names OEWS publishes. Those are the strings the projections use
     before their parenthetical county gloss, so joining is an equality test: a vintage that
     renamed an area drops out here rather than being repaired by a prefix or edit-distance
     match, which could attribute one region's wages to another.
+
+    Empty for any state but :data:`WAGE_SPREAD_STATE`, for the reason recorded there.
     """
+    if state.strip().upper() != WAGE_SPREAD_STATE:
+        return {}
     if not path.exists():
         return {}
     try:
@@ -1169,11 +1274,11 @@ def check_provider_links(
         )
 
     # Front pages are merged into one mapping because that is what `decide` reads, but they
-    # are summarised out of the headline counts: they are evidence about a substitution, not
+    # are summarized out of the headline counts: they are evidence about a substitution, not
     # links this dataset publishes, and counting them would inflate every figure in the
     # report that motivated this work.
     merged = {**checks, **front_pages}
-    summary = link_check.summarise(checks, pages_per_url=pages)
+    summary = link_check.summarize(checks, pages_per_url=pages)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(link_check.checks_document(merged), indent=1), encoding="utf-8"
@@ -1474,17 +1579,17 @@ def provider_link_coverage(payloads: list[dict[str, Any]]) -> ProviderLinkCovera
 # person least likely to be told anywhere else.
 #
 # This site cannot determine anybody's eligibility and must never appear to -- that is done
-# by a one-stop centre after an interview (20 CFR 680.220). What it can do is name the
+# by a one-stop center after an interview (20 CFR 680.220). What it can do is name the
 # nearest offices where the question is answered. Those come from one statewide read of the
 # federal finder, ranked locally, exactly as `afterward.sources.local_help` was built to be
-# used: 183 centres in one request, not 227 requests for the same 183.
+# used: 183 centers in one request, not 227 requests for the same 183.
 # --------------------------------------------------------------------------------------
 
 CENTER_RADIUS_MILES: Final = 25.0
 """How far away an office may be and still be published as somewhere to ask.
 
 Chosen from the measured distribution rather than picked. 3,234 of California's 3,266
-program pages have a centre inside it and the median page's nearest is about three miles;
+program pages have a center inside it and the median page's nearest is about three miles;
 widening it to 50 would gain the last 32 pages at the price of offering somebody a mountain
 pass as "nearby". The 32 are told plainly that there is none within this distance, and given
 the statewide finder instead, which is a better answer than a two-hour drive presented as a
@@ -1494,7 +1599,7 @@ Straight-line, so it is generous rather than conservative wherever the road is n
 """
 
 NEAREST_CENTERS: Final = 3
-"""How many centres to publish per program.
+"""How many centers to publish per program.
 
 One is a single point of failure: a phone nobody answers, an office open two mornings a
 week, a site that turns out to be the wrong side of a county line. Three is enough to make a
@@ -1510,13 +1615,13 @@ def fetch_job_centers(
 ) -> tuple[local_help.AmericanJobCenter, ...] | None:
     """Every America's Job Center the federal finder holds for ``state``, in one request.
 
-    ``None`` means this build established nothing about where the centres are -- no
+    ``None`` means this build established nothing about where the centers are -- no
     credentials are configured, or the endpoint could not be read. That is the CI case and a
     complete build: the pages then carry the funding route and the statewide finder without
     claiming anything about what is nearby. An empty tuple would be the other thing entirely,
     and neither is ever rendered as the other.
 
-    Centres outside the state are dropped. A border search legitimately returns them -- the
+    Centers outside the state are dropped. A border search legitimately returns them -- the
     nearest office to Blythe is in Arizona -- but an Individual Training Account is opened by
     a California local board, so an out-of-state office is not an answer to the question this
     dataset is attaching it to. Nothing is lost today: all 183 California records carry
@@ -1533,7 +1638,7 @@ def fetch_job_centers(
 def local_help_block(
     location: Mapping[str, Any], centers: Sequence[local_help.AmericanJobCenter] | None
 ) -> dict[str, Any]:
-    """The nearest centres to one program, or the record that none were looked for.
+    """The nearest centers to one program, or the record that none were looked for.
 
     ``centers`` is a list of ``{"id", "miles"}`` rather than whole records: the same three
     offices are the nearest ones to hundreds of programs, and copying 183 addresses across
@@ -1544,7 +1649,7 @@ def local_help_block(
 
     * ``None`` -- nothing was looked for. Either no directory was read, or this program's own
       record carries no coordinates to search from.
-    * ``[]`` -- looked for, and there is no centre within :data:`CENTER_RADIUS_MILES`.
+    * ``[]`` -- looked for, and there is no center within :data:`CENTER_RADIUS_MILES`.
     * a list -- the nearest ones, closest first.
 
     ``miles`` is rounded to a tenth because it is a great-circle distance being offered to
@@ -1576,7 +1681,7 @@ def local_help_block(
 def _attach_local_help(
     payloads: list[dict[str, Any]], centers: Sequence[local_help.AmericanJobCenter] | None
 ) -> None:
-    """Write every record's nearest centres, in place.
+    """Write every record's nearest centers, in place.
 
     Always written, like the cohort verdict and the link decision, so that a consumer can
     tell "this build looked and found nothing" from "this record predates the field".
@@ -1588,9 +1693,9 @@ def _attach_local_help(
 def local_help_coverage(
     payloads: list[dict[str, Any]], centers: Sequence[local_help.AmericanJobCenter] | None
 ) -> LocalHelpCoverage:
-    """Count what became of the centres, from the emitted records rather than the fetch."""
-    # `is True`, not truthiness: a centre the directory left unlabelled is not an affiliate,
-    # it is a centre nobody classified, and it must not be counted as either.
+    """Count what became of the centers, from the emitted records rather than the fetch."""
+    # `is True`, not truthiness: a center the directory left unlabeled is not an affiliate,
+    # it is a center nobody classified, and it must not be counted as either.
     comprehensive = {c.center_id for c in centers or () if c.is_comprehensive is True}
     attached = [payload["local_help"]["centers"] for payload in payloads]
     searched = [rows for rows in attached if rows is not None]
@@ -1710,7 +1815,7 @@ def _attach_wage_spread(
     percentiles are the honest bracket around the median already on the page.
 
     Every percentile is independently suppressible at source and stays null when it was
-    suppressed. None is interpolated from its neighbours, and none is read as zero: a
+    suppressed. None is interpolated from its neighbors, and none is read as zero: a
     withheld wage is a wage nobody published, which is the same rule the rest of this
     dataset follows.
     """
@@ -1821,8 +1926,8 @@ def _published_related(
     """O*NET's related occupations, less the ones this dataset cannot open a page for.
 
     O*NET's order is kept: it is a relevance ranking by the source that made the claim, and
-    re-sorting it would quietly restate someone else's judgement as ours. Two O*NET
-    specialisations can collapse onto the same six-digit SOC, so the first mention wins.
+    re-sorting it would quietly restate someone else's judgment as ours. Two O*NET
+    specializations can collapse onto the same six-digit SOC, so the first mention wins.
     """
     if found is None:
         return []
@@ -1963,7 +2068,7 @@ class OccupationMatch:
     """One occupation a program feeds, and how the join reached it.
 
     ``program_soc_codes`` holds the program's own codes that landed here, plural because two
-    of them can resolve to one aggregate: a home health aide programme tagged both 31-1121
+    of them can resolve to one aggregate: a home health aide program tagged both 31-1121
     and 31-1122 gets a single 31-1120 row, and this is what says why it is single.
     """
 
@@ -1991,7 +2096,7 @@ def match_occupations(
     The feed's order is kept, since it is the provider's own priority order, and a target
     appears once however many of the program's codes reached it. Where one code matches a
     published occupation exactly and another reaches the same occupation only as an
-    aggregate, the exact match wins and the row is labelled ``exact``: DOL naming the
+    aggregate, the exact match wins and the row is labeled ``exact``: DOL naming the
     published code itself is a stronger claim than one this pipeline derived, and it is not
     this pipeline's to weaken.
     """
@@ -2065,7 +2170,7 @@ look" is not a finding about the program.
 """
 
 UNPLACED_NO_ZIP = "no_zip"
-"""The record carries no ZIP this can look up. See :func:`zip_county.normalise_zip`."""
+"""The record carries no ZIP this can look up. See :func:`zip_county.normalize_zip`."""
 
 UNPLACED_ZIP_NOT_IN_CROSSWALK = "zip_not_in_crosswalk"
 """A real ZIP the crosswalk has no row for -- a PO Box range, or a ZIP unique to one
@@ -2080,9 +2185,22 @@ a border ZIP, or a California county no area title names."""
 UNPLACED_STRADDLES_AREAS = "straddles_areas"
 """The ZIP reaches counties in more than one area, or reaches into ground no area claims.
 
-Refused rather than resolved. Picking the larger share would be exactly the judgement this
+Refused rather than resolved. Picking the larger share would be exactly the judgment this
 rule exists not to make, and a program on the Los Angeles side of a Los Angeles/Orange ZIP
 renders identically to one on the Orange side.
+"""
+
+UNPLACED_SOURCE_PUBLISHES_NO_AREAS = "source_publishes_no_areas"
+"""This state's projection source publishes no sub-state geography, so there is nowhere to
+place a program.
+
+A statement about the publisher, and the only one of these six that is. Both placement rules
+restate a geography somebody else published -- the city rule reads EDD's own area titles and
+the county rule joins a ZIP to the counties those titles name -- and Projections Central
+(D9) publishes one figure per state and no areas at all. Without this word every program in
+such a build would be unplaced for ``zip_not_in_crosswalk``, which says the crosswalk let
+the program down when in fact nothing was ever going to place it, and the coverage block
+would read as a broken join rather than as a source that does not publish regions.
 """
 
 
@@ -2138,7 +2256,7 @@ def occupation_summary(
 
     **``entry_level_education`` is dropped on an aggregate match.** The other figures survive
     because a median wage or an opening count over a wider population is still an estimate of
-    a population the trainee belongs to -- approximate, labelled, and the only one California
+    a population the trainee belongs to -- approximate, labeled, and the only one California
     publishes for those workers. The typical-entry credential is not that kind of figure. It
     is a single category BLS assigns to the whole aggregate, so on a union of occupations with
     different credentials it is not an approximation of the member's answer, it is a different
@@ -2151,8 +2269,8 @@ def occupation_summary(
 
     The rule is mechanical -- every aggregate match, not the ones judged wrong. Deciding
     case by case which aggregate's credential happens to fit a given program is precisely the
-    similarity judgement :mod:`afterward.sources.soc_vintage` refuses to make, and it would put
-    that judgement somewhere nobody could audit it.
+    similarity judgment :mod:`afterward.sources.soc_vintage` refuses to make, and it would put
+    that judgment somewhere nobody could audit it.
 
     Two absences would otherwise reach the page as the same null, so
     ``match.entry_level_education_withheld`` separates them: true means EDD published a
@@ -2191,7 +2309,7 @@ def area_for_city(
     """
     if city_areas is None:
         return None
-    key = edd_lmi.normalise_place(city)
+    key = edd_lmi.normalize_place(city)
     if key is None:
         return None
     return city_areas.get(key)
@@ -2267,7 +2385,7 @@ def area_for_zip(
     """
     if index is None:
         return None, UNPLACED_CROSSWALK_NOT_READ
-    if zip_county.normalise_zip(zip_code) is None:
+    if zip_county.normalize_zip(zip_code) is None:
         return None, UNPLACED_NO_ZIP
     counties = index.crosswalk.counties(zip_code)
     if counties is None:
@@ -2287,11 +2405,18 @@ def place_program(
     program: dol_etp.Program,
     city_areas: Mapping[str, edd_lmi.ProjectionArea] | None,
     counties: CountyIndex | None,
+    *,
+    areas_published: bool = True,
 ) -> tuple[edd_lmi.ProjectionArea | None, str | None, str | None]:
     """Place one program, city rule first, county rule second.
 
     Returns ``(area, matched_on, unplaced_reason)``; exactly one of ``matched_on`` and
     ``unplaced_reason`` is set.
+
+    ``areas_published`` is false when this state's projection source publishes no sub-state
+    geography. Neither rule is then attempted -- both restate somebody else's published
+    areas and there are none -- and the reason says so, rather than letting the record fall
+    through to a crosswalk verdict about a join that was never going to happen.
 
     The order is stated rather than incidental, but it is not currently load-bearing.
     Measured on the 2026-08-04 snapshot: of the 1,525 programs the city rule places, 1,440
@@ -2300,6 +2425,8 @@ def place_program(
     publisher to reach its answer, and if the two ever do disagree the reader is told which
     one spoke through ``matched_on`` either way.
     """
+    if not areas_published:
+        return None, None, UNPLACED_SOURCE_PUBLISHES_NO_AREAS
     area = area_for_city(program.city, city_areas)
     if area is not None:
         return area, AREA_MATCH_PRINCIPAL_CITY, None
@@ -2318,8 +2445,9 @@ def program_payload(
     centers: Sequence[local_help.AmericanJobCenter] | None = None,
     reviewer: link_review.OffsiteReviewer | None = None,
     counties: CountyIndex | None = None,
+    areas_published: bool = True,
 ) -> dict[str, Any]:
-    """One program record, with its outcomes labelled by who they actually describe.
+    """One program record, with its outcomes labeled by who they actually describe.
 
     ``cohort`` comes from :func:`afterward.sources.dol_etp.cohort_integrity` run over the whole
     snapshot, because a cohort republished across a provider's programs is invisible from
@@ -2343,16 +2471,21 @@ def program_payload(
     hijacked one.
 
     ``counties`` is the ZIP-to-county index behind the second placement rule. Omitting it
-    leaves the county rule unattempted and every unplaced program labelled
+    leaves the county rule unattempted and every unplaced program labeled
     ``crosswalk_not_read`` -- "nobody looked", which is a statement about the build and not
     about the program, and is kept apart from the four ways the rule can look and decline.
+
+    ``areas_published`` is false when this state's projection source publishes no areas to
+    place a program in; see :func:`place_program`.
     """
     integrity = (
         cohort
         if cohort is not None
         else dol_etp.cohort_integrity([dol_etp.CohortFiling.of(program)])[0]
     )
-    area, matched_on, unplaced_reason = place_program(program, city_areas, counties)
+    area, matched_on, unplaced_reason = place_program(
+        program, city_areas, counties, areas_published=areas_published
+    )
     area_name = None if area is None else area.area_name
     matched = [
         occupation_summary(occupations[match.soc_code], match, area_name)
@@ -2455,7 +2588,7 @@ def program_payload(
         },
         "occupations": matched,
         # Where a person can ask whether somebody else will pay for this. Points into the
-        # centre directory published once in coverage.json; null means not looked for.
+        # center directory published once in coverage.json; null means not looked for.
         "local_help": local_help_block({"lat": program.lat, "lon": program.lon}, centers),
     }
 
@@ -2492,9 +2625,9 @@ def alternate_title_index(
     """SOC code -> search-only alternate titles, for every occupation a program actually feeds.
 
     A lookup table beside the rows rather than a field folded into each one. `search_entry`
-    already found this out the hard way for area names: 27 distinct labour-market areas
+    already found this out the hard way for area names: 27 distinct labor-market areas
     inlined per-row would have cost 5.1 KB gzipped where a table would cost 1.9 KB, and was
-    kept inline anyway because an integer means nothing without the table travelling with it.
+    kept inline anyway because an integer means nothing without the table traveling with it.
     Alternate titles make the opposite trade the right one, because the redundancy is far
     larger: measured against the 2026-08-17 snapshot, folding each program's occupations'
     full alternate-title lists directly into its search row more than doubles the index
@@ -2524,6 +2657,80 @@ def alternate_title_index(
     return table
 
 
+def spanish_title_index(
+    payloads: list[dict[str, Any]], occupations: dict[str, dict[str, Any]]
+) -> dict[str, list[str]]:
+    """SOC code -> the Department's own Spanish titles, for search matching only.
+
+    Nothing here is translated by this project. Every string is O*NET's Mi Proximo Paso text,
+    already attached to the occupation record by :func:`_attach_spanish`, and this only
+    reshapes it into the same kind of table :func:`alternate_title_index` builds and for the
+    same reason: an occupation repeats across many programs, so the terms belong beside the
+    rows rather than inside each one.
+
+    **A missing key means one thing and only one thing: the Department publishes no Spanish
+    record for that occupation.** That is a stronger guarantee than the alternate-title table
+    makes, where a missing key conflates "no record" with "no term worth indexing", and it is
+    the guarantee the interface needs -- a Spanish reader whose search finds nothing has to be
+    able to tell "no programs train for this" from "this job has no Spanish name on record
+    here". ``spanish["title"]`` is required wherever a record exists, so a record can never
+    produce an empty list and no key can ever be absent for the other reason.
+
+    The occupation's own Spanish title comes first and its ``also_called`` terms follow, which
+    is Mi Proximo Paso's own ordering. Terms are de-duplicated case- and accent-insensitively
+    against each other, because ``also_called`` sometimes repeats the title with different
+    accenting and an index does not need it twice; nothing is dropped for matching an English
+    string, since the two are scored separately.
+    """
+    used_socs = {soc for payload in payloads for soc in payload.get("soc_codes") or []}
+    table: dict[str, list[str]] = {}
+    for soc in sorted(used_socs):
+        occupation = occupations.get(soc)
+        if occupation is None:
+            continue
+        spanish = occupation.get("spanish")
+        if not isinstance(spanish, dict):
+            continue
+        title = spanish.get("title")
+        if not isinstance(title, str) or not title.strip():
+            continue
+        seen: set[str] = set()
+        kept: list[str] = []
+        for raw in [title, *(spanish.get("also_called") or [])]:
+            if not isinstance(raw, str):
+                continue
+            trimmed = raw.strip()
+            key = fold_accents(trimmed).lower()
+            if not trimmed or key in seen:
+                continue
+            seen.add(key)
+            kept.append(trimmed)
+        if kept:
+            table[soc] = kept
+    return table
+
+
+def fold_accents(text: str) -> str:
+    """Drop combining marks, so ``enfermeria`` and ``enfermería`` are the same search term.
+
+    NFD-decompose and discard the combining characters, the same operation ``foldAccents`` in
+    ``web/lib/search.ts`` performs on the query and on the indexed text.
+
+    What each side uses it for is different, and worth being precise about. The front end
+    folds both sides of a comparison, so a reader typing ``enfermeria`` -- which is what a
+    phone keyboard set to English produces -- reaches the same rows as one typing
+    ``enfermería``. Here it is used only to decide whether two terms are the same term for
+    de-duplication. **The emitted strings keep their accents**, so a difference between the
+    two implementations could only change which duplicate survives, never whether a search
+    matches. Neither side is derived from the other and neither has to be.
+
+    Deliberately not a general transliteration. ``ñ`` decomposes to ``n``, which is what a
+    reader without a Spanish keyboard types for it, and that is the whole point; nothing here
+    maps letters that are not accented forms of another letter.
+    """
+    return "".join(c for c in unicodedata.normalize("NFD", text) if not unicodedata.combining(c))
+
+
 def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     """One row of the client-side search index.
 
@@ -2540,7 +2747,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     the direction of understating the cost, because twice as many rows now carry a string.
     The decision it supported is unchanged and does not turn on the size: interning was
     rejected because an integer means nothing without the table, so a table that ever slipped
-    out of step with the rows would attribute programs to the wrong labour market silently,
+    out of step with the rows would attribute programs to the wrong labor market silently,
     which is the one failure this dataset is built to refuse. A row that can be read on its
     own is worth a few kilobytes, and worth more of them than it was.
 
@@ -2556,7 +2763,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
     # A program can feed up to three occupations, and 1,521 of California's 3,266 feed more
     # than one. Reading only the first understated the programs training for declining work
     # by more than half (229 against 538 on the current snapshot), because the shrinking
-    # occupation is frequently not the one listed first. Summarise across all of them.
+    # occupation is frequently not the one listed first. Summarize across all of them.
     changes = [o["percent_change"] for o in occupations if o.get("percent_change") is not None]
     openings = [
         o["total_job_openings"] for o in occupations if o.get("total_job_openings") is not None
@@ -2570,7 +2777,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         "n": program["program_name"],
         "p": program["provider_name"],
         "c": program["location"]["city"],
-        # Short name of the EDD labour-market area, or null for "this city is in none of
+        # Short name of the EDD labor-market area, or null for "this city is in none of
         # them". Never a nearest-metro guess and never a catch-all bucket.
         "a": None if region is None else region["area_short_name"],
         "$": program["cost"]["total_out_of_pocket"],
@@ -2604,7 +2811,7 @@ def search_entry(program: dict[str, Any]) -> dict[str, Any]:
         # The values themselves stay, deliberately. Nulling them here would say "not
         # reported", which is false and is the one confusion this dataset refuses to make;
         # dropping the row would hide a real program. So the row is published whole and
-        # labelled, and anything that ranks, badges or sorts on `cr`/`er`/`me` has to read
+        # labeled, and anything that ranks, badges or sorts on `cr`/`er`/`me` has to read
         # this key first.
         "at": outcomes["cohort"]["attributable"],
     }
@@ -2654,10 +2861,24 @@ AREA_UNPLACED_REASONS: Final = (
     UNPLACED_ZIP_NOT_IN_CROSSWALK,
     UNPLACED_COUNTY_OUTSIDE_AREAS,
     UNPLACED_STRADDLES_AREAS,
+    UNPLACED_SOURCE_PUBLISHES_NO_AREAS,
 )
 """Every reason a program can end up with no area. Enumerated so the coverage block carries
 a zero for each rather than omitting the ones that did not occur -- an absent key reads as
 "this cannot happen" where a zero reads as "it did not happen in this build"."""
+
+UNPLACED_REASONS_WITH_PUBLISHED_AREAS: Final = tuple(
+    reason for reason in AREA_UNPLACED_REASONS if reason != UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+)
+"""The reasons reachable in a build whose projection source publishes areas.
+
+Which is every California build, and every build the site has ever been given. The sixth
+word exists only for a state whose source publishes no sub-state geography at all, so a
+consumer whose job is to cover the reasons a *published* dataset can carry -- the site's
+copy for the unplaced panel, for one -- wants this tuple rather than the whole vocabulary.
+Derived from :data:`AREA_UNPLACED_REASONS` rather than typed beside it, so a seventh reason
+lands in both or in neither.
+"""
 
 
 def area_placement_coverage(
@@ -2775,12 +2996,14 @@ def cohort_integrity_coverage(payloads: list[dict[str, Any]]) -> CohortIntegrity
         oversized_for_one_program=sum(
             1 for cohort in cohorts if cohort["oversized_for_one_program"]
         ),
-        oversized_providers=len(
-            {
-                dol_etp.normalise_provider(payload["provider_name"])
-                for payload in payloads
-                if payload["outcomes"]["cohort"]["oversized_for_one_program"]
-            }
+        # Keyed on the published identity, like every other provider count here. The flags
+        # themselves are still grouped by the duplicate pass's own key, which is a different
+        # and narrower question; this line only counts the providers those flags landed on,
+        # and it is a number a reader meets, so it counts them the way the site does.
+        oversized_providers=count_providers(
+            payload["provider_name"]
+            for payload in payloads
+            if payload["outcomes"]["cohort"]["oversized_for_one_program"]
         ),
         not_attributable=sum(1 for cohort in cohorts if not cohort["attributable"]),
     )
@@ -2790,7 +3013,7 @@ def unmapped_cities(payloads: list[dict[str, Any]]) -> dict[str, int]:
     """Cities this build declined to place, with how many programs each cost.
 
     The refusals are the interesting half of the coverage story, so they ship rather than
-    being summarised away. This list was written when the city rule was the only rule and it
+    being summarized away. This list was written when the city rule was the only rule and it
     answered "which places would a documented address-to-county source recover"; that source
     is now read (D8), so what remains here is the residual after both rules -- the cities
     whose ZIPs straddle two areas, and the ones no crosswalk row covers.
@@ -2852,6 +3075,11 @@ def emit_site_bundle(
                 # Search-only, never rendered: see alternate_title_index for why this is a
                 # table beside the rows rather than a field folded into each one.
                 "altTitles": alternate_title_index(payloads, occupations),
+                # The same shape, for the Department's own Spanish occupation titles. A SOC
+                # a program feeds is present here exactly when Mi Proximo Paso publishes a
+                # Spanish record for it, so the front end can tell a Spanish search that
+                # found nothing from a job that has no Spanish name on record.
+                "esTitles": spanish_title_index(payloads, occupations),
             },
             separators=(",", ":"),
         ),
@@ -2862,7 +3090,7 @@ def emit_site_bundle(
     receipt_dir = _fresh_dir(output_dir / receipts.RECEIPT_DIRNAME)
     for payload in payloads:
         if payload["uuid"]:
-            # The receipt attests to the bytes actually written, not to a re-serialisation of
+            # The receipt attests to the bytes actually written, not to a re-serialization of
             # the same dict: a digest over a second rendering would keep agreeing with itself
             # after the writer's separators changed underneath it, which is the one thing it
             # exists to notice.
@@ -2919,7 +3147,9 @@ def _attach_cohort_integrity(payloads: list[dict[str, Any]]) -> None:
         payload["outcomes"]["cohort"] = verdict.as_dict()
 
 
-def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
+def _attach_unplaced_reason(
+    payloads: list[dict[str, Any]], *, areas_published: bool = True
+) -> None:
     """Say why each unplaced record has no region, in place, for a build that has no index.
 
     The sixth block the offline build has to write for itself, and the one that was missed.
@@ -2943,11 +3173,18 @@ def _attach_unplaced_reason(payloads: list[dict[str, Any]]) -> None:
     What this deliberately does **not** do is re-run placement. Guessing which of the four
     county-rule outcomes a program would have reached, with no crosswalk in the process,
     would put a specific reason nobody computed into a published record.
+
+    ``areas_published`` is false when the state's projection source publishes no sub-state
+    geography, and then ``crosswalk_not_read`` would be the wrong word for the opposite
+    reason: it says a crosswalk was not consulted, when the truth is there was nowhere for
+    it to place anything. That distinction matters on this path too, because this is also
+    how an operator rebuilds a site bundle from an unpacked release of any state.
     """
+    unplaced = (
+        UNPLACED_CROSSWALK_NOT_READ if areas_published else UNPLACED_SOURCE_PUBLISHES_NO_AREAS
+    )
     for payload in payloads:
-        payload["region_unplaced_reason"] = (
-            None if payload.get("region") is not None else UNPLACED_CROSSWALK_NOT_READ
-        )
+        payload["region_unplaced_reason"] = None if payload.get("region") is not None else unplaced
 
 
 def build_offline(
@@ -2982,16 +3219,22 @@ def build_offline(
     payloads = programs_doc["programs"]
     occupations = occupations_doc["occupations"]
     snapshot = programs_doc["snapshot_date"]
+    offline_state = str(programs_doc.get("state", DEFAULT_STATE))
+    offline_source = projection_source.source_for(offline_state)
     _attach_cohort_integrity(payloads)
-    _attach_unplaced_reason(payloads)
+    _attach_unplaced_reason(payloads, areas_published=offline_source.publishes.regions)
     _attach_provider_links(payloads, load_link_checks(link_checks_path))
     # The fixture predates the wage spread and carries no such key, so without this every
     # occupation reaches the page with the field absent rather than null -- a shape no real
     # build produces, which is how a page that guards `!== null` still crashed the export.
     # With no OEWS extract on the machine this attaches null everywhere, which is the honest
     # answer: nothing published a spread here, so the pages say the median alone.
-    _attach_wage_spread(occupations, load_wage_spread(), load_wage_regions())
-    # No centres are looked up here, for the same reason no links are checked: this is the
+    _attach_wage_spread(
+        occupations,
+        load_wage_spread(state=offline_state),
+        load_wage_regions(state=offline_state),
+    )
+    # No centers are looked up here, for the same reason no links are checked: this is the
     # hermetic build, and a distance copied out of another machine's read would be an
     # observation this build did not make. The pages it produces carry the funding route and
     # the statewide finder, and claim nothing about what is near any particular city.
@@ -3014,11 +3257,32 @@ def build_offline(
         local_help_coverage(payloads, None), None, payloads
     )
     coverage["peer_medians"] = peer_medians(payloads)
+    # Recomputed for the sixth time for the reason the five above are: a fixture predating
+    # the field carries no block, and inheriting one would let a fixture assert which
+    # publisher figures came from. The fixture is a slice of a California build, so the
+    # source is EDD, and the declaration is written from the code rather than copied -- the
+    # check below then reads it back against the occupations actually emitted.
+    coverage[PROJECTION_SOURCE_KEY] = projection_source.fixture_read(
+        offline_source,
+        state=offline_state,
+        periods=[
+            occupation["period"] for occupation in occupations.values() if occupation.get("period")
+        ],
+    ).declaration(occupations_indexed=len(occupations))
+    # Counted from the fixture's own records rather than carried across, so that the number
+    # the offline build publishes is one this rule produced today. The site derives the same
+    # figure from the roster it mints provider pages from and refuses to build if the two
+    # disagree (`providerPopulation` in web/lib/providers.ts), and that check is only worth
+    # having if this side of it is a count rather than a constant. #155.
+    coverage["distinct_providers"] = count_providers(
+        payload.get("provider_name") for payload in payloads
+    )
     # The fixture's own coverage block is carried through untouched apart from the keys above,
     # so a fixture older than a field the site reads would ship a document missing it. Checked
     # before anything is written, so the failure is a build that stops rather than a site that
     # quietly renders one section fewer.
     check_coverage_shape(coverage)
+    check_projection_source(coverage, occupations)
     # And the headline counts it carried through are checked against the programs actually
     # being written here, because "carried through untouched" is exactly how they would come
     # to describe some other dataset. See check_coverage_counts.
@@ -3080,9 +3344,11 @@ def build(
     snapshot = snapshot or date.today().isoformat()
     link_checks = load_link_checks(link_checks_path)
 
+    source = projection_source.source_for(check_state_is_reported(state))
     programs = list(dol_etp.fetch_programs(state))
     benchmark = dol_etp.fetch_state_benchmark(state)
-    projections = edd_lmi.fetch_projections()
+    read = source.fetch()
+    projections = list(read.rows)
     # Enrichment first, so the occupation index is built once with it rather than rewritten.
     # Empty when no credentials are configured, which is a complete build, not a failed one.
     enrichment = fetch_enrichment(
@@ -3091,9 +3357,10 @@ def build(
     # O*NET's Spanish records, for the same occupations and on the same terms: absent
     # without a key, absent for the occupations Mi Próximo Paso does not carry.
     spanish = fetch_spanish_occupations(detailed_soc_codes(projections))
-    # Whatever a previous `afterward fetch-wages` left behind; absent is a complete build.
-    wage_spread = load_wage_spread()
-    wage_regions = load_wage_regions()
+    # Whatever a previous `afterward fetch-wages` left behind; absent is a complete build,
+    # and so is a build for a state the California OEWS extract cannot answer for.
+    wage_spread = load_wage_spread(state=state)
+    wage_regions = load_wage_regions(state=state)
     occupations = index_occupations(
         projections,
         enrichment=enrichment,
@@ -3101,7 +3368,9 @@ def build(
         wage_spread=wage_spread,
         wage_regions=wage_regions,
     )
-    areas = edd_lmi.area_definitions(projections)
+    # Empty for a source that publishes no sub-state geography, which both placement rules
+    # then decline to attempt rather than reaching a verdict about a join with no right side.
+    areas = edd_lmi.area_definitions(projections) if source.publishes.regions else []
     city_areas = edd_lmi.principal_city_areas(areas)
     # The second placement rule's index, read from the committed Census extract (D8). No
     # network: the 2020 relationship file is a decennial product, so the extract is a
@@ -3132,6 +3401,7 @@ def build(
             centers=centers,
             reviewer=reviewer,
             counties=counties,
+            areas_published=source.publishes.regions,
         )
         for p, c in zip(programs, integrity, strict=True)
     ]
@@ -3167,7 +3437,12 @@ def build(
         programs_with_soc=sum(1 for p in programs if p.soc_codes),
         programs_matched_to_occupation=sum(1 for p in payloads if p["occupations"]),
         aggregate_matches=aggregate_match_coverage(payloads),
-        distinct_providers=len({p.provider_name for p in programs if p.provider_name}),
+        # One rule, one number. `count_providers` is the same identity the site mints
+        # provider URLs from, so this figure is the number of provider pages a reader can
+        # go and count -- it used to be the number of distinct strings filed, which was
+        # three higher and reconcilable with nothing the site publishes. See #155 and
+        # afterward/providers.py.
+        distinct_providers=count_providers(p.provider_name for p in programs),
         distinct_occupations_matched=len(matched_socs),
         occupation_rows_loaded=len(occupations),
         programs_mapped_to_area=mapped_to_area,
@@ -3209,7 +3484,7 @@ def build(
         "areas": area_coverage(payloads, areas),
         "area_placement": area_placement_coverage(payloads, counties.unresolved_counties),
         "unmapped_cities": unmapped_cities(payloads),
-        # The counts, plus the centre directory the program records point into and
+        # The counts, plus the center directory the program records point into and
         # the guidance the site publishes with them. Overrides the plain counts
         # `asdict(report)` already wrote under this key.
         "local_help": local_help_document(report.local_help, centers, payloads),
@@ -3218,8 +3493,13 @@ def build(
         # employed against a 69% median among reporting programs).
         "state_benchmark": benchmark.as_dict() if benchmark else None,
         "peer_medians": peer_medians(payloads),
+        # Which publisher these occupation figures came from, and which measures that
+        # publisher does not carry at all. Without it a null wage in a second state's
+        # dataset is byte-identical to a wage California's source withheld.
+        PROJECTION_SOURCE_KEY: read.declaration(occupations_indexed=len(occupations)),
     }
     check_coverage_shape(coverage)
+    check_projection_source(coverage, occupations)
     # The report counted `programs`; the site is served `payloads`. Nothing sits between the
     # two today, and this is what says so out loud if anything ever does.
     check_coverage_counts(coverage, payloads)

@@ -13,8 +13,8 @@ import {
   programCount,
   programCountsBySoc,
   providerLetter,
-  summariseOccupations,
-  summariseProviders,
+  summarizeOccupations,
+  summarizeProviders,
   toProviderRow,
 } from "./browse";
 import type { SearchEntry } from "./types";
@@ -153,7 +153,7 @@ describe("grouping occupations", () => {
   });
 
   it("counts each band for the summary", () => {
-    expect(summariseOccupations(rows)).toEqual({
+    expect(summarizeOccupations(rows)).toEqual({
       total: 5,
       shrinking: 1,
       steady: 1,
@@ -262,9 +262,9 @@ describe("provider rows", () => {
     expect(row.reporting).toBe(0);
   });
 
-  it("summarises the roster", () => {
+  it("summarizes the roster", () => {
     expect(
-      summariseProviders([
+      summarizeProviders([
         provider({ name: "A", programs: 3, reporting: 1 }),
         provider({ name: "B", programs: 2, reporting: 0 }),
       ]),

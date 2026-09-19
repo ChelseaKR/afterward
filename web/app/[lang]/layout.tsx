@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AnalyticsOptOut } from "@/components/AnalyticsOptOut";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { MachineTranslationNotice } from "@/components/MachineTranslationNotice";
 import { getCoverage } from "@/lib/data";
 import { LANGUAGES, LANG_NAME, OTHER_LANG, dict, isLang } from "@/lib/i18n";
+import { isMachineTranslated } from "@/lib/machineTranslation";
 import { REPO_URL, homeDescription, homeTitle, shareMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -97,10 +101,18 @@ export async function generateMetadata({
  * name — and the qualifier rendered beside the language name says so, in that language:
  * "Español (inicio)". The script hides the qualifier at the same moment it makes the link
  * true, so the link never claims to preserve your place and then fails to.
+ *
+ * ---- The machine-translation notice's English link ----
+ *
+ * On a Spanish page the notice links to "the English version", and the English version of
+ * `/es/<rest>` is `/en/<rest>` by the same derivation. The notice renders above the masthead,
+ * so it exists when this runs; without JavaScript its href stays at `/en/`, which is still
+ * the English version of the site, and its text promises no more than that.
  */
 const SYNC_MASTHEAD_TO_LOCATION = `(function () {
   var toggle = document.getElementById("lang-switch");
   var qualifier = document.getElementById("lang-switch-home");
+  var english = document.getElementById("mt-notice-english");
   var from = toggle ? "/" + toggle.getAttribute("data-lang-from") + "/" : "";
   var to = toggle ? "/" + toggle.getAttribute("data-lang-to") : "";
 
@@ -118,6 +130,7 @@ const SYNC_MASTHEAD_TO_LOCATION = `(function () {
     var rest = here.slice(from.length - 1);
     toggle.setAttribute("href", to + rest + location.search + location.hash);
     if (qualifier) qualifier.setAttribute("hidden", "");
+    if (english) english.setAttribute("href", "/en" + rest + location.search + location.hash);
   }
 
   function sync() {
@@ -167,6 +180,14 @@ export default async function LangLayout({
           <div className="disclaimer">
             <div className="shell">{t.notAffiliated}</div>
           </div>
+
+          {/*
+            Machine-translated, unreviewed Spanish (owner decision, 2026-09-18), said on every
+            Spanish page in both languages, directly under the non-affiliation notice and for
+            the same reason it sits there. `scripts/mt-notice-audit.mjs` fails the build on
+            any exported Spanish page without it. See `lib/machineTranslation.ts`.
+          */}
+          {isMachineTranslated(lang) && <MachineTranslationNotice />}
 
           <div className="masthead">
             <div className="shell masthead-row">
@@ -235,7 +256,7 @@ export default async function LangLayout({
             {/*
               The two browse indexes were reachable only by typing the URL. They are the
               site's other two ways in — by the job you want or by the school you were
-              about to enrol in — so they belong in the chrome rather than in a link at the
+              about to enroll in — so they belong in the chrome rather than in a link at the
               bottom of one page. Their own row under the wordmark: dropping them into the
               masthead row would either crowd the tagline or push the language toggle off a
               narrow screen, and the language toggle is not something to make harder to find.
@@ -323,8 +344,7 @@ export default async function LangLayout({
 
               A plain `<a>`, not a `<Link>`: it leaves the site. `rel="noopener noreferrer"`
               matches the O*NET credit above and is the house rule for every outbound link
-              here -- `noreferrer` because this site sends no referrer anywhere, which is the
-              same reason it carries no analytics.
+              here -- `noreferrer` because this site sends no referrer to the places it links.
             */}
             <p>
               {t.sourceCode}{" "}
@@ -333,9 +353,31 @@ export default async function LangLayout({
               </a>
             </p>
 
+            {/*
+              Google Analytics 4 (owner decision, 2026-09-17), said where every reader will
+              meet it, with the way to turn it off beside it. The link goes to the full
+              disclosure on the About page; the button renders after hydration, because only
+              the browser knows whether this reader already opted out.
+            */}
+            <p className="footer-analytics">
+              {t.analyticsFooter}{" "}
+              <Link href={`/${lang}/about/#privacy`} prefetch={false}>
+                {t.analyticsFooterLink}
+              </Link>
+              <AnalyticsOptOut
+                labels={{
+                  optOut: t.analyticsOptOut,
+                  optIn: t.analyticsOptIn,
+                  offStatus: t.analyticsOffStatus,
+                  onStatus: t.analyticsOnStatus,
+                }}
+              />
+            </p>
+
             <p>{t.notAffiliated}</p>
           </div>
         </footer>
+        <GoogleAnalytics />
       </body>
     </html>
   );

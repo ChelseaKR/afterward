@@ -8,6 +8,76 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Every page that shows Spanish says it is machine-translated (owner decision,
+  2026-09-18).** The Spanish was drafted by machine and no native speaker has reviewed it
+  (#32). Spanish pages, the root language chooser and the 404 page now carry a notice at the
+  top of the page body, in Spanish and English -- *"Traducción automática, sin revisión
+  humana."* -- with a link to the same page in English. `npm run mt-notice` fails the build on
+  any exported page that shows Spanish without it. See `docs/I18N.md`.
+
+- **Google Analytics 4, disclosed and switchable off (owner decision, 2026-09-17).**
+  `web/lib/analytics.ts` loads gtag.js for `G-GXZNBWJB8D` only when the production deploy
+  build set `NEXT_PUBLIC_GA_MEASUREMENT_ID` (a literal in `deploy.yml`, nowhere else), the page
+  is on `afterward.chelseakr.com`, the browser sends neither Global Privacy Control nor Do Not
+  Track, and the reader has not opted out. Consent Mode v2 denies ad storage, ad user data and
+  ad personalization everywhere, and analytics storage in the EEA, the UK and Switzerland;
+  Google signals and ad personalization are off. One page view per client-side path change,
+  with the address reduced to its path and `utm_*` tags, so search terms, filters and shared
+  shortlists never reach Google. Every footer gains a line saying so, a link to the About
+  page's new "Privacy and analytics" section (English and Spanish), and an "Opt out of
+  analytics" / "Opt back in" button remembered in `localStorage`
+  (`afterward.chelseakr.com:analytics-opt-out`) that also deletes the GA cookies. The
+  CloudFront CSP in `infra/aws-static-site.yml` allows the three GA origins; it takes effect
+  when the stack is updated. The "no account, no tracking" line in the README, SECURITY.md,
+  the privacy audit, the roadmap and the repository description was rewritten to match.
+
+- **The pipeline builds a second state, and the dataset says what that state's source does
+  not publish (#105).** The occupation side was California's alone: it read CA EDD directly.
+  It now reads a `ProjectionSource` — EDD (D2) for California, Projections Central (D9) for
+  every other state — and `afterward build --state NV` emits a dataset that passes
+  `scripts/dataset_shape_check.py`. Measured on Nevada, 2026-09-11: 1,069 ETP programs, 657
+  published projection rows, 648 occupations indexed, **1,042 of 1,069 programs (97.5%)
+  joined to at least one occupation**. `--state` is checked against the 55 states the ETP
+  feed actually reports for, in one aggregation, so an unrecognized code is a named refusal
+  rather than a successful fetch of nothing. **The declaration is the substance of this
+  change.** Projections Central publishes no wage of any kind, no regional breakdown, and no
+  education or training columns — seven of the eleven occupation measures — so without a
+  statement somewhere, a Nevada occupation's `median_annual_wage: null` is byte-identical to
+  a California occupation whose wage EDD withheld: a fact about a publisher rendered as a
+  fact about a job. Every `coverage.json` now carries a `projection_source` block naming the
+  publisher, the endpoint, the period read off the rows themselves, and the measures that
+  publisher has no column for; `build.check_projection_source` refuses a dataset that
+  contradicts it in **either** direction — a measure declared absent that some record
+  carries, or a measure declared published that no record does. Four things the adapter
+  refuses, each measured against the live service rather than read out of documentation: the
+  **national row**, which the all-states endpoint serves in the same array as the states
+  (`STFIPS: "0"`, first, before Alabama) and which is refused by name rather than filtered
+  out; **`AvgAnnualOpenings`**, which is an annual average where EDD's `total_job_openings`
+  is a ten-year total — the ratio is 10.0 across all 56 occupations in the committed dataset,
+  so the source's openings figure has no field here and is not carried; a **404**, which the
+  endpoint answers both to a state it holds nothing for and to a page size it does not accept
+  (10, 25, 50, 100 and 1000 are accepted; 5, 20, 200, 500 and 2000 each answered 404), so a
+  404 raises rather than becoming an empty projection set; and **one Nevada row that
+  contradicts itself** — `45-4029 Logging Workers, All Other`, published as `Base: "0"` with
+  `PercentChange: "25"` — which is dropped, counted and named under
+  `projection_source.rows_refused`. A new unplaced reason, `source_publishes_no_areas`, keeps
+  "this publisher has no sub-state geography" apart from "the crosswalk could not place it",
+  and `load_wage_spread` now refuses to read California's OEWS extract into another state's
+  build, which would have attached California percentiles to Nevada occupations. The adapter
+  was checked against the source this project already trusts: Projections Central's
+  California rows agree with EDD's on base employment, projected employment, numeric change
+  and percentage change for **56 of 56** occupations in the committed dataset, exactly. **The
+  California build is unchanged except for the declaration**: over a real 3,266-program
+  build, **7,205 of 7,206 emitted files are byte-identical**, and `coverage.json` gains
+  exactly two things, both additive — the `projection_source` block and a
+  `source_publishes_no_areas: 0` entry in `area_placement.unplaced_by_reason`. The owner
+  accepted the new key on 2026-09-18 on the condition that it is additive, and
+  `tests/test_coverage_is_additive.py` holds that: every field the pre-change code published
+  for the committed California fixture, in `coverage.json` and in `area_placement`, comes back
+  with the same value, and nothing disappears. The site's copy test for unplaced reasons now
+  covers the reasons a dataset with published areas can carry, so the new reason needs its
+  English and Spanish sentence only when the site takes a second state (#32).
+
 - **Every page now says which URL it is, and where its other language lives (#156).** A crawl
   of the live site on 2026-09-13 read 27 URLs out of a `sitemap.xml` holding 9,046 and found
   **no `<link rel="canonical">` on any of them**; the only canonical anywhere in the export
@@ -40,7 +110,7 @@ All notable changes to this project are documented here. The format follows
   the whole tarball, and runs on a schedule nobody outside this repository sees. A
   `receipts/<uuid>.json` beside every record hands the same question to the reader, one
   record at a time: the sha256 of the exact bytes of `programs/<uuid>.json` (so
-  `shasum -a 256` settles it, with no canonicalisation rule to reimplement), every measure's
+  `shasum -a 256` settles it, with no canonicalization rule to reimplement), every measure's
   state in the flat CSV's own three-word vocabulary read through `tabular.state_of` rather
   than a second copy of the rule, how the occupation join reached each occupation beside the
   program's own SOC codes, and the link verdict with the classifier version that reached it.
@@ -114,6 +184,35 @@ All notable changes to this project are documented here. The format follows
   real run reported `current` against `dataset-2026-08-17`. `list_releases` now carries
   `published_at`, `created_at` and `html_url` for it, and a test pins those field names because
   nothing in `release_integrity.py` itself reads them. (#135, #137)
+- **Search now matches the Department's own Spanish occupation titles**, so "enfermera" finds
+  the nursing programs. The dataset has carried O\*NET Mi Próximo Paso titles for every
+  occupation the Department publishes one for since the enrichment expansion, and the search
+  index never offered them to the scorer — a Spanish reader typing a Spanish job name got an
+  empty result set on a site that promises Spanish from the first release, and an empty result
+  set reads as "California trains nobody for this" rather than "this search cannot hear you".
+  `spanish_title_index` emits an `esTitles` table beside `altTitles`, keyed by the SOC codes a
+  program actually feeds. Nothing is translated by this project; the terms are O\*NET's text,
+  carried through untouched, accents and all.
+  Terms are matched accent-folded, because a phone keyboard set to English types `enfermeria`
+  and the Department writes `Enfermería`; folding both sides means the reader most likely to
+  need this index is not the one it fails.
+  **The table is supplied on the Spanish site only**, which is what makes "English scoring is
+  unchanged" a guarantee rather than a hope: with no table the Spanish arm of `score` is
+  unreachable, and a test asserts identical scores over terms drawn from the Spanish table
+  itself. Scoring it on the English pages too would change what an English query matches, and
+  that is a separate decision.
+  **Index cost, measured on the 60-program fixture** (`make data-offline`): 7,825 → 12,000
+  bytes gzipped, of which the table is 4,175 for 52 occupations and 511 terms. That is the
+  fixture's ratio and not the real snapshot's, and it overstates it heavily — the fixture is 60
+  rows against 3,266, so the per-SOC table is a far larger share of it. The real figure has not
+  been measured, because the production dataset is not in this repository, and a number nobody
+  has taken does not belong in a changelog. For scale, the English alternate-title table costs
+  2,557 gzipped bytes for 470 fixture terms against 23.2 KB for 3,473 on the real snapshot.
+  A reader whose search finds nothing is now told what is actually true: job titles are
+  searched in Spanish, program and provider names are not, and *n* of the *m* occupations these
+  programs lead to have no Spanish name on record — both counted from the index. The previous
+  sentence said a Spanish term "no va a coincidir con ninguno", which stopped being true.
+
 - **DOL's bulk export is now read beside the search API for the one thing it has that the API
   does not: `de129`, the actual denominator of the published Q2 employment rate.** Issue #25
   established that this site publishes a rate whose denominator it cannot show, and
@@ -185,6 +284,35 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- **The sitemap's `lastmod` is derived from the pages, or omitted (#156).** It used to be one
+  date — `2026-09-12T00:00:00.000Z` — on all 9,046 URLs, read from
+  `getCoverage().snapshot_date`. That is a real date belonging to a real thing, and the thing
+  it belongs to is the dataset rather than the page, so the claim was wrong in both directions
+  at once: it moved for a program whose row was byte-identical to last month's, and it did not
+  move when a copy change rewrote a sentence on 165 program pages under an unchanged dataset.
+  `app/sitemap.ts` now emits no `lastmod` at all, and the new `web/scripts/lastmod.mjs`
+  (`npm run lastmod`, in the `verify` chain) adds one only where it can point at evidence: it
+  digests every exported page and compares it against the ledger the last deploy published at
+  `/lastmod.json`. **A page whose bytes are unchanged keeps the date it last changed; a page
+  whose bytes differ is dated today, because today is when it changed; a page nothing has yet
+  watched change carries no date at all.** That last rule is what makes "stamp today on
+  everything" impossible to mistake for "stamp today on what moved" — with no ledger, this
+  dates nothing and says so, where the two would otherwise produce identical output. Digesting
+  the whole document is legitimate because the export is reproducible: measured on 2026-09-13,
+  two `npm run build` runs over an unchanged tree produced 284 pages of which 284 differed, and
+  the entire difference was Next's 21-character random build id — normalize that one literal
+  away and **0 of 284 differ**. The build id is read from `.next/BUILD_ID` rather than
+  pattern-matched, and a build id that appears in no page is a refusal rather than a silent
+  no-op that would re-date the site on every deploy. `--check` is the gate: every `<lastmod>`
+  in the sitemap must be backed by a ledger entry whose digest still matches the page in the
+  export, so a date with no evidence and a page edited after it was dated are both failures.
+  `web/scripts/lastmod.test.ts` proves it, over eleven refusals and four dating rules, with the
+  central fixture handing the script a ledger dated `2026-05-01` and a build date of
+  `2026-09-13` and requiring `2026-05-01` in the output. `.github/workflows/deploy.yml` fetches
+  the published ledger over plain HTTPS before dating — no AWS call, no credential, nothing
+  about a reader — and if there is none, that deploy publishes a sitemap with no `lastmod` and
+  says so in the run summary rather than inventing dates to fill the space.
+
 - `check_coverage_counts` now recomputes `programs_mapped_to_area` and `programs_without_area`
   from the emitted programs, as it already did for the outcome counts. Those two are the figures
   the site's whole regional half is measured by, and they were carried through the offline build
@@ -192,7 +320,7 @@ All notable changes to this project are documented here. The format follows
 
 - `afterward export-csv` and `make csv-export`: the dataset as one flat table in which no blank
   ever carries a meaning. The site's dataset is sharded JSON, which is right for a page loading
-  one programme and wrong for the reader most likely to check these figures — a journalist or a
+  one program and wrong for the reader most likely to check these figures — a journalist or a
   researcher with a spreadsheet, who today has to reverse-engineer the shards. Every measure now
   carries a state column beside it, the state column is never empty, and a value cell is empty
   only where the state cell says why. A reader reaching for `fillna(0)` has been told, in the
@@ -202,8 +330,8 @@ All notable changes to this project are documented here. The format follows
   enum, and `""` declared as the only missing value.
   The vocabulary is `reported`, `not_reported` and `competency_based`, and the missing fourth is
   the point. `competency_based` reaches only `length_weeks` and `length_hours`, from the record's
-  own flag: the ETP data dictionary attaches `-1` on those two elements to a programme that
-  advances on demonstrated competency, which is a fact about the programme and not missing data.
+  own flag: the ETP data dictionary attaches `-1` on those two elements to a program that
+  advances on demonstrated competency, which is a fact about the program and not missing data.
   There is deliberately **no `suppressed`**, which the issue asked for. WIOA does suppress
   small-cohort cells and that is why many of these measures are absent, but the scorecard serves
   a suppressed cell and an unreported cell as the same `-1` and its data dictionary calls the
@@ -224,14 +352,14 @@ All notable changes to this project are documented here. The format follows
 - `afterward diff` and `make dataset-diff`: what changed between two emitted datasets, with the
   kinds of change kept apart. Every refresh replaces the dataset wholesale and the only review it
   gets is the shape floors in `dataset_check.py` — a count that did not collapse — which cannot
-  see a programme that stopped reporting a measure. That is a different event from a programme
+  see a program that stopped reporting a measure. That is a different event from a program
   that left the list, which is a different event again from one that was never on it, and
   collapsing the three into "the number is gone" is the same error, one level up, that this
   codebase spends its life avoiding on a single value.
-  So a programme present on one side only produces exactly one event and **no measure events**:
+  So a program present on one side only produces exactly one event and **no measure events**:
   its measures did not stop being reported, it stopped being listed. Outcome events are counted
   per measure and never summed into one number, because nine measures moving once and one measure
-  moving nine times are different events. Programme titles, provider disappearance, length,
+  moving nine times are different events. Program titles, provider disappearance, length,
   cost, the occupation join's `match.kind` and the link verdict each get their own class.
   **An empty diff means "compared, and nothing moved", never "could not compare".** A dataset
   directory that is missing, holds invalid JSON, states no `snapshot_date`, or carries a record
@@ -240,13 +368,13 @@ All notable changes to this project are documented here. The format follows
   strength of never having looked.
   The Markdown summary is written only from the statement's own counts rather than recounting the
   events, so the two cannot disagree with no way to tell which is wrong. Deterministic: events
-  sort by kind then by programme so the emitted order cannot move the bytes, no wall-clock is
+  sort by kind then by program so the emitted order cannot move the bytes, no wall-clock is
   recorded, and the only dates in the output are the two snapshots' own. Writes into `dist/` only.
 
 - `afterward query` and `GET /query`: the deterministic query layer with no model attached.
   `afterward.ask` structures a sentence with a model, runs a deterministic query over the
   published dataset, then verifies every claim. The middle step is the whole of what a job
-  centre counsellor or a script wants — the same answer every time, offline, with no provider
+  center counselor or a script wants — the same answer every time, offline, with no provider
   configured — and it was reachable only by going through the model. Named criteria go in
   (`--occupation`, `--area`, `--max-cost`, `--max-weeks`, `--min-annual-wage`, `--format`,
   `--projection`, `--reported-only`), records and a written account of what each term resolved
@@ -261,7 +389,7 @@ All notable changes to this project are documented here. The format follows
   looks like the answer to a question nobody ran is an absence rendered as a value. It now
   exits 2 with no records and names the term. The filters that were already careful are left
   alone: an unreported cost is still excluded from `--max-cost` rather than read as zero, a
-  competency-based programme is still not "short", and each exclusion is counted.
+  competency-based program is still not "short", and each exclusion is counted.
   Exit codes are the interface for a script: 0 records found, 1 none found but every term
   resolved, 2 a named term resolved to nothing. `--json` is byte-identical across runs of the
   same criteria and carries a `schema_version`; `--explain` prints the resolution trace.
@@ -479,9 +607,9 @@ All notable changes to this project are documented here. The format follows
 - A CareerOneStop client for occupation descriptions, O*NET skill ratings and O*NET related
   occupations. Optional: the build runs unchanged without credentials.
 - The funding block says what order to do things in. Every program page now carries "Ask
-  before you enroll, not after": under 20 CFR 680.220 a centre has to interview or assess
+  before you enroll, not after": under 20 CFR 680.220 a center has to interview or assess
   somebody before it can find them eligible, and under 680.340 the referral and the account
-  come after that — so the call belongs before the enrolment, and someone who has already
+  come after that — so the call belongs before the enrollment, and someone who has already
   enrolled or paid is told to ask rather than told what will happen, which no regulation read
   for this says. It is a plain paragraph above the offices, not behind the link to the guide.
   The claim and its citations are a new step in `local_help`; `/paying-for-training/` renders
@@ -492,7 +620,7 @@ All notable changes to this project are documented here. The format follows
   the nearest offices anyway, with distance, phone and hours, instead of offering a statewide
   search box. Lemoore's two nearest are 26.7 and 27.0 miles, Coalinga's 38.7 and 39.0, and
   South Lake Tahoe's one at 36.5. Nothing new is fetched: `coverage.json` already publishes
-  all 183 centres with coordinates and each program carries its own.
+  all 183 centers with coordinates and each program carries its own.
 - The comprehensive/affiliate label on an office card is explained in one clause, so a
   federal term of art on the page means something to the reader looking at it.
 - A first-visit transfer budget in the build. `size-report.mjs` measured the export on disk,
@@ -686,7 +814,7 @@ All notable changes to this project are documented here. The format follows
   cache, measured in Chromium. Result cards still prefetch: those are ~8 KiB and are what the
   reader came to open. Measurements and the options considered are in
   `docs/payload-audit-2026-08-05.md`.
-- Phone numbers on office cards dial what they say. 20 of the 183 centres publish a field
+- Phone numbers on office cards dial what they say. 20 of the 183 centers publish a field
   that is not one ten-digit number — two numbers, a number and an extension, a switchboard
   and an EDD line — and stripping non-digits from the whole field produced `tel:` links for
   twenty- and thirteen-digit numbers that dial nothing, on 778 of the 3,234 program pages
@@ -699,7 +827,7 @@ All notable changes to this project are documented here. The format follows
   of the gap was visible to a test. The check now walks every step.
 - Phone links say which office they call. Three offices on one page published three bare
   numbers, and a screen reader announced each as its digits alone (WCAG 2.2 AAA 2.4.9).
-- Programs summarise across every occupation they feed, not just the first. The count of
+- Programs summarize across every occupation they feed, not just the first. The count of
   programs training for declining occupations was understated by more than half (on the
   current snapshot, 229 against 538), and hundreds of detail pages named the wrong job.
 - Statistical aggregates are no longer published as occupations (764 → 670 real ones).
@@ -711,7 +839,7 @@ All notable changes to this project are documented here. The format follows
 - Programs are compared against the median program that reported the same measure, not
   against DOL's statewide aggregate, which is computed on a different basis and made 91% of
   programs read as above average.
-- Earnings are labelled as covering a single quarter, so they are not read as a yearly
+- Earnings are labeled as covering a single quarter, so they are not read as a yearly
   salary beside the annual occupation wage.
 - Program descriptions no longer ship the feed's own row id (`6091|Covers understanding…`)
   on 3,223 of 3,266 records. The site stripped it in one component, so only readers of the
@@ -777,7 +905,7 @@ All notable changes to this project are documented here. The format follows
   site, an Indonesian lottery site, a Baltimore charity, and five domain listings). Neither is
   fixable from the repository: `make data` reads the DOL endpoint, which refuses CI, so the
   dataset has to be rebuilt on a workstation, republished with `make dataset-publish`, and
-  deployed. Until then the deploy workflow refuses that tag, which is the correct behaviour
+  deployed. Until then the deploy workflow refuses that tag, which is the correct behavior
   and not a substitute for the refresh. The committed `web/public/ctdl/*.json` statements were
   produced from a locally rebuilt 2026-08-07 dataset that does carry the length fix, so
   `snapshot_date` alone does not identify which bytes a statement describes.

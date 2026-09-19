@@ -41,7 +41,15 @@ def cli() -> None:
 
 @app.command("build")
 def build_command(
-    state: str = typer.Option("CA", "--state", help="Two-letter state code to extract."),
+    state: str = typer.Option(
+        "CA",
+        "--state",
+        help="Two-letter state code to extract. Validated against the states the ETP feed "
+        "actually reports programs for, so an unrecognized code is refused rather than "
+        "fetched as an empty dataset. California reads its projections from EDD; every "
+        "other state reads Projections Central, which publishes no wage and no regions -- "
+        "`coverage.json` says which source a dataset came from and what it does not carry.",
+    ),
     output_dir: Path = typer.Option(
         Path("data/processed"), "--output-dir", help="Where to write the emitted JSON."
     ),
@@ -61,7 +69,7 @@ def build_command(
     ),
 ) -> None:
     """Fetch source data, join it, and emit the site dataset."""
-    typer.echo(f"Fetching {state} training programs and California occupation projections...")
+    typer.echo(f"Fetching {state} training programs and occupation projections...")
     report = build(
         state,
         output_dir=output_dir,
@@ -164,7 +172,7 @@ def _echo_provider_links(links: ProviderLinkCoverage, report_path: Path) -> None
 
     Every line here is a count of what *this build did*, phrased as an observation. Nothing
     printed is a claim about a provider: "we could not reach" is true and checkable, "the
-    site is down" would be a statement about a named organisation that this project cannot
+    site is down" would be a statement about a named organization that this project cannot
     support, and the summary is not the place to start making one.
     """
     typer.echo(f"\nProvider links              {links.programs_with_link:>6}")
@@ -201,7 +209,7 @@ def _echo_local_help(centers: LocalHelpCoverage) -> None:
     """Say how many pages can name a real office, and never imply one that was not looked for.
 
     A build with no credentials prints the directory line as "not read" rather than as 0.
-    "We did not look" and "California has no job centres" are different sentences, and the
+    "We did not look" and "California has no job centers" are different sentences, and the
     summary is where an operator decides whether the dataset they just built is one worth
     publishing.
     """
@@ -498,13 +506,13 @@ def diff_command(
 ) -> None:
     """Say what changed between two emitted datasets, keeping the kinds of change apart.
 
-    Three things happen when a programme's number disappears and they are not the same event:
-    the programme left the list, the programme is still listed and stopped reporting that
-    measure, or the programme was never listed at all. Every refresh replaces the dataset
+    Three things happen when a program's number disappears and they are not the same event:
+    the program left the list, the program is still listed and stopped reporting that
+    measure, or the program was never listed at all. Every refresh replaces the dataset
     wholesale and the only review it gets is a count that did not collapse, which cannot see
     any of that.
 
-    A programme present on one side only produces exactly one event and no measure events: its
+    A program present on one side only produces exactly one event and no measure events: its
     measures did not stop being reported, it stopped being listed. Outcome events are counted
     per measure and never summed, because nine measures moving once and one measure moving nine
     times are different events.
@@ -602,7 +610,7 @@ def _echo_query_answer(found: Answer, *, explain: bool) -> None:
     for program in found.programs:
         cost = (program.get("cost") or {}).get("total_out_of_pocket")
         # Never "$0" for a cost the source did not report: an unreported price is not a free
-        # program, and this is the line a counsellor would read aloud.
+        # program, and this is the line a counselor would read aloud.
         money = "cost not reported" if cost is None else f"${cost:,.0f}"
         typer.echo(f"  {program['uuid']}  {program['program_name']} -- {program['provider_name']}")
         typer.echo(f"      {money}")
@@ -727,7 +735,7 @@ def ask_eval_command(
 
     With a provider configured in the environment the document is a `run`. With none, and
     without --dry-run, it is an honest `not_run` that says so. A --dry-run document is
-    labelled `dry_run` and a test refuses to let one be committed as a measurement.
+    labeled `dry_run` and a test refuses to let one be committed as a measurement.
     """
     from afterward.ask import evals, fakes
     from afterward.ask.api import Assistant

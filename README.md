@@ -11,7 +11,8 @@ programs actually lead.**
 3,266 California training programs, 3,250 of them joined to the state's own ten-year
 projection for the occupation they lead to. California publishes no projection for the
 occupation the other 16 are tagged with, and the site says that rather than showing a gap
-that reads like a zero. No account, no tracking, English and Spanish.
+that reads like a zero. No account, English and Spanish. Page views are counted with Google
+Analytics 4, which honors Global Privacy Control, Do Not Track and an opt-out in the footer.
 
 **Status:** Beta. Version `0.1.0`, first signed tag not yet cut. The public site, the bilingual
 interface, and the data pipeline are live and covered by an automated test suite. Datasets are
@@ -28,7 +29,7 @@ published by the federal government in a form no Californian is expected to find
 Meanwhile the state publishes excellent occupation data: what jobs are growing, in which
 regions, and what they pay. Nobody puts the two next to each other.
 
-Afterward does exactly that, from public data, with no account and no tracking.
+Afterward does exactly that, from public data, with no account.
 
 ## What it does today
 
@@ -141,12 +142,20 @@ show nothing, and are counted in their own bucket rather than folded into "no da
 
 The front end shows none of this yet: whether a denominator on an older vintage may sit on a
 program page beside a newer rate, or belongs only on `/outcomes-coverage/` as a statement
-about the measure, is a judgement about what the site claims, in two languages, and it has not
+about the measure, is a judgment about what the site claims, in two languages, and it has not
 been made. See PROVENANCE.md, "Notes on D1B".
 
 ## Design commitments
 
-- **No account, no tracking.** Everything is public, static, and readable without logging in.
+- **No account.** Everything is public, static, and readable without logging in.
+- **Analytics that say what they are.** Google Analytics 4 counts page views (owner decision,
+  2026-09-17; `web/lib/analytics.ts`). It loads only in the production build on
+  `afterward.chelseakr.com`, never when the browser sends Global Privacy Control or Do Not
+  Track or the reader has used the footer's "Opt out of analytics" button, and with Google
+  signals and ad personalization off. Consent Mode denies ad storage everywhere and analytics
+  storage in the EEA, the UK and Switzerland. The address it receives is the path plus
+  `utm_*` tags only: search terms, filters and shared shortlists are stripped. The About
+  page's "Privacy and analytics" section is the disclosure, in both languages.
 - **English and Spanish from the first release**, not as a later phase. A missing translation
   is a compile error, and a test fails if a Spanish string is left identical to the English.
 - **Accessible**, mobile-first. The people most likely to need this are least likely to be on
@@ -167,9 +176,48 @@ been made. See PROVENANCE.md, "Notes on D1B".
 | U.S. DOL ETP bulk export (`DownloadPrograms.xlsx`) | One column, read beside the scorecard and never instead of it: `de129`, the denominator behind the published employment rate |
 | CA EDD Long-Term Occupational Employment Projections (2024–2034) | Wages, job openings, growth, entry-level education, by region |
 | CA EDD OEWS | Wage detail |
+| Projections Central (state long-term projections) | The occupation side of a build for any state other than California: employment now, employment projected, and the change between them |
+| U.S. Census ANSI/FIPS state codes | The link between the two-letter code the ETP feed reports and the numeric code Projections Central is keyed by |
 
 Full source list, licensing, access dates, and this project's provenance constraints are in
 [PROVENANCE.md](PROVENANCE.md).
+
+## Building a second state, and what a second state does not get
+
+`afterward build --state NV` produces a dataset for another state. The program side has
+always been state-parameterised — the ETP scorecard reports 55 states and territories, and
+`--state` is checked against that list before a build starts, so an unrecognized code is a
+refusal rather than a successful fetch of nothing. What is new is the occupation side:
+California reads EDD directly, every other state reads Projections Central, and the two
+sources do not publish the same things.
+
+**They agree where they overlap.** Projections Central's California rows are EDD's own
+figures republished: across the 56 occupations in the committed dataset, base employment,
+projected employment, numeric change and percentage change agree 56 of 56 exactly.
+
+**Seven of eleven occupation measures are absent from a second state's dataset**, and the
+dataset says which. Every `coverage.json` now carries a `projection_source` block naming the
+publisher, the endpoint, the period, and the measures that publisher has no column for:
+
+| Measure | California (EDD) | Any other state (Projections Central) |
+|---|---|---|
+| Employment now, projected, and the change | yes | yes |
+| Median annual and hourly wage | yes | **no column exists** |
+| OEWS 10th–90th percentile spread | yes | no — that extract is California's |
+| Ten-year job openings | yes | **no** — the source publishes an *annual average*, which is a different measure and is not carried |
+| Entry-level education, work experience, on-the-job training | yes | no |
+| Regional (sub-state) figures | 31 areas | no — the source publishes one figure per state |
+| Spanish occupation titles | O\*NET, where it has them | the same: O\*NET is keyed by occupation, not by state |
+| Occupation descriptions, skills, tasks, related occupations | CareerOneStop and O\*NET | the same |
+
+So a second state's occupation pages would lead with growth rather than pay, and every
+program would carry `region: null` with the reason `source_publishes_no_areas` — a fact
+about the publisher, not a failed lookup. That last distinction is the point of the whole
+block: without it, a null wage in a Nevada record is byte-identical to a California wage
+EDD withheld, and `afterward.build.check_projection_source` refuses any dataset that
+contradicts its own declaration in either direction.
+
+**Hosting a second site is out of scope.** What exists is the dataset and the method.
 
 ## CTDL export (demonstration)
 
@@ -350,7 +398,7 @@ The vocabulary is three words, and the fourth one that is missing is the point:
 | --- | --- |
 | `reported` | A number the source filed, present in the value column beside it. |
 | `not_reported` | No number. The ETP scorecard's `-1` and its empty string. |
-| `competency_based` | On `length_weeks` and `length_hours` only: the programme advances on demonstrated competency and has no fixed length. A fact, not a gap. |
+| `competency_based` | On `length_weeks` and `length_hours` only: the program advances on demonstrated competency and has no fixed length. A fact, not a gap. |
 
 There is deliberately no `suppressed`. WIOA does suppress small-cohort cells, and that is why
 many of these measures are absent — but the ETP scorecard serves a suppressed cell and an
@@ -432,13 +480,13 @@ exists to notice.
 summary into `dist/diff/`. `make dataset-diff` runs it against `PREVIOUS_DATASET_DIR` (an unpacked
 `dataset-<date>` release) and the working dataset.
 
-Three things happen when a programme's number disappears, and they are not the same event:
+Three things happen when a program's number disappears, and they are not the same event:
 
-- The programme **left the list** — `program_removed`, and **no measure events at all**. Its
+- The program **left the list** — `program_removed`, and **no measure events at all**. Its
   measures did not stop being reported; it stopped being listed.
-- The programme is still listed and **stopped reporting** that measure — `stopped_reporting`, on
-  that measure, on that programme. Somebody who used to answer no longer does.
-- The programme was **never on the list**, so nothing moved.
+- The program is still listed and **stopped reporting** that measure — `stopped_reporting`, on
+  that measure, on that program. Somebody who used to answer no longer does.
+- The program was **never on the list**, so nothing moved.
 
 Collapsing those into "the number is gone" is the same error, one level up, that this codebase
 spends its life avoiding on a single value. Outcome events are counted per measure and never
@@ -450,7 +498,7 @@ no `uuid` is a refusal that writes nothing and exits 2. Returning zero counts be
 nothing to read would be a statement that the refresh changed nothing, published on the strength
 of never having looked.
 
-Deterministic, like the other exports: events sort by kind then by programme so the emitted order
+Deterministic, like the other exports: events sort by kind then by program so the emitted order
 cannot move the bytes, no wall-clock is recorded anywhere, and the only dates in the output are
 the two snapshots' own. It writes into `dist/` only, so the bytes the site serves are untouched.
 
@@ -488,8 +536,8 @@ model narrates the records it is handed. Every substantive claim in the narratio
 record id and is verified against the published JSON before it is shown; a claim that does
 not verify is withheld and counted. A suppressed measure is narrated as not reported, never
 as a zero. The only comparison the model may make is the one the site already makes, against
-the median of programs reporting the same measure. Spanish produced by the model is labelled
-AI-translated and unreviewed, and never alters a number. Every AI output is labelled
+the median of programs reporting the same measure. Spanish produced by the model is labeled
+AI-translated and unreviewed, and never alters a number. Every AI output is labeled
 AI-generated, unofficial, and not a recommendation from the State of California.
 
 Nothing in the service is deployed publicly yet. That is a decision the owner has not made;
@@ -517,7 +565,7 @@ silently.
 | Quality & Metrics | Applies (metrics ledger: [docs/ROADMAP.md](docs/ROADMAP.md)) |
 | Release & Versioning | N/A (not consumed downstream: ADR [docs/adr/0001-release-and-versioning-na.md](docs/adr/0001-release-and-versioning-na.md); dataset snapshots are date-tagged releases consumed only by the deploy workflow) |
 | AI Development Measurement | Applies (this repo was built AI-assisted, disclosed under [Development disclosure](#development-disclosure); the runtime AI the product itself ships is a separate matter, under [AI in the product](#ai-in-the-product)). The committed, dated artifact is the metrics ledger in [docs/ROADMAP.md](docs/ROADMAP.md); no AI-usage or delivery metric gates a merge here, by design, since activity counters are diagnostic rather than outcomes |
-| Incident Response | Applies (private vulnerability reporting and a stated acknowledgement expectation in [SECURITY.md](SECURITY.md), plus the in-scope and out-of-scope list). Scope is a static site with no accounts and no cookies, plus the optional `afterward.ask` service, which accepts free text and is in scope once deployed; no incident has been recorded, so there is no `docs/incidents/` yet |
+| Incident Response | Applies (private vulnerability reporting and a stated acknowledgment expectation in [SECURITY.md](SECURITY.md), plus the in-scope and out-of-scope list). Scope is a static site with no accounts whose only cookies are Google Analytics' own, plus the optional `afterward.ask` service, which accepts free text and is in scope once deployed; no incident has been recorded, so there is no `docs/incidents/` yet |
 | Data Governance | Applies (per-source terms and the clean-room rule in [PROVENANCE.md](PROVENANCE.md), enforced by `make provenance-check`; privacy review in [docs/RESPONSIBLE-TECH-AUDITS.md](docs/RESPONSIBLE-TECH-AUDITS.md) section C). The dataset holds no personal data, and upstream small-cohort suppression is preserved rather than reversed |
 
 ## License

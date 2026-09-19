@@ -26,7 +26,7 @@ from afterward.sources.link_review import (
     host_of,
     load_review,
     name_continues,
-    normalise_name,
+    normalize_name,
     registrable_domain,
 )
 
@@ -81,7 +81,7 @@ class TestRegistrableDomain:
         self, host: str | None
     ) -> None:
         """A wrong registrable domain would make two unrelated districts look like one
-        organisation. Returning nothing costs a confirmation; returning ``ca.us`` would
+        organization. Returning nothing costs a confirmation; returning ``ca.us`` would
         manufacture one."""
         assert registrable_domain(host) is None
 
@@ -114,13 +114,13 @@ class TestNameContinuity:
             "college.edu", filed="giligiacollege.com", provider_name="Giligia College"
         )
 
-    def test_organisation_noise_does_not_block_a_match(self) -> None:
-        assert normalise_name("Airstreams Renewables, Inc.") == "airstreamsrenewables"
+    def test_organization_noise_does_not_block_a_match(self) -> None:
+        assert normalize_name("Airstreams Renewables, Inc.") == "airstreamsrenewables"
 
     def test_a_name_that_is_only_noise_keeps_its_words(self) -> None:
         """Stripping every word would leave an empty key that matches nothing, or worse,
         everything."""
-        assert normalise_name("The Co") == "theco"
+        assert normalize_name("The Co") == "theco"
 
 
 class TestTheThreeHijackedDomains:
@@ -172,7 +172,7 @@ class TestCorroboration:
     def test_the_same_trick_on_a_shared_host_is_not_evidence(self) -> None:
         """Two schools on one website builder share a registrable domain and nothing else.
         Restricting this rule to ``.edu`` and ``.gov`` is what keeps a redirect between two
-        strangers' pages from reading as one organisation's."""
+        strangers' pages from reading as one organization's."""
         verdict = OffsiteReviewer().resolve(
             url="https://a-school.wixsite.com/site",
             final_url="https://someone-else.wixsite.com/site",

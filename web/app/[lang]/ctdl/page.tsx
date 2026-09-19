@@ -41,7 +41,7 @@ const VALIDATION_STATEMENT_URL = "/ctdl/ctdl-validation.json";
  * The published definition each mapping decision rests on.
  *
  * Links to the primary text rather than a paraphrase of it, for the same reason the coverage
- * page links the regulations rather than summarising them: this is the part of the page a
+ * page links the regulations rather than summarizing them: this is the part of the page a
  * reader cannot check against the data, so it has to be checkable against the source. English
  * only, because Credential Engine publishes it that way.
  */
