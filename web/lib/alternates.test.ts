@@ -19,7 +19,7 @@ import { allOccupationCodes, allProgramIds, getSearchIndex } from "./data";
 import { DEFAULT_LANG, LANGUAGES, type Lang } from "./i18n";
 import { groupByProvider } from "./providers";
 import { sitePaths } from "./routes";
-import { SITE_URL, pageAlternates } from "./site";
+import { SITE_URL, languageAlternates, pageAlternates, urlFor } from "./site";
 
 /**
  * Which URL each page says it is, and which URL is the same record in the other language.
@@ -32,19 +32,29 @@ import { SITE_URL, pageAlternates } from "./site";
  * `/`, and it was the relative string `/en/` -- valid HTML, and the one form of the tag worth
  * less than none, since a reader handed it out of context resolves it against itself.
  *
- * ---- What was NOT missing, and is checked here so it stays that way ----
+ * ---- What was half there, and is now in both halves ----
  *
- * hreflang. A first pass at this reported the site as emitting no language alternates at all;
- * it had looked only in the head. `app/sitemap.ts` has published them all along -- 18,092
- * reciprocal `<xhtml:link rel="alternate" hreflang>` entries over those 9,046 URLs -- and
- * sitemap-level hreflang is a first-class declaration, not a lesser one. So the pairs are
- * checked here where they actually live rather than being duplicated into ~9,000 heads, and
- * the head is checked for *not* carrying a second copy: two declarations of one relationship
- * are two things that can disagree, with nothing to say which a crawler believed.
+ * hreflang. A first reading called it absent everywhere; that was true of the head and false
+ * of the site. `app/sitemap.ts` has published the pairs all along -- 18,092 reciprocal
+ * `<xhtml:link rel="alternate" hreflang>` entries over those 9,046 URLs -- and sitemap-level
+ * hreflang is a first-class declaration, not a lesser one.
  *
- * That it was never gated is the finding that survives. A sitemap that stopped emitting
- * alternates, or emitted a one-way set, would take the site's entire bilingual-search story
- * with it through a green build and show no symptom, because search engines discard a
+ * It is now declared in each page's head as well, which is what `chelseakr.com` does on the
+ * other bilingual site in this portfolio, and both sets gain an `x-default` neither carried.
+ * The two are not alternatives to pick between: the sitemap is the declaration a crawler can
+ * read before fetching anything, the head is the one that survives the page being reached
+ * from a link, a share, or a search result for the other language.
+ *
+ * The objection to publishing both -- two descriptions of one relationship are two things
+ * that can disagree, with nothing to say which a crawler believed -- is answered by
+ * construction rather than by care. `languageAlternates` in `lib/site.ts` is the only
+ * expression of the relationship; the sitemap and every page call it with the same `rest`.
+ * This file asserts that they still do, entry by entry, and `scripts/seo-audit.mjs` asserts
+ * the same thing again over the built HTML.
+ *
+ * That none of it was ever gated is the finding that survives. A sitemap that stopped
+ * emitting alternates, or emitted a one-way set, would take the site's entire bilingual-search
+ * story with it through a green build and show no symptom, because search engines discard a
  * one-way annotation and that is indistinguishable from publishing none.
  *
  * ---- Why this test derives its list instead of holding one ----
@@ -219,15 +229,31 @@ describe.each(ROUTES)("$template", ({ rest, metadata }) => {
     expect(String(page.alternates?.canonical)).toMatch(/^https:\/\//);
   });
 
-  it("leaves hreflang to the sitemap rather than publishing a second copy of it", async () => {
-    // Not an omission. The sitemap declares every pair reciprocally and is checked for it
-    // below; a head that declared the same relationship again would be a second description
-    // of one fact, and the two can drift. This pins the division of responsibility, so
-    // adding head alternates has to be a decision somebody makes here rather than a line
-    // that arrives with something else.
+  it("names every language version of itself, and an x-default", async () => {
+    // The measured defect in the head: zero `hreflang` across 9,046 pages, 4,523 of them
+    // Spanish. Every version has to name every version *including itself* -- a set that is
+    // not reciprocal is discarded, and a discarded annotation is indistinguishable from one
+    // that was never published.
     for (const lang of LANGUAGES) {
       const page = await metadata(lang);
-      expect(page.alternates?.languages).toBeUndefined();
+      expect(page.alternates?.languages).toEqual(languageAlternates(rest));
+      for (const other of LANGUAGES) {
+        expect(page.alternates?.languages?.[other]).toBe(urlFor(other, rest));
+      }
+      expect(page.alternates?.languages?.["x-default"]).toBe(urlFor(DEFAULT_LANG, rest));
+    }
+  });
+
+  it("says the same thing in its head as the sitemap says about it", async () => {
+    // The whole answer to "why is it safe to declare this twice". Both sides are read from
+    // the build rather than described: this is the page's real `generateMetadata`, and the
+    // entry is `app/sitemap.ts`'s real output for the same URL.
+    for (const lang of LANGUAGES) {
+      const page = await metadata(lang);
+      const entry = sitemap().find((candidate) => candidate.url === urlFor(lang, rest));
+      // `/[lang]/about` is deliberately not in the sitemap; there is nothing to agree with.
+      if (entry === undefined) continue;
+      expect(entry.alternates?.languages).toEqual(page.alternates?.languages);
     }
   });
 
@@ -288,8 +314,21 @@ describe("pageAlternates", () => {
     }
   });
 
-  it("declares no languages, because the sitemap does", () => {
-    expect(pageAlternates(DEFAULT_LANG, "occupations/29-1141/")?.languages).toBeUndefined();
+  it("declares one entry per language plus an x-default, all absolute", () => {
+    const languages = pageAlternates(DEFAULT_LANG, "occupations/29-1141/")?.languages ?? {};
+
+    expect(Object.keys(languages).sort()).toEqual([...LANGUAGES, "x-default"].sort());
+    for (const href of Object.values(languages)) expect(String(href)).toMatch(/^https:\/\//);
+  });
+
+  it("points x-default at the default language, the same URL as `en`", () => {
+    // `x-default` names where a reader whose language matches no version should be sent. The
+    // site root would be the better answer -- it is a language chooser -- except that
+    // `app/page.tsx` canonicalizes `/` to `/en/`, so naming it here would put a URL in the
+    // set that the set's own members disown.
+    const languages = pageAlternates("es", "programs/1234/")?.languages ?? {};
+    expect(languages["x-default"]).toBe(languages[DEFAULT_LANG]);
+    expect(languages["x-default"]).toBe(`${SITE_URL}/${DEFAULT_LANG}/programs/1234/`);
   });
 });
 
@@ -314,8 +353,13 @@ describe("the sitemap's language alternates", () => {
     // "A names B" is worth nothing unless B names A back and both name themselves. Checked
     // over all 9,046 rather than a sample, because the cost is a map lookup and the failure
     // being guarded against is one page in a pair silently dropping out.
+    // `x-default` is deliberately a second name for the English URL rather than a URL of its
+    // own, so reciprocity is asked of the language entries only. Including it would compare a
+    // URL against itself and pass for the wrong reason.
     const urls = (languages: Record<string, string | URL | undefined>) =>
-      Object.values(languages).map(String);
+      LANGUAGES.map((lang) => languages[lang])
+        .filter((href) => href !== undefined)
+        .map(String);
 
     const oneWay: string[] = [];
     for (const [url, languages] of byUrl) {
@@ -332,9 +376,9 @@ describe("the sitemap's language alternates", () => {
     expect(oneWay.slice(0, 10)).toEqual([]);
   });
 
-  it("offers every language the site is published in", () => {
+  it("offers every language the site is published in, and an x-default", () => {
     for (const [url, languages] of byUrl) {
-      expect(Object.keys(languages).sort(), url).toEqual([...LANGUAGES].sort());
+      expect(Object.keys(languages).sort(), url).toEqual([...LANGUAGES, "x-default"].sort());
     }
   });
 });

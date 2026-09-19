@@ -8,7 +8,7 @@ import {
   ROOT_DESCRIPTION,
   ROOT_TITLE,
   SITE_URL,
-  pageAlternates,
+  urlFor,
   rootCard,
 } from "@/lib/site";
 
@@ -51,13 +51,18 @@ const CARD_ALT =
  *
  * The value is unchanged and is deliberately not `/`: this page is a `<meta http-equiv=
  * "refresh">` shim with no content of its own, and the page a search result should land on
- * is `/en/`. `pageAlternates` supplies the hreflang set with it, so the one URL most likely
- * to be linked also announces that the site is published in two languages.
+ * is `/en/`.
+ *
+ * And deliberately no `hreflang` set here, unlike every page under `/[lang]/`. A page that
+ * canonicalizes somewhere else is not a member of an alternate set: naming it in one would
+ * put a URL in the set that the set's own members disown, and search engines resolve that
+ * contradiction by discarding the annotation. The chooser's job is to forward a reader, and
+ * the two pages it forwards to name each other.
  */
 export const metadata: Metadata = {
   title: ROOT_TITLE,
   description: ROOT_DESCRIPTION,
-  alternates: pageAlternates(DEFAULT_LANG, ""),
+  alternates: { canonical: urlFor(DEFAULT_LANG, "") },
   openGraph: {
     type: "website",
     siteName: "Afterward",

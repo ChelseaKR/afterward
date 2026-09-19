@@ -20,9 +20,10 @@ import { groupByProvider } from "./providers";
  * the same `rest` under another `lang`, and there is nothing to keep in step.
  *
  * `rest` is the path after the language, with a trailing slash and no leading one: `""` for a
- * language home page, `"programs/1234/"` for a program. It is what `pageMetadata` in
- * `lib/site.ts` takes, so the string that reaches a page's `<link rel="canonical">` is the
- * string this file produced.
+ * language home page, `"programs/1234/"` for a program. It is what `urlFor`, `pageMetadata`
+ * and `languageAlternates` in `lib/site.ts` take, so the string that reaches a page's
+ * `<link rel="canonical">`, the strings in its `hreflang` set and the sitemap's `<loc>` are
+ * all the string this file produced.
  */
 export interface SitePath {
   lang: Lang;
@@ -30,11 +31,6 @@ export interface SitePath {
   rest: string;
   /** Sitemap priority. Nothing else reads it; it travels with the path so it stays paired. */
   priority: number;
-}
-
-/** `/{lang}/{rest}` — the one place a `SitePath` becomes a URL path. */
-export function pathOf({ lang, rest }: Pick<SitePath, "lang" | "rest">): string {
-  return `/${lang}/${rest}`;
 }
 
 /**

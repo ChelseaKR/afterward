@@ -16,16 +16,16 @@
  * its own canonical; this reads both out of the same build and refuses any disagreement.
  * Nothing here holds a list of pages, so there is no list to go stale.
  *
- * The two annotations are checked in the two different places they live, which is the point:
+ * Both annotations are checked in both of the places they live, which is the point:
  *
  * - **The canonical is a claim each page makes about itself**, so it is checked in each
  *   page's head. Before this work no page in the site made it; the only canonical anywhere
  *   in the export was on `/`, and it was the relative string `/en/`.
- * - **hreflang is declared by the sitemap**, completely -- 18,092 reciprocal `<xhtml:link>`
- *   entries over 9,046 URLs -- and it always was. What was missing was any gate on it. A
- *   sitemap that quietly stopped emitting alternates, or emitted a one-way set, would have
- *   broken the site's entire bilingual-search story with a green build and no symptom, since
- *   a one-way `hreflang` is discarded by search engines and looks exactly like none.
+ * - **hreflang is declared twice, from one expression.** The sitemap declared it all along --
+ *   18,092 reciprocal `<xhtml:link>` entries over 9,046 URLs -- and the head declared none,
+ *   which is what a crawl of the served HTML measured and reported as "no hreflang". Both now
+ *   carry it, built by `languageAlternates` in `lib/site.ts` from the same path. That is safe
+ *   only while the two really are one expression, so this gate compares them page by page.
  *
  * What fails the gate:
  *
@@ -33,12 +33,17 @@
  *   2. a page whose canonical is missing, relative, duplicated, or names a different URL;
  *   3. a sitemap entry whose alternates are not reciprocal: a URL that names its twin
  *      without the twin naming it back, or that leaves itself out of its own set;
- *   4. a page whose head carries hreflang alternates that contradict the sitemap. The head
- *      deliberately carries none, so that two declarations of one relationship cannot
- *      disagree; this is what keeps that decision from being undone by accident;
+ *   4. a page whose head declares a different set of hreflang alternates from the sitemap
+ *      entry for the same URL -- a missing key, an extra key, or a different href. Two
+ *      declarations of one relationship are two things that can disagree, and this is the
+ *      check that makes the disagreement impossible to ship rather than merely unlikely;
  *   5. an exported page that is neither in the sitemap nor `noindex` and carries no canonical
  *      of its own. `/[lang]/about/` is in this class deliberately -- it is indexable and has
  *      never been in the sitemap -- and it still has to say which URL it is.
+ *
+ * `scripts/seo-audit.test.ts` runs this file over twelve synthetic exports, each wrong in
+ * exactly one of those ways, having first asserted that the intact one passes -- so "the gate
+ * is green" is a statement about the site rather than about the gate.
  *
  * And, before any of it, the gate refuses to report a pass over nothing: an empty sitemap, an
  * export with no pages, or a route template the export never built are all failures rather
@@ -206,14 +211,23 @@ for (const { loc, alternates: declared } of entries) {
   else if (found.length > 1) fail(`${file}: ${found.length} canonicals, which names none of them`);
   else if (found[0] !== loc) fail(`${file}: canonical is ${found[0]}, sitemap says ${loc}`);
 
-  // hreflang lives in the sitemap, deliberately and solely. A head that also declared it
-  // would be a second copy of a working annotation, and two descriptions of one relationship
-  // are two things that can disagree with nothing to say which a crawler believed. This is
-  // the check that keeps that decision deliberate: a page may carry no alternates, or ones
-  // that agree with the sitemap, but never ones that contradict it.
-  for (const [lang, href] of Object.entries(alternates(html))) {
-    if (declared[lang] !== undefined && declared[lang] !== href) {
-      fail(`${file}: head says hreflang="${lang}" is ${href}, sitemap says ${declared[lang]}`);
+  // hreflang is declared in the head and in the sitemap, from one expression in
+  // `lib/site.ts`. Equality is therefore the assertion -- not "the head may carry none, or
+  // ones that agree". A head missing a key the sitemap has is the defect the live crawl
+  // found; a head carrying a key the sitemap does not is the drift that would make publishing
+  // it twice a bad idea in the first place.
+  const inHead = alternates(html);
+  const declaredKeys = Object.keys(declared).sort().join(",");
+  const headKeys = Object.keys(inHead).sort().join(",");
+
+  if (headKeys === "") fail(`${file}: no <link rel="alternate" hreflang> in the head`);
+  else if (headKeys !== declaredKeys) {
+    fail(`${file}: head declares hreflang [${headKeys}], sitemap declares [${declaredKeys}]`);
+  } else {
+    for (const [lang, href] of Object.entries(inHead)) {
+      if (declared[lang] !== href) {
+        fail(`${file}: head says hreflang="${lang}" is ${href}, sitemap says ${declared[lang]}`);
+      }
     }
   }
 
@@ -269,5 +283,5 @@ const hreflangs = entries.reduce((total, { alternates: a }) => total + Object.ke
 console.log(
   `seo-audit: ${entries.length} sitemap URLs over ${pairs.size} records, ` +
     `${pages.length} exported pages — every one self-canonical against the sitemap, ` +
-    `and ${hreflangs} hreflang alternates all reciprocal`,
+    `and ${hreflangs} hreflang alternates, reciprocal and matched head to sitemap`,
 );

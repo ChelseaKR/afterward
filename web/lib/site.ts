@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { dict, type Lang } from "./i18n";
+import { DEFAULT_LANG, LANGUAGES, dict, type Lang } from "./i18n";
 
 /**
  * Where the source for this site lives.
@@ -168,7 +168,44 @@ export function shareMetadata(lang: Lang, title: string, description: string): M
 }
 
 /**
- * The one claim only a page can make: which URL it is.
+ * `/{lang}/{rest}`, absolute — the one place a language and a path become a URL.
+ *
+ * `rest` is the path after the language, trailing slash included and no leading one, exactly
+ * as `lib/routes.ts` produces it. `app/sitemap.ts` builds its `<loc>` from this and every page
+ * builds its canonical from it, so the two strings a crawler compares are one expression.
+ */
+export function urlFor(lang: Lang, rest: string): string {
+  return `${SITE_URL}/${lang}/${rest}`;
+}
+
+/**
+ * The language versions of one record, as `hreflang` to URL.
+ *
+ * ---- Why every version names every version, itself included ----
+ *
+ * `hreflang` is read only when the annotation is reciprocal: each page in a set names all the
+ * others *and itself*. A one-way set is discarded, and a discarded annotation is
+ * indistinguishable from never having published one. Building the whole set from `rest`,
+ * rather than each page naming its twin, makes a one-way set unwritable here.
+ *
+ * ---- Why `x-default`, which neither the sitemap nor the head carried before ----
+ *
+ * It names where a reader whose language matches no version should be sent. Without one, a
+ * search engine serving somebody who reads neither English nor Spanish picks for itself. The
+ * site root would be the better answer — it *is* a language chooser — except that
+ * `app/page.tsx` canonicalizes `/` to `/en/`, so `/` is not an indexable URL of its own and
+ * naming it here would put a URL in the set that the set's own members disown. English it is,
+ * uniformly, on every page: one rule, no per-route exception, and true.
+ */
+export function languageAlternates(rest: string): Record<string, string> {
+  return {
+    ...Object.fromEntries(LANGUAGES.map((lang) => [lang, urlFor(lang, rest)])),
+    "x-default": urlFor(DEFAULT_LANG, rest),
+  };
+}
+
+/**
+ * The two claims only a page can make: which URL it is, and where its other languages are.
  *
  * ---- What was published before this ----
  *
@@ -186,29 +223,33 @@ export function shareMetadata(lang: Lang, title: string, description: string): M
  * rule that came out of it is that a per-URL canonical belongs in each page's own metadata
  * or nowhere, and this is how a page says it without writing the URL out by hand.
  *
- * ---- Why there is no `languages` here, which is the interesting half ----
+ * ---- Why `languages` is here as well as in `app/sitemap.ts` ----
  *
- * Because `app/sitemap.ts` already publishes it, completely, and has all along. Every one of
- * the 9,046 URLs carries two reciprocal `<xhtml:link rel="alternate" hreflang>` entries --
- * 18,092 of them -- naming both members of its en/es pair. Sitemap-level hreflang is one of
- * the three first-class ways to declare it and is the one that scales to 9,046 URLs without
- * putting three tags in every head.
+ * The sitemap has published the en/es pairing all along -- 18,092 reciprocal `<xhtml:link
+ * rel="alternate" hreflang>` entries over 9,046 URLs -- and a crawl that reported the site as
+ * emitting no `hreflang` at all had looked only in the head. Sitemap-level hreflang is a
+ * first-class declaration, not a lesser one, and it is the one that scales here.
  *
- * So head-level alternates here would not be a missing annotation being supplied. They would
- * be a second copy of a working one, and two declarations of the same relationship are two
- * things that can disagree with nothing to say which a crawler believed. A canonical has no
- * such counterpart: the sitemap's `<loc>` is a list of addresses, not a claim by each page
- * about which address is its own, and nothing else in the export makes that claim.
+ * The head is not a second-best copy of it. It is the declaration that survives the page being
+ * reached any way other than by walking the sitemap: from a link, from a share, from a search
+ * result for the other language, or by a crawler that reads pages and not sitemaps. Bing,
+ * Yandex and every third-party tool a reader might check this site with read the head;
+ * `chelseakr.com`, the other bilingual site in this portfolio, carries both. The cost is three
+ * `<link>` elements, about 34 bytes gzipped, on a page whose median document is 8 KB.
  *
- * `scripts/seo-audit.mjs` holds both halves of this to the export: every page's canonical
- * against the sitemap's `<loc>`, and the sitemap's alternates against each other for
- * reciprocity -- so the mechanism the site actually relies on for hreflang is now gated,
- * which it was not before.
+ * The objection to publishing both is real and is answered by construction rather than by
+ * care: two descriptions of one relationship are two things that can disagree, with nothing to
+ * say which a crawler believed. Here there are not two descriptions. `languageAlternates`
+ * above is the only expression of the relationship, and `app/sitemap.ts` and every page call
+ * it with the same `rest`. `lib/alternates.test.ts` asserts the two are equal entry by entry,
+ * and `scripts/seo-audit.mjs` asserts it again over the built HTML and refuses the export if
+ * a page's head and its sitemap entry ever declare different sets -- a missing key, an extra
+ * key, or a different href. `scripts/seo-audit.test.ts` proves that check can fail.
  *
  * `rest` is the path after the language, exactly as `lib/routes.ts` produces it.
  */
 export function pageAlternates(lang: Lang, rest: string): Metadata["alternates"] {
-  return { canonical: `${SITE_URL}/${lang}/${rest}` };
+  return { canonical: urlFor(lang, rest), languages: languageAlternates(rest) };
 }
 
 /**
@@ -235,6 +276,6 @@ export function pageMetadata(
   return {
     ...shared,
     alternates: pageAlternates(lang, rest),
-    openGraph: { ...shared.openGraph, url: `${SITE_URL}/${lang}/${rest}` },
+    openGraph: { ...shared.openGraph, url: urlFor(lang, rest) },
   };
 }
