@@ -471,7 +471,7 @@ def validate_ctdl_command(
         help="Directory `export-ctdl` wrote: the JSON-LD graph and its coverage statement.",
     ),
 ) -> None:
-    """Check the CTDL export with ctdl-validate, an independent validator.
+    """Check the CTDL export with ctdl-validate, a separate validator by the same author.
 
     Runs the published `ctdl-validate` package over the exact bytes `export-ctdl` wrote and
     writes a validation statement beside them. Every finding code is either listed in

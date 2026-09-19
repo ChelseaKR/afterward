@@ -1278,7 +1278,7 @@ const en = {
 
   ctdlTitle: "The CTDL export, and what it does and does not carry",
   ctdlLede:
-    "This project publishes California's training programs as CTDL, the vocabulary Credential Engine maintains for describing credentials and learning opportunities. This page is the export's own account of itself: which classes and properties it fills in, what the source record says that it drops, and what an independent validator found when it was pointed at the result.",
+    "This project publishes California's training programs as CTDL, the vocabulary Credential Engine maintains for describing credentials and learning opportunities. This page is the export's own account of itself: which classes and properties it fills in, what the source record says that it drops, and what a separate validator found when it was pointed at the result.",
   ctdlWhy:
     "A mapping is only worth anything if somebody can check it. So the counts here are produced by the export at the moment it runs, the omissions are counted the same way as the coverage, and the validator's findings are published whichever way they came out.",
 
@@ -1355,9 +1355,9 @@ const en = {
   ctdlGapOccupationProjectionsWhy:
     "This export projects the federal training record. California's projections for the occupation each program feeds — median wage, expected openings, growth — are joined to the program everywhere else on this site and are not carried here. They describe an occupation rather than this program, and hanging them off the program would assert that the program leads to that wage, which the source does not say. The occupation code itself is carried, so the alignment is stated and the projection is not.",
 
-  ctdlValidationHeading: "What an independent validator found",
+  ctdlValidationHeading: "What a separate validator found",
   ctdlValidationIntro: (tool: string, version: string) =>
-    `The export checks itself, but every one of those checks was written by the same hand as the export, against the same reading of the same schema — which is the reading a mistake would survive. So it is also run through ${tool} ${version}, a separate tool with its own copies of Credential Engine's schema and a citation for every rule it applies. It makes no network request and submits nothing anywhere.`,
+    `The export checks itself, but every one of those checks was written by the same hand as the export, against the same reading of the same schema — which is the reading a mistake would survive. So it is also run through ${tool} ${version}, a separate tool with its own copies of Credential Engine's schema and a citation for every rule it applies. It has the same author as this site, so it is a second reading of the schema and not an outside review. It makes no network request and submits nothing anywhere.`,
   ctdlValidationEntities: (n: string) => `${n} entities were checked.`,
   ctdlValidationSeverityColumn: "Severity",
   ctdlValidationCountColumn: "Findings",
@@ -2447,7 +2447,7 @@ const es: Dictionary = {
 
   ctdlTitle: "La exportación CTDL: qué lleva y qué no",
   ctdlLede:
-    "Este proyecto publica los programas de capacitación de California en CTDL, el vocabulario que mantiene Credential Engine para describir credenciales y oportunidades de aprendizaje. Esta página es el informe que la exportación hace de sí misma: qué clases y propiedades llena, qué dice el registro de origen que ella descarta, y qué encontró un validador independiente al revisar el resultado.",
+    "Este proyecto publica los programas de capacitación de California en CTDL, el vocabulario que mantiene Credential Engine para describir credenciales y oportunidades de aprendizaje. Esta página es el informe que la exportación hace de sí misma: qué clases y propiedades llena, qué dice el registro de origen que ella descarta, y qué encontró un validador aparte al revisar el resultado.",
   ctdlWhy:
     "Una correspondencia solo vale algo si alguien puede comprobarla. Por eso las cifras de aquí las produce la exportación en el momento de ejecutarse, las omisiones se cuentan igual que la cobertura, y los hallazgos del validador se publican salgan como salgan.",
 
@@ -2524,9 +2524,9 @@ const es: Dictionary = {
   ctdlGapOccupationProjectionsWhy:
     "Esta exportación proyecta el registro federal de capacitación. Las proyecciones de California para la ocupación a la que lleva cada programa — salario mediano, vacantes previstas, crecimiento — se unen al programa en todo el resto de este sitio y aquí no se llevan. Describen una ocupación y no este programa, y colgarlas del programa afirmaría que el programa lleva a ese salario, cosa que la fuente no dice. El código de la ocupación sí se lleva, de modo que la correspondencia queda dicha y la proyección no.",
 
-  ctdlValidationHeading: "Qué encontró un validador independiente",
+  ctdlValidationHeading: "Qué encontró un validador aparte",
   ctdlValidationIntro: (tool: string, version: string) =>
-    `La exportación se revisa a sí misma, pero todas esas revisiones las escribió la misma mano que la exportación, sobre la misma lectura del mismo esquema, que es justo la lectura a la que un error sobreviviría. Por eso también pasa por ${tool} ${version}, una herramienta aparte con sus propias copias del esquema de Credential Engine y una cita para cada regla que aplica. No hace ninguna petición de red ni envía nada a ningún sitio.`,
+    `La exportación se revisa a sí misma, pero todas esas revisiones las escribió la misma mano que la exportación, sobre la misma lectura del mismo esquema, que es justo la lectura a la que un error sobreviviría. Por eso también pasa por ${tool} ${version}, una herramienta aparte con sus propias copias del esquema de Credential Engine y una cita para cada regla que aplica. Tiene la misma autora que este sitio, así que es una segunda lectura del esquema y no una revisión externa. No hace ninguna petición de red ni envía nada a ningún sitio.`,
   ctdlValidationEntities: (n: string) => `Se revisaron ${n} entidades.`,
   ctdlValidationSeverityColumn: "Gravedad",
   ctdlValidationCountColumn: "Hallazgos",

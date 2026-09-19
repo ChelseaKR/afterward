@@ -650,6 +650,18 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- **The CTDL page called `ctdl-validate` "an independent validator"; it has the same author as
+  this site.** The heading is now "What a separate validator found", the opening paragraph says
+  "separate" as well, and the validation intro adds the sentence that was missing: the tool
+  "has the same author as this site, so it is a second reading of the schema and not an outside
+  review." The tool is separate in the sense that matters for the check (its own copies of the
+  schema, its own rules, no shared code with the exporter), which the intro already said. What
+  it never said was who wrote it, and a paragraph contrasting it with checks "written by the
+  same hand as the export" read as if someone else had. Spanish strings changed to match
+  ("un validador aparte", "Tiene la misma autora que este sitio"); they are machine-drafted
+  like the rest and carry the same notice. The two docstrings that used the phrase are
+  reworded too.
+
 - A front page offered in place of a page that is gone is now checked against the review
   ledger, like every other destination this site links. The redirect path has consulted
   `provider-link-review.json` since 2026-08-15, but the 404 fallback in
