@@ -1,4 +1,4 @@
-"""Check the CTDL export with an independent validator, and publish what it found.
+"""Check the CTDL export with a separate validator, and publish what it found.
 
 :mod:`afterward.ctdl.export` already refuses to write a document whose terms the vendored
 CTDL context does not define, and refuses to write a graph that says anything the source
