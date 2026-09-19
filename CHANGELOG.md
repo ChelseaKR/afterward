@@ -650,6 +650,16 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- **PROVENANCE.md said "365 of the 2,039 that publish a rate"; the number that publish a rate
+  is 1,760.** 2,039 was 3,266 minus the table's "rate not published" row (1,227), but the states
+  are assigned in order and "no bulk row" is tested first, so that row holds only the rate-less
+  programs that have a bulk row. 279 more publish no rate and have no bulk row, and are counted
+  under "no bulk row". The table is unchanged and still sums to 3,266; the sentence under it is
+  corrected and a paragraph now says how to read the order. Documentation only: no figure on
+  the site used 2,039. Whether `denominator_block()` in `dol_bulk.py` should test "rate not published"
+  first, which its own comment argues for, is left for a change that re-measures against a
+  fresh bulk export.
+
 - A front page offered in place of a page that is gone is now checked against the review
   ledger, like every other destination this site links. The redirect path has consulted
   `provider-link-review.json` since 2026-08-15, but the 404 fallback in
