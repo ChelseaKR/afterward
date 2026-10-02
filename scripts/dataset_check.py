@@ -74,7 +74,7 @@ def counts() -> Counts:
     )
 
 
-def problems(actual: Counts, expected: Counts) -> list[str]:
+def problems(actual: Counts, expected: Counts, *, sources_only: bool = False) -> list[str]:
     """Every way ``actual`` fails to look like the dataset ``expected`` describes.
 
     Split out of :func:`main` to keep that function under the complexity limit, and
@@ -109,6 +109,14 @@ def problems(actual: Counts, expected: Counts) -> list[str]:
     ):
         if got < want * 0.9:
             found.append(f"{key}: {got}, manifest says {want}")
+
+    # The enrichment counts come from credentials (ONET_API_KEY, CareerOneStop) and from a
+    # separate OEWS fetch, not from the DOL and EDD sources. A build without them is complete
+    # and simply carries no Spanish titles or wage spreads, so on a machine that has neither --
+    # the scheduled CI freshness job -- "enrichment lost" would describe the runner, not the
+    # sources. `--sources-only` answers the narrower question that job asks.
+    if sources_only:
+        return found
 
     for key, got, want in (
         (
@@ -156,7 +164,8 @@ def main(argv: list[str]) -> int:
         return 1
 
     expected = cast(Counts, json.loads(manifest.read_text()))
-    found = problems(actual, expected)
+    sources_only = "--sources-only" in argv
+    found = problems(actual, expected, sources_only=sources_only)
 
     if found:
         print("dataset-check: REFUSING — the working dataset does not look like the real one")
@@ -171,6 +180,11 @@ def main(argv: list[str]) -> int:
         f"{actual['occupations_with_spanish']} Spanish, "
         f"{actual['occupations_with_wage_spread']} wage spreads"
     )
+    if sources_only:
+        print(
+            "dataset-check: --sources-only: the Spanish and wage-spread counts were not "
+            "compared, so this says nothing about enrichment and does not clear a backup"
+        )
     return 0
 
 

@@ -130,5 +130,19 @@ jobs:
       - name: Install dependencies
         run: make install
 
+      # Not `make data`. That target backs up the working dataset first, and the backup
+      # refuses to run unless a real dataset is already on disk (scripts/dataset_check.py).
+      # A fresh checkout never has one: the dataset is gitignored. So `make data` here
+      # stopped at "dataset-check: no dataset at web/public/data" before it sent a single
+      # request upstream, and the first quarterly run after the backup became a
+      # prerequisite (2026-10-01) reported a failure that said nothing about the sources.
+      # There is nothing on a runner to protect, so build directly, then hold the result to
+      # the committed manifest. `--sources-only` because a runner has no ONET or
+      # CareerOneStop credentials and no OEWS extract: the Spanish titles and wage spreads
+      # are absent by design here, and comparing them would fail every run on the runner's
+      # configuration rather than on the sources.
       - name: Rebuild dataset from upstream
-        run: make data
+        run: uv run afterward build --output-dir web/public/data
+
+      - name: Compare the rebuilt dataset with the committed manifest
+        run: uv run python scripts/dataset_check.py --sources-only

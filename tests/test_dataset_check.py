@@ -89,3 +89,28 @@ class TestComparingTwoStates:
     def test_enrichment_lost_is_still_caught_within_one_state(self) -> None:
         problems = dataset_check.problems(counts(occupations_with_spanish=0), counts())
         assert problems == ["occupations_with_spanish: 0, manifest says 600 — enrichment lost"]
+
+
+class TestSourcesOnly:
+    """The scheduled freshness job rebuilds from DOL and EDD with no enrichment credentials.
+
+    Its question is whether the sources still answer with California's programs, so the
+    enrichment counts it cannot produce must not fail it -- and must still fail every other
+    caller, because the backup relies on them.
+    """
+
+    def test_missing_enrichment_is_not_a_source_problem(self) -> None:
+        actual = counts(occupations_with_spanish=0, occupations_with_wage_spread=0)
+        assert dataset_check.problems(actual, counts(), sources_only=True) == []
+
+    def test_the_default_comparison_still_refuses_it(self) -> None:
+        actual = counts(occupations_with_spanish=0, occupations_with_wage_spread=0)
+        assert len(dataset_check.problems(actual, counts())) == 2
+
+    def test_a_shrunken_source_still_fails(self) -> None:
+        problems = dataset_check.problems(counts(programs=100), counts(), sources_only=True)
+        assert problems == ["programs: 100, manifest says 3266"]
+
+    def test_a_state_mismatch_still_refuses(self) -> None:
+        problems = dataset_check.problems(counts(state="NV"), counts(), sources_only=True)
+        assert len(problems) == 1 and "NV" in problems[0]
