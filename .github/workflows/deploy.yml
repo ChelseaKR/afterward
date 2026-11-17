@@ -56,10 +56,9 @@ on:
         required: false
         type: string
 
-permissions:
-  contents: read # checkout, and `gh release download` for the dataset asset
-  id-token: write # OIDC only. There are no static AWS keys for this account anywhere.
-  actions: read # read CI's conclusion for this commit
+# Nothing at the workflow level: each job states its own, so the IndexNow job below cannot
+# inherit the deploy job's id-token grant.
+permissions: {}
 
 # Never cancel a deploy in flight: a half-applied sync is worse than a slow one.
 concurrency:
@@ -84,6 +83,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    permissions:
+      contents: read # checkout, and `gh release download` for the dataset asset
+      id-token: write # OIDC only. There are no static AWS keys for this account anywhere.
+      actions: read # read CI's conclusion for this commit
     # Required, and not merely as an approval gate: the deploy role's trust policy accepts
     # exactly one subject, `repo:ChelseaKR/afterward:environment:production`. A job without
     # this environment cannot assume the role at all. See GitHubDeployRole in
@@ -441,6 +444,31 @@ jobs:
 
           echo "Artifact verified: ${urls} sitemap URLs, ${DATASET_PROGRAMS} programs, snapshot ${DATASET_SNAPSHOT}."
 
+      - name: Pick the pages to announce to IndexNow
+        # Runs BEFORE the upload replaces the live site, because the sitemap.xml live now is
+        # what this build is compared with. The <lastmod> the step above wrote moves only when
+        # a page's digest moved, so a URL is picked when it is new or its <lastmod> differs
+        # from the live one: the pages whose bytes changed, not all 9,000. Only https URLs on
+        # this host, only built pages without a robots noindex, at most 10,000. Selection
+        # only: nothing is sent here. src/afterward/indexnow.py is stdlib only and exits 0 on
+        # any problem (a notice, never a failed deploy); a live sitemap it cannot read means
+        # nothing is picked. No secret: the IndexNow key is public by design, served from
+        # web/public/<key>.txt (ADR 0004).
+        run: |
+          set -euo pipefail
+          python3 src/afterward/indexnow.py select \
+            --site-dir web/out --base-url "${SITE_URL}" \
+            --kind sitemap --file sitemap.xml \
+            --out "${RUNNER_TEMP}/indexnow-urls.json"
+
+      - name: Keep the IndexNow list for the job after the deploy
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: indexnow-urls
+          path: ${{ runner.temp }}/indexnow-urls.json
+          retention-days: 1
+          if-no-files-found: warn
+
       # ---------------------------------------------------------------------------------
       # Publish
       # ---------------------------------------------------------------------------------
@@ -633,7 +661,31 @@ jobs:
             return 1
           }
 
-          fetch "${SITE_URL}/" '<!DOCTYPE html>'
+          # `/` is a 301 to `/en/` once the stack carries the edge redirect (ADR 0004), and the
+          # language-chooser page until then. The stack is deployed by hand, separately from
+          # this workflow, so either answer passes; anything else -- a 404 at the root, which
+          # is what this guard was written for, or a redirect somewhere other than `/en/` --
+          # fails. Without -L, so the status is the root's own and not the page it points at.
+          root_ok=""
+          for attempt in 1 2 3 4 5 6 7 8; do
+            root=$(curl -sS -o "${RUNNER_TEMP}/body" -w '%{http_code} %{redirect_url}' \
+              --max-time 45 -H 'Cache-Control: no-cache' "${SITE_URL}/" || echo 000)
+            case "$root" in
+              "301 ${SITE_URL}/en/")
+                echo "  ok  ${SITE_URL}/ (301 to /en/)"; root_ok=1; break ;;
+              "200 "*)
+                if grep -qF '<!DOCTYPE html>' "${RUNNER_TEMP}/body"; then
+                  echo "  ok  ${SITE_URL}/ (200, the language chooser; the edge redirect is not deployed yet)"
+                  root_ok=1; break
+                fi ;;
+            esac
+            echo "  ... ${SITE_URL}/ -> ${root}, attempt ${attempt}"
+            sleep 15
+          done
+          if [ -z "$root_ok" ]; then
+            echo "::error::${SITE_URL}/ answered '${root}', neither a 301 to /en/ nor the chooser page."
+            exit 1
+          fi
           fetch "${SITE_URL}/en/" 'lang="en"'
           fetch "${SITE_URL}/es/" 'lang="es"'
           fetch "${SITE_URL}/robots.txt" "Sitemap: ${SITE_URL}/sitemap.xml"
@@ -681,3 +733,32 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
         env:
           DEPLOY_REASON: ${{ inputs.reason }}
+
+  # Tell IndexNow (Bing, and through it ChatGPT search) which pages are new or changed, only
+  # after the deploy and its live smoke test succeeded: a failed or skipped deploy skips this
+  # job. It never fails the run: indexnow.py exits 0 on any problem and prints a notice, and
+  # the sitemap still gets the pages crawled. Read-only, no AWS role, no environment, no
+  # secret. https://www.indexnow.org/documentation
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: src/afterward/indexnow.py
+          sparse-checkout-cone-mode: false
+
+      - name: Fetch the list the deploy selected
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: indexnow-urls
+          path: ${{ runner.temp }}/indexnow
+
+      - name: Announce the new and changed pages to IndexNow
+        run: |
+          set -euo pipefail
+          python3 src/afterward/indexnow.py submit --list "${RUNNER_TEMP}/indexnow/indexnow-urls.json"

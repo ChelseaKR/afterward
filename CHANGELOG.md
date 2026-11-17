@@ -8,6 +8,17 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **`/` is a real 301 to `/en/`, and each deploy tells IndexNow what changed (ADR 0004, owner
+  decision 2026-11-17).** Google had picked the meta-refresh chooser at `/` as the homepage's
+  canonical and then dropped it from the index. `RouteRewriteFunction` in
+  `infra/aws-static-site.yml` now answers `/` and `/index.html` with a 301 to `/en/`, query
+  string kept; it takes effect when the stack is deployed. The Deploy workflow now picks the
+  sitemap URLs that are new or whose `<lastmod>` moved, before the upload, and a separate
+  read-only job sends them to IndexNow after the smoke test passes (`src/afterward/indexnow.py`,
+  key file in `web/public/`). The smoke test accepts either the 301 or the chooser at `/`.
+  Tests: `web/lib/edgeRoutes.test.ts` and `tests/test_indexnow_wiring.py`, plus the shared
+  `tests/test_indexnow.py`.
+
 - **Every page that shows Spanish says it is machine-translated (owner decision,
   2026-09-18).** The Spanish was drafted by machine and no native speaker has reviewed it
   (#32). Spanish pages, the root language chooser and the 404 page now carry a notice at the
