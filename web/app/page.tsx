@@ -82,6 +82,11 @@ export const metadata: Metadata = {
 /**
  * Language chooser at the site root.
  *
+ * Once the stack carries ADR 0004, production does not serve this page: the CloudFront function
+ * in `infra/aws-static-site.yml` answers `/` with a 301 to `/en/`, so search engines index `/en/`
+ * rather than a refresh. It stays in the export for a local preview of `out/`, which has no
+ * edge function, and for the edge as it was before that stack update.
+ *
  * This was previously `redirect()`, which under `output: "export"` does not produce a
  * redirect at all: Next emits an error shell with an empty body and no `lang` attribute.
  * Visitors without JavaScript got a blank page at the most-linked URL in the site, and

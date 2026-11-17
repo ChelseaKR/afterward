@@ -102,6 +102,28 @@ Resources:
         function handler(event) {
           var request = event.request;
           var uri = request.uri;
+          // The root belongs to no language: a real 301 to /en/, so search engines index
+          // /en/ rather than the meta-refresh chooser (ADR 0004). The query string is kept,
+          // so utm_* tags on a shared root link still reach the page they land on.
+          if (uri === '/' || uri === '/index.html') {
+            var params = [];
+            for (var key in request.querystring) {
+              var q = request.querystring[key];
+              if (q.multiValue) {
+                q.multiValue.forEach(function (mv) {
+                  params.push(encodeURIComponent(key) + '=' + encodeURIComponent(mv.value));
+                });
+              } else {
+                params.push(encodeURIComponent(key) + '=' + encodeURIComponent(q.value));
+              }
+            }
+            var qs = params.length ? '?' + params.join('&') : '';
+            return {
+              statusCode: 301,
+              statusDescription: 'Moved Permanently',
+              headers: { location: { value: '/en/' + qs } }
+            };
+          }
           if (uri.endsWith('/')) {
             request.uri += 'index.html';
           } else if (!uri.split('/').pop().includes('.')) {
@@ -110,7 +132,7 @@ Resources:
           return request;
         }
       FunctionConfig:
-        Comment: Resolve directory-style public routes to their reviewed index documents.
+        Comment: 301 the root to /en/, and resolve directory-style public routes to their reviewed index documents.
         Runtime: cloudfront-js-2.0
       Name: !Sub "${AWS::StackName}-route-rewrite"
 

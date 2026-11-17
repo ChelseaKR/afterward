@@ -3,7 +3,8 @@
 One CloudFormation stack publishes [afterward.chelseakr.com](https://afterward.chelseakr.com):
 a private, versioned S3 bucket; CloudFront with Origin Access Control and TLS; Route 53
 A/AAAA aliases; directory-route rewriting so `/en/occupations/` resolves to its
-`index.html`; security headers; and a narrowly scoped GitHub OIDC deploy role.
+`index.html`, and a 301 from `/` to `/en/` (ADR 0004); security headers; and a narrowly
+scoped GitHub OIDC deploy role.
 
 The bucket is never public. CloudFront reads it through OAC, so the only way to the content
 is through the distribution and its headers.
@@ -74,6 +75,36 @@ aws cloudformation update-stack \
   --capabilities CAPABILITY_NAMED_IAM \
   --parameters ParameterKey=PublishDns,ParameterValue=true
 ```
+
+## Updating the stack
+
+The Deploy workflow publishes the site; it never touches this stack. A change to
+`aws-static-site.yml` -- the CloudFront function, the CSP, the deploy role -- reaches
+production only when the owner applies it, from a checkout of `main`. A change set first, so
+the diff CloudFormation is about to apply can be read before it is:
+
+```bash
+aws cloudformation create-change-set --region us-east-1 \
+  --stack-name afterward-static-site --change-set-name "update-$(date +%Y%m%d)" \
+  --template-body file://infra/aws-static-site.yml --capabilities CAPABILITY_NAMED_IAM \
+  --parameters ParameterKey=DomainName,UsePreviousValue=true \
+    ParameterKey=HostedZoneId,UsePreviousValue=true \
+    ParameterKey=SiteBucketName,UsePreviousValue=true \
+    ParameterKey=GitHubOidcSubjectRepository,UsePreviousValue=true \
+    ParameterKey=PublishDns,UsePreviousValue=true
+aws cloudformation wait change-set-create-complete --region us-east-1 \
+  --stack-name afterward-static-site --change-set-name "update-$(date +%Y%m%d)"
+aws cloudformation describe-change-set --region us-east-1 \
+  --stack-name afterward-static-site --change-set-name "update-$(date +%Y%m%d)" \
+  --query 'Changes[].ResourceChange.[Action,LogicalResourceId,Replacement]' --output table
+aws cloudformation execute-change-set --region us-east-1 \
+  --stack-name afterward-static-site --change-set-name "update-$(date +%Y%m%d)"
+aws cloudformation wait stack-update-complete --region us-east-1 \
+  --stack-name afterward-static-site
+```
+
+`UsePreviousValue` on every parameter matters most for `PublishDns`: its default is
+`"false"`, and an update that fell back to it would remove the DNS records.
 
 ## Redeploying
 
