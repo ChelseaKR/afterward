@@ -1540,6 +1540,12 @@ dd {
   margin: 0.75rem 0 0;
 }
 
+/*
+  Allowed to wrap (WCAG 1.4.10). It was `nowrap`, and "Copiar el enlace de esta búsqueda" is
+  wider than a 320px screen in a wide font: CI's Linux fonts put the Spanish search page at
+  349px while macOS's fitted. On a wide screen the label still sits on one line beside the
+  result count; only where it cannot fit does it break, inside the button.
+*/
 .copy-link {
   background: transparent;
   border: 1px solid var(--gray-50);
@@ -1547,8 +1553,9 @@ dd {
   color: var(--primary-100);
   cursor: pointer;
   font-size: 0.9375rem;
+  max-width: 100%;
   padding: 0.375rem 0.875rem;
-  white-space: nowrap;
+  text-align: start;
 }
 .copy-link:hover {
   background: var(--gray-20);

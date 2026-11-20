@@ -46,7 +46,9 @@
  * Obscured (2.4.11)**: with four programs in the sticky comparison tray, focus is tabbed
  * through the search page on a desktop and on a phone, and any control that lands entirely
  * behind the tray fails. At 320px it also asks axe's `scrollable-region-focusable`, which
- * cannot fire on a desktop where no table overflows. Three filter selects did, on a desktop, and most of the result list
+ * cannot fire on a desktop where no table overflows, and repeats the reflow check with the
+ * 1.4.12 text-spacing overrides applied, so a page that only fits in this machine's fonts
+ * fails here rather than on a CI runner with different ones. Three filter selects did, on a desktop, and most of the result list
  * did on a phone.
  *
  * Usage: node scripts/a11y-rendered.mjs [outDir]
@@ -231,6 +233,11 @@ function reflowSample(outDir, lang) {
       return { template, path: `/${parts.join("/")}/` };
     });
 }
+
+/** The four WCAG 1.4.12 Text Spacing overrides, as a stylesheet. */
+const TEXT_SPACING =
+  "* { line-height: 1.5 !important; letter-spacing: 0.12em !important; " +
+  "word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }";
 
 /** Elements wider than the viewport that are not inside their own horizontal scroller. */
 async function reflowOverflow(page) {
@@ -501,6 +508,18 @@ try {
       });
       for (const target of stuck) {
         reflowFailures.push(`${route}: ${target} scrolls sideways and cannot be reached by keyboard`);
+      }
+      // Again with the WCAG 1.4.12 text-spacing overrides, which a reader is entitled to apply
+      // and which also stand in for a wider font. Reflow depends on font metrics, so a page
+      // that fits in this machine's fonts can still overflow in another's: the Spanish
+      // "Copy link" button fitted 320px on macOS and was 349px on CI's Linux. Wider spacing
+      // makes that margin visible here instead of in CI.
+      if (wide.length === 0) {
+        await narrow.addStyleTag({ content: TEXT_SPACING });
+        const spaced = await reflowOverflow(narrow);
+        if (spaced.length > 0) {
+          reflowFailures.push(`${route} with 1.4.12 text spacing: ${spaced.join(" · ")}`);
+        }
       }
     }
     await narrow.close();
