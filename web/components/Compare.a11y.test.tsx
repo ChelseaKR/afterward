@@ -54,6 +54,7 @@ function entry(n: number): SearchEntry {
 }
 
 const TRAY_HEIGHT = 239.4;
+let height = TRAY_HEIGHT;
 
 let container: HTMLElement;
 let root: Root;
@@ -65,12 +66,13 @@ beforeEach(() => {
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (
     this: HTMLElement,
   ) {
-    const height = this.classList.contains("compare-tray") ? TRAY_HEIGHT : 0;
-    return { x: 0, y: 0, top: 0, left: 0, right: 0, bottom: height, width: 0, height } as DOMRect;
+    const h = this.classList.contains("compare-tray") ? height : 0;
+    return { x: 0, y: 0, top: 0, left: 0, right: 0, bottom: h, width: 0, height: h } as DOMRect;
   });
 });
 
 afterEach(async () => {
+  height = TRAY_HEIGHT;
   await act(async () => root.unmount());
   container.remove();
   vi.restoreAllMocks();
@@ -97,6 +99,13 @@ describe("CompareTray and focus", () => {
     expect(document.documentElement.style.scrollPaddingBottom).toBe(
       `${Math.ceil(TRAY_HEIGHT) + 8}px`,
     );
+  });
+
+  it("re-measures on the render that grows the tray, not a frame later", async () => {
+    await act(async () => root.render(tray([entry(1), entry(2)])));
+    height = 408;
+    await act(async () => root.render(tray([entry(1), entry(2), entry(3)])));
+    expect(document.documentElement.style.scrollPaddingBottom).toBe("416px");
   });
 
   it("gives the padding back when the tray goes away", async () => {

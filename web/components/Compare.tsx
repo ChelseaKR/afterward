@@ -22,6 +22,12 @@ export { MAX_COMPARE };
 // `t.leadsTo` is not used by this component; the row it labeled has been replaced by one
 // that carries each job's own figures (still used by the provider page and search results).
 
+/** Reserve scroll space below the viewport's content the height of the sticky tray. */
+function padBelow(tray: HTMLElement) {
+  document.documentElement.style.scrollPaddingBottom =
+    `${Math.ceil(tray.getBoundingClientRect().height) + 8}px`;
+}
+
 /**
  * Sticky tray showing what has been picked for comparison.
  *
@@ -57,15 +63,18 @@ export function CompareTray({
     is exactly where the tray is, so a keyboard user's focus disappeared behind it. Scroll
     padding the height of the tray moves that edge up; it is measured rather than fixed
     because the tray grows with every chip.
+
+    Measured on every render as well as by the observer: a ResizeObserver reports a frame
+    late, and a Tab pressed straight after ticking a box would scroll against the old height.
   */
+  useLayoutEffect(() => {
+    if (shown && trayRef.current !== null) padBelow(trayRef.current);
+  });
   useLayoutEffect(() => {
     const tray = trayRef.current;
     if (!shown || tray === null) return;
     const root = document.documentElement;
-    const apply = () => {
-      root.style.scrollPaddingBottom = `${Math.ceil(tray.getBoundingClientRect().height) + 8}px`;
-    };
-    apply();
+    const apply = () => padBelow(tray);
     const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(apply);
     observer?.observe(tray);
     return () => {
