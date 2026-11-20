@@ -489,7 +489,12 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <ul className="limits">
         {MAPPING_CITATIONS.map((citation) => (
           <li key={citation.id}>
-            <a href={citation.url} rel="noopener noreferrer" lang={feedTextLang(lang)}>
+            <a
+              href={citation.url}
+              rel="noopener noreferrer"
+              lang={feedTextLang(lang)}
+              className="url-text"
+            >
               {citation.label}
             </a>
           </li>

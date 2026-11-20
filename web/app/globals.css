@@ -1055,7 +1055,8 @@ dd {
   overflow-wrap: anywhere;
 }
 
-/* A web address shown as its own link text. Long and unbroken, so it may wrap anywhere. */
+/* A web address shown as its own link text, or a citation naming long schema terms such as
+   ceterms:aggregateData. Long and unbroken, so it may wrap anywhere. */
 .url-text {
   overflow-wrap: anywhere;
 }
