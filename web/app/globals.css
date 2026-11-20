@@ -624,7 +624,9 @@ td.num {
   A wide table scrolls inside this box on a narrow screen rather than widening the page
   (WCAG 1.4.10). A table with no link in it gives the keyboard nothing to land on, so those
   wrappers carry `tabIndex={0}`: focus the box, then the arrow keys scroll it (WCAG 2.1.1).
-  Tables with links do not need it, because tabbing to a link scrolls it into view.
+  Something focusable needs a role, so they are also `role="region"`, named by the heading
+  above the table (`aria-labelledby`), which is what a screen reader says on arriving.
+  Tables with links do not need any of this: tabbing to a link scrolls it into view.
 */
 .table-scroll {
   overflow-x: auto;

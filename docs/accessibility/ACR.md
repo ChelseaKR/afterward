@@ -103,7 +103,7 @@ answers for those versions at the same levels.
 | 1.3.3 Sensory Characteristics (Level A) | Supports | Instructions refer to controls by name, not by shape, colour, size or position. Checked by reading the strings in `web/lib/i18n.ts`. |
 | 1.4.1 Use of Color (Level A) | Supports | Shrinking occupations, programs that reported nothing and the strongest figure in a comparison are each said in words or marked with text for screen readers as well as colour or weight. Links in running text are underlined (axe `link-in-text-block` passes). |
 | 1.4.2 Audio Control (Level A) | Not Applicable | No audio. |
-| 2.1.1 Keyboard (Level A) | Supports | Every control is a native link, button, input, select, checkbox or `summary`. The Tab walk reached every one on every template. On a narrow screen, wide tables scroll inside their own box; the ten tables with no link in them now take keyboard focus so they can be scrolled with the arrow keys (fixed on this branch; before it, nine of them could not be scrolled without a mouse on a 320px screen). Nothing needs a mouse, drag or hover. |
+| 2.1.1 Keyboard (Level A) | Supports | Every control is a native link, button, input, select, checkbox or `summary`. The Tab walk reached every one on every template. On a narrow screen, wide tables scroll inside their own box; the ten tables with no link in them now take keyboard focus so they can be scrolled with the arrow keys, and are named regions labelled by the heading above them (fixed on this branch; before it, nine of them could not be scrolled without a mouse on a 320px screen). Nothing needs a mouse, drag or hover. |
 | 2.1.2 No Keyboard Trap (Level A) | Supports | The Tab walk cycled through every page and state without being held. The site has no modal dialogs or embedded widgets. |
 | 2.1.4 Character Key Shortcuts (Level A) | Not Applicable | No keyboard shortcuts. |
 | 2.2.1 Timing Adjustable (Level A) | Supports | No time limits. "Copy link" shows "Link copied" for two seconds and then returns to its label; nothing the reader needs to do is timed. The root page redirects to `/en/` immediately (a zero-second redirect, which the criterion allows), and the live site answers `/` with a server redirect instead. |
@@ -170,7 +170,8 @@ On branch `a11y/acr-2026-11`, each with a test that failed before the change:
    name), and the CTDL page's term lists and bare web address now wrap. Gate:
    `web/scripts/a11y-rendered.mjs`, every page template in both languages at 320 CSS px.
 2. **Keyboard-scrollable tables (2.1.1).** The ten tables with no link inside take keyboard
-   focus. Gate: axe `scrollable-region-focusable` at 320 CSS px in the same script.
+   focus, as regions named by their headings. Gates: axe `scrollable-region-focusable` at 320
+   CSS px in the same script, and `focus-order-semantics` in `npm run a11y`.
 3. **Focus not obscured (2.4.11).** The comparison tray reserves scroll space its own height
    (`web/components/Compare.tsx`). Tests: `web/components/Compare.a11y.test.tsx` and the
    keyboard walk in `web/scripts/a11y-rendered.mjs`.
@@ -219,7 +220,8 @@ after this branch is deployed. In each step, the thing to listen or look for is 
    control shows a visible focus ring that you can find easily on white and on the grey filter
    panel* (1.4.11 for the browsers' own default rings). On a phone-width window (or 400% zoom),
    Tab to the tables on `/en/outcomes-coverage/` and `/en/ctdl/` and use the arrow keys. *The
-   table scrolls sideways.*
+   table scrolls sideways.* With a screen reader on, *each is announced as a region with the
+   heading above it as its name.*
 4. **TalkBack with Chrome on Android, or VoiceOver on iPhone** (about 30 minutes): the search,
    compare, save and program-page steps from 1, by swiping. *Every control can be reached and
    activated; the tray does not cover what has focus; nothing needs a two-finger gesture.*
