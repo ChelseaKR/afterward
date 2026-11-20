@@ -558,7 +558,7 @@ silently.
 | CI/CD | Applies (`make verify` and `make web-verify` run identically in CI; deploys are dispatch-only and refuse to run without CI green on the exact commit) |
 | Observability | Applies (static-site tier: deploy-time guards, live-site smoke tests, quarterly upstream freshness checks; declared in [docs/ROADMAP.md](docs/ROADMAP.md)) |
 | Performance | Applies (pre-rendered static export served from S3/CloudFront, so pages do no server round trip and ship no client data fetch). **Not yet enforced:** no performance budget is gated in CI and none has been measured, so treat this row as declared scope rather than proven numbers |
-| Accessibility | Applies (WCAG 2.2 AAA target; axe and contrast gates block the build; what automation proves and what it cannot: [docs/wcag-2.2-aaa-conformance.md](docs/wcag-2.2-aaa-conformance.md)) |
+| Accessibility | Applies (WCAG 2.2 AAA target; axe and contrast gates block the build; what automation proves and what it cannot: [docs/wcag-2.2-aaa-conformance.md](docs/wcag-2.2-aaa-conformance.md); WCAG 2.2 A/AA conformance report: [docs/accessibility/ACR.md](docs/accessibility/ACR.md)) |
 | Internationalization | Applies (EN/ES ship together; typed modules instead of catalogs: [docs/I18N.md](docs/I18N.md), ADR 0002) |
 | AI Evaluation | Applies since 2026-08-21 ([ADR 0003](docs/adr/0003-runtime-ai-at-the-edges.md)): the optional `afterward.ask` service has a prompt, a retrieval step and a generation surface. Committed eval suites and provenance-stamped results live in `evals/`; the static site itself still contains no model |
 | Documentation | Applies (README, CHANGELOG, CONTRIBUTING, SECURITY, DISCLAIMER, PROVENANCE, design log, ADRs) |
