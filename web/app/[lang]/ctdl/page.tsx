@@ -250,7 +250,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <h2 id="contains">{t.ctdlCoverageHeading}</h2>
       <p>{t.ctdlCoverageIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -277,7 +277,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <h3>{t.ctdlPropertiesHeading}</h3>
       <p>{t.ctdlPropertiesIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -309,7 +309,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <h3>{t.ctdlMeasuresHeading}</h3>
       <p>{t.ctdlMeasuresIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -344,7 +344,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <p>{t.ctdlGapsIntro}</p>
       <p>{t.ctdlGapsReading}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -396,7 +396,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <p>{t.ctdlValidationIntro(validation.tool.name, validation.tool.version)}</p>
       <p>{t.ctdlValidationEntities(tally(validation.entities_validated, lang))}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -424,7 +424,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
 
       <p>{unaccepted ? t.ctdlValidationUnaccepted : t.ctdlValidationResult}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -515,7 +515,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <p>{t.ctdlGetReproduce}</p>
       <p>
         {t.ctdlGetReleases}{" "}
-        <a href={RELEASES_URL} rel="noopener noreferrer">
+        <a href={RELEASES_URL} rel="noopener noreferrer" className="url-text">
           {RELEASES_URL}
         </a>
       </p>

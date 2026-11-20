@@ -17,6 +17,7 @@
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const DS_DIR = dirname(require.resolve("@cagovweb/design-system/package.json"));
@@ -179,6 +180,51 @@ const PAIRS = [
   ["shared list button", "--primary-100", "--gray-20", AA_NORMAL],
 ];
 
+/*
+ * WCAG 1.4.11 Non-text Contrast: 3:1 for what shows a control is there, and where focus is.
+ *
+ * Added with the WCAG 2.2 A/AA conformance report (docs/accessibility/ACR.md, 2026-11). The
+ * list above is all text, so nothing here ever looked at a focus ring or a field border. The
+ * ring the site's own controls use was `--primary-60`: 2.87:1 on the page and 2.34:1 on the
+ * grey panels where most of those controls sit. The select and search-box border was
+ * `--gray-60`, 2.76:1 on the filter panel.
+ *
+ * The pairs alone would repeat the fault the comment on PAIRS records -- a ring colour added
+ * later would be unchecked rather than correct -- so every `outline: ... var(--token)` in
+ * app/globals.css must be the foreground of a "focus ring" pair below, and the form-field
+ * border token must be the foreground of the "field border" pairs, or this audit fails.
+ */
+const NON_TEXT = 3.0;
+const NON_TEXT_PAIRS = [
+  ["focus ring on page", "--primary-80", "--gray-10", NON_TEXT],
+  ["focus ring on panel", "--primary-80", "--gray-20", NON_TEXT],
+  ["focus ring in masthead", "--gray-10", "--primary-100", NON_TEXT],
+  ["focus ring in notice", "--gray-10", "--gray-120", NON_TEXT],
+  ["field border on page", "--gray-70", "--gray-10", NON_TEXT],
+  ["field border on filter panel", "--gray-70", "--gray-20", NON_TEXT],
+];
+
+const SITE_CSS = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), "..", "app", "globals.css"),
+  "utf-8",
+);
+
+/** Ring and field-border tokens globals.css uses that no non-text pair checks. */
+function uncheckedNonTextTokens(css) {
+  const covered = (prefix) =>
+    new Set(NON_TEXT_PAIRS.filter(([label]) => label.startsWith(prefix)).map(([, fg]) => fg));
+  const rings = covered("focus ring");
+  const borders = covered("field border");
+  const missing = [];
+  for (const [, token] of css.matchAll(/outline:\s*[\d.]+(?:px|rem)\s+solid\s+var\((--[a-z0-9-]+)\)/g)) {
+    if (!rings.has(token)) missing.push(`focus ring ${token}`);
+  }
+  const field = css.match(/\.field select\s*\{[^}]*border:\s*[\d.]+px\s+solid\s+var\((--[a-z0-9-]+)\)/);
+  if (!field) missing.push("field border (rule not found in globals.css)");
+  else if (!borders.has(field[1])) missing.push(`field border ${field[1]}`);
+  return [...new Set(missing)];
+}
+
 const statics = staticTokens();
 const aliases = aliasesByScheme();
 let failures = 0;
@@ -187,7 +233,7 @@ let unresolved = 0;
 for (const scheme of ["light", "dark"]) {
   console.log(`\n${scheme}`);
 
-  for (const [label, fgToken, bgToken, minimum] of PAIRS) {
+  for (const [label, fgToken, bgToken, minimum] of [...PAIRS, ...NON_TEXT_PAIRS]) {
     const fg = resolve(fgToken, statics, aliases[scheme]);
     const bg = resolve(bgToken, statics, aliases[scheme]);
 
@@ -209,13 +255,19 @@ for (const scheme of ["light", "dark"]) {
   }
 }
 
-if (failures > 0 || unresolved > 0) {
+const unchecked = uncheckedNonTextTokens(SITE_CSS);
+for (const token of unchecked) console.log(`  UNCHECKED  ${token} — add a non-text pair for it`);
+
+if (failures > 0 || unresolved > 0 || unchecked.length > 0) {
   const parts = [];
-  if (failures) parts.push(`${failures} pairing(s) below the WCAG 2.2 AAA minimum (1.4.6)`);
+  if (failures) parts.push(`${failures} pairing(s) below their WCAG 2.2 minimum (1.4.6 / 1.4.11)`);
   if (unresolved) parts.push(`${unresolved} pairing(s) could not be resolved`);
+  if (unchecked.length) parts.push(`${unchecked.length} ring or border token(s) no pair checks`);
   console.error(`\ncontrast-audit: ${parts.join("; ")}`);
   process.exit(1);
 }
 console.log(
-  `\ncontrast-audit: all ${PAIRS.length} pairings meet WCAG 2.2 AAA (1.4.6) in both light and dark`,
+  `\ncontrast-audit: all ${PAIRS.length} text pairings meet WCAG 2.2 AAA (1.4.6) and all ` +
+    `${NON_TEXT_PAIRS.length} focus-ring and field-border pairings meet 1.4.11, in both light ` +
+    `and dark`,
 );

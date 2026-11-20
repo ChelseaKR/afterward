@@ -311,7 +311,7 @@ export default async function OutcomesCoveragePage({
       <h2 id="measures">{t.coverageMeasuresHeading}</h2>
       <p>{t.coverageMeasuresIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -374,7 +374,7 @@ export default async function OutcomesCoveragePage({
       <h2 id="provider-type">{t.coverageByTypeHeading}</h2>
       <p>{t.coverageByTypeIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>
@@ -460,7 +460,7 @@ export default async function OutcomesCoveragePage({
       <h2 id="cohort-size">{t.coverageCohortHeading}</h2>
       <p>{t.coverageCohortIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0}>
         <table>
           <thead>
             <tr>

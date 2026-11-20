@@ -139,6 +139,9 @@ const en = {
   /** i18n key naming: replaces `showThese` where the button carries a count. */
   showTheseN: (n: number) => (n === 1 ? "Show that one" : `Show those ${fmt(n)}`),
   showOnlyReported: (n: number) => `Show only the ${fmt(n)} that reported`,
+  /** The button under the result list that reveals the next batch. Named by what it does:
+   * it read "+ 50", which a screen reader announces as a number, not a purpose. */
+  showMore: (n: number) => (n === 1 ? "Show 1 more program" : `Show ${fmt(n)} more programs`),
   filterCity: "City",
   filterAnyCity: "Anywhere in California",
   filterMaxCost: "Most you can pay",
@@ -1539,6 +1542,7 @@ const es: Dictionary = {
   showThese: "Ver estos",
   showTheseN: (n: number) => (n === 1 ? "Ver ese" : `Ver esos ${fmt(n)}`),
   showOnlyReported: (n: number) => `Ver solo los ${fmt(n)} que reportaron`,
+  showMore: (n: number) => (n === 1 ? "Ver 1 programa más" : `Ver ${fmt(n)} programas más`),
   filterCity: "Ciudad",
   filterAnyCity: "Cualquier lugar de California",
   filterMaxCost: "Lo máximo que puede pagar",

@@ -1067,6 +1067,15 @@ export function SearchApp({
           >
             {copied ? t.copyLinkDone : t.copyLink}
           </button>
+          {/*
+            Both copy buttons relabel themselves "Link copied" for two seconds. A sighted reader
+            sees that; a screen reader is told nothing, because a button's text changing is not
+            something assistive technology announces (WCAG 4.1.3). Always in the DOM and empty
+            until a copy succeeds, so it is a live region before it has anything to say.
+          */}
+          <span role="status" className="visually-hidden">
+            {copied ? t.copyLinkDone : ""}
+          </span>
         </div>
 
         {/*
@@ -1164,7 +1173,7 @@ export function SearchApp({
                   className="button"
                   onClick={() => setLimit((n) => n + PAGE_SIZE * 2)}
                 >
-                  {`+ ${Math.min(PAGE_SIZE * 2, results.length - visible.length)}`}
+                  {t.showMore(Math.min(PAGE_SIZE * 2, results.length - visible.length))}
                 </button>
               </p>
             )}
