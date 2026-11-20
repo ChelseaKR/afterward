@@ -369,8 +369,8 @@ export default async function OccupationPage({
 
       {regions.length > 0 && (
         <>
-          <h2>{t.byRegion}</h2>
-          <div className="table-scroll">
+          <h2 id="by-region">{t.byRegion}</h2>
+          <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="by-region">
             <table>
               <thead>
                 <tr>

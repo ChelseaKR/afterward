@@ -8,6 +8,20 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **A WCAG 2.2 A/AA Accessibility Conformance Report, and the six problems writing it found
+  (2026-11).** `docs/accessibility/ACR.md`, based on the VPAT 2.5 Rev WCAG edition: 55
+  criteria, each with what was checked and what was not. Nobody has tested the site with a
+  screen reader yet, and the report says so and lists the steps (Appendix A). Fixed on the
+  way, each with a test that failed first: the search page was 403px wide on a 320px phone
+  (432px in Spanish) and the CTDL page 411px (1.4.10); nine data tables could not be scrolled
+  from the keyboard at that width (2.1.1); tabbing put controls entirely behind the sticky
+  comparison tray (2.4.11); focus rings were 2.34:1 on grey panels and select borders 2.76:1
+  (1.4.11); "Link copied" and "Comparison is full" were not reliably announced (4.1.3); and
+  the show-more button was named "+ 50" (2.4.6), now "Show 50 more programs". New gates:
+  reflow, keyboard-scrollable tables and focus-behind-the-tray in `npm run a11y:rendered`,
+  and non-text contrast in `npm run contrast`. 2.4.3 stays "Partially Supports": removing
+  the focused item from the tray or the saved list drops focus.
+
 - **`/` is a real 301 to `/en/`, and each deploy tells IndexNow what changed (ADR 0004, owner
   decision 2026-11-17).** Google had picked the meta-refresh chooser at `/` as the homepage's
   canonical and then dropped it from the index. `RouteRewriteFunction` in

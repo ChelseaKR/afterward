@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 
 import { dict, feedTextLang, type Lang } from "@/lib/i18n";
 import { clockWeeks, isShrinking } from "@/lib/search";
@@ -21,6 +21,12 @@ export { MAX_COMPARE };
 
 // `t.leadsTo` is not used by this component; the row it labeled has been replaced by one
 // that carries each job's own figures (still used by the provider page and search results).
+
+/** Reserve scroll space below the viewport's content the height of the sticky tray. */
+function padBelow(tray: HTMLElement) {
+  document.documentElement.style.scrollPaddingBottom =
+    `${Math.ceil(tray.getBoundingClientRect().height) + 8}px`;
+}
 
 /**
  * Sticky tray showing what has been picked for comparison.
@@ -44,10 +50,43 @@ export function CompareTray({
   open: boolean;
 }) {
   const t = dict(lang);
-  if (selected.length === 0) return null;
+  const trayRef = useRef<HTMLDivElement>(null);
+  const shown = selected.length > 0;
+  const full = selected.length >= MAX_COMPARE;
+
+  /*
+    Keeps a focused control from scrolling under the tray (WCAG 2.4.11 Focus Not Obscured).
+
+    The tray is sticky at the bottom of the viewport, and it is tall: 239px with two programs
+    picked, 408px with four on a desktop, 361 of a phone's 640 with four. Tabbing down the
+    filters or the result list scrolls each control just into view at the bottom edge, which
+    is exactly where the tray is, so a keyboard user's focus disappeared behind it. Scroll
+    padding the height of the tray moves that edge up; it is measured rather than fixed
+    because the tray grows with every chip.
+
+    Measured on every render as well as by the observer: a ResizeObserver reports a frame
+    late, and a Tab pressed straight after ticking a box would scroll against the old height.
+  */
+  useLayoutEffect(() => {
+    if (shown && trayRef.current !== null) padBelow(trayRef.current);
+  });
+  useLayoutEffect(() => {
+    const tray = trayRef.current;
+    if (!shown || tray === null) return;
+    const root = document.documentElement;
+    const apply = () => padBelow(tray);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(apply);
+    observer?.observe(tray);
+    return () => {
+      observer?.disconnect();
+      root.style.removeProperty("scroll-padding-bottom");
+    };
+  }, [shown]);
+
+  if (!shown) return null;
 
   return (
-    <div className="compare-tray" role="region" aria-label={t.compareTrayLabel}>
+    <div className="compare-tray" role="region" aria-label={t.compareTrayLabel} ref={trayRef}>
       <div className="shell compare-tray-inner">
         <p className="compare-tray-count">
           {t.compareCount(selected.length, MAX_COMPARE)}
@@ -55,15 +94,21 @@ export function CompareTray({
             Said out loud when the limit is reached. The card checkboxes go disabled at that
             point, which removes them from the tab order, so a keyboard user could never
             reach the tooltip that used to be the only explanation.
+
+            The status element is always present and only its text changes. It used to be
+            mounted together with its message, and a live region that arrives already
+            holding its text is one many screen readers never announce (WCAG 4.1.3).
           */}
-          {selected.length >= MAX_COMPARE && (
-            <span
-              role="status"
-              style={{ display: "block", fontWeight: 400, opacity: 0.85, marginTop: "0.15rem" }}
-            >
-              {t.compareFull}
-            </span>
-          )}
+          <span
+            role="status"
+            style={
+              full
+                ? { display: "block", fontWeight: 400, opacity: 0.85, marginTop: "0.15rem" }
+                : undefined
+            }
+          >
+            {full ? t.compareFull : ""}
+          </span>
         </p>
 
         <ul className="compare-chips">

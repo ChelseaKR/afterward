@@ -3,6 +3,13 @@
 Updated 2026-08-07. This site targets **WCAG 2.2 level AAA**. This note records what the
 automated gates actually prove, and — more usefully — what they cannot.
 
+The criterion-by-criterion answer at Levels A and AA, in the VPAT 2.5 WCAG format, is the
+Accessibility Conformance Report: [docs/accessibility/ACR.md](accessibility/ACR.md)
+(2026-11). Its evaluation added three checks to `npm run a11y:rendered` (reflow at 320 CSS
+px on every page template, keyboard-scrollable tables at that width, and focus never hidden
+behind the comparison tray) and non-text contrast for focus rings and field borders to
+`npm run contrast`.
+
 ## The four gates
 
 | Gate | Covers | Where it runs |

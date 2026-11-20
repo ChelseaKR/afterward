@@ -250,7 +250,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <h2 id="contains">{t.ctdlCoverageHeading}</h2>
       <p>{t.ctdlCoverageIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="contains">
         <table>
           <thead>
             <tr>
@@ -274,10 +274,10 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       </div>
       {stamp}
 
-      <h3>{t.ctdlPropertiesHeading}</h3>
+      <h3 id="properties">{t.ctdlPropertiesHeading}</h3>
       <p>{t.ctdlPropertiesIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="properties">
         <table>
           <thead>
             <tr>
@@ -306,10 +306,10 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       </div>
       {stamp}
 
-      <h3>{t.ctdlMeasuresHeading}</h3>
+      <h3 id="measures">{t.ctdlMeasuresHeading}</h3>
       <p>{t.ctdlMeasuresIntro}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="measures">
         <table>
           <thead>
             <tr>
@@ -344,7 +344,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <p>{t.ctdlGapsIntro}</p>
       <p>{t.ctdlGapsReading}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="not-carried">
         <table>
           <thead>
             <tr>
@@ -396,7 +396,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <p>{t.ctdlValidationIntro(validation.tool.name, validation.tool.version)}</p>
       <p>{t.ctdlValidationEntities(tally(validation.entities_validated, lang))}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="validation">
         <table>
           <thead>
             <tr>
@@ -422,9 +422,9 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       </div>
       {stamp}
 
-      <p>{unaccepted ? t.ctdlValidationUnaccepted : t.ctdlValidationResult}</p>
+      <p id="validation-findings">{unaccepted ? t.ctdlValidationUnaccepted : t.ctdlValidationResult}</p>
 
-      <div className="table-scroll">
+      <div className="table-scroll" tabIndex={0} role="region" aria-labelledby="validation-findings">
         <table>
           <thead>
             <tr>
@@ -489,7 +489,12 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <ul className="limits">
         {MAPPING_CITATIONS.map((citation) => (
           <li key={citation.id}>
-            <a href={citation.url} rel="noopener noreferrer" lang={feedTextLang(lang)}>
+            <a
+              href={citation.url}
+              rel="noopener noreferrer"
+              lang={feedTextLang(lang)}
+              className="url-text"
+            >
               {citation.label}
             </a>
           </li>
@@ -515,7 +520,7 @@ export default async function CtdlPage({ params }: { params: Promise<{ lang: str
       <p>{t.ctdlGetReproduce}</p>
       <p>
         {t.ctdlGetReleases}{" "}
-        <a href={RELEASES_URL} rel="noopener noreferrer">
+        <a href={RELEASES_URL} rel="noopener noreferrer" className="url-text">
           {RELEASES_URL}
         </a>
       </p>

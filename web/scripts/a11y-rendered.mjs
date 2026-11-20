@@ -38,18 +38,32 @@
  * The panel's own axe coverage, for builds that have none, is
  * `web/components/AskPanel.a11y.test.tsx`.
  *
+ * Two WCAG 2.2 AA checks no axe rule makes were added with the conformance report
+ * (docs/accessibility/ACR.md, 2026-11). **Reflow (1.4.10)**: every per-language page template
+ * is loaded at 320 CSS px and fails if the page scrolls sideways; a wide data table inside its
+ * own scroll container is allowed, a page that is wider than the screen is not. The search
+ * page failed this at 403px, and the CTDL page at 411px, before anyone looked. **Focus Not
+ * Obscured (2.4.11)**: with four programs in the sticky comparison tray, focus is tabbed
+ * through the search page on a desktop and on a phone, and any control that lands entirely
+ * behind the tray fails. At 320px it also asks axe's `scrollable-region-focusable`, which
+ * cannot fire on a desktop where no table overflows, and repeats the reflow check with the
+ * 1.4.12 text-spacing overrides applied, so a page that only fits in this machine's fonts
+ * fails here rather than on a CI runner with different ones. Three filter selects did, on a desktop, and most of the result list
+ * did on a phone.
+ *
  * Usage: node scripts/a11y-rendered.mjs [outDir]
  */
 
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 
 import { chromium } from "playwright";
 
 import { askServiceConfigured, verdict } from "./a11y-verdict.mjs";
+import { isPerLanguage, routeTemplates } from "./routes.mjs";
 
 const require = createRequire(import.meta.url);
 const AXE = readFileSync(require.resolve("axe-core/axe.min.js"), "utf-8");
@@ -187,6 +201,111 @@ async function printRulesAreInForce(page) {
       summary: shown("details > summary"),
     };
   });
+}
+
+/**
+ * One exported page per per-language template, for the reflow pass. Dynamic segments take
+ * the first page the export holds, so a template added later is covered without anyone
+ * remembering to list it; a template with nothing exported fails rather than leaving the
+ * sample, for the reason `a11y-audit.mjs` gives.
+ */
+function reflowSample(outDir, lang) {
+  return routeTemplates()
+    .filter(isPerLanguage)
+    .map((template) => {
+      let dir = outDir;
+      const parts = [];
+      for (const segment of template.split("/").filter(Boolean)) {
+        let name = segment === "[lang]" ? lang : segment;
+        if (segment !== "[lang]" && segment.startsWith("[")) {
+          let entries = [];
+          try {
+            entries = readdirSync(dir, { withFileTypes: true });
+          } catch {
+            entries = [];
+          }
+          name = entries.filter((e) => e.isDirectory()).map((e) => e.name).sort()[0] ?? null;
+          if (name === null) return { template, path: null };
+        }
+        parts.push(name);
+        dir = path.join(dir, name);
+      }
+      return { template, path: `/${parts.join("/")}/` };
+    });
+}
+
+/** The four WCAG 1.4.12 Text Spacing overrides, as a stylesheet. */
+const TEXT_SPACING =
+  "* { line-height: 1.5 !important; letter-spacing: 0.12em !important; " +
+  "word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }";
+
+/** Elements wider than the viewport that are not inside their own horizontal scroller. */
+async function reflowOverflow(page) {
+  return page.evaluate(() => {
+    const width = document.documentElement.clientWidth;
+    if (document.documentElement.scrollWidth <= width + 1) return [];
+    const inScroller = (element) => {
+      for (let a = element.parentElement; a; a = a.parentElement) {
+        const overflow = getComputedStyle(a).overflowX;
+        if (overflow === "auto" || overflow === "scroll") return true;
+      }
+      return false;
+    };
+    return [...document.querySelectorAll("body *")]
+      .filter((element) => {
+        const box = element.getBoundingClientRect();
+        if (box.width === 0 || box.right <= width + 1 || inScroller(element)) return false;
+        return ![...element.children].some((c) => c.getBoundingClientRect().right > width + 1);
+      })
+      .slice(0, 3)
+      .map((e) => `<${e.tagName.toLowerCase()}> ${(e.textContent ?? "").trim().slice(0, 50)}`);
+  });
+}
+
+/**
+ * Tab through the page and name every control that ends up entirely behind the sticky tray.
+ * "Entirely" is the 2.4.11 test: partly covered passes AA, wholly covered does not.
+ */
+async function focusHiddenByTray(page) {
+  await page.evaluate(() => {
+    if (document.activeElement && "blur" in document.activeElement) document.activeElement.blur();
+    window.scrollTo(0, 0);
+  });
+  const hidden = [];
+  let first = null;
+  for (let step = 0; step < 250; step += 1) {
+    await page.keyboard.press("Tab");
+    const result = await page.evaluate(() => {
+      const element = document.activeElement;
+      if (!element || element === document.body) return null;
+      const tray = document.querySelector(".compare-tray");
+      const box = element.getBoundingClientRect();
+      const key = `${element.tagName}|${element.id}|${(element.textContent ?? "").trim().slice(0, 40)}|${Math.round(box.top + window.scrollY)}`;
+      if (!tray || tray.contains(element) || box.width === 0 || box.height === 0) {
+        return { key, covered: false };
+      }
+      const points = [
+        [0.5, 0.5],
+        [0.1, 0.1],
+        [0.9, 0.1],
+        [0.1, 0.9],
+        [0.9, 0.9],
+      ];
+      const covered = points.every(([fx, fy]) => {
+        const x = box.left + box.width * fx;
+        const y = box.top + box.height * fy;
+        if (y > window.innerHeight || y < 0) return true;
+        const top = document.elementFromPoint(x, y);
+        return top !== null && tray.contains(top);
+      });
+      return { key, covered, label: key.split("|").slice(0, 3).join(" ") };
+    });
+    if (result === null) continue;
+    if (result.key === first) break;
+    first ??= result.key;
+    if (result.covered) hidden.push(result.label);
+  }
+  return hidden;
 }
 
 const ASSISTANT_EXPECTED = askServiceConfigured(
@@ -363,6 +482,78 @@ try {
       }
     }
     await sheet.close();
+
+    // Reflow at 320 CSS px (1.4.10): 1280px at 400% zoom.
+    const reflowFailures = [];
+    const narrow = await browser.newPage({ viewport: { width: 320, height: 640 } });
+    for (const { template, path: route } of reflowSample(OUT_DIR, lang)) {
+      if (route === null) {
+        reflowFailures.push(`${template}: no exported page to load`);
+        continue;
+      }
+      await narrow.goto(`${base}${route}`, { waitUntil: "networkidle" });
+      if (route === `/${lang}/`) await narrow.waitForSelector(".card-list .card", { timeout: 15000 });
+      const wide = await reflowOverflow(narrow);
+      if (wide.length > 0) reflowFailures.push(`${route}: ${wide.join(" · ")}`);
+      // A table that reflow sends into its own scroller has to be scrollable from the
+      // keyboard too (2.1.1). axe's rule only fires once the table overflows, which on a
+      // desktop it never does, so it is asked here, at the width where it matters.
+      await narrow.addScriptTag({ content: AXE });
+      const stuck = await narrow.evaluate(async () => {
+        const { violations } = await window.axe.run(document, {
+          runOnly: { type: "rule", values: ["scrollable-region-focusable"] },
+          resultTypes: ["violations"],
+        });
+        return violations.flatMap((v) => v.nodes.map((n) => n.target.join(" ")));
+      });
+      for (const target of stuck) {
+        reflowFailures.push(`${route}: ${target} scrolls sideways and cannot be reached by keyboard`);
+      }
+      // Again with the WCAG 1.4.12 text-spacing overrides, which a reader is entitled to apply
+      // and which also stand in for a wider font. Reflow depends on font metrics, so a page
+      // that fits in this machine's fonts can still overflow in another's: the Spanish
+      // "Copy link" button fitted 320px on macOS and was 349px on CI's Linux. Wider spacing
+      // makes that margin visible here instead of in CI.
+      if (wide.length === 0) {
+        await narrow.addStyleTag({ content: TEXT_SPACING });
+        const spaced = await reflowOverflow(narrow);
+        if (spaced.length > 0) {
+          reflowFailures.push(`${route} with 1.4.12 text spacing: ${spaced.join(" · ")}`);
+        }
+      }
+    }
+    await narrow.close();
+    if (reflowFailures.length > 0) {
+      console.log(`FAIL  Reflow at 320 CSS px (${label})`);
+      for (const line of reflowFailures) console.log(`          ${line}`);
+      failures += reflowFailures.length;
+    } else {
+      console.log(`pass  Reflow at 320 CSS px, every page template (${label})`);
+      audited.push(`reflow at 320 CSS px on every page template (${label})`);
+    }
+
+    // Focus Not Obscured (2.4.11), with the tray as tall as it gets: four programs picked.
+    for (const [width, height] of [
+      [1280, 900],
+      [320, 640],
+    ]) {
+      const tray = await browser.newPage({ viewport: { width, height } });
+      await tray.goto(`${base}/${lang}/`, { waitUntil: "networkidle" });
+      await tray.waitForSelector(".card-list .card", { timeout: 15000 });
+      const boxes = tray.locator(".card .compare-check input[type=checkbox]");
+      for (let n = 0; n < 4; n += 1) await boxes.nth(n).check();
+      const hidden = await focusHiddenByTray(tray);
+      await tray.close();
+      const where = `${width}px, four programs in the tray (${label})`;
+      if (hidden.length > 0) {
+        console.log(`FAIL  Focus hidden behind the comparison tray, ${where}`);
+        for (const name of hidden.slice(0, 5)) console.log(`          ${name}`);
+        failures += hidden.length;
+      } else {
+        console.log(`pass  Focus never hidden behind the comparison tray, ${where}`);
+        audited.push(`focus against the comparison tray at ${width}px (${label})`);
+      }
+    }
   }
 } finally {
   await browser.close();

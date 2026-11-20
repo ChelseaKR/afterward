@@ -118,6 +118,18 @@ body {
   }
 }
 
+/*
+  Reflow (WCAG 1.4.10) on a 320px screen. A grid item's minimum width is its content's, and a
+  native select is as wide as its longest option ("Anywhere in California" and the region
+  names under it), so the single phone column was held at 403px in English and 432px in
+  Spanish and the whole search page scrolled sideways. Letting the items shrink to the column
+  keeps the selects at the column's width; a long option is cut off in the closed select, as
+  every native select does, and read in full when it is opened.
+*/
+.search-layout > * {
+  min-width: 0;
+}
+
 .filters {
   display: flex;
   flex-direction: column;
@@ -141,15 +153,22 @@ body {
   font-size: 0.875rem;
 }
 
+/*
+  `--gray-70`, not `--gray-60`. The border is the only thing that shows where a select or the
+  search box begins, and WCAG 1.4.11 asks 3:1 of it against what it sits on. `--gray-60` was
+  3.38:1 on the page and 2.76:1 on the filter panel, where five of these sit.
+  `npm run contrast` checks it.
+*/
 .field input[type="search"],
 .field select {
   font: inherit;
   padding: 0.625rem 0.75rem;
-  border: 1px solid var(--gray-60);
+  border: 1px solid var(--gray-70);
   border-radius: var(--border-radius-sm);
   background: var(--gray-10);
   color: inherit;
   width: 100%;
+  max-width: 100%;
 }
 
 .checkline {
@@ -222,8 +241,11 @@ body {
   padding: 1.125rem 1.25rem;
 }
 
+/* `flex-wrap` so that on a narrow screen Compare and Save drop under a long program name
+   rather than pushing the card, and the page, wider than the screen (WCAG 1.4.10). */
 .card-head {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: flex-start;
   justify-content: space-between;
@@ -598,6 +620,14 @@ td.num {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+  A wide table scrolls inside this box on a narrow screen rather than widening the page
+  (WCAG 1.4.10). A table with no link in it gives the keyboard nothing to land on, so those
+  wrappers carry `tabIndex={0}`: focus the box, then the arrow keys scroll it (WCAG 2.1.1).
+  Something focusable needs a role, so they are also `role="region"`, named by the heading
+  above the table (`aria-labelledby`), which is what a screen reader says on arriving.
+  Tables with links do not need any of this: tabbing to a link scrolls it into view.
+*/
 .table-scroll {
   overflow-x: auto;
 }
@@ -633,7 +663,7 @@ td.num {
   text-decoration: underline;
 }
 .footer .analytics-opt-out:focus-visible {
-  outline: 2px solid var(--primary-60);
+  outline: 2px solid var(--primary-80);
   outline-offset: 2px;
 }
 
@@ -1013,6 +1043,24 @@ td.num {
   }
 }
 
+/*
+  Reflow (WCAG 1.4.10) on a 320px screen. The design system lays every `dl` out as a
+  `1fr 4fr` grid, and a grid track never shrinks below its longest unbreakable run of text.
+  On the CTDL page that is a list of `qdata:` terms in monospace, which held the whole page at
+  411px. `min-width: 0` lets the track shrink; `overflow-wrap: anywhere` breaks a term only
+  when it would otherwise run off the screen.
+*/
+dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* A web address shown as its own link text, or a citation naming long schema terms such as
+   ceterms:aggregateData. Long and unbroken, so it may wrap anywhere. */
+.url-text {
+  overflow-wrap: anywhere;
+}
+
 /* A provider URL we could not reach, shown as text so a reader can still try it or look it
    up in an archive. These are long and unbroken, so they must wrap rather than overflow. */
 .provider-link-plain {
@@ -1291,7 +1339,7 @@ td.num {
   background: var(--gray-30);
 }
 .filters-disclosure > summary:focus-visible {
-  outline: 2px solid var(--primary-60);
+  outline: 2px solid var(--primary-80);
   outline-offset: 2px;
 }
 
@@ -1348,7 +1396,7 @@ td.num {
   background: var(--gray-30);
 }
 .funding-detail > summary:focus-visible {
-  outline: 2px solid var(--primary-60);
+  outline: 2px solid var(--primary-80);
   outline-offset: 2px;
 }
 
@@ -1367,7 +1415,7 @@ td.num {
   background: var(--gray-30);
 }
 .occ-detail > summary:focus-visible {
-  outline: 2px solid var(--primary-60);
+  outline: 2px solid var(--primary-80);
   outline-offset: 2px;
 }
 
@@ -1456,7 +1504,7 @@ td.num {
 .save-toggle:focus-visible,
 .copy-link:focus-visible,
 .saved-bar button:focus-visible {
-  outline: 2px solid var(--primary-60);
+  outline: 2px solid var(--primary-80);
   outline-offset: 2px;
 }
 
@@ -1493,6 +1541,12 @@ td.num {
   margin: 0.75rem 0 0;
 }
 
+/*
+  Allowed to wrap (WCAG 1.4.10). It was `nowrap`, and "Copiar el enlace de esta búsqueda" is
+  wider than a 320px screen in a wide font: CI's Linux fonts put the Spanish search page at
+  349px while macOS's fitted. On a wide screen the label still sits on one line beside the
+  result count; only where it cannot fit does it break, inside the button.
+*/
 .copy-link {
   background: transparent;
   border: 1px solid var(--gray-50);
@@ -1500,8 +1554,9 @@ td.num {
   color: var(--primary-100);
   cursor: pointer;
   font-size: 0.9375rem;
+  max-width: 100%;
   padding: 0.375rem 0.875rem;
-  white-space: nowrap;
+  text-align: start;
 }
 .copy-link:hover {
   background: var(--gray-20);
@@ -1665,7 +1720,7 @@ td.num {
   background: var(--gray-30);
 }
 .shared-bar button:focus-visible {
-  outline: 2px solid var(--primary-60);
+  outline: 2px solid var(--primary-80);
   outline-offset: 2px;
 }
 
