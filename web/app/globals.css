@@ -54,9 +54,17 @@ body {
 .masthead-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1.5rem;
+  gap: 0.25rem 1.5rem;
   align-items: baseline;
   justify-content: space-between;
+}
+
+/* The tagline takes the row under the wordmark and the language toggle, at every width.
+   `max-width: none`, because a capped item would fit beside them and never wrap. */
+.masthead-row .tagline {
+  flex-basis: 100%;
+  max-width: none;
+  margin-top: 0;
 }
 
 .wordmark {
@@ -523,6 +531,42 @@ body {
 
 /* ---------- Detail pages ---------- */
 
+/*
+  The breadcrumb that replaced "← Back to search" on program, occupation and provider pages.
+  The separators are generated content, so a screen reader announces the list and its items
+  and not a run of "›". Each link is at least 24 CSS px tall (2.5.8). Colors are the page's
+  own text and link pairings, which the contrast audit already covers.
+*/
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  list-style: none;
+  margin: 0 0 0.25rem;
+  padding: 0;
+  font-size: 0.9375rem;
+  color: var(--gray-90);
+}
+
+/* Rows of links, not paragraphs: none of them takes the design system's 1.5rem under an <li>. */
+.breadcrumbs li,
+.footer-links li,
+.browse-ways li {
+  margin-block-end: 0;
+}
+
+.breadcrumbs li + li::before {
+  content: "›";
+  margin-right: 0.5rem;
+}
+
+.breadcrumbs a,
+.breadcrumbs [aria-current] {
+  display: inline-block;
+  min-height: 24px;
+  padding-block: 0.125rem;
+}
+
 .detail {
   padding-block: 1.5rem 4rem;
   /* Centered rather than left-aligned in the wider shell. Left-aligned it stranded roughly a
@@ -643,6 +687,23 @@ td.num {
   color: var(--primary-100);
 }
 
+/* The footer's row of the site's own reference pages, above the lines that were already here. */
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  font-size: 0.9375rem;
+}
+
+.footer-links a {
+  display: inline-block;
+  min-height: 24px;
+  padding-block: 0.125rem;
+}
+
 /*
  * The analytics opt-out is a button (it changes a setting) dressed as the footer links
  * around it. Every state restates its colors, for the reason `.compare-open` records: the
@@ -749,14 +810,17 @@ td.num {
   gap: 0 1.5rem;
   list-style: none;
   margin: 0;
-  padding: 0.25rem 0 0;
+  padding: 0.25rem 0 1.5rem;
   border-top: 1px solid rgb(255 255 255 / 25%);
   font-size: 0.9375rem;
 }
 
-/* Flex, so the line box's descender space does not leave the masthead bottom-heavy. */
+/* Flex, so the line box's descender space does not leave the masthead bottom-heavy. No
+   bottom margin: with four items the list wraps on a phone, and the design system's 1.5rem
+   under every <li> opened a gap between its rows. The list keeps that space under itself. */
 .site-nav li {
   display: flex;
+  margin-block-end: 0;
 }
 
 /* Padding rather than margin: the whole height is the tap target, which matters most on the
@@ -1354,6 +1418,26 @@ dd {
 }
 
 /*
+  The search page's two ways to browse, shown to every reader. They were inside <noscript>,
+  so only a reader without JavaScript ever met them, and the indexes had no other way in from
+  the search page.
+*/
+.browse-ways {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.browse-ways a {
+  display: inline-block;
+  min-height: 24px;
+  padding-block: 0.125rem;
+}
+
+/*
   "Other programs for the same jobs in the … area": the search page's own cards, so a program
   reads the same here as it does in a result list. The statewide link sits under the list,
   or alone where the program has no area.
@@ -1823,6 +1907,9 @@ dd {
 */
 @media print {
   .site-nav,
+  .breadcrumbs,
+  .footer-links,
+  .browse-ways,
   .lang-switch,
   .save-toggle,
   .compare-check,

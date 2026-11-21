@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Measure } from "@/components/Measure";
 import { getSearchIndex } from "@/lib/data";
 import { isOwnCohort } from "@/lib/compare";
@@ -104,14 +105,16 @@ export default async function ProviderPage({
 
   return (
     <div className="shell detail">
-      <p>
-        {/* Unprefetched. This sits at the top of every page in the site, and the route it
-            points at carries the whole search index, so prefetching it costs 229 KB of a
-            reader's data on the chance they press it. Reasoning in app/[lang]/layout.tsx. */}
-        <Link href={`/${lang}/`} prefetch={false}>
-          ← {t.backToSearch}
-        </Link>
-      </p>
+      {/* Afterward › Providers › {provider}, in place of "← Back to search". */}
+      <Breadcrumbs
+        lang={lang}
+        current
+        trail={[
+          { name: t.siteName, href: `/${lang}/` },
+          { name: t.navProviders, href: `/${lang}/providers/` },
+          { name: tidyName(provider.name), href: `/${lang}/providers/${slug}/`, lang: feedTextLang(lang) },
+        ]}
+      />
 
       <h1 lang={feedTextLang(lang)}>{tidyName(provider.name)}</h1>
       <p style={{ color: "var(--gray-90)" }}>{provider.cities.join(" · ")}</p>

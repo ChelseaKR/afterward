@@ -614,12 +614,7 @@ export function SearchApp({
         * leave someone on a library machine or a locked-down phone poking an inert box.
         */}
       <noscript>
-        <p className="lede">
-          {t.noScriptSearch}{" "}
-          <Link href={`/${lang}/occupations/`}>{t.noScriptBrowseOccupations}</Link>
-          {" · "}
-          <Link href={`/${lang}/providers/`}>{t.noScriptBrowseProviders}</Link>
-        </p>
+        <p className="lede">{t.noScriptSearch}</p>
       </noscript>
       <form
         className="query-form"
@@ -875,6 +870,24 @@ export function SearchApp({
         </button>
       </form>
       </details>
+      {/*
+        * The two ways in that need no search, for every reader. They sat inside the
+        * <noscript> above, so only a reader without JavaScript ever saw them. Same strings,
+        * same targets; the sentence that says search needs JavaScript stays where it was.
+        * Unprefetched: both indexes are tens of kilobytes, fetched only if pressed.
+        */}
+      <ul className="browse-ways">
+        <li>
+          <Link href={`/${lang}/occupations/`} prefetch={false}>
+            {t.noScriptBrowseOccupations}
+          </Link>
+        </li>
+        <li>
+          <Link href={`/${lang}/providers/`} prefetch={false}>
+            {t.noScriptBrowseProviders}
+          </Link>
+        </li>
+      </ul>
       </div>
 
       <section aria-label={t.resultsRegion}>

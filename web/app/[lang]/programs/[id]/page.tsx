@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AskPanel } from "@/components/AskPanel";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { TranslateButton } from "@/components/TranslateButton";
 import { CENTERS_STEP, LEAD_STEP, SEQUENCE_STEP, stepCopy } from "@/components/funding";
 import { Fact, Measure } from "@/components/Measure";
@@ -1235,14 +1236,28 @@ export default async function ProgramPage({
 
   return (
     <div className="shell detail detail-program">
-      <p>
-        {/* Unprefetched. This sits at the top of every page in the site, and the route it
-            points at carries the whole search index, so prefetching it costs 229 KB of a
-            reader's data on the chance they press it. Reasoning in app/[lang]/layout.tsx. */}
-        <Link href={`/${lang}/`} prefetch={false}>
-          ← {t.backToSearch}
-        </Link>
-      </p>
+      {/*
+        * Afterward › Providers › {provider}, in place of "← Back to search": nearly every
+        * reader arrived here directly, so "back" named a place they had never been. The
+        * provider is the trail's last item and this page's parent, not this page.
+        */}
+      <Breadcrumbs
+        lang={lang}
+        current={false}
+        trail={[
+          { name: t.siteName, href: `/${lang}/` },
+          { name: t.navProviders, href: `/${lang}/providers/` },
+          ...(program.provider_name
+            ? [
+                {
+                  name: tidyName(program.provider_name),
+                  href: `/${lang}/providers/${slugify(program.provider_name)}/`,
+                  lang: feedTextLang(lang),
+                },
+              ]
+            : []),
+        ]}
+      />
 
       <h1 lang={feedTextLang(lang)}>{program.program_name}</h1>
       <p style={{ color: "var(--gray-90)", fontSize: "1.0625rem" }}>

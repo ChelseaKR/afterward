@@ -620,8 +620,18 @@ const en = {
 
   // ---- Site chrome ----
   navLabel: "Main navigation",
-  navOccupations: "Occupations",
+  // The search had no menu item: only the wordmark led to it. "Jobs" is the word program
+  // pages already use for occupations ("The jobs this trains for"). Approved copy, 2026-11-21.
+  navSearch: "Search programs",
+  navJobs: "Jobs",
   navProviders: "Providers",
+  /** The breadcrumb's accessible name. Its first item is `siteName`, its middle item the nav
+   *  label of the section it names (`navProviders` or `navJobs`). */
+  breadcrumbLabel: "Breadcrumb",
+  // The footer's links row: About was reachable only through the privacy link and the
+  // methodology link at the foot of program pages, and from no menu.
+  footerAbout: "About this site",
+  footerPaying: "Paying for training",
 
   /*
    * Qualifier on the language toggle, shown only while the toggle still points at the other
@@ -1911,8 +1921,12 @@ const es: Dictionary = {
 
   // ---- Site chrome ----
   navLabel: "Navegación principal",
-  navOccupations: "Ocupaciones",
+  navSearch: "Buscar programas",
+  navJobs: "Empleos",
   navProviders: "Instituciones",
+  breadcrumbLabel: "Ruta de navegación",
+  footerAbout: "Acerca de este sitio",
+  footerPaying: "Pagar la capacitación",
 
   langSwitchHome: "inicio",
 
