@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AskPanel } from "@/components/AskPanel";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Fact, Measure } from "@/components/Measure";
 import { TranslateButton } from "@/components/TranslateButton";
 import {
@@ -212,14 +213,20 @@ export default async function OccupationPage({
 
   return (
     <div className="shell detail">
-      <p>
-        {/* Unprefetched. This sits at the top of every page in the site, and the route it
-            points at carries the whole search index, so prefetching it costs 229 KB of a
-            reader's data on the chance they press it. Reasoning in app/[lang]/layout.tsx. */}
-        <Link href={`/${lang}/`} prefetch={false}>
-          ← {t.backToSearch}
-        </Link>
-      </p>
+      {/* Afterward › Jobs › {job}, in place of "← Back to search". */}
+      <Breadcrumbs
+        lang={lang}
+        current
+        trail={[
+          { name: t.siteName, href: `/${lang}/` },
+          { name: t.navJobs, href: `/${lang}/occupations/` },
+          {
+            name: displayTitle ?? `SOC ${occupation.soc_code ?? soc}`,
+            href: `/${lang}/occupations/${soc}/`,
+            lang: occupationTitleLang(lang, occupation.soc_code),
+          },
+        ]}
+      />
 
       {/*
         O*NET's Spanish title where one exists, the English where it does not. A reader who
