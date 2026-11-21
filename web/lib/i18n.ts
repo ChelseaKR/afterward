@@ -64,11 +64,13 @@ const en = {
   skipToContent: "Skip to main content",
 
   searchIntroHeading: "Search California training programs",
+  // Shortened (copy table row 22) so the search box sits higher on a phone. "Free to use,
+  // no account" is still said by `siteSummary`, in the home page's description and on the
+  // root page; the one-in-three admission stays here.
   searchIntroBody:
     "Every California training program in the federal record: what it costs, how long it " +
-    "takes, and — where the provider reported it — how many people finished, how many " +
-    "were working six months later, and what they earned. Free to use, no account, and " +
-    "the roughly one program in three that reported nothing is listed here too, saying so.",
+    "takes, and, where the provider reported it, what happened to the people who took it. " +
+    "About one in three reported nothing; those are listed too, saying so.",
   resultsRegion: "Search results",
   searchLabel: "Search programs, providers, or jobs",
   searchPlaceholder: "medical assistant, welding, Fresno…",
@@ -1514,11 +1516,10 @@ const es: Dictionary = {
 
   searchIntroHeading: "Busque programas de capacitación en California",
   searchIntroBody:
-    "Aquí está cada programa de capacitación de California que consta en el registro " +
-    "federal: cuánto cuesta, cuánto dura y —cuando la institución lo reportó— cuántas " +
-    "personas terminaron, cuántas estaban trabajando seis meses después y cuánto ganaron. " +
-    "Es gratis y sin cuenta, y alrededor de uno de cada tres programas no reportó nada: " +
-    "esos también aparecen aquí, y lo dicen.",
+    "Cada programa de capacitación de California que consta en el registro federal: " +
+    "cuánto cuesta, cuánto dura y, cuando la institución lo reportó, qué pasó con quienes " +
+    "lo tomaron. Alrededor de uno de cada tres no reportó nada; esos también aparecen " +
+    "aquí, y lo dicen.",
   resultsRegion: "Resultados de la búsqueda",
   searchLabel: "Busque programas, instituciones u ocupaciones",
   // Program and occupation names in the source data are English only, so a Spanish
