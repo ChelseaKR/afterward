@@ -1353,6 +1353,25 @@ dd {
   min-height: 24px;
 }
 
+/*
+  "Other programs for the same jobs in the … area": the search page's own cards, so a program
+  reads the same here as it does in a result list. The statewide link sits under the list,
+  or alone where the program has no area.
+*/
+/* The design system pads every <section>; this one is a page section, not a panel, so its
+   heading lines up with the page's other headings. */
+.nearby {
+  padding: 0;
+}
+
+.nearby .card-list {
+  margin-top: 0.75rem;
+}
+
+.nearby-statewide {
+  margin-top: 1rem;
+}
+
 @media (min-width: 62rem) {
   .detail-program {
     max-width: 65rem;

@@ -570,6 +570,18 @@ const en = {
   nextStepsFunding:
     "Ask an America's Job Center whether someone else may pay, before you enroll",
   nextStepsProviderPrograms: (provider: string) => `All programs at ${provider}`,
+  nextStepsNearby: (city: string) => `Other programs for the same jobs near ${city}`,
+  // ---- Other programs for the same jobs nearby, on program pages ----
+  //
+  // Same EDD area, at least one SOC code in common, ordered by how many are shared and then
+  // by name (`lib/nearby.ts`). The note says that order is not a ranking, because a list of
+  // providers under a provider's figures reads as one unless it is told not to.
+  nearbyHeading: (area: string) => `Other programs for the same jobs in the ${area} area`,
+  nearbyNote:
+    "Listed by how many of the same jobs they train for, then by name. This is not a ranking.",
+  nearbyStatewide: (n: number, job: string) =>
+    `All ${fmt(n)} programs for ${job} in California →`,
+  nearbyNone: (area: string) => `No other program in the ${area} area trains for these jobs.`,
   occupationColumn: "Occupation",
   programsHere: "Programs listed here",
   onThisPage: "On this page",
@@ -1853,6 +1865,14 @@ const es: Dictionary = {
   nextStepsFunding:
     "Pregunte en un America's Job Center si alguien más puede pagar, antes de inscribirse",
   nextStepsProviderPrograms: (provider: string) => `Todos los programas de ${provider}`,
+  nextStepsNearby: (city: string) => `Otros programas para los mismos empleos cerca de ${city}`,
+  nearbyHeading: (area: string) => `Otros programas para los mismos empleos en el área de ${area}`,
+  nearbyNote:
+    "Ordenados por cuántos de los mismos empleos preparan y luego por nombre. No es una clasificación.",
+  nearbyStatewide: (n: number, job: string) =>
+    `Los ${fmt(n)} programas para ${job} en California →`,
+  nearbyNone: (area: string) =>
+    `Ningún otro programa en el área de ${area} prepara para estos empleos.`,
   occupationColumn: "Ocupación",
   programsHere: "Programas en esta lista",
   onThisPage: "En esta página",

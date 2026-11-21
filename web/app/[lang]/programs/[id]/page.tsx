@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { AskPanel } from "@/components/AskPanel";
 import { TranslateButton } from "@/components/TranslateButton";
 import { CENTERS_STEP, LEAD_STEP, SEQUENCE_STEP, stepCopy } from "@/components/funding";
-import { Measure } from "@/components/Measure";
+import { Fact, Measure } from "@/components/Measure";
 import { NextSteps } from "@/components/NextSteps";
 import { WageRangeChart } from "@/components/WageRangeChart";
 import { programCount, programCountsBySoc } from "@/lib/browse";
@@ -31,6 +31,7 @@ import {
 } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang, type Lang } from "@/lib/i18n";
 import { linkNotice } from "@/lib/links";
+import { areaPlace, nearbyPrograms, statewideJob } from "@/lib/nearby";
 import type {
   AmericanJobCenter,
   FundingCitation,
@@ -41,6 +42,7 @@ import type {
   OccupationTask,
   Program,
   ProgramOccupation,
+  SearchEntry,
 } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
 import { slugify } from "@/lib/providers";
@@ -984,6 +986,48 @@ function FundingBlock({
 }
 
 /**
+ * One card in "Other programs for the same jobs in the … area".
+ *
+ * The same facts the glance strip at the top of this page gives, in the same order and with
+ * the same null handling, so a reader comparing the two compares like with like: cost (a floor
+ * when a component was suppressed), length, and working six months later, which is "not
+ * reported" whenever it is absent or describes a wider population than the program's own.
+ * Never a zero for a missing figure. Unprefetched, as the masthead links are: these sit under
+ * the fold of every program page, and a prefetch is a guess paid for in the reader's data.
+ */
+function NearbyCard({ entry, lang }: { entry: SearchEntry; lang: Lang }) {
+  const t = dict(lang);
+  const cost =
+    entry.$ === null
+      ? null
+      : entry.$partial
+        ? t.costAtLeast(money(entry.$, lang) ?? "")
+        : money(entry.$, lang);
+  return (
+    <li className={`card${entry.r ? "" : " is-unreported"}`}>
+      <h3>
+        <Link href={`/${lang}/programs/${entry.i}/`} prefetch={false} lang={feedTextLang(lang)}>
+          {entry.n ?? "—"}
+        </Link>
+      </h3>
+      <p className="card-provider">
+        <span lang={feedTextLang(lang)}>{tidyName(entry.p)}</span>
+        {entry.c ? ` · ${entry.c}` : ""}
+      </p>
+      <dl className="facts">
+        <Fact label={t.cost} value={cost} lang={lang} />
+        <Fact label={t.length} value={lengthText(entry.w, entry.cb, t)} lang={lang} />
+        <Fact
+          label={t.employmentRate}
+          value={entry.at ? percent(entry.er, lang) : null}
+          lang={lang}
+        />
+      </dl>
+    </li>
+  );
+}
+
+/**
  * Build the statewide comparison for one measure, or undefined when either side is missing.
  * Never invents a comparison out of a null: an unreported program value has nothing to
  * compare, and saying "below average" about it would be an accusation, not a fact.
@@ -1136,6 +1180,35 @@ export default async function ProgramPage({
     .sort((a, b) => b.programs - a.programs || (b.percent_change ?? 0) - (a.percent_change ?? 0))
     .slice(0, 6);
 
+  /*
+   * Other programs for the same jobs in the same area (`lib/nearby.ts`), read from the search
+   * index the site already builds. This program's own row there is the authority for its area
+   * and its job codes, so the list and the search page agree about what "the same area" is.
+   * The statewide link names one of this program's own occupations, in its own order.
+   */
+  const searchPrograms = getSearchIndex().programs;
+  const ownEntry = searchPrograms.find((entry) => entry.i === program.uuid);
+  const nearby =
+    ownEntry === undefined ? { listed: [], total: 0 } : nearbyPrograms(ownEntry, searchPrograms);
+  const nearbyPlace = ownEntry?.a ? areaPlace(ownEntry.a) : null;
+  const statewide = statewideJob([...ownSocs], nearby.listed, socCounts);
+  const statewideName =
+    statewide === null
+      ? null
+      : (occupationTitleIn(
+          lang,
+          statewide.soc,
+          occupations.find((o) => o.soc_code === statewide.soc)?.title ?? null,
+        ) ?? statewide.soc);
+  const statewideLink =
+    statewide === null || statewideName === null ? null : (
+      <p className="nearby-statewide">
+        <Link href={`/${lang}/occupations/${statewide.soc}/`} prefetch={false}>
+          {t.nearbyStatewide(statewide.programs, statewideName)}
+        </Link>
+      </p>
+    );
+
   const profiled = occupations.map((occupation) => ({
     occupation,
     profile: workProfile(occupation.soc_code),
@@ -1263,6 +1336,7 @@ export default async function ProgramPage({
 
         <NextSteps
           lang={lang}
+          nearby={nearby.listed.length > 0 && location.city ? { city: location.city } : null}
           funding={localHelp !== undefined}
           provider={
             program.provider_name
@@ -1368,6 +1442,34 @@ export default async function ProgramPage({
               : t.outcomesUnreportedBody}
           </p>
         </div>
+      )}
+
+      {/*
+        * Other programs for the same jobs nearby, straight after this program's outcomes and
+        * before the long per-job detail, so the alternatives are not 2,500 phone pixels away.
+        * A program with no area gets only the statewide link: it is never given a neighboring
+        * area's programs. A placed program with no neighbors says so in a sentence rather
+        * than showing an empty list.
+        */}
+      {nearbyPlace !== null ? (
+        <section id="nearby" className="nearby">
+          <h2>{t.nearbyHeading(nearbyPlace)}</h2>
+          {nearby.listed.length > 0 ? (
+            <>
+              <p className="compare-note">{t.nearbyNote}</p>
+              <ul className="card-list">
+                {nearby.listed.map((entry) => (
+                  <NearbyCard key={entry.i} entry={entry} lang={lang} />
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p>{t.nearbyNone(nearbyPlace)}</p>
+          )}
+          {statewideLink}
+        </section>
+      ) : (
+        statewideLink
       )}
 
       {occupations.length > 0 && (
