@@ -36,6 +36,7 @@ vi.mock("next/link", () => ({
 const LAYOUT_DEPENDENT = new Set(["color-contrast", "color-contrast-enhanced", "target-size"]);
 
 const FULL: Omit<NextStepsProps, "lang"> = {
+  nearby: { city: "Fairfield" },
   funding: true,
   provider: { href: "/en/providers/fairfield-suisun-adult-school/", name: "Fairfield Suisun Adult School" },
   website: { href: "https://example.test/sterile-processing", label: "Provider's website" },
@@ -70,10 +71,11 @@ describe("the Before you decide box", () => {
   for (const lang of LANGUAGES) {
     const t = dict(lang);
 
-    it(`lists who may pay, the provider's programs and its website, in ${lang}`, async () => {
+    it(`lists programs nearby, who may pay, the provider's programs and its website, in ${lang}`, async () => {
       await render({ lang, ...FULL });
       expect(container.querySelector("h2")?.textContent).toBe(t.nextStepsHeading);
       expect(links()).toEqual([
+        { text: t.nextStepsNearby("Fairfield"), href: "#nearby" },
         { text: t.nextStepsFunding, href: "#funding" },
         {
           text: t.nextStepsProviderPrograms("Fairfield Suisun Adult School"),
@@ -110,13 +112,18 @@ describe("the Before you decide box", () => {
     expect(links().map((l) => l.href)).not.toContain("#funding");
   });
 
+  it("does not promise programs nearby when the page lists none", async () => {
+    await render({ lang: "en", ...FULL, nearby: null });
+    expect(links().map((l) => l.href)).not.toContain("#nearby");
+  });
+
   it("leaves out the provider links when the record names no provider or no site", async () => {
-    await render({ lang: "en", funding: true, provider: null, website: null });
+    await render({ lang: "en", nearby: null, funding: true, provider: null, website: null });
     expect(links()).toEqual([{ text: dict("en").nextStepsFunding, href: "#funding" }]);
   });
 
   it("renders nothing at all when it would have no links", async () => {
-    await render({ lang: "en", funding: false, provider: null, website: null });
+    await render({ lang: "en", nearby: null, funding: false, provider: null, website: null });
     expect(container.innerHTML).toBe("");
   });
 });
