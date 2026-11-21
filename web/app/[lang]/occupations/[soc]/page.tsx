@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { AskPanel } from "@/components/AskPanel";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { RegionFilter } from "@/components/RegionFilter";
 import { Fact, Measure } from "@/components/Measure";
 import { TranslateButton } from "@/components/TranslateButton";
 import {
@@ -16,6 +17,7 @@ import {
 import { isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
 import { LANGUAGES, dict, feedTextLang, isLang } from "@/lib/i18n";
+import { regionOptions } from "@/lib/regionOptions";
 import { pageMetadata } from "@/lib/site";
 import type { OccupationSkill, RelatedSource } from "@/lib/types";
 import { translateTerm } from "@/lib/vocabulary";
@@ -248,6 +250,50 @@ export default async function OccupationPage({
       </p>
 
       {/*
+        The three figures a reader of this page came for, in the program page's glance strip,
+        before any prose: what the job pays in California, how many openings the state
+        projects, and how many programs here train for it, as a link to that list. The first
+        two are the figures "What California expects of this job" prints further down, which
+        keeps them; a missing one reads "not reported", never 0. The third is a count of rows
+        in a list, so zero is a fact and not an absence.
+      */}
+      <dl className="at-a-glance">
+        <div>
+          <dt>{t.medianWage}</dt>
+          <dd>
+            {occupation.median_annual_wage === null ? (
+              <span className="unreported">{t.notReported}</span>
+            ) : (
+              <>
+                {money(occupation.median_annual_wage, lang)}
+                <small>{t.perYear}</small>
+              </>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>{t.jobOpenings}</dt>
+          <dd>
+            {occupation.total_job_openings === null ? (
+              <span className="unreported">{t.notReported}</span>
+            ) : (
+              count(occupation.total_job_openings, lang)
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>{t.occupationGlancePrograms}</dt>
+          <dd>
+            {programs.length > 0 ? (
+              <a href="#programs">{count(programs.length, lang)}</a>
+            ) : (
+              count(0, lang)
+            )}
+          </dd>
+        </div>
+      </dl>
+
+      {/*
         What the work actually is, before any figure about it. The page used to open on a
         wage, which asks the reader to judge a job it had not yet described.
       */}
@@ -285,6 +331,83 @@ export default async function OccupationPage({
           <br />
           {t.shrinkingWarning}
         </p>
+      )}
+
+      {/*
+        The program list, moved up from the foot of the page to straight after the description:
+        on a phone it started about 5,900 pixels down, after five other sections, on the page
+        type with the most search impressions on the site. Every section that was above it is
+        still here, below it, with the same wording.
+
+        All of the programs, not the first 40, so that "Show programs in" can narrow to an
+        area without silently missing the programs past the cut. Without JavaScript the filter
+        does not render and the whole list shows.
+      */}
+      {programs.length > 0 && (
+        <section id="programs" className="occupation-programs">
+          {/*
+            "Leads to — 66" pointed the wrong way. A program leads to an occupation, which is
+            what the phrase means on a program card and in the provider table; on an
+            occupation page the 66 are what lead *here*, so the heading was claiming this job
+            leads to sixty-six things.
+          */}
+          <h2>
+            {t.programsForThisJob} — {programs.length}
+          </h2>
+          <RegionFilter
+            listId="occupation-programs"
+            label={t.regionFilterLabel}
+            allLabel={t.regionFilterAll(programs.length)}
+            total={programs.length}
+            options={regionOptions(programs.map((entry) => entry.a))}
+          />
+          <ul className="card-list" id="occupation-programs">
+            {programs.map((entry) => (
+              <li
+                key={entry.i}
+                className={`card${entry.r ? "" : " is-unreported"}`}
+                data-area={entry.a ?? ""}
+              >
+                <h3>
+                  <Link href={`/${lang}/programs/${entry.i}/`} lang={feedTextLang(lang)}>
+                    {entry.n ?? "—"}
+                  </Link>
+                </h3>
+                <p className="card-provider">
+                  <span lang={feedTextLang(lang)}>{tidyName(entry.p)}</span>
+                  {entry.c ? ` · ${entry.c}` : ""}
+                  {entry.$ !== null ? ` · ${money(entry.$, lang)}` : ""}
+                </p>
+                {/*
+                  * The site's premise is what happened to the people who took a program, and
+                  * this is the screen where someone picks among the programs for one job. It
+                  * listed name, provider, city and cost, so the reader had to open each of
+                  * eighteen tabs to reach the figures the search results already show on the
+                  * card. Same index, same fields, so this is the search card's treatment
+                  * brought to the page where the choice is actually made.
+                  */}
+                <dl className="facts">
+                  <Fact
+                    label={t.employmentRate}
+                    value={percent(entry.er, lang)}
+                    lang={lang}
+                  />
+                  <Fact label={t.medianEarnings} value={money(entry.me, lang)} lang={lang} />
+                </dl>
+                {/*
+                  * Gated on `r` as well as the cohort flag: a caution about figures that are
+                  * not on screen reads as a puzzle rather than a warning.
+                  */}
+                {entry.r && !isOwnCohort(entry) && (
+                  <p className="cohort-note">
+                    <span className="badge badge-small">{t.cohortNotOwn}</span>{" "}
+                    {t.cohortNotOwnNote}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {/*
@@ -338,40 +461,6 @@ export default async function OccupationPage({
             {t.brightOutlookNote}
           </p>
         </div>
-      )}
-
-      {/*
-        Skills as an ordered list of names, with no rating shown.
-
-        The rating the order comes from is a bare number: the record carries `4.12` and
-        nothing that says what it is out of. The raw API pairs each value with a companion
-        0–100 field, and across all 20,335 cached pairs the two are related by
-        (value − 1) ÷ 4 × 100, which puts the value on a 1–5 scale — but that companion field
-        is not in what this page reads, and only the top six skills survive into the record,
-        so the shipped numbers are the top of a scale whose bottom never appears. Printing
-        "4.12" invites reading it as a score out of 5, or out of 10, or as a percentage, and
-        inviting a wrong reading is not better than showing less. Rank is the part of the
-        rating the data can carry on its own, so rank is what the page shows.
-      */}
-      {occupation.skills.length > 0 && (
-        <>
-          <h2>{t.skillsHeading}</h2>
-          {ranked.length > 0 && (
-            <>
-              <p className="compare-note">{t.skillsNote}</p>
-              <ol>
-                {ranked.map((skill) => (
-                  <li key={skill.name}>{skill.name}</li>
-                ))}
-              </ol>
-            </>
-          )}
-          {unrated.length > 0 && (
-            <p className="compare-note">
-              {t.skillsUnrated(unrated.map((skill) => skill.name).join(", "))}
-            </p>
-          )}
-        </>
       )}
 
       {regions.length > 0 && (
@@ -459,6 +548,40 @@ export default async function OccupationPage({
         </>
       )}
 
+      {/*
+        Skills as an ordered list of names, with no rating shown.
+
+        The rating the order comes from is a bare number: the record carries `4.12` and
+        nothing that says what it is out of. The raw API pairs each value with a companion
+        0–100 field, and across all 20,335 cached pairs the two are related by
+        (value − 1) ÷ 4 × 100, which puts the value on a 1–5 scale — but that companion field
+        is not in what this page reads, and only the top six skills survive into the record,
+        so the shipped numbers are the top of a scale whose bottom never appears. Printing
+        "4.12" invites reading it as a score out of 5, or out of 10, or as a percentage, and
+        inviting a wrong reading is not better than showing less. Rank is the part of the
+        rating the data can carry on its own, so rank is what the page shows.
+      */}
+      {occupation.skills.length > 0 && (
+        <>
+          <h2>{t.skillsHeading}</h2>
+          {ranked.length > 0 && (
+            <>
+              <p className="compare-note">{t.skillsNote}</p>
+              <ol>
+                {ranked.map((skill) => (
+                  <li key={skill.name}>{skill.name}</li>
+                ))}
+              </ol>
+            </>
+          )}
+          {unrated.length > 0 && (
+            <p className="compare-note">
+              {t.skillsUnrated(unrated.map((skill) => skill.name).join(", "))}
+            </p>
+          )}
+        </>
+      )}
+
       {occupation.related.length > 0 && related !== null && (
         <>
           <h2>{related.heading}</h2>
@@ -526,62 +649,6 @@ export default async function OccupationPage({
               </tbody>
             </table>
           </div>
-        </>
-      )}
-
-      {programs.length > 0 && (
-        <>
-          {/*
-            "Leads to — 66" pointed the wrong way. A program leads to an occupation, which is
-            what the phrase means on a program card and in the provider table; on an
-            occupation page the 66 are what lead *here*, so the heading was claiming this job
-            leads to sixty-six things.
-          */}
-          <h2>
-            {t.programsForThisJob} — {programs.length}
-          </h2>
-          <ul className="card-list">
-            {programs.slice(0, 40).map((entry) => (
-              <li key={entry.i} className={`card${entry.r ? "" : " is-unreported"}`}>
-                <h3>
-                  <Link href={`/${lang}/programs/${entry.i}/`} lang={feedTextLang(lang)}>
-                    {entry.n ?? "—"}
-                  </Link>
-                </h3>
-                <p className="card-provider">
-                  <span lang={feedTextLang(lang)}>{tidyName(entry.p)}</span>
-                  {entry.c ? ` · ${entry.c}` : ""}
-                  {entry.$ !== null ? ` · ${money(entry.$, lang)}` : ""}
-                </p>
-                {/*
-                  * The site's premise is what happened to the people who took a program, and
-                  * this is the screen where someone picks among the programs for one job. It
-                  * listed name, provider, city and cost, so the reader had to open each of
-                  * eighteen tabs to reach the figures the search results already show on the
-                  * card. Same index, same fields, so this is the search card's treatment
-                  * brought to the page where the choice is actually made.
-                  */}
-                <dl className="facts">
-                  <Fact
-                    label={t.employmentRate}
-                    value={percent(entry.er, lang)}
-                    lang={lang}
-                  />
-                  <Fact label={t.medianEarnings} value={money(entry.me, lang)} lang={lang} />
-                </dl>
-                {/*
-                  * Gated on `r` as well as the cohort flag: a caution about figures that are
-                  * not on screen reads as a puzzle rather than a warning.
-                  */}
-                {entry.r && !isOwnCohort(entry) && (
-                  <p className="cohort-note">
-                    <span className="badge badge-small">{t.cohortNotOwn}</span>{" "}
-                    {t.cohortNotOwnNote}
-                  </p>
-                )}
-              </li>
-            ))}
-          </ul>
         </>
       )}
 

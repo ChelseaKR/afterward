@@ -1377,6 +1377,30 @@ dd {
   font-weight: 400;
 }
 
+/* A unit under a figure, such as "per year" under a wage on an occupation page. */
+.at-a-glance dd small {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--gray-90);
+}
+
+/*
+  "Show programs in" above an occupation page's program list. Narrow enough to sit under the
+  heading as a control rather than run the width of the column; `max-width: 100%` keeps a long
+  area name inside a 320-pixel screen (1.4.10), as the search page's selects do.
+*/
+.region-filter {
+  max-width: 24rem;
+  margin: 0 0 1rem;
+}
+
+/* A page section, not a panel: without the design system's <section> padding its heading
+   lines up with the page's other headings. */
+.occupation-programs {
+  padding: 0;
+}
+
 /*
   "Before you decide" on program pages: the reader's next steps, on the first screen.
 

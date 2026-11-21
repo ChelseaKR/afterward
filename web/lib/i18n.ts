@@ -271,6 +271,12 @@ const en = {
   smallSample: "Small group — treat with caution",
 
   occupationOutlook: "What California expects of this job",
+  // ---- Occupation page: the glance strip and the program list's region filter ----
+  // Approved copy, 2026-11-21. The filter only hides cards in the page: no URL changes, and
+  // without JavaScript the whole list shows and the control does not render.
+  occupationGlancePrograms: "Programs in California",
+  regionFilterLabel: "Show programs in",
+  regionFilterAll: (n: number) => `All of California (${fmt(n)})`,
   medianWage: "Typical pay in California",
   jobOpenings: "Projected openings",
   growth: "Projected change",
@@ -1675,6 +1681,9 @@ const es: Dictionary = {
   smallSample: "Grupo pequeño — interprete con cuidado",
 
   occupationOutlook: "Lo que California espera de este empleo",
+  occupationGlancePrograms: "Programas en California",
+  regionFilterLabel: "Mostrar programas en",
+  regionFilterAll: (n: number) => `Todo California (${fmt(n)})`,
   medianWage: "Pago típico en California",
   jobOpenings: "Vacantes proyectadas",
   growth: "Cambio proyectado",

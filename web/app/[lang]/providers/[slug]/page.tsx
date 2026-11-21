@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Measure } from "@/components/Measure";
 import { getSearchIndex } from "@/lib/data";
 import { isOwnCohort } from "@/lib/compare";
 import { count, money, percent, signedPercent, tidyName } from "@/lib/format";
@@ -119,34 +118,37 @@ export default async function ProviderPage({
       <h1 lang={feedTextLang(lang)}>{tidyName(provider.name)}</h1>
       <p style={{ color: "var(--gray-90)" }}>{provider.cities.join(" · ")}</p>
 
-      <dl className="measure-grid panel">
-        <Measure
-          label={t.providerPrograms}
-          value={count(programs.length, lang)}
-          lang={lang}
-        />
-        <Measure
-          label={t.providerReporting}
-          value={`${reported} / ${programs.length}`}
-          lang={lang}
-        />
-        <Measure
-          label={lowest === highest ? t.providerCostOne : t.providerCostRange}
-          value={
-            lowest === null || highest === null
-              ? null
-              : lowest === highest
-                ? money(lowest, lang)
-                : `${money(lowest, lang)} – ${money(highest, lang)}`
-          }
-          lang={lang}
-        />
+      {/*
+        The same figures as before, set in the glance strip the program and occupation pages
+        open with, so the three detail templates share one first screen. A cost range with no
+        filed cost reads "not reported", never 0; the other two are counts of rows in a list.
+      */}
+      <dl className="at-a-glance">
+        <div>
+          <dt>{t.providerPrograms}</dt>
+          <dd>{count(programs.length, lang)}</dd>
+        </div>
+        <div>
+          <dt>{t.providerReporting}</dt>
+          <dd>{`${reported} / ${programs.length}`}</dd>
+        </div>
+        <div>
+          <dt>{lowest === highest ? t.providerCostOne : t.providerCostRange}</dt>
+          <dd>
+            {lowest === null || highest === null ? (
+              <span className="unreported">{t.notReported}</span>
+            ) : lowest === highest ? (
+              money(lowest, lang)
+            ) : (
+              `${money(lowest, lang)} – ${money(highest, lang)}`
+            )}
+          </dd>
+        </div>
         {shrinking > 0 && (
-          <Measure
-            label={t.providerShrinking}
-            value={count(shrinking, lang)}
-            lang={lang}
-          />
+          <div>
+            <dt>{t.providerShrinking}</dt>
+            <dd>{count(shrinking, lang)}</dd>
+          </div>
         )}
       </dl>
 
@@ -164,18 +166,6 @@ export default async function ProviderPage({
         </div>
       )}
 
-      {occupations.length > 0 && (
-        <>
-          <h2>{t.providerTrainsFor}</h2>
-          <ul className="provider-occupations">
-            {occupations.map(([soc, title]) => (
-              <li key={soc}>
-                <Link href={`/${lang}/occupations/${soc}/`}>{title}</Link>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
 
       <h2>{t.providerProgramList}</h2>
       <div className="table-scroll">
@@ -255,6 +245,24 @@ export default async function ProviderPage({
       */}
       {programs.some((program) => program.r === true && !isOwnCohort(program)) && (
         <p className="cohort-note">{t.cohortTableNote}</p>
+      )}
+
+      {/*
+        After the program list rather than before it. Most readers of a provider page searched
+        for the school by name and came for its programs; the jobs they lead to are the second
+        question, and are still one heading down.
+      */}
+      {occupations.length > 0 && (
+        <>
+          <h2>{t.providerTrainsFor}</h2>
+          <ul className="provider-occupations">
+            {occupations.map(([soc, title]) => (
+              <li key={soc}>
+                <Link href={`/${lang}/occupations/${soc}/`}>{title}</Link>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );
