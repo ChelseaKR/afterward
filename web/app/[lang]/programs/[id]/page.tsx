@@ -6,6 +6,7 @@ import { AskPanel } from "@/components/AskPanel";
 import { TranslateButton } from "@/components/TranslateButton";
 import { CENTERS_STEP, LEAD_STEP, SEQUENCE_STEP, stepCopy } from "@/components/funding";
 import { Measure } from "@/components/Measure";
+import { NextSteps } from "@/components/NextSteps";
 import { WageRangeChart } from "@/components/WageRangeChart";
 import { programCount, programCountsBySoc } from "@/lib/browse";
 import { nearestCenters, phoneParts } from "@/lib/centers";
@@ -898,7 +899,7 @@ function FundingBlock({
       : stepCopy(sequenceStep, t);
 
   return (
-    <section className="funding">
+    <section className="funding" id="funding">
       <h2>{lead === undefined ? t.fundingHeading : stepCopy(lead, t).heading}</h2>
 
       {/*
@@ -1147,8 +1148,20 @@ export default async function ProgramPage({
         profile.alternateTitles.length > 0),
   );
 
+  /*
+   * The provider's own site, for the "Before you decide" box: the same link, under the same
+   * label, as the provider link further down the page, and only when that one is a link.
+   */
+  const website =
+    link !== null && link.linked && link.href !== null
+      ? {
+          href: link.href,
+          label: link.label === "provider_home_page" ? t.providerHomePage : t.providerSite,
+        }
+      : null;
+
   return (
-    <div className="shell detail">
+    <div className="shell detail detail-program">
       <p>
         {/* Unprefetched. This sits at the top of every page in the site, and the route it
             points at carries the whole search index, so prefetching it costs 229 KB of a
@@ -1184,61 +1197,84 @@ export default async function ProgramPage({
         relevant to them. Every value routes through the same null handling as the detail
         below it, so "not reported" still reads as not reported.
       */}
-      <dl className="at-a-glance">
-        <div>
-          <dt>{t.cost}</dt>
-          <dd>
-            {cost.total_out_of_pocket === null ? (
-              <span className="unreported">{t.notReported}</span>
-            ) : cost.total_is_complete ? (
-              money(cost.total_out_of_pocket, lang)
-            ) : (
-              t.costAtLeast(money(cost.total_out_of_pocket, lang) ?? "")
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>{t.length}</dt>
+      <div className="program-head">
+        <div className="program-head-main">
+          <dl className="at-a-glance">
+            <div>
+              <dt>{t.cost}</dt>
+              <dd>
+                {cost.total_out_of_pocket === null ? (
+                  <span className="unreported">{t.notReported}</span>
+                ) : cost.total_is_complete ? (
+                  money(cost.total_out_of_pocket, lang)
+                ) : (
+                  t.costAtLeast(money(cost.total_out_of_pocket, lang) ?? "")
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>{t.length}</dt>
+              {/*
+                `lengthText` decides, here as on the cards and in the comparison table, so all
+                three cannot drift into answering "how long is this" differently. It returns null
+                only for a record that says nothing about length, which is the one case that may
+                reach the "not reported" treatment below.
+
+                Competency-based wins even if a week count was filed beside the marker: "finishes
+                when you can do the work" is a statement about the course that one filed duration
+                does not override, and printing weeks would put a fixed length on screen that the
+                provider declined to claim. No California record does both (0 of 3,266 on
+                2026-08-07), and `length.weeks` is still in `programs.json` for anyone reading the
+                data rather than the page.
+
+                The competency-based phrase deliberately does not carry the `unreported` class:
+                that italic gray and its "not reported" tooltip are how this site says a record is
+                silent, and this record is not.
+              */}
+              <dd>
+                {lengthText(length.weeks, length.competency_based, t) === null ? (
+                  <span className="unreported">{t.notReported}</span>
+                ) : length.competency_based ? (
+                  <span title={t.lengthCompetencyBasedLong}>{t.lengthCompetencyBased}</span>
+                ) : (
+                  t.weeks(length.weeks as number)
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>{t.employmentRate}</dt>
+              <dd>
+                {outcomes.employment_rate_q2 === null || !attributable ? (
+                  <span className="unreported">{t.notReported}</span>
+                ) : (
+                  percent(outcomes.employment_rate_q2, lang)
+                )}
+              </dd>
+            </div>
+          </dl>
+
           {/*
-            `lengthText` decides, here as on the cards and in the comparison table, so all
-            three cannot drift into answering "how long is this" differently. It returns null
-            only for a record that says nothing about length, which is the one case that may
-            reach the "not reported" treatment below.
-
-            Competency-based wins even if a week count was filed beside the marker: "finishes
-            when you can do the work" is a statement about the course that one filed duration
-            does not override, and printing weeks would put a fixed length on screen that the
-            provider declined to claim. No California record does both (0 of 3,266 on
-            2026-08-07), and `length.weeks` is still in `programs.json` for anyone reading the
-            data rather than the page.
-
-            The competency-based phrase deliberately does not carry the `unreported` class:
-            that italic gray and its "not reported" tooltip are how this site says a record is
-            silent, and this record is not.
-          */}
-          <dd>
-            {lengthText(length.weeks, length.competency_based, t) === null ? (
-              <span className="unreported">{t.notReported}</span>
-            ) : length.competency_based ? (
-              <span title={t.lengthCompetencyBasedLong}>{t.lengthCompetencyBased}</span>
-            ) : (
-              t.weeks(length.weeks as number)
-            )}
-          </dd>
+            * Spanish pages only. The note explains why a Spanish page shows English program names,
+            * and on an English page it explained nothing while taking about 130 pixels of the
+            * first phone screen. The wording is unchanged.
+            */}
+          {lang === "es" && <p className="compare-note">{t.programTextEnglishOnly}</p>}
         </div>
-        <div>
-          <dt>{t.employmentRate}</dt>
-          <dd>
-            {outcomes.employment_rate_q2 === null || !attributable ? (
-              <span className="unreported">{t.notReported}</span>
-            ) : (
-              percent(outcomes.employment_rate_q2, lang)
-            )}
-          </dd>
-        </div>
-      </dl>
 
-      <p className="compare-note">{t.programTextEnglishOnly}</p>
+        <NextSteps
+          lang={lang}
+          funding={localHelp !== undefined}
+          provider={
+            program.provider_name
+              ? {
+                  href: `/${lang}/providers/${slugify(program.provider_name)}/`,
+                  name: tidyName(program.provider_name),
+                }
+              : null
+          }
+          website={website}
+        />
+      </div>
 
       {/*
         * What the work is, before what it costs.

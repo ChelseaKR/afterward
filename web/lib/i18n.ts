@@ -561,6 +561,15 @@ const en = {
     "only language the federal and state records publish them in. Occupation titles are " +
     "translated where O*NET publishes a Spanish name. Everything else on this page is " +
     "translated.",
+  // ---- "Before you decide" box on program pages (IA redesign, approved copy 2026-11-21) ----
+  //
+  // Links only, and no claim of their own. The funding link points at the program page's
+  // existing funding section, whose wording is the checked wording; this line only says where
+  // to ask and when, which is the order 20 CFR 680.220 and 680.340 already put on that section.
+  nextStepsHeading: "Before you decide",
+  nextStepsFunding:
+    "Ask an America's Job Center whether someone else may pay, before you enroll",
+  nextStepsProviderPrograms: (provider: string) => `All programs at ${provider}`,
   occupationColumn: "Occupation",
   programsHere: "Programs listed here",
   onThisPage: "On this page",
@@ -1840,6 +1849,10 @@ const es: Dictionary = {
     "único idioma en que los publican los registros federales y estatales. Los nombres de las " +
     "ocupaciones están traducidos cuando O*NET publica un nombre en español. Todo lo demás en " +
     "esta página está traducido.",
+  nextStepsHeading: "Antes de decidir",
+  nextStepsFunding:
+    "Pregunte en un America's Job Center si alguien más puede pagar, antes de inscribirse",
+  nextStepsProviderPrograms: (provider: string) => `Todos los programas de ${provider}`,
   occupationColumn: "Ocupación",
   programsHere: "Programas en esta lista",
   onThisPage: "En esta página",
