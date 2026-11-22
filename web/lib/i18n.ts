@@ -59,6 +59,10 @@ const LENGTH_GLOSS: Record<Lang, Record<number, string>> = {
 const en = {
   siteName: "Afterward",
   tagline: "California training programs, and what happened to the people who took them",
+  // The home page's <title> after "Afterward — ". Not the tagline: a results page cuts the
+  // tagline title to "…and what happened to the…", which can read as after-a-death content.
+  // Owner decision 2026-11-21. The visible tagline and the share cards are unchanged.
+  homeMetaTitle: "California training programs and their outcomes",
   notAffiliated:
     "Not a California state website. An independent project built from public data.",
   skipToContent: "Skip to main content",
@@ -1510,6 +1514,7 @@ export type Copy = Dictionary;
 const es: Dictionary = {
   siteName: "Afterward",
   tagline: "Programas de capacitación en California y qué pasó con quienes los tomaron",
+  homeMetaTitle: "Programas de capacitación de California y resultados",
   notAffiliated:
     "No es un sitio del estado de California. Es un proyecto independiente hecho con datos públicos.",
   skipToContent: "Saltar al contenido principal",
