@@ -11,7 +11,7 @@ import { generateMetadata as providerMetadata } from "@/app/[lang]/providers/[sl
 import { allOccupationCodes, allProgramIds, getSearchIndex } from "./data";
 import { LANGUAGES, type Lang } from "./i18n";
 import { groupByProvider } from "./providers";
-import { SITE_URL, langCard, rootCard, shareMetadata } from "./site";
+import { SITE_URL, homeTitle, langCard, rootCard, shareMetadata } from "./site";
 
 /**
  * The share cards, checked as files rather than as strings.
@@ -231,5 +231,25 @@ describe("shareMetadata", () => {
     // The detail titles leave "Afterward" out to spend the characters on the provider's name.
     // `og:site_name` is where an unfurler expects to read it, and it costs the title nothing.
     expect(shareMetadata("en", "t", "d").openGraph?.siteName).toBe("Afterward");
+  });
+});
+
+describe("the home page title", () => {
+  // Not the tagline. A results page cuts the tagline title to "…and what happened to the…",
+  // which can read as after-a-death content (owner decision 2026-11-21).
+  it.each([
+    ["en", "Afterward — California training programs and their outcomes"],
+    ["es", "Afterward — Programas de capacitación de California y resultados"],
+  ] as const)("is exact in %s", (lang, expected) => {
+    expect(homeTitle(lang)).toBe(expected);
+  });
+
+  it.each(LANGUAGES)("is what the %s layout puts on the page and the card", async (lang) => {
+    const meta = await langLayoutMetadata({ params: Promise.resolve({ lang }) });
+    expect([meta.title, meta.openGraph?.title, meta.twitter?.title]).toEqual([
+      homeTitle(lang),
+      homeTitle(lang),
+      homeTitle(lang),
+    ]);
   });
 });

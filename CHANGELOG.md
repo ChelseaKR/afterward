@@ -309,6 +309,16 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- **The home page title no longer ends "what happened to the people who took them" (owner
+  decision 2026-11-21).** A results page cut it to "…and what happened to the…", which can
+  read as after-a-death content. `/en/` is now "Afterward — California training programs and
+  their outcomes", the same words `/` already used, and `/es/` is "Afterward — Programas de
+  capacitación de California y resultados" (machine-translated, owner-approved). It comes
+  from a new `homeMetaTitle` key in `web/lib/i18n.ts`, so the visible tagline, the
+  description and the share-card images are unchanged. Program and provider titles and
+  descriptions are held until the 2027-01-10 Search Console re-check (ADR 0004). Test:
+  `web/lib/site.test.ts`.
+
 - **The sitemap's `lastmod` is derived from the pages, or omitted (#156).** It used to be one
   date — `2026-09-12T00:00:00.000Z` — on all 9,046 URLs, read from
   `getCoverage().snapshot_date`. That is a real date belonging to a real thing, and the thing

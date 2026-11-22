@@ -60,7 +60,7 @@ export const ROOT_DESCRIPTION =
  */
 export function homeTitle(lang: Lang): string {
   const t = dict(lang);
-  return `${t.siteName} — ${t.tagline}`;
+  return `${t.siteName} — ${t.homeMetaTitle}`;
 }
 
 export function homeDescription(lang: Lang): string {
